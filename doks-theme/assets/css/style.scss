@@ -180,3 +180,51 @@ th
     margin: 0;
   }
 }
+
+.site-header__nav
+{
+  li:nth-last-child(1)
+  {
+    margin-left: 1rem;
+    a
+    {
+      background-color: #eb5c0b;
+      border-color: #eea236;
+      color: #fff;
+      padding: 10px 26px;
+      display: inline;
+      &:hover
+      {
+        background-color: #f39813;
+
+      }
+      &::-moz-selection {
+        background-color: #f39813;
+
+      }
+      &::selection {
+        background-color: #f39813;
+
+      }
+    }
+  }
+  li:nth-last-child(2)
+  {
+    a
+    {
+      border: 1px solid rgba(37,57,81,0.15);
+      padding: 10px 26px;
+      display: inline;
+      &:hover
+      {
+        background-color: rgba(255,255,255,0.45);
+      }
+      &::-moz-selection {
+        background-color: rgba(255,255,255,0.45);
+      }
+      &::selection {
+        background-color: rgba(255,255,255,0.45);
+      }
+    }
+  }
+}

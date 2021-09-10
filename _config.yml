@@ -17,6 +17,10 @@ doks:
               item_url: '/custom-style/'
             - item_name: GeoJSON 仕様
               item_url: '/geojson/'
+            - item_name: サインイン
+              item_url: 'https://app.geolonia.com/#/signin'
+            - item_name: ユーザー登録
+              item_url: 'https://app.geolonia.com/#/signup'
 
     footer:
         content:
