@@ -46,7 +46,7 @@ Geolonia の地図サービスでは、Embed API という API を提供して�
 
 ## Embed API の動作環境
 
-* Internet Exploerer 11 以降及びすべてのモダンブラウザの最新版。
+* Internet Explorer 11 以降及びすべてのモダンブラウザの最新版。
 * Firefox などの一部のブラウザでは、WebGL に対する制限により、一つのページ内に16個を超える地図を設置することはできません。
 * API キー `YOUR-API-KEY` に限り、`iframe` 内での利用を許可しておりません。
 
