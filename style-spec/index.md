@@ -34,98 +34,103 @@ breadcrumbs:
     #   URL: "./"
 ---
 
-## GeoJSON について
+## スタイルの仕様
 
-GeoJSON とは JSON によって空間情報を扱うためのファイルフォーマットです。
+- Mapbox 社の
 
-[GeoJSON - Wikipedia](https://ja.wikipedia.org/wiki/GeoJSON)
 
-## Simplestyle について
+詳しくは、Mapbox GL JS のドキュメントを御覧ください。
 
-Simplestyle とは Mapbox 社が公開した GeoJSON にスタイル情報を埋め込むための仕様で、GitHub 等で採用されています。
+https://docs.mapbox.com/mapbox-gl-js/style-spec/
 
-[smplestyle-spec](https://github.com/mapbox/simplestyle-spec)
+- Maplibre と Mapbox と Geolonia は互換性があります
 
-[![](https://www.evernote.com/l/ABWRqUPcMf1AwKFp5kH0BSZzScwRaC0TAusB/image.png)](https://github.com/geolonia/docs.geolonia.com/blob/master/geojson/example.geojson)
+このドキュメントでは、[https://github.com/geolonia/charites](https://github.com/geolonia/charites) を使って YAML 形式でスタイルを記述する方法について説明します。
 
-[SimpleStyle 対応の GeoJSON の例](https://github.com/geolonia/docs.geolonia.com/blob/master/geojson/example.geojson)
 
-Geolonia の Embed API の GeoJSON 埋め込み機能でも同様に Simplestyle に対応しています。
+## Layers
 
-```html
-<div
-  class="geolonia"
-  data-geojson="/geojson/example.geojson"
-></div>
+スタイルの layers プロパティには、そのスタイルで使用できるすべてのレイヤーが一覧表示されます。レイヤーの種類は `type`プロパティで指定され、`fill`、`line`、`symbol`等があります。
+
+上記の各レイヤーはソースを参照する必要があります。レイヤーは、ソースから取得したデータを受け取り、オプションで特徴をフィルタリングし、それらの特徴のスタイルを定義します。
+
+[https://github.com/geolonia/charites](https://github.com/geolonia/charites) を使って生成した場合ディレクトリ構成は以下のようになります。
+
+```
+layers:
+  - !!inc/file layers/background.yml
+  - !!inc/file layers/water.yml
+  - !!inc/file layers/park.yml
+  - !!inc/file layers/building.yml
 ```
 
-<div
-  class="geolonia"
-  data-geojson="/geojson/example.geojson"
-></div>
+### `layout` プロパティと、`paint` プロパティ
 
-## Simplestyle のスキーマ
+レイヤーには、そのレイヤーのデータをどのようにレンダリングするかを決定する、`layout` プロパティと、`paint` プロパティという2つのサブプロパティがあります。
 
-GeoJSON は、以下のようなルート要素を持っています。
+`layout` プロパティはレイヤーの `layout` オブジェクトに表示されます。`layout` プロパティはレンダリングプロセスの初期に適用され、そのレイヤーのデータがどのように GPU に渡されるかを定義しま す。`layout` プロパティを変更するには、非同期の「レイアウ ト」ステップが必要です。
 
-```json
-{
-  "type": "FeatureCollection",
-  "features": []
-}
+描画プロパティは、レンダリングプロセスの後半で適用されます。`paint` プロパティは、レイヤの「ペイント」オブジェクトに表示されます。`paint` プロパティへの変更は安価で、同期的に行われます。
+
+`layers/waterway-name.yml`
+
+```
+id: waterway-name
+type: symbol
+source: geolonia
+source-layer: waterway
+minzoom: 13
+filter:
+  - all
+  - - '=='
+    - $type
+    - LineString
+  - - has
+    - name
+layout:
+  text-font:
+    - Noto Sans Regular
+  text-size: 14
+  text-field: '{name}'
+  text-max-width: 5
+  text-rotation-alignment: map
+  symbol-placement: line
+  text-letter-spacing: 0.2
+  symbol-spacing: 350
+paint:
+  text-color: '#FFFFFF'
+  text-halo-width: 1.5
+  text-halo-color: '#000000'
 ```
 
-`features` の中には `feature` オブジェクト（地物）が配列で保存されており、それらも含めると以下の通りになります。
+## fill
 
-```json
-{
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": []
-      },
-      "properties": {}
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": []
-      },
-      "properties": {}
-    }
-  ]
-}
-```
-
-`feature` オブジェクトにはいくつかのタイプがあり、それは `geometry` プロパティの中にある `type` プロパティで指定されています。
-
-Geolonia の Embed API が対応しているタイプは以下の3種類です。
-
-* `Point`: 特定の座標を示すためのマーカーを設置します。
-* `LineString`: 複数の座標を結ぶ線を設置します。
-* `Polygon`: 多角形の図形を設置します。
-
-Geolonia では、これらのタイプに対して、以下で紹介するスタイル情報に対応しています。
-
-## タイプごとに指定可能なスタイル情報
-
-上述した `Point` などの各 `feature` タイプに対してスタイルを指定するには、それぞれのオブジェクトの `properties` にスタイル情報を埋め込みます。
-
-| プロパティ| 内容| Point | LineString | Polygon |
+| プロパティ| 内容| プロパティタイプ | データ型 | デフォルト |
 |---------|---------| :---: | :---:   | :---: |
-| title          | 地物のタイトル。 | ○ | ○ | ○ |
-| description    | 地物をクリックした際に表示されるコンテンツ | ○ | ○ | ○ |
-| marker-size    | マーカーのサイズを `small`、`medium`、`large` のいずれかで指定 | ○ |   |   |
-| marker-symbol  | マーカーのアイコン。 | ○ |   |   |
-| marker-color   | マーカーの色。例: `#7e7e7e` | ○ |   |   |
-| stroke         | 線の色。例: `#555555` | ○ | ○ | ○ |
-| stroke-width   | 線の太さ。例: `2` | ○ | ○ |   |
-| fill           | 塗りつぶし色。例: `#7e7e7e` |   |   | ○ |
+| fill-antialias | 塗りつぶしの際にアンチエイリアスをかけるかどうか。 | Paint | boolean | `true` |
+| fill-color | このレイヤーの塗りつぶし部分の色を指定します。この色は `rgba` にアルファ成分を加えたものを指定することができ、この色の不透明度は1pxのストロークの不透明度には影響しません。`fill-pattern` で無効になります。| Paint | color | `"#000000"` |
+| fill-opacity | 塗りつぶしレイヤー全体の不透明度です。`fill-color` とは対照的に、`stroke` が使用されている場合、この値は塗りつぶしの周りの1pxのストロークにも影響します。 | Paint | number `(0-1)` | `1` |
+| fill-outline-color | 塗りつぶしの輪郭色です。指定されていない場合は、fill-colorの値と一致します。`fill-pattern` で無効になります。`fill-antialias` を `true` にする必要があります。 | Paint | color |  |
+| fill-pattern | 画像の塗りつぶしの描画に使用するスプライト内の画像の名前です．シームレスパターンの場合、画像の幅と高さは2の倍数（2, 4, 8, ..., 512）でなければなりません。ズームに依存する表現は、整数のズームレベルでのみ評価されることに注意してください。 | Paint | resolvedImage |  |
+| fill-sort-key | この値に基づいて、フィーチャーを昇順にソートします。高いソートキーを持つフィーチャーは、低いソートキーを持つフィーチャーの上に表示されます。 | Layout | number |  |
+| fill-translate | ジオメトリのオフセット。値は [x, y] で、負の値はそれぞれ左と上を示す。 | Paint | array of numbers （単位は `px`） | `[0,0]` |
+| fill-translate-anchor | fill-translateが必要です。fill-translateの参照フレームを制御する。"map "を指定します。塗りつぶしは、マップを基準にして翻訳されます"viewport":塗りつぶしはビューポートに対して相対的に変換されます。 | Paint | `"map"` or `"viewport"` | `"map"` |
+| visibility | このレイヤーを表示するかどうか。 | Layout | `"visible"` or `"none"` | `"visible"` |
 
-* `○` がついているものが対応しているプロパティです。
-* [geojson.io](http://geojson.io/) を使用するとブラウザベースの GUI でスタイル情報を設定することができます。
-* `marker-symbol` については、一部のスタイルで意図したとおりのアイコンが表示されないことがあります。
+
+## line
+
+| プロパティ| 内容| プロパティタイプ | データ型 | デフォルト |
+|---------|---------| :---: | :---:   | :---: |
+| fill-antialias | 塗りつぶしの際にアンチエイリアスをかけるかどうか。 | Paint | boolean | `true` |
+| fill-color | このレイヤーの塗りつぶし部分の色を指定します。この色は `rgba` にアルファ成分を加えたものを指定することができ、この色の不透明度は1pxのストロークの不透明度には影響しません。`fill-pattern` で無効になります。| Paint | color | `"#000000"` |
+| fill-opacity | 塗りつぶしレイヤー全体の不透明度です。`fill-color` とは対照的に、`stroke` が使用されている場合、この値は塗りつぶしの周りの1pxのストロークにも影響します。 | Paint | number `(0-1)` | `1` |
+| fill-outline-color | 塗りつぶしの輪郭色です。指定されていない場合は、fill-colorの値と一致します。`fill-pattern` で無効になります。`fill-antialias` を `true` にする必要があります。 | Paint | color |  |
+| fill-pattern | 画像の塗りつぶしの描画に使用するスプライト内の画像の名前です．シームレスパターンの場合、画像の幅と高さは2の倍数（2, 4, 8, ..., 512）でなければなりません。ズームに依存する表現は、整数のズームレベルでのみ評価されることに注意してください。 | Paint | resolvedImage |  |
+| fill-sort-key | この値に基づいて、フィーチャーを昇順にソートします。高いソートキーを持つフィーチャーは、低いソートキーを持つフィーチャーの上に表示されます。 | Layout | number |  |
+| fill-translate | ジオメトリのオフセット。値は [x, y] で、負の値はそれぞれ左と上を示す。 | Paint | array of numbers （単位は `px`） | `[0,0]` |
+| fill-translate-anchor | fill-translateが必要です。fill-translateの参照フレームを制御する。"map "を指定します。塗りつぶしは、マップを基準にして翻訳されます"viewport":塗りつぶしはビューポートに対して相対的に変換されます。 | Paint | `"map"` or `"viewport"` | `"map"` |
+| visibility | このレイヤーを表示するかどうか。 | Layout | `"visible"` or `"none"` | `"visible"` |
+
+
+## symbol
