@@ -44,6 +44,10 @@ grid_navigation:
       excerpt: 地図のスタイルをカスタマイズする方法についてご紹介します。
       cta: Read more
       url: '/custom-style/'
+    - title: スタイルテンプレート
+      excerpt: 地図のスタイルを、テンプレートを使ってカスタマイズする方法についてご紹介します。
+      cta: Read more
+      url: '/custom-style-template/'
     - title: GeoJSON 仕様
       excerpt: GeoJSON のスタイルを定義するための仕様について紹介します。
       cta: Read more
