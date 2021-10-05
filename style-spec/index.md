@@ -105,32 +105,90 @@ paint:
 
 ## fill
 
-| プロパティ| 内容| プロパティタイプ | データ型 | デフォルト |
-|---------|---------| :---: | :---:   | :---: |
-| fill-antialias | 塗りつぶしの際にアンチエイリアスをかけるかどうか。 | Paint | boolean | `true` |
-| fill-color | このレイヤーの塗りつぶし部分の色を指定します。この色は `rgba` にアルファ成分を加えたものを指定することができ、この色の不透明度は1pxのストロークの不透明度には影響しません。`fill-pattern` で無効になります。| Paint | color | `"#000000"` |
-| fill-opacity | 塗りつぶしレイヤー全体の不透明度です。`fill-color` とは対照的に、`stroke` が使用されている場合、この値は塗りつぶしの周りの1pxのストロークにも影響します。 | Paint | number `(0-1)` | `1` |
-| fill-outline-color | 塗りつぶしの輪郭色です。指定されていない場合は、fill-colorの値と一致します。`fill-pattern` で無効になります。`fill-antialias` を `true` にする必要があります。 | Paint | color |  |
-| fill-pattern | 画像の塗りつぶしの描画に使用するスプライト内の画像の名前です．シームレスパターンの場合、画像の幅と高さは2の倍数（2, 4, 8, ..., 512）でなければなりません。ズームに依存する表現は、整数のズームレベルでのみ評価されることに注意してください。 | Paint | resolvedImage |  |
-| fill-sort-key | この値に基づいて、フィーチャーを昇順にソートします。高いソートキーを持つフィーチャーは、低いソートキーを持つフィーチャーの上に表示されます。 | Layout | number |  |
-| fill-translate | ジオメトリのオフセット。値は [x, y] で、負の値はそれぞれ左と上を示す。 | Paint | array of numbers （単位は `px`） | `[0,0]` |
-| fill-translate-anchor | fill-translateが必要です。fill-translateの参照フレームを制御する。"map "を指定します。塗りつぶしは、マップを基準にして翻訳されます"viewport":塗りつぶしはビューポートに対して相対的に変換されます。 | Paint | `"map"` or `"viewport"` | `"map"` |
-| visibility | このレイヤーを表示するかどうか。 | Layout | `"visible"` or `"none"` | `"visible"` |
+### fill-antialias
 
+塗りつぶしの際にアンチエイリアスをかけるかどうか。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Paint | [boolean](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#boolean) | `true` |
+
+### fill-color
+
+このレイヤーの塗りつぶし部分の色を指定します。この色は `rgba` にアルファ成分を加えたものを指定することができ、この色の不透明度は1pxのストロークの不透明度には影響しません。`fill-pattern` で無効になります。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Paint | [color](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#color) | `"#000000"` |
+
+### fill-opacity
+
+塗りつぶしレイヤー全体の不透明度です。`fill-color` とは対照的に、`stroke` が使用されている場合、この値は塗りつぶしの周りの1pxのストロークにも影響します。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Paint | [number](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#number) (0-1) | `1` |
+
+### fill-outline-color
+
+塗りつぶしの輪郭色です。指定されていない場合は、fill-colorの値と一致します。`fill-pattern` で無効になります。`fill-antialias` を `true` にする必要があります。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Paint | [color](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#color) |  |
+
+### fill-pattern
+
+画像の塗りつぶしの描画に使用するスプライト内の画像の名前です．シームレスパターンの場合、画像の幅と高さは2の倍数（2, 4, 8, ..., 512）でなければなりません。ズームに依存する表現は、整数のズームレベルでのみ評価されることに注意してください。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Paint | [resolvedImage](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#resolvedimage) |  |
+
+### fill-sort-key
+
+この値に基づいて、フィーチャーを昇順にソートします。高いソートキーを持つフィーチャーは、低いソートキーを持つフィーチャーの上に表示されます。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Layout | [number](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#number) |  |
+
+### fill-translate
+
+ジオメトリのオフセット。値は [x, y] で、負の値はそれぞれ左と上を示す。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Paint | [array](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#array) of [numbers](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#number) （単位は `px`） | `[0,0]` |
+
+### fill-translate-anchor
+
+`fill-translate` の基準となるフレームを制御します。`fill-translate` が必要です。
+
+`"map"`を指定します。
+ - 塗りつぶしは、地図を基準にして翻訳されます。
+
+`"viewport"`:
+ - 塗りつぶしはビューポートに対して相対的に変換されます。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Paint | `"map"`, `"viewport"` | `"map"` |
+
+### visibility
+
+このレイヤーが表示されているかどうか。
+
+`"visible"`:
+このレイヤーを表示するかどうか。
+
+`"none"`:
+このレイヤーは表示されません。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Layout | `"visible"`, `"none"` | `"visible"` |
 
 ## line
-
-| プロパティ| 内容| プロパティタイプ | データ型 | デフォルト |
-|---------|---------| :---: | :---:   | :---: |
-| fill-antialias | 塗りつぶしの際にアンチエイリアスをかけるかどうか。 | Paint | boolean | `true` |
-| fill-color | このレイヤーの塗りつぶし部分の色を指定します。この色は `rgba` にアルファ成分を加えたものを指定することができ、この色の不透明度は1pxのストロークの不透明度には影響しません。`fill-pattern` で無効になります。| Paint | color | `"#000000"` |
-| fill-opacity | 塗りつぶしレイヤー全体の不透明度です。`fill-color` とは対照的に、`stroke` が使用されている場合、この値は塗りつぶしの周りの1pxのストロークにも影響します。 | Paint | number `(0-1)` | `1` |
-| fill-outline-color | 塗りつぶしの輪郭色です。指定されていない場合は、fill-colorの値と一致します。`fill-pattern` で無効になります。`fill-antialias` を `true` にする必要があります。 | Paint | color |  |
-| fill-pattern | 画像の塗りつぶしの描画に使用するスプライト内の画像の名前です．シームレスパターンの場合、画像の幅と高さは2の倍数（2, 4, 8, ..., 512）でなければなりません。ズームに依存する表現は、整数のズームレベルでのみ評価されることに注意してください。 | Paint | resolvedImage |  |
-| fill-sort-key | この値に基づいて、フィーチャーを昇順にソートします。高いソートキーを持つフィーチャーは、低いソートキーを持つフィーチャーの上に表示されます。 | Layout | number |  |
-| fill-translate | ジオメトリのオフセット。値は [x, y] で、負の値はそれぞれ左と上を示す。 | Paint | array of numbers （単位は `px`） | `[0,0]` |
-| fill-translate-anchor | fill-translateが必要です。fill-translateの参照フレームを制御する。"map "を指定します。塗りつぶしは、マップを基準にして翻訳されます"viewport":塗りつぶしはビューポートに対して相対的に変換されます。 | Paint | `"map"` or `"viewport"` | `"map"` |
-| visibility | このレイヤーを表示するかどうか。 | Layout | `"visible"` or `"none"` | `"visible"` |
-
 
 ## symbol
