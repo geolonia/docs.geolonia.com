@@ -92,7 +92,14 @@ $textSettings:
   text-halo-width: 1
   text-halo-color: "#000000"
 ```
-- `text-halo-blur`(輪郭のぼかしサイズ）
-- `text-color`（文字の色）
-- `text-halo-width`（輪郭のサイズ）
-- `text-halo-color`（輪郭の色）
+- `text-halo-blur`: 輪郭のぼかしサイズを指定します。
+- `text-color`: 文字の色を指定します。
+- `text-halo-width`: 輪郭のサイズを指定します。
+- `text-halo-color`: 輪郭の色を指定します。
+
+
+## さらに高度なカスタマイズ
+
+本ドキュメントでは、変数として用意されているレイヤーの色を変更する方法についてのみご紹介しました。実際にはスタイルを直接編集することで、もっと多くのことが可能です。
+
+詳しくは、スタイル仕様 のページをご覧ください。
