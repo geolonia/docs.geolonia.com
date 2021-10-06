@@ -36,72 +36,68 @@ breadcrumbs:
 
 ## スタイルの仕様
 
-- Mapbox 社の
+スタイルとはマップの見た目を定義するドキュメントのことです。
+
+Geolonia で使用できるスタイルは、Mapbox や MapLibre GL JS の JSON 形式の、スタイルの仕様と互換性があります。
+
+[https://docs.mapbox.com/mapbox-gl-js/style-spec/](https://docs.mapbox.com/mapbox-gl-js/style-spec/)
 
 
-詳しくは、Mapbox GL JS のドキュメントを御覧ください。
+## YAML 形式のスタイル
 
-https://docs.mapbox.com/mapbox-gl-js/style-spec/
-
-- Maplibre と Mapbox と Geolonia は互換性があります
-
-このドキュメントでは、[https://github.com/geolonia/charites](https://github.com/geolonia/charites) を使って YAML 形式でスタイルを記述する方法について説明します。
+Geolonia では、[Charites](https://github.com/geolonia/charites) を使って、JSON 形式のスタイルを、YAML で記述する方法を推奨しています。それによりコメントや、変数の使用が可能になり、ユーザーがデザインをカスタマイズするステップが簡単になります。
 
 
 ## Layers
 
-スタイルの layers プロパティには、そのスタイルで使用できるすべてのレイヤーが一覧表示されます。レイヤーの種類は `type`プロパティで指定され、`fill`、`line`、`symbol`等があります。
+スタイルの layers プロパティには、そのスタイルで使用できるすべてのレイヤーが一覧表示されます。
 
-上記の各レイヤーはソースを参照する必要があります。レイヤーは、ソースから取得したデータを受け取り、オプションで特徴をフィルタリングし、それらの特徴のスタイルを定義します。
-
-[https://github.com/geolonia/charites](https://github.com/geolonia/charites) を使って生成した場合ディレクトリ構成は以下のようになります。
+[Charites](https://github.com/geolonia/charites) を使って YAML 形式のスタイルを生成した場合、以下のようにそれぞれのレイヤーが定義されているファイルを読み込んでいます。
 
 ```
 layers:
   - !!inc/file layers/background.yml
+  - !!inc/file layers/landuse-school.yml
   - !!inc/file layers/water.yml
-  - !!inc/file layers/park.yml
   - !!inc/file layers/building.yml
 ```
 
-### `layout` プロパティと、`paint` プロパティ
-
-レイヤーには、そのレイヤーのデータをどのようにレンダリングするかを決定する、`layout` プロパティと、`paint` プロパティという2つのサブプロパティがあります。
-
-`layout` プロパティはレイヤーの `layout` オブジェクトに表示されます。`layout` プロパティはレンダリングプロセスの初期に適用され、そのレイヤーのデータがどのように GPU に渡されるかを定義しま す。`layout` プロパティを変更するには、非同期の「レイアウ ト」ステップが必要です。
-
-描画プロパティは、レンダリングプロセスの後半で適用されます。`paint` プロパティは、レイヤの「ペイント」オブジェクトに表示されます。`paint` プロパティへの変更は安価で、同期的に行われます。
-
-`layers/waterway-name.yml`
+レイヤーはファイルの中身は以下のようになっています。
 
 ```
-id: waterway-name
-type: symbol
+id: landuse-school
+type: fill
 source: geolonia
-source-layer: waterway
-minzoom: 13
+source-layer: landuse
 filter:
-  - all
-  - - '=='
-    - $type
-    - LineString
-  - - has
-    - name
+  - '=='
+  - class
+  - school
 layout:
-  text-font:
-    - Noto Sans Regular
-  text-size: 14
-  text-field: '{name}'
-  text-max-width: 5
-  text-rotation-alignment: map
-  symbol-placement: line
-  text-letter-spacing: 0.2
-  symbol-spacing: 350
+  visibility: visible
 paint:
-  text-color: '#FFFFFF'
-  text-halo-width: 1.5
-  text-halo-color: '#000000'
+  fill-color: rgba(255, 255, 255, 0.1)
 ```
+
+レイヤーの種類は `type`プロパティで指定され、`fill`、`line`、`symbol`等があります。
+
+- `fill`: 塗りつぶされた多角形で、境界線も追加できます。
+- `line`: 線です。
+- `symbol`: アイコンまたはテキストラベルです。
+
+これらのタイプは、後ほど紹介するスタイル情報に対応しています。
+
+
+更に、レイヤーには、`layout` プロパティと、`paint` プロパティという2つのサブプロパティがあります。
+後ほど紹介するスタイル情報は、`layout` か `paint` のプロパティとして指定します。プロパティの種類を間違えないようにご注意ください。
+
+```
+layout:
+  visibility: visible
+paint:
+  fill-color: rgba(255, 255, 255, 0.1)
+```
+
 
 ## fill
 
