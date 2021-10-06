@@ -112,7 +112,7 @@ paint:
 
 | プロパティ | データ型 | デフォルト |
 |---------|---------|---------|
-| Paint | [boolean](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#boolean) | `true` |
+| Paint | [boolean](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#boolean) | true |
 
 ### fill-color
 
@@ -128,7 +128,7 @@ paint:
 
 | プロパティ | データ型 | デフォルト |
 |---------|---------|---------|
-| Paint | [number](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#number) (0-1) | `1` |
+| Paint | [number](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#number) (`0-1`) | 1 |
 
 ### fill-outline-color
 
@@ -160,7 +160,7 @@ paint:
 
 | プロパティ | データ型 | デフォルト |
 |---------|---------|---------|
-| Paint | [array](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#array) of [numbers](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#number) （単位は `px`） | `[0,0]` |
+| Paint | [array](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#array) of [numbers](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#number) （単位は `px`） | [0,0] |
 
 ### fill-translate-anchor
 
@@ -191,5 +191,33 @@ paint:
 | Layout | `"visible"`, `"none"` | `"visible"` |
 
 ## line
+
+### line-blur
+
+線に適用されるブラーをピクセル単位で指定します。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Paint | [number](https://maplibre.org/maplibre-gl-js-docs/style-spec/types/#number) （`0`以上、単位は `px`） | 0 |
+
+### line-cap
+
+行末の表示について。
+
+`"butt"`:
+
+線の正確な終点に合わせて描かれる、端が四角くなったキャップ。
+
+`"round"`:
+
+丸みを帯びた端部を持つキャップで、線の幅の2分の1の半径で線の終点を中心として線の終点を越えて描かれる。
+
+`"square"`:
+
+端が四角いキャップで、線の幅の2分の1の距離で線の終点を越えて描かれています。
+
+| プロパティ | データ型 | デフォルト |
+|---------|---------|---------|
+| Layout | `"butt"`, `"round"`, `"square"` | `"butt"` |
 
 ## symbol
