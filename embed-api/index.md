@@ -139,3 +139,29 @@ Embed API を利用して地図を設置するには、`geolonia` というク�
 ```
 
 <a class="codepen" href="https://codepen.io/pen?template=dyomyrX" target="codepen"><i class="icon icon--codepen"></i> CodePen</a> を使用するとサインアップ無しで Geolonia の地図をお試しいただけます。
+
+## 制限モードについて
+
+APIキーを使用して所定の地図表示回数を超過した場合、地図は**制限モード**で表示されます。制限モードでは地図に含まれる情報が大幅に減少し（<a href="https://maps.geolonia.com/#style=geolonia/basic&lang=ja&map=7.99/35.681133/139.766943" target="_blank">ズームレベル8</a>相当）、詳細な建物や街路が表示されなくなります。また、制限モードであることを示すダイアログが表示されます。
+
+<figure>
+<img src="https://ucarecdn.com/bac818b6-ba90-4d69-ab49-6bb2e5115788/-/resize/1680x/">
+<figcaption>制限モード</figcaption>
+</figure>
+
+<figure>
+<img src="https://ucarecdn.com/95e130eb-54a2-4f8e-9804-5767b6dfb21b/-/resize/1680x/">
+<figcaption>通常モード</figcaption>
+</figure>
+
+なお、ローカル開発環境を含む一部の開発環境で API キーを利用して地図を表示した場合、地図の表示回数はカウントされず、無料でご利用いただけます。
+
+[無料利用の対象となる URL やサービスを確認する](/tutorial/002/#%E5%AF%BE%E8%B1%A1%E3%81%A8%E3%81%AA%E3%82%8B-url-%E3%81%8A%E3%82%88%E3%81%B3%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9)
+
+### 制限モードを解除するには
+
+[ダッシュボード](https://app.geolonia.com)にアクセスし、クレジットカードの登録を行うことで有料プランの申し込みを行うことができます。有料プランではより多くの地図表示回数とそれを超える分の従量課金での地図表示が利用できます。
+
+[価格を見る](https://geolonia.com/pricing/)
+
+請求書によるお支払いをご希望の場合は[お問い合わせ](https://geolonia.com/contact/)ください。
