@@ -145,12 +145,12 @@ Embed API を利用して地図を設置するには、`geolonia` というク�
 APIキーを使用して所定の地図表示回数を超過した場合、地図は**制限モード**で表示されます。制限モードでは地図に含まれる情報が大幅に減少し（<a href="https://maps.geolonia.com/#style=geolonia/basic&lang=ja&map=7.99/35.681133/139.766943" target="_blank">ズームレベル8</a>相当）、詳細な建物や街路が表示されなくなります。また、制限モードであることを示すダイアログが表示されます。
 
 <figure>
-<img src="https://ucarecdn.com/bac818b6-ba90-4d69-ab49-6bb2e5115788/-/resize/1680x/">
+<img src="https://ucarecdn.com/bac818b6-ba90-4d69-ab49-6bb2e5115788/-/resize/500x/">
 <figcaption>制限モード</figcaption>
 </figure>
 
 <figure>
-<img src="https://ucarecdn.com/95e130eb-54a2-4f8e-9804-5767b6dfb21b/-/resize/1680x/">
+<img src="https://ucarecdn.com/95e130eb-54a2-4f8e-9804-5767b6dfb21b/-/resize/500x/">
 <figcaption>通常モード</figcaption>
 </figure>
 
