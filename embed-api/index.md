@@ -140,25 +140,28 @@ Embed API を利用して地図を設置するには、`geolonia` というク�
 
 <a class="codepen" href="https://codepen.io/pen?template=dyomyrX" target="codepen"><i class="icon icon--codepen"></i> CodePen</a> を使用するとサインアップ無しで Geolonia の地図をお試しいただけます。
 
-## 制限モードについて
+## 地図の表示利用回数を超過した場合
 
-APIキーを使用して所定の地図表示回数を超過した場合、地図は**制限モード**で表示されます。制限モードでは地図に含まれる情報が大幅に減少し（<a href="https://maps.geolonia.com/#style=geolonia/basic&lang=ja&map=7.99/35.681133/139.766943" target="_blank">ズームレベル8</a>相当）、詳細な建物や街路が表示されなくなります。また、制限モードであることを示すダイアログが表示されます。
+API キーを利用した地図の表示が所定の回数を超過した場合、地図の表示が制限されます。
 
-<figure>
-<img src="https://ucarecdn.com/1d1725e0-b54d-414c-8a0b-5569fbe9e89c/-/resize/1000x/">
-<figcaption>制限モード</figcaption>
-</figure>
-
-<figure>
-<img src="https://ucarecdn.com/583c6c9e-a1a2-492f-b02e-0f21f9cd63ff/-/resize/1000x/">
-<figcaption>通常モード</figcaption>
-</figure>
+<style>
+  .restricted-mode-demo {
+    width: 100%;
+    height: 300px;
+    margin: 1em auto 2em;
+    /* same as styled in geolonia/embed */
+    background-image: url("https://geolonia.github.io/embed/restricted.jpg");
+    background-position: center center;
+    background-size: cover;
+  }
+</style>
+<div class="restricted-mode-demo"></div>
 
 なお、ローカル開発環境を含む一部の開発環境で API キーを利用して地図を表示した場合、地図の表示回数はカウントされず、無料でご利用いただけます。
 
 [無料利用の対象となる URL やサービスを確認する](/tutorial/002/#%E5%AF%BE%E8%B1%A1%E3%81%A8%E3%81%AA%E3%82%8B-url-%E3%81%8A%E3%82%88%E3%81%B3%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9)
 
-### 制限モードを解除するには
+### 地図の表示制限を解除するには
 
 [ダッシュボード](https://app.geolonia.com)にアクセスし、クレジットカードの登録を行うことで有料プランの申し込みを行うことができます。有料プランではより多くの地図表示回数とそれを超える分の従量課金での地図表示が利用できます。
 
