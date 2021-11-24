@@ -144,18 +144,7 @@ Embed API を利用して地図を設置するには、`geolonia` というク�
 
 API キーを利用した地図の表示が所定の回数を超過した場合、地図の表示が制限されます。
 
-<style>
-  .restricted-mode-demo {
-    width: 100%;
-    height: 300px;
-    margin: 1em auto 2em;
-    /* same as styled in geolonia/embed */
-    background-image: url("https://geolonia.github.io/embed/restricted.jpg");
-    background-position: center center;
-    background-size: cover;
-  }
-</style>
-<div class="restricted-mode-demo"></div>
+<div class="restricted-mode-demo-container"></div>
 
 なお、ローカル開発環境を含む一部の開発環境で API キーを利用して地図を表示した場合、地図の表示回数はカウントされず、無料でご利用いただけます。
 
