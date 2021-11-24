@@ -139,19 +139,3 @@ Embed API を利用して地図を設置するには、`geolonia` というク�
 ```
 
 <a class="codepen" href="https://codepen.io/pen?template=dyomyrX" target="codepen"><i class="icon icon--codepen"></i> CodePen</a> を使用するとサインアップ無しで Geolonia の地図をお試しいただけます。
-
-## 地図の表示制限について
-
-地図が無料プランの制限を超過した場合、地図の配信が停止して以下の表示に切り替わります。
-
-<div class="restricted-mode-demo-container"></div>
-
-なお、ローカル開発環境を含む一部の開発環境で API キーを利用して地図を表示した場合、地図の表示回数はカウントされず、無料でご利用いただけます。
-
-[無料利用の対象となる URL やサービスを確認する](/tutorial/002/#%E5%AF%BE%E8%B1%A1%E3%81%A8%E3%81%AA%E3%82%8B-url-%E3%81%8A%E3%82%88%E3%81%B3%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9)
-
-### 地図の表示制限を解除するには
-
-[ダッシュボード](https://app.geolonia.com)にアクセスし、クレジットカードの登録を行うことで有料プランの申し込みを行うことができます。有料プランではより多くの地図表示回数とそれを超える分の従量課金での地図表示が利用できます。
-
-[価格を見る](https://geolonia.com/pricing/)
