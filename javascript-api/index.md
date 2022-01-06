@@ -132,7 +132,7 @@ map.on('moveend', () => {
 * <a class="codepen" href="https://codepen.io/geolonia/pen/poJLoBq" target="codepen"><i class="icon icon--codepen"></i> 地図を回転させる。</a>
 * <a class="codepen" href="https://codepen.io/geolonia/pen/vYORqwX" target="codepen"><i class="icon icon--codepen"></i> 地物上にマウスオーバーで、名前や緯度経度などをポップアップで表示する。</a>
 
-その他、Codepen の Geolonia アカウントで、たくさんのサンプルを紹介しています。
+その他、CodePen の Geolonia アカウントで、たくさんのサンプルを紹介しています。
 
 [![CodePen](/img/codepen.png)](https://codepen.io/geolonia/)
 [Geolonia on CodePen へ移動](https://codepen.io/geolonia/)
