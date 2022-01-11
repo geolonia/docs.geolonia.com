@@ -143,10 +143,13 @@ API キーに対しては、あらかじめ `https://editor.geolonia.com` を許
 
 上の例では、`https://example.com/my-style.json` がカスタムスタイルの URL です。
 
-GitHub の [GeoloniaMaps オーガニゼーション](https://github.com/geoloniamaps/)では、スタイルを テンプレートレポジトリとして公開しています。
+手早く試したい場合は、GitHub にアップロードするのがおすすめです。 Geolonia の地図は、GitHub ページ上では無料で使えるようになっていますので、上述した API キーを変更する必要もありません。
 
-手早く試したい場合こちらのテンプレートレポジトリを使い、GitHub 上でスタイルをホストするのがおすすめです。 
-Geolonia の地図は、GitHub ページ上では無料で使えるようになっていますので、上述した API キーを変更する必要もありません。
+## スタイルテンプレート
+
+本ドキュメントでは、Maptunik を使ってスタイルを編集する方法を紹介しましたが、スタイルを直接カスタマイズしたい場合は、[Geolonia Maps](https://github.com/geoloniamaps/) にあるスタイルのテンプレートレポジトリを編集して下さい。Geolonia のスタイルをベースにスタイルのカスタマイズを簡単に試していただくことができます。
+
+* [Geolonia Maps](https://github.com/geoloniamaps/) は スタイルのテンプレートをはじめ便利なツールなどを集めた GitHub の Organization (組織) です。
 
 ## さらに高度なカスタマイズ
 
