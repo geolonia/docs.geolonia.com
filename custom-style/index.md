@@ -143,7 +143,14 @@ API キーに対しては、あらかじめ `https://editor.geolonia.com` を許
 
 上の例では、`https://example.com/my-style.json` がカスタムスタイルの URL です。
 
-手早く試したい場合は、GitHub にアップロードするのがおすすめです。 Geolonia の地図は、GitHub ページ上では無料で使えるようになっていますので、上述した API キーを変更する必要もありません。
+```html
+<div class="geolonia" data-style="https://example.com/my-style.json">
+```
+
+GitHub の [GeoloniaMaps オーガニゼーション](https://github.com/geoloniamaps/)では、スタイルを テンプレートレポジトリとして公開しています。
+
+手早く試したい場合こちらのテンプレートレポジトリを使い、GitHub 上でスタイルをホストするのがおすすめです。 
+Geolonia の地図は、GitHub ページ上では無料で使えるようになっていますので、上述した API キーを変更する必要もありません。
 
 ## さらに高度なカスタマイズ
 
