@@ -145,6 +145,18 @@ API キーに対しては、あらかじめ `https://editor.geolonia.com` を許
 
 手早く試したい場合は、GitHub にアップロードするのがおすすめです。 Geolonia の地図は、GitHub ページ上では無料で使えるようになっていますので、上述した API キーを変更する必要もありません。
 
+## スタイルテンプレート
+
+本ドキュメントでは、Maptunik を使ってスタイルを編集する方法を紹介しましたが、直接スタイルをカスタマイズしたい場合は、[Geolonia Maps](https://github.com/geoloniamaps/) にあるスタイルのテンプレートレポジトリを編集して下さい。
+
+例：Basic スタイルのテンプレートレポジトリ
+
+[https://github.com/geoloniamaps/basic](https://github.com/geoloniamaps/basic)
+
+<div class="callout callout--info">
+<p><a href="https://github.com/geoloniamaps/" target="_blank" rel="noopener noreferrer">Geolonia Maps</a> は スタイルのテンプレートをはじめ便利なツールなどを集めた GitHub の Organization (組織) です。</p>
+</div>
+
 ## さらに高度なカスタマイズ
 
 本ドキュメントでは、色を変更する方法のみについてご紹介しましたが、実際にはもっと多くのことが可能です。
