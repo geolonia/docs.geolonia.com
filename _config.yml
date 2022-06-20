@@ -20,7 +20,7 @@ doks:
             - item_name: サインイン
               item_url: 'https://app.geolonia.com/#/signin'
             - item_name: ユーザー登録
-              item_url: 'https://app.geolonia.com/#/signup'
+              item_url: 'https://app.geolonia.com/?lang=ja&referrer=site-docs_geolonia_com#/signup'
 
     footer:
         content:
