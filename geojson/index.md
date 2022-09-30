@@ -48,7 +48,7 @@ Simplestyle とは Mapbox 社が公開した GeoJSON にスタイル情報を埋
 
 [![](https://www.evernote.com/l/ABWRqUPcMf1AwKFp5kH0BSZzScwRaC0TAusB/image.png)](https://github.com/geolonia/docs.geolonia.com/blob/master/geojson/example.geojson)
 
-[SimpleStyle 対応の GeoJSON の例](https://github.com/geolonia/docs.geolonia.com/blob/master/geojson/example.geojson)
+[Simplestyle 対応の GeoJSON の例](https://github.com/geolonia/docs.geolonia.com/blob/master/geojson/example.geojson)
 
 Geolonia の Embed API の GeoJSON 埋め込み機能でも同様に Simplestyle に対応しています。
 
