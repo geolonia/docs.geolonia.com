@@ -96,9 +96,9 @@ map.on('moveend', () => {
 
 ## Simplestyle を JavaScript で扱う
 
-JavaScript で API で [Simplestyle](/geojson/#simplestyle-について) を適用する場合は、`window.geolonia.Simplestyle` のインターフェースを利用できます。以下は、GeoJSON を地図に追加した上で `fitBound` メソッドをコールし描画された地物に合わせて地図を移動するサンプルです。
+JavaScript で API で [Simplestyle](/geojson/#simplestyle-について) を適用する場合は、`window.geolonia.SimpleStyle` のインターフェースを利用できます。以下は、GeoJSON を地図に追加した上で `fitBounds` メソッドをコールし描画された地物に合わせて地図を移動するサンプルです。
 
-`fitBound` メソッドのオプションは `Map.fitBound` メソッドと互換性があります。
+`fitBounds` メソッドのオプションは `Map.fitBounds` メソッドと互換性があります。
 詳細は Mapbox GL JS のドキュメントをご覧下さい。
 
 [https://docs.mapbox.com/mapbox-gl-js/api/map/#map#fitbounds](https://docs.mapbox.com/mapbox-gl-js/api/map/#map#fitbounds)
@@ -109,7 +109,7 @@ map.on('load', async () => {
   const resp = await fetch('https://raw.githubusercontent.com/geolonia/docs.geolonia.com/master/geojson/example.geojson')
   const geojson = await resp.json()
 
-  new geolonia.Simplestyle(geojson)
+  new geolonia.SimpleStyle(geojson)
     .addTo(map)
     .fitBounds()
 })
