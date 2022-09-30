@@ -94,6 +94,28 @@ map.on('moveend', () => {
 
 <a class="codepen" href="https://codepen.io/geolonia/pen/ZEGxQbd" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
 
+## Symplestyle を JavaScript で扱う
+
+JavaScript で API で [Symplestyle](/geojson/#simplestyle-について) を適用する場合は、`window.geolonia.Simplestyle` のインターフェースを利用できます。以下は、GeoJSON を地図に追加した上で `fitBound` メソッドをコールし描画された地物に合わせて地図を移動するサンプルです。
+
+`fitBound` メソッドのオプションは `Map.fitBound` メソッドと互換性があります。
+詳細は Mapbox GL JS のドキュメントをご覧下さい。
+
+[https://docs.mapbox.com/mapbox-gl-js/api/map/#map#fitbounds](https://docs.mapbox.com/mapbox-gl-js/api/map/#map#fitbounds)
+
+```javascript
+const map = new geolonia.Map('#map')
+map.on('load', async () => {
+  const resp = await fetch('https://raw.githubusercontent.com/geolonia/docs.geolonia.com/master/geojson/example.geojson')
+  const geojson = await resp.json()
+
+  new geolonia.Simplestyle(geojson)
+    .addTo(map)
+    .fitBound()
+})
+```
+
+
 ## サンプルアプリケーション
 
 ### JavaScript で地図のバックグラウンドにテクスチャを追加
