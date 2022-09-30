@@ -26,7 +26,7 @@ breadcrumbs:
 
 ## Geolonia の JavaScript API について
 
-Geolonia の JavaScript API は、[Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/) の拡張クラスで、同じオプションやプロパティ、メソッド等が使用できます。
+Geolonia の JavaScript API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/) の拡張クラスで、同じオプションやプロパティ、メソッド等が使用できます。
 
 また、[Embed API](/embed-api/) によって、緯度や経度などのオプションを HTML の `data-*` 属性を使用して設定することができ、少ない記述で地図アプリケーションの開発を始めることができます。
 
@@ -49,14 +49,14 @@ const map = new geolonia.Map('#map')
 
 <a class="codepen" href="https://codepen.io/geolonia/pen/xxGWwrN" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
 
-## Mapbox GL JS との互換性
+## Mapbox GL JS 及び MapLibre GL JS との互換性
 
-Geolonia の JavaScript API は、[Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/) を内部で使用しており、Mapbox GL JS のクラス名 `mapboxgl` を `geolonia` に置き換えるだけで、すべてのほぼすべてのクラスおよびそのインスタンスメンバー、イベントを利用できます。
+Geolonia の JavaScript API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/) を内部で使用しており、MapLibre GL JS のクラス名 `maplibregl` を `geolonia` に置き換えるだけで、すべてのほぼすべてのクラスおよびそのインスタンスメンバー、イベントを利用できます。また、 Mapbox GL JS についても多くの互換性があります。
 
-Mapbox GL jS:
+MapLibre GL JS:
 
 ```javascript
-const map = new mapboxgl.Map( '#map' )
+const map = new maplibregl.Map( '#map' )
 ```
 
 Geolonia:
@@ -69,18 +69,18 @@ const map = new geolonia.Map( '#map' )
 
 <div class="callout callout--danger">
   <ul>
-    <li>Mapbox と Geolonia の地図では API キーの受け渡しに関する仕様が違うため、API キーに関わる部分だけ互換性がありません。</li>
+    <li>MapLibre 及び Mapbox と Geolonia の地図では API キーの受け渡しに関する仕様が違うため、API キーに関わる部分だけ互換性がありません。</li>
     <li>また、ベクトルタイルのスキーマが違うため、スタイル用の JSON については仕様は同じですが流用はできません。</li>
   </ul>
 </div>
 
 ### プロパティ、メソッドおよびイベントについて
 
-上述しましたが、クラス `mapboxgl` と `geolonia` は互換性があります。
+上述しましたが、クラス `maplibregl` と `geolonia` は互換性があります。
 
-`geolonia` に含まれる各クラスのインスタンスメンバーや、イベントについては、Mapbox GL JS のドキュメントを御覧ください。
+`geolonia` に含まれる各クラスのインスタンスメンバーや、イベントについては、MapLibre GL JS のドキュメントを御覧ください。
 
-[https://docs.mapbox.com/mapbox-gl-js/api/](https://docs.mapbox.com/mapbox-gl-js/api/)
+[https://maplibre.org/maplibre-gl-js-docs/api/](https://maplibre.org/maplibre-gl-js-docs/api/)
 
 以下は、`moveend` イベントで、地図の中心点の座標をコンソールに出力するサンプルです。
 
@@ -99,9 +99,9 @@ map.on('moveend', () => {
 JavaScript で API で [Symplestyle](/geojson/#simplestyle-について) を適用する場合は、`window.geolonia.Simplestyle` のインターフェースを利用できます。以下は、GeoJSON を地図に追加した上で `fitBound` メソッドをコールし描画された地物に合わせて地図を移動するサンプルです。
 
 `fitBound` メソッドのオプションは `Map.fitBound` メソッドと互換性があります。
-詳細は Mapbox GL JS のドキュメントをご覧下さい。
+詳細は MapLibre GL JS のドキュメントをご覧下さい。
 
-[https://docs.mapbox.com/mapbox-gl-js/api/map/#map#fitbounds](https://docs.mapbox.com/mapbox-gl-js/api/map/#map#fitbounds)
+[https://maplibre.org/maplibre-gl-js-docs/api/map/#map#fitbounds](https://maplibre.org/maplibre-gl-js-docs/api/map/#map#fitbounds)
 
 ```javascript
 const map = new geolonia.Map('#map')
