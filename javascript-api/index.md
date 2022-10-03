@@ -76,7 +76,7 @@ const map = new geolonia.Map( '#map' )
 
 ### プロパティ、メソッドおよびイベントについて
 
-上述しましたが、クラス `maplibregl` と `geolonia` は互換性があります。
+上述しましたが、 `geolonia` に含まれる API  `maplibregl` と互換性があります。
 
 `geolonia` に含まれる各クラスのインスタンスメンバーや、イベントについては、MapLibre GL JS のドキュメントを御覧ください。
 
@@ -96,7 +96,7 @@ map.on('moveend', () => {
 
 ## Simplestyle を JavaScript で扱う
 
-JavaScript API で [Simplestyle](/geojson/#simplestyle-について) を適用する場合は、`window.geolonia.SimpleStyle` のインターフェースを利用できます。以下は、GeoJSON を地図に追加した上で `fitBounds` メソッドをコールし描画された地物に合わせて地図を移動するサンプルです。
+JavaScript API で [Simplestyle](/geojson/#simplestyle-について) を適用する場合は、`geolonia.SimpleStyle` のインターフェースを利用できます。以下は、GeoJSON を地図に追加した上で `fitBounds` メソッドをコールし描画された地物に合わせて地図を移動するサンプルです。
 
 `fitBounds` メソッドのオプションは `Map.fitBounds` メソッドと互換性があります。
 詳細は MapLibre GL JS のドキュメントをご覧下さい。
