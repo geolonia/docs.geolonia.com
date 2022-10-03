@@ -48,7 +48,7 @@ Geolonia では、デフォルトのスタイル `geolonia/basic` 以外にも�
 
 ![](/img/maputnik.png)
 
-これは、[Maputnik](https://maputnik.github.io/) というオープンソースのソフトウエアで、Mapbox GL JS ベースの地図のスタイルを GUI で簡単に編集することができます。
+これは、[Maputnik](https://maputnik.github.io/) というオープンソースのソフトウエアで、MapLibre GL JS ベースの地図のスタイルを GUI で簡単に編集することができます。
 
 ## カスタムスタイルをつくるための手順
 
@@ -60,11 +60,11 @@ Geolonia では、デフォルトのスタイル `geolonia/basic` 以外にも�
 
 <a href="https://editor.geolonia.com/?style=https://raw.githubusercontent.com/geolonia/midnight/master/style.json"><i class="icon icon--github"></i> geolonia/midnight を編集する</a>
 
-Geolonia の地図に限らず、Mapbox GL JS ベースの地図は、とてもたくさんのレイヤーから成り立っています。
+Geolonia の地図に限らず、MapLibre GL JS ベースの地図は、とてもたくさんのレイヤーから成り立っています。
 
 これらのレイヤーには、地図上に表示される背景（background）の上に、海や陸地、地域、建物などのポリゴン (fill)や、道路などのライン (line)、店舗などの位置情報を示す点 (symbol) などが含まれています。
 
-Mapbox GL JS のスタイルでは、fill や line、symbol ごとに背景色や輪郭、透視度などを設定することができます。
+MapLibre GL JS のスタイルでは、fill や line、symbol ごとに背景色や輪郭、透視度などを設定することができます。
 
 これらをひとつずつ把握して個々に編集していくのはとても大変なので、上述のように Maputnik で編集していきましょう。
 
@@ -105,10 +105,10 @@ Mapbox GL JS のスタイルでは、fill や line、symbol ごとに背景色�
 ![](/img/custom-style-4.png)
 
 <div class="callout callout--danger">
-<p>Mapbox GL ではフォントを変更することも可能ですが、WebGL の性格上日本語フォントを埋め込むにはフォントのフォーマットを変更する必要がある上に独自にホスティングする必要があり、それでもとても大きなサイズとなるため、地図の表示に時間がかかるようになります。</p>
+<p>MapLibre GL ではフォントを変更することも可能ですが、WebGL の性格上日本語フォントを埋め込むにはフォントのフォーマットを変更する必要がある上に独自にホスティングする必要があり、それでもとても大きなサイズとなるため、地図の表示に時間がかかるようになります。</p>
 <p>そのため、Geolonia ではユーザーのローカルフォントを使用するように Embed API にてあらかじめ設定されていますので、フォントを変更しても意図したとおりに表示されません。</p>
 
-<p>参考: <a href="https://docs.mapbox.com/mapbox-gl-js/example/local-ideographs/">https://docs.mapbox.com/mapbox-gl-js/example/local-ideographs/</a></p>
+<p>参考: <a href="https://maplibre.org/maplibre-gl-js-docs/example/local-ideographs/">https://maplibre.org/maplibre-gl-js-docs/example/local-ideographs/</a></p>
 </div>
 
 ## カスタムスタイルを使用する
@@ -166,9 +166,9 @@ API キーに対しては、あらかじめ `https://editor.geolonia.com` を許
 * ズームレベルを特定の範囲内に固定する。
 * 各地物がもつメタデータに含まれる数字を元にヒートマップを表示する。
 
-詳しくは、Mapbox GL JS のドキュメントを御覧ください。
+詳しくは、MapLibre GL JS のドキュメントを御覧ください。
 
-[https://docs.mapbox.com/mapbox-gl-js/style-spec/](https://docs.mapbox.com/mapbox-gl-js/style-spec/)
+[https://maplibre.org/maplibre-gl-js-docs/style-spec/](https://maplibre.org/maplibre-gl-js-docs/style-spec/)
 
 また、JavaScript を使用してダイナミックにスタイルを変更することも可能です。
 

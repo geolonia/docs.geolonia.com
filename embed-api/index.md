@@ -38,7 +38,7 @@ breadcrumbs:
 
 Geolonia の地図サービスでは、Embed API という API を提供しています。
 
-この API は、[Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/api/) 互換の JavaScript API に加えて、簡単な HTML を記述するだけでユーザーの皆さんのウェブサイトに地図を埋め込むことも可能にしています。
+この API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/api/) 互換の JavaScript API に加えて、簡単な HTML を記述するだけでユーザーの皆さんのウェブサイトに地図を埋め込むことも可能にしています。
 
 このページでは、Embed API の詳しい仕様について紹介します。
 
