@@ -32,6 +32,10 @@ grid_navigation:
       excerpt: Geolonia へのサインアップ方法や、ウェブサイトへの Geolonia 地図の埋め込み方法についてご紹介します。
       cta: Read more
       url: '/tutorial/'
+    - title: クックブック
+      excerpt: クックブックは、Geolonia地図でできることと、それらを具体的にどう実装するかを紹介するレシピ集です。
+      cta: Read more
+      url: '/cookbook/'
     - title: Embed API
       excerpt: Embed API を使用すると、簡単な HTML を記述するだけで地図を設置することが可能です。
       cta: Read more
