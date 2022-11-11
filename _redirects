@@ -5,3 +5,10 @@ https://docs.tilecloud.io/* https://docs.geolonia.com/:splat 301!
 
 # Optional: Redirect default Netlify subdomain to primary domain
 https://geolonia-docs.netlify.com/* https://docs.geolonia.com/:splat 301!
+
+/tutorial/005/  /cookbook/001/
+/tutorial/006/  /cookbook/002/
+/tutorial/007/  /cookbook/003/
+/tutorial/008/  /cookbook/004/
+/tutorial/009/  /cookbook/005/
+/tutorial/010/  /cookbook/006/

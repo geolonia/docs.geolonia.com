@@ -9,6 +9,8 @@ doks:
         nav:
             - item_name: チュートリアル
               item_url: '/tutorial/'
+            - item_name: クックブック
+              item_url: '/cookbook/'
             - item_name: Embed API
               item_url: '/embed-api/'
             - item_name: JavaScript API
