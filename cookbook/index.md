@@ -42,3 +42,4 @@ breadcrumbs:
 * [GeoJSON で複数のマーカーを表示](/cookbook/004/)
 * [地図の表示言語を切り替える](/cookbook/005/)
 * [JavaScript を使用した高度なカスタマイズ](/cookbook/006/)
+* [ドラッグしたマーカーの緯度・経度を取得する](/cookbook/draggable_marker/)
