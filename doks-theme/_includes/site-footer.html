@@ -41,9 +41,11 @@
 	</footer><!-- /.site-footer -->
 {% endif %}
 
+{% if jekyll.environment == 'production' %}
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/20920096.js"></script>
 <!-- End of HubSpot Embed Code -->
+{% endif %}
 
 <script src="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/doks-theme/assets/js/vendor/jquery.min.js"></script>
 <script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/doks-theme/assets/js/vendor/bootstrap/affix.min.js"></script>
@@ -54,5 +56,3 @@
 <script type="text/javascript" src="https://cdn.geolonia.com/dev/embed?geolonia-api-key=YOUR-API-KEY"></script>
 <script type="text/javascript" src="https://geolonia.github.io/get-geolonia/app.js"></script>
 <script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/doks-theme/assets/js/geolonia.js"></script>
-
-{% include google-analytics.html %}

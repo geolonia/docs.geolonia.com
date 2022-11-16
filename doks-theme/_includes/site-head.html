@@ -1,20 +1,24 @@
-<meta charset="UTF-8">
-<meta http-equiv="x-ua-compatible" content="ie=edge">
-<meta name="viewport" content="width=device-width, minimum-scale=1.0">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0">
 
-{% if "homepage" == page.layout %}
-<title>{{ site.doks.header.logo.text }}</title>
-{% else %}
-	<title>{{ page.title }} | {{ site.doks.header.logo.text }}</title>
-{% endif %}
+  {% if "homepage" == page.layout %}
+  <title>{{ site.doks.header.logo.text }}</title>
+  {% else %}
+    <title>{{ page.title }} | {{ site.doks.header.logo.text }}</title>
+  {% endif %}
 
-{% if page.description %}
-	<meta name="description" content="{{ page.description }}">
-{% endif %}
+  {% if page.description %}
+    <meta name="description" content="{{ page.description }}">
+  {% endif %}
 
-{% if page.keywords %}
-	<meta name="keywords" content="{{ page.keywords }}">
-{% endif %}
+  {% if page.keywords %}
+    <meta name="keywords" content="{{ page.keywords }}">
+  {% endif %}
 
-<link rel="icon" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/icon.png" type="image/png">
-<link rel="stylesheet" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/doks-theme/assets/css/style.css">
+  <link rel="icon" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/icon.png" type="image/png">
+  <link rel="stylesheet" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/doks-theme/assets/css/style.css">
+
+  {% include google-analytics.html %}
+</head>
