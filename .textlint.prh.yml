@@ -1,0 +1,10 @@
+# 表記揺れチェック辞書
+# prh フォーマット
+# https://github.com/textlint-rule/textlint-rule-prh
+
+version: 1
+rules:
+  - expected: MapLibre GL JS
+    specs:
+      - from: mapLibre gl js
+        to:   MapLibre GL JS
