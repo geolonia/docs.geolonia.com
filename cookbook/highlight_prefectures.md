@@ -164,7 +164,7 @@ this._container.addEventListener("change", (e) => {
 })
 ```
 
-後半では、[mapbox / geojson-extent](https://github.com/mapbox/geojson-extent) というライブラリを使い、選択された都道府県の geojson データから、バウンディングボックス情報(その都道府県をふちどる枠をかたどる緯度経度の配列)を抽出し、`fitBounds` に渡すことで、選択した都道府県にフォーカスするように移動できるようにしています。
+後半では、[mapbox / geojson-extent](https://github.com/mapbox/geojson-extent) というライブラリを使い、選択された都道府県の geojson データから、バウンディングボックス情報(その都道府県を囲む最小の四角形のポリゴンの座標の集まり)を抽出し、`fitBounds` に渡すことで、選択した都道府県にフォーカスするように移動できるようにしています。
 
 onAdd の最後では、このようにして作成した this._container を返り値として返しています。
 
