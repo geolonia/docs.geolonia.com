@@ -40,7 +40,7 @@ doks:
             - network_name: github
               profile_url: 'https://github.com/geolonia/docs.geolonia.com'
     google_analytics:
-        tracking_code: G-0KXZR23EXZL
+        tracking_code: G-0KXZR23EZL
     comments:
         disqus_forum_shortname: # Add your disqus forum shortname to activate comments
 
