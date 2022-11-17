@@ -23,6 +23,9 @@ page_nav:
     prev:
         content: JavaScript を使用した高度なカスタマイズ
         url: '/cookbook/006/'
+    next:
+        content: カスタムコントロールのセレクトボックスで選択した都道府県をハイライト表示する
+        url: /cookbook/highlight_prefectures/
 
 breadcrumbs:
     - title: クックブック
