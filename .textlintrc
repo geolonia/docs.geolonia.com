@@ -3,6 +3,9 @@
     "preset-japanese": {
       "sentence-length": {
         "max": 200
+      },
+      "no-doubled-joshi": {
+        "severity": "warning"
       }
     },
     "prh": {
