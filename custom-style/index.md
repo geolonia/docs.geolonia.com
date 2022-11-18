@@ -62,7 +62,7 @@ Geolonia では、デフォルトのスタイル `geolonia/basic` 以外にも�
 
 Geolonia の地図に限らず、MapLibre GL JS ベースの地図は、とてもたくさんのレイヤーから成り立っています。
 
-これらのレイヤーには、地図上に表示される背景（background）の上に、海や陸地、地域、建物などのポリゴン (fill)や、道路などのライン (line)、店舗などの位置情報を示す点 (symbol) などが含まれています。
+これらのレイヤーには、地図上に表示される背景（background）の上に、海や陸地、地域、建物などのポリゴン (fill) や、道路などのライン (line)、店舗などの位置情報を示す点 (symbol) などが含まれています。
 
 MapLibre GL JS のスタイルでは、fill や line、symbol ごとに背景色や輪郭、透視度などを設定することができます。
 
@@ -147,7 +147,7 @@ API キーに対しては、あらかじめ `https://editor.geolonia.com` を許
 
 ## スタイルテンプレート
 
-本ドキュメントでは、Maptunik を使ってスタイルを編集する方法を紹介しましたが、直接スタイルをカスタマイズしたい場合は、[Geolonia Maps](https://github.com/geoloniamaps/) にあるスタイルのテンプレートレポジトリを編集して下さい。
+本ドキュメントでは、Maputnik を使ってスタイルを編集する方法を紹介しましたが、直接スタイルをカスタマイズしたい場合は、[Geolonia Maps](https://github.com/geoloniamaps/) にあるスタイルのテンプレートレポジトリを編集して下さい。
 
 例：Basic スタイルのテンプレートレポジトリ
 

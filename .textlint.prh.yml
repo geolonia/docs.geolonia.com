@@ -44,3 +44,9 @@ rules:
     pattern: /web( )?gl/i
 
   - expected: Maputnik
+    pattern: /map(tu|ut)nik/i
+    specs:
+      - from: maputnik
+        to: Maputnik
+      - from: Maptunik
+        to: Maputnik
