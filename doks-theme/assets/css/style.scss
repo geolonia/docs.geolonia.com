@@ -141,6 +141,11 @@ th
   content: '';
 }
 
+.content table {
+  display: block;
+  overflow-x: auto;
+}
+
 .callout ul
 {
   margin: 0 1em;
