@@ -1,0 +1,52 @@
+# 表記揺れチェック辞書
+# prh フォーマット
+# https://github.com/textlint-rule/textlint-rule-prh
+
+version: 1
+rules:
+  - expected: Geolonia
+    pattern: /^geolonia(?!\.|\/)/i
+    specs:
+      - from: gEoLoNiA
+        to:   Geolonia
+      - from: geolonia.com
+        to:   geolonia.com
+      - from: geolonia/basic
+        to:   geolonia/basic
+
+  - expected: Embed API
+
+  - expected: JavaScript API
+
+  - expected: MapLibre GL JS
+
+  - expected: OpenStreetMap
+
+  - expected: CodePen
+
+  - expected: JSON
+    pattern: /^(?!\.)json/i
+    specs:
+      - from: Json
+        to:   JSON
+      - from: hello.json
+        to:   hello.json
+
+  - expected: GeoJSON
+    pattern: /^(?!\.)geojson/i
+    specs:
+      - from: GeoJson
+        to:   GeoJSON
+      - from: sample.geojson
+        to:   sample.geojson
+
+  - expected: WebGL
+    pattern: /web( )?gl/i
+
+  - expected: Maputnik
+    pattern: /map(tu|ut)nik/i
+    specs:
+      - from: maputnik
+        to: Maputnik
+      - from: Maptunik
+        to: Maputnik
