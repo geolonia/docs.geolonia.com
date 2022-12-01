@@ -1,10 +1,12 @@
 {
   "devDependencies": {
+    "husky": "^8.0.0",
     "textlint": "^12.2.3",
     "textlint-rule-preset-japanese": "^7.0.0",
     "textlint-rule-prh": "^5.3.0"
   },
   "scripts": {
-    "lint": "textlint */**.md"
+    "lint": "textlint */**.md",
+    "prepare": "husky install"
   }
 }
