@@ -6,7 +6,7 @@ comments: false
 
 # Hero section
 title: カスタムコントロールのセレクトボックスで選択した都道府県をハイライト表示する
-description: 
+description:
 
 # Author box
 # author:
@@ -54,7 +54,7 @@ map.on('load', async () => {
 
 続いて、`addLayer` で取得した geojson データを地図に追加します。
 
-geojson データは、全都道府県のポリゴンデータがまとめて入った FeatureCollection タイプのデータなのですが、個別に指定して表示/非表示が切り替えられるように、それぞれの都道府県(Featureタイプのデータ)に都道府県コード(すでに properties の一つにセットされている)を ID として割り当てる処理を addLayer の前におこなっています。
+GeoJSON データは、全都道府県のポリゴンデータがまとめて入った FeatureCollection タイプのデータなのですが、個別に指定して表示/非表示が切り替えられるように、それぞれの都道府県(Featureタイプのデータ)に都道府県コード(すでに properties の一つにセットされている)を ID として割り当てる処理を addLayer の前におこなっています。
 
 ```javascript
 const prefectures = geojson.features.map(pref => { return {...pref, ...{id: pref.properties.code}}})
@@ -119,7 +119,7 @@ class PrefectureSelectBox {
 ```javascript
 onAdd(map) {
   this._map = map
-  
+
   // 都道府県を選ぶセレクトボックスを作る
   this._container = document.createElement('div')
   this._container.className = 'maplibregl-ctrl'
@@ -137,8 +137,8 @@ onAdd(map) {
 
 ```javascript
 // 都道府県が選択されたときに呼ばれる
-this._container.addEventListener("change", (e) => {      
-  
+this._container.addEventListener("change", (e) => {
+
   // 前回選択した都道府県があれば、ハイライト表示を無効にする
   if (this._selectedPrefectureCode) {
     this._map.setFeatureState(
@@ -146,7 +146,7 @@ this._container.addEventListener("change", (e) => {
       { active: false }
     );
   }
-  
+
   // 選択した都道府県のハイライト表示を有効にする
   this._selectedPrefectureCode = e.target.value
   this._map.setFeatureState(
@@ -164,7 +164,7 @@ this._container.addEventListener("change", (e) => {
 })
 ```
 
-後半では、[mapbox / geojson-extent](https://github.com/mapbox/geojson-extent) というライブラリを使い、選択された都道府県の geojson データから、バウンディングボックス情報(その都道府県を囲む最小の四角形のポリゴンの座標の集まり)を抽出し、`fitBounds` に渡すことで、選択した都道府県にフォーカスするように移動できるようにしています。
+後半では [mapbox / geojson-extent](https://github.com/mapbox/geojson-extent) というライブラリを使い、選択された都道府県の geojson データから、バウンディングボックス情報(その都道府県を囲む最小の四角形のポリゴンの座標の集まり)を抽出し `fitBounds` に渡すことで、選択した都道府県にフォーカスするように移動できるようにしています。
 
 onAdd の最後では、このようにして作成した this._container を返り値として返しています。
 
