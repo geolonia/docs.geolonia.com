@@ -1,9 +1,15 @@
-{% if site.doks.header.nav %}
+{% if site.doks.header.homepage_nav and site.doks.header.nav %}
 	<div class="offcanvas visible-xs">
 		<ul class="offcanvas__nav">
-			{% for item in site.doks.header.nav %}
-				<li><a href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}{{ item.item_url }}">{{ item.item_name }}</a></li>
-			{% endfor %}
+			{% if include.layout == "homepage" %}
+				{% for item in site.doks.header.homepage_nav %}
+					<li><a href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}{{ item.item_url }}">{{ item.item_name }}</a></li>
+				{% endfor %}
+			{% else %}
+				{% for item in site.doks.header.nav %}
+					<li><a href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}{{ item.item_url }}">{{ item.item_name }}</a></li>
+				{% endfor %}
+			{% endif %}
 		</ul><!-- /.offcanvas__nav -->
 	</div><!-- /.offcanvas -->
 {% endif %}
@@ -22,11 +28,17 @@
 							<a href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/" class="site-header__logo">{{ site.doks.header.logo.text }}</a>
 						{% endif %}
 					{% endif %}
-					{% if site.doks.header.nav %}
+					{% if site.doks.header.homepage_nav and site.doks.header.nav %}
 						<ul class="site-header__nav hidden-xs hidden-sm hidden-md">
-							{% for item in site.doks.header.nav %}
-								<li><a href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}{{ item.item_url }}">{{ item.item_name }}</a></li>
-							{% endfor %}
+							{% if include.layout == "homepage" %}
+								{% for item in site.doks.header.homepage_nav %}
+									<li><a href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}{{ item.item_url }}">{{ item.item_name }}</a></li>
+								{% endfor %}
+							{% else %}
+								{% for item in site.doks.header.nav %}
+									<li><a href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}{{ item.item_url }}">{{ item.item_name }}</a></li>
+								{% endfor %}
+							{% endif %}
 						</ul><!-- /.site-header__nav -->
 						<button class="offcanvas-toggle visible-xs visible-sm visible-md">
 							<span></span>

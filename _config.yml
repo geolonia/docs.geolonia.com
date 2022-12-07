@@ -7,6 +7,15 @@ doks:
         logo:
             text: Mapbox GL JS、MapLibre GL JS 互換の Geolonia Maps 公式ドキュメンテーション
             image: /img/logo.png
+        homepage_nav:
+            - item_name: Geolonia ホーム
+              item_url: 'https://geolonia.com/'
+            - item_name: 開発者ブログ
+              item_url: 'https://blog.geolonia.com/'
+            - item_name: サインイン
+              item_url: 'https://app.geolonia.com/#/signin'
+            - item_name: ユーザー登録
+              item_url: 'https://app.geolonia.com/?lang=ja&ref=docs.geolonia.com#/signup'
         nav:
             - item_name: チュートリアル
               item_url: '/tutorial/'
