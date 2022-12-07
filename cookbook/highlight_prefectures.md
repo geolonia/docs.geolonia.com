@@ -52,7 +52,7 @@ map.on('load', async () => {
 
 ## 都道府県のレイヤーを地図に追加する
 
-続いて、`addLayer` で取得した geojson データを地図に追加します。
+続いて、`addLayer` で取得した GeoJSON データを地図に追加します。
 
 GeoJSON データは、全都道府県のポリゴンデータがまとめて入った FeatureCollection タイプのデータなのですが、個別に指定して表示/非表示が切り替えられるように、それぞれの都道府県(Featureタイプのデータ)に都道府県コード(すでに properties の一つにセットされている)を ID として割り当てる処理を addLayer の前におこなっています。
 
@@ -92,7 +92,7 @@ paint プロパティでは、`'fill-color': '#ff0000'` で赤色に塗りつぶ
 
 ## 都道府県セレクトボックス(カスタムコントロール)を追加
 
-後述する PrefectureSelectBox クラスに geojson データを引数として渡して初期化したあと、カスタムコントロールとして地図に追加します。
+後述する PrefectureSelectBox クラスに GeoJSON データを引数として渡して初期化したあと、カスタムコントロールとして地図に追加します。
 
 ```javascript
 const prefectureSelectBox = new PrefectureSelectBox(prefectures)
@@ -164,7 +164,7 @@ this._container.addEventListener("change", (e) => {
 })
 ```
 
-後半では [mapbox / geojson-extent](https://github.com/mapbox/geojson-extent) というライブラリを使い、選択された都道府県の geojson データから、バウンディングボックス情報(その都道府県を囲む最小の四角形のポリゴンの座標の集まり)を抽出し `fitBounds` に渡すことで、選択した都道府県にフォーカスするように移動できるようにしています。
+後半では [mapbox / geojson-extent](https://github.com/mapbox/geojson-extent) というライブラリを使い、選択された都道府県の GeoJSON データからバウンディングボックス情報(その都道府県を囲む最小の四角形のポリゴンの座標の集まり)を抽出し、`fitBounds` に渡すことで選択した都道府県にフォーカスするように移動できるようにしています。
 
 onAdd の最後では、このようにして作成した this._container を返り値として返しています。
 
