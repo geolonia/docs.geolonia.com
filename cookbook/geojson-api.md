@@ -87,7 +87,16 @@ GeoJSON は、 `https://<あなたのGitHubユーザー名>.github.io/<リポジ
 <div class="geolonia" data-geojson="<GeoJSON の URL>"></div>
 ```
 
-デモ: [https://codepen.io/geolonia/pen/RwgJjmE](https://codepen.io/geolonia/pen/RwgJjmE)
+
+#### サンプル
+```html
+<div
+  class="geolonia"
+  data-geojson="https://geoloniamaps.github.io/geojson-api/example.json"
+></div>
+```
+
+<div class="geolonia" data-geojson="https://geoloniamaps.github.io/geojson-api/example.json"></div>
 
 
 ## 備考
