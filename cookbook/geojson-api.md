@@ -43,7 +43,14 @@ Geolonia Maps なら以下のような簡単なマークアップで地図に表
 
 デモ: [https://codepen.io/geolonia/pen/RwgJjmE](https://codepen.io/geolonia/pen/RwgJjmE)
 
-## リポジトリをコピー
+
+規定のフォーマットに沿ったCSV を リポジトリにアップロードすると、GitHub Actions によって自動的に GeoJSON に変換されます。
+
+GeoJSON は、 `https://<あなたのGitHubユーザー名>.github.io/<リポジトリ名>/<ファイル名>.json` のような URL でアクセスできます。
+
+## 設定手順
+
+### リポジトリをコピー
 
 [https://github.com/geoloniamaps/geojson-api](https://github.com/geoloniamaps/geojson-api) にアクセスし、**「Use this template」** をクリックして下さい。
 
@@ -54,17 +61,15 @@ Geolonia Maps なら以下のような簡単なマークアップで地図に表
 ![テンプレートをリポジトリをコピーする](/img/geojson-api-copy-repository2.png)
 
 
-## データを準備
+### Google スプレッドシートで CSV を編集する
 
-[こちらのサンプルデータ](https://docs.google.com/spreadsheets/d/125tgFwGwkdEX5rapUMQuzVQ0BPshHkU0K_snFagOzwk/edit#gid=0) を、自分の Google スプレッドシートにコピーして下さい。
+1. [こちらのサンプルデータ](https://docs.google.com/spreadsheets/d/125tgFwGwkdEX5rapUMQuzVQ0BPshHkU0K_snFagOzwk/edit#gid=0) をコピーして、ご自身のデータを入力してください。
+2. 入力したデータを CSV でエクスポートして、それを任意のファイル名でコミットしてください。
 
-
-入力したデータを CSV でエクスポートし、リポジトリの `data` ディレクトリに配置して下さい。
-
-緯度経度の取得には、Community Geocoder をご利用することをご推奨します。
+緯度経度の取得には、[Community Geocoder](https://community-geocoder.geolonia.com/#12/35.68124/139.76713) をご利用することをご推奨します。
 
 
-## GitHub Pages の設定方法
+### GitHub Pages の設定方法
 
 * GitHub のリポジトリのメニューの中にある [Settings] をクリックしてください。
 * 移動先のページの下の方にある [GitHub Pages] のところで、以下のように設定してください。
@@ -72,9 +77,9 @@ Geolonia Maps なら以下のような簡単なマークアップで地図に表
 ![](https://www.evernote.com/l/ABXqA26fEitDNZG6KDxX-Os6Qb8gciGRKSYB/image.png)
 
 
-## Geolonia Maps での地図の表示方法
+### Geolonia Maps での地図の表示方法
 
-* 保存された CSV は GitHub Actions によって、自動的に GeoJSON に変換されます。GeoJSON は、上述のように `https://<あなたのGitHubユーザー名>.github.io/<リポジトリ名>/<ファイル名>.json` のような URL でアクセスできますので、ブラウザで URL を確認した後、その URL をコピーしてください。
+* 保存された CSV は GitHub Actions によって、自動的に GeoJSON に変換されます。GeoJSON は、上述のように `https://<あなたのGitHubユーザー名>.github.io/<リポジトリ名>/<ファイル名>.json` （[サンプル URL](https://geoloniamaps.github.io/geojson-api/example.json)）のような URL でアクセスできますので、ブラウザで URL を確認した後、その URL をコピーしてください。
 * [Geolonia Maps の API キーを取得](https://docs.geolonia.com/tutorial/002/) して、[JavaScript API を設置](https://docs.geolonia.com/tutorial/003/)  してください。
 * 地図を表示したい場所に以下のような HTML を設置してください。
 
@@ -84,15 +89,15 @@ Geolonia Maps なら以下のような簡単なマークアップで地図に表
 
 デモ: [https://codepen.io/geolonia/pen/RwgJjmE](https://codepen.io/geolonia/pen/RwgJjmE)
 
-[詳しくは Geolonia Maps ドキュメンテーションを御覧ください。](https://docs.geolonia.com/)
 
+## 備考
 
-### 備考
-
+* 任意のファイル名の CSV を複数設置することも可能です。
+* 点データのみに対応しています。
 * `marker-color` は、`#FF0000` または `rgba(255,0,0)` のように指定することが可能です。
 * 列の順番に制約はありません。
 * `description` では、HTML も利用可能です。
 * 上記にない列は、`properties` に保存されますが、これらの値を利用するには JavaScript によるプログラミングが必要です。
 * [サンプル CSV は、こちらにあります。](https://docs.google.com/spreadsheets/d/125tgFwGwkdEX5rapUMQuzVQ0BPshHkU0K_snFagOzwk/edit#gid=0)
-* データの仕様については、Geolonia Maps の[ドキュメンテーション](https://docs.geolonia.com/geojson/)もご参照ください。
+* データの仕様については、Geolonia Maps の[GeoJSON 仕様](https://docs.geolonia.com/geojson/)もご参照ください。
 
