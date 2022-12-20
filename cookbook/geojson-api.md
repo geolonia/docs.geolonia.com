@@ -66,8 +66,15 @@ GeoJSON は、 `https://<あなたのGitHubユーザー名>.github.io/<リポジ
 
 * <a href="https://docs.google.com/spreadsheets/d/125tgFwGwkdEX5rapUMQuzVQ0BPshHkU0K_snFagOzwk/edit#gid=0" target="_blank">こちらのサンプルデータ</a>の URLを開いて下さい。
 * メニューの [ファイル] > [コピーを作成] を選んで、自分のアカウントにコピーを作成してください。
+
+![](/img/geojson-api-copy-sheet1.png)
+
+
 * ご自身のデータを入力してください。
 * メニューの [ファイル] > [ダウンロード] > [カンマ区切り形式（.csv）] を選んで、入力したデータを CSV でエクスポートして下さい。
+
+![](/img/geojson-api-copy-sheet2.png)
+
 * エクスポートした CSV を任意のファイル名でコミットしてください。
 * 緯度経度の取得には、<a href="https://community-geocoder.geolonia.com/#12/35.68124/139.76713" target="_blank">Community Geocoder</a> をご利用することをご推奨します。
 
