@@ -18,12 +18,6 @@ description: CSV を GeoJSON に変換し地図で表示する方法を紹介し
 # Micro navigation
 micro_nav: true
 
-# Page navigation
-page_nav:
-    prev:
-        content: カスタムコントロールのセレクトボックスで選択した都道府県をハイライト表示する
-        url: /cookbook/highlight_prefectures/
-
 breadcrumbs:
     - title: クックブック
       url: /cookbook/
