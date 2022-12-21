@@ -21,8 +21,8 @@
     <meta name="keywords" content="{{ page.keywords }}">
   {% endif %}
 
-  <meta property="og:image" content="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/img/ogp.png">
-  <meta property="og:url" content="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}">
+  <meta property="og:image" content="{{site.doks.baseurl}}/img/ogp.png">
+  <meta property="og:url" content="{{site.doks.baseurl}}{{page.url}}">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
 

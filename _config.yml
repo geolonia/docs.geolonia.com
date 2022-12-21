@@ -1,6 +1,6 @@
 # Theme settings
 doks:
-    baseurl:
+    baseurl: 'https://docs.geolonia.com'
     color_theme: # Available themes: blue (default), green, purple, red and yellow
     header:
         description: Mapbox GL JS、MapLibre GL JS と互換性がある Geolonia Maps 公式ドキュメンテーションです。
