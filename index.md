@@ -5,7 +5,7 @@ keywords:
 
 # Hero section
 title: Geolonia 公式ドキュメント
-description: ""
+# description: ""
 # buttons:
 #     - icon: arrow-right
 #       content: ログイン（またはサインアップ）

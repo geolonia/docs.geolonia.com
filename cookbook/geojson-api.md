@@ -109,7 +109,7 @@ GeoJSON は、 `https://<あなたのGitHubユーザー名>.github.io/<リポジ
 ></div>
 ```
 
-<div class="geolonia" data-geojson="https://geoloniamaps.github.io/geojson-api/example.json"></div>
+<div class="geolonia" data-geojson="https://geolonia.github.io/style-demo-source/example.json"></div>
 
 <a class="codepen" href="https://codepen.io/geolonia/pen/RwgJjmE" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
 
