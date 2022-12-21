@@ -5,7 +5,7 @@
 
   {% if "homepage" == page.layout %}
     <title>{{ site.doks.header.logo.text }}</title>
-    <meta property="og:title" content={{ site.doks.header.logo.text }}>
+    <meta property="og:title" content="{{ site.doks.header.logo.text }}">
   {% else %}
     <title>{{ page.title }} | {{ site.doks.header.logo.text }}</title>
   {% endif %}
