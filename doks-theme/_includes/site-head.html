@@ -4,18 +4,28 @@
   <meta name="viewport" content="width=device-width, minimum-scale=1.0">
 
   {% if "homepage" == page.layout %}
-  <title>{{ site.doks.header.logo.text }}</title>
+    <title>{{ site.doks.header.logo.text }}</title>
+    <meta property="og:title" content="{{ site.doks.header.logo.text }}">
   {% else %}
     <title>{{ page.title }} | {{ site.doks.header.logo.text }}</title>
   {% endif %}
 
   {% if page.description %}
     <meta name="description" content="{{ page.description }} | {{ site.doks.header.description }}">
+    <meta property="og:description" content="{{ page.description }} | {{ site.doks.header.description }}" />
+  {% else %}
+    <meta property="og:description" content="Mapbox GL JS、MapLibre GL JS 互換の Geolonia Maps 公式ドキュメンテーション" />
   {% endif %}
 
   {% if page.keywords %}
     <meta name="keywords" content="{{ page.keywords }}">
   {% endif %}
+
+  <meta property="og:image" content="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/img/ogp.png">
+  <meta property="og:url" content="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
 
   <link rel="icon" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/icon.png" type="image/png">
   <link rel="stylesheet" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/doks-theme/assets/css/style.css">
