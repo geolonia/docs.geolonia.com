@@ -33,7 +33,7 @@ breadcrumbs:
 
 以下のように、複数のカスタムマーカーを追加する方法を紹介します。
 
-<a class="codepen" href="https://codepen.io/naogify/pen/MWBwgVy" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
+<a class="codepen" href="https://codepen.io/geolonia/pen/dyjoVyW" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
 
 <div class="callout callout--warning">
   <p>このクックブックでは、 <a href="/javascript-api/">Javascript API</a> を使用した実装方法を紹介しています。Embed API を使った実装はできませんのでご注意下さい。</p>
@@ -130,11 +130,11 @@ map.on("load", async () => {
 
 コード全体を見るには、以下の CodePen のサンプルコードを参照してください。
 
-<p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="MWBwgVy" data-user="naogify" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
-  <span>See the Pen <a href="https://codepen.io/naogify/pen/MWBwgVy">
-  Custom marker and popup sample</a> by nao (<a href="https://codepen.io/naogify">@naogify</a>)
+<p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="dyjoVyW" data-user="geolonia" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
+  <span>See the Pen <a href="https://codepen.io/geolonia/pen/dyjoVyW">
+  複数のカスタムマーカーを追加</a> by Geolonia (<a href="https://codepen.io/geolonia">@geolonia</a>)
   on <a href="https://codepen.io">CodePen</a>.</span>
 </p>
 <script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
 
-<a class="codepen" href="https://codepen.io/naogify/pen/MWBwgVy" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
+<a class="codepen" href="https://codepen.io/geolonia/pen/dyjoVyW" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
