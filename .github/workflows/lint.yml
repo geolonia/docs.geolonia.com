@@ -32,3 +32,4 @@ jobs:
 
       - run: yarn
       - run: yarn lint
+      - run: bundle exec jekyll build && yarn lint:html

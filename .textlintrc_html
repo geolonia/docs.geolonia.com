@@ -1,0 +1,10 @@
+{
+  "plugins": ["html"],
+  "rules": {
+    "no-dead-link": {
+      "checkRelative": true,
+      "baseURI": "https://docs.geolonia.com/",
+      "preferGET": ["https://codepen.io/"]
+    }
+  }
+}
