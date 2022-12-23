@@ -9,7 +9,7 @@
   },
   "scripts": {
     "lint": "textlint */**.md",
-    "lint:html": "cat .textlintrc_html | jq '.rules.\"no-dead-link\".baseURI=\"$DEPLOY_PRIME_URL\"' > .textlintrc_html.tmp && textlint --config .textlintrc_html.tmp _site/**/*.html",
+    "lint:html": "cat .textlintrc_html | jq '.rules.\"no-dead-link\".baseURI=\"'${DEPLOY_PRIME_URL}'\"' > .textlintrc_html.tmp && textlint --config .textlintrc_html.tmp _site/**/*.html",
     "prepare": "husky install"
   }
 }
