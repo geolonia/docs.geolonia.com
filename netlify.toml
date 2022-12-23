@@ -7,4 +7,4 @@ publish = "_site/"
 command = "bundle install --path vendor &&  JEKYLL_ENV=production bundle exec jekyll build && cp ./_redirects ./_site && cp ./_headers _site/"
 
 [context.deploy-preview.environment]
-site = { doks = { baseurl = DEPLOY_PRIME_URL }
+site.doks.baseurl = DEPLOY_PRIME_URL
