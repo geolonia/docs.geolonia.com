@@ -33,13 +33,13 @@ breadcrumbs:
 
 以下のように、複数のカスタムマーカーを追加する方法を紹介します。
 
-<a class="codepen" href="https://codepen.io/geolonia/pen/dyjoVyW" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
-
 <div class="callout callout--warning">
   <p>このクックブックでは、 <a href="/javascript-api/">Javascript API</a> を使用した実装方法を紹介しています。Embed API を使った実装はできませんのでご注意下さい。</p>
 </div>
 
 ![](/img/custom-markers1.png)
+
+まずコードを見たいと言う方は <a class="codepen" href="https://codepen.io/geolonia/pen/dyjoVyW" target="codepen">CodePen</a> をご覧ください。
 
 ## 地図の初期化
 
