@@ -14,5 +14,6 @@ https://doks.themejack.com/
 ## Check dead links
 
 ```shell
-$ DEPLOY_PRIME_URL=https://docs.geolonia.com yarn lint:html
+$ bundle exec jekyll serve
+$ DEPLOY_PRIME_URL=https://localhost:4000 yarn lint:html
 ```
