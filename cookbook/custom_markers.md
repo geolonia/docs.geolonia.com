@@ -35,6 +35,10 @@ breadcrumbs:
 
 <a class="codepen" href="https://codepen.io/naogify/pen/MWBwgVy" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
 
+<div class="callout callout--warning">
+  <p>このクックブックでは、 <a href="/javascript-api/">Javascript API</a> を使用した実装方法を紹介しています。Embed API を使った実装はできませんのでご注意下さい。</p>
+</div>
+
 ![](/img/custom-markers1.png)
 
 ## 地図の初期化
@@ -78,7 +82,7 @@ markerDom.innerHTML = feature.properties.title; // GeoJSON feature の title を
 ```
 
 
-次に、<a href="https://geolonia.github.io/ja-maplibre-gl-js-docs/api/markers/#marker" class="" target="_blank">geolonia.Marker</a> を使用して、カスタムマーカーを追加します。
+次に、`geolonia.Marker` を使用して、カスタムマーカーを追加します。
 
 ```javascript
 const marker = new geolonia.Marker(markerDom)
