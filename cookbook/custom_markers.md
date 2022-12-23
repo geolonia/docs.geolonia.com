@@ -39,7 +39,7 @@ breadcrumbs:
 
 ![](/img/custom-markers1.png)
 
-まずコードを見たいと言う方は <a class="codepen" href="https://codepen.io/geolonia/pen/dyjoVyW" target="codepen">CodePen</a> をご覧ください。
+まずコードを見たい方は <a class="codepen" href="https://codepen.io/geolonia/pen/dyjoVyW" target="codepen">CodePen</a> をご覧ください。
 
 ## 地図の初期化
 
