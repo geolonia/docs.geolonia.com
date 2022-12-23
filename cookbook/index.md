@@ -45,5 +45,5 @@ breadcrumbs:
 * [ドラッグしたマーカーの緯度・経度を取得する](/cookbook/draggable_marker/)
 * [カスタムコントロールのセレクトボックスで選択した都道府県をハイライト表示する](/cookbook/highlight_prefectures/)
 * [CSV を GeoJSON に変換し地図で表示する](/cookbook/geojson-api/)
+* [ユーザーの現在位置をトラッキングする](/cookbook/track_user_location/)
 * [複数のカスタムマーカーを追加する](/cookbook/custom_markers/)
-
