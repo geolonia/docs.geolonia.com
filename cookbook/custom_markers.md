@@ -74,18 +74,18 @@ map.on("load", async () => {
 
 ## カスタムマーカーを追加する
 
-まず、カスタムマーカーの DOM を作成します。
+まず、カスタムマーカーの HTML要素 を作成します。
 ```javascript
-const markerDom = document.createElement("div");
-markerDom.className = "custom-marker"; // クラス名をセット
-markerDom.innerHTML = feature.properties.title; // GeoJSON feature の title をセット
+const markerElm = document.createElement("div");
+markerElm.className = "custom-marker"; // クラス名をセット
+markerElm.innerHTML = feature.properties.title; // GeoJSON feature の title をセット
 ```
 
 
 次に、`geolonia.Marker` を使用して、カスタムマーカーを追加します。
 
 ```javascript
-const marker = new geolonia.Marker(markerDom)
+const marker = new geolonia.Marker(markerElm)
   .setLngLat(feature.geometry.coordinates) // 緯度経度をセット
   .addTo(map); // 地図に追加
 ```
@@ -99,12 +99,12 @@ map.on("load", async () => {
     geojson.features.forEach((feature) => {
 
       // カスタムマーカーの DOM を作成
-      const markerDom = document.createElement("div");
-      markerDom.className = "custom-marker";
-      markerDom.innerHTML = feature.properties.title;
+      const markerElm = document.createElement("div");
+      markerElm.className = "custom-marker";
+      markerElm.innerHTML = feature.properties.title;
 
       // マーカーを追加
-      const marker = new geolonia.Marker(markerDom)
+      const marker = new geolonia.Marker(markerElm)
         .setLngLat(feature.geometry.coordinates)
         .addTo(map);
     });
