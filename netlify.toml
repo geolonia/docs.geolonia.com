@@ -1,7 +1,7 @@
 [build]
   base    = ""
   publish = "_site/"
-  command = "bundle install --path vendor &&  JEKYLL_ENV=production bundle exec jekyll build && cp ./_redirects ./_site && cp ./_headers _site/"
+  command = "bundle install --path vendor &&  JEKYLL_ENV=production bundle exec jekyll build && cp ./_redirects ./_site && cp ./_headers _site/ && $site"
 
-[context.deploy-preview]
-  environment = { site = { doks = { baseurl = DEPLOY_PRIME_URL } }
+[context.deploy-preview.environment]
+  site = "not so secret"
