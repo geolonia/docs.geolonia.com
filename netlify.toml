@@ -1,0 +1,7 @@
+[build]
+  base    = ""
+  publish = "_site/"
+  command = "bundle install --path vendor &&  JEKYLL_ENV=production bundle exec jekyll build && cp ./_redirects ./_site && cp ./_headers _site/"
+
+[context.deploy-preview]
+  command = "bundle install --path vendor &&  JEKYLL_ENV=staging bundle exec jekyll build && cp ./_redirects ./_site && cp ./_headers _site/"
