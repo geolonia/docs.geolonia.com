@@ -52,4 +52,8 @@ grid_navigation:
       excerpt: GeoJSON のスタイルを定義するための仕様について紹介します。
       cta: Read more
       url: '/geojson/'
+    - title: Geolonia CLI
+      excerpt: Geolonia CLI を使ってワークフローの自動化などを紹介します。
+      cta: Read more
+      url: '/cli/'
 ---
