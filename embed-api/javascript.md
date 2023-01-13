@@ -20,8 +20,10 @@ micro_nav: true
 #       url: '/js/class/'
 
 breadcrumbs:
+    - title: Embed API
+      url: /embed-api/
     - title: JavaScript API
-      url: /javascript-api/
+      url: /embed-api/javascript/
 ---
 
 ## Geolonia の JavaScript API について

@@ -175,4 +175,4 @@ API キーに対しては、あらかじめ `https://editor.geolonia.com` を許
 以下のページですこしずつサンプルを増やしていきますので、よろしくお願いいたします。
 
 
-[JavaScript API](/javascript-api/)
+[JavaScript API](/embed-api/javascript/)

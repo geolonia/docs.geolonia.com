@@ -12,3 +12,4 @@ https://geolonia-docs.netlify.com/* https://docs.geolonia.com/:splat 301!
 /tutorial/008/  /cookbook/004/
 /tutorial/009/  /cookbook/005/
 /tutorial/010/  /cookbook/006/
+/javascript-api/ /embed-api/javascript/

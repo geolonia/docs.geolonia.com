@@ -19,7 +19,7 @@ breadcrumbs:
 
 [Embed API](/embed-api/) の `data-geolocate-control` を `on` にすれば、ユーザーの現在位置を指し示すジオロケーションコントロールを表示することができますが、スマホを持って歩いているときなど位置が刻々と変わる場合には、コントロールのボタンを何度も押す必要があります。
 
-このような場合には、ジオロケーションコントロールの `trackUserLocation` オプションを有効にするのが良いのですが、Embed API で追加されるジオロケーションコントロールではこのオプションは無効になっています。そこで、[JavaScript API](/javascript-api/) と組み合わせ、`trackUserLocation` を有効にしたコントロールを地図に追加します。
+このような場合には、ジオロケーションコントロールの `trackUserLocation` オプションを有効にするのが良いのですが、Embed API で追加されるジオロケーションコントロールではこのオプションは無効になっています。そこで、[JavaScript API](/embed-api/javascript/) と組み合わせ、`trackUserLocation` を有効にしたコントロールを地図に追加します。
 
 ## 地図を表示する
 

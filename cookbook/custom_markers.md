@@ -34,7 +34,7 @@ breadcrumbs:
 以下のように、複数のカスタムマーカーを追加する方法を紹介します。
 
 <div class="callout callout--warning">
-  <p>このクックブックでは、 <a href="/javascript-api/">Javascript API</a> を使用した実装方法を紹介しています。Embed API を使った実装はできませんのでご注意下さい。</p>
+  <p>このクックブックでは、 <a href="/embed-api/javascript/">JavaScript API</a> を使用した実装方法を紹介しています。Embed API を使った実装はできませんのでご注意下さい。</p>
 </div>
 
 ![](/img/custom-markers1.png)
