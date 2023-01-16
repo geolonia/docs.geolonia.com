@@ -78,7 +78,7 @@ function onDragEnd() {
 }
 ```
 
-最後に、`marker` がドラッグされ終わったときに発火する `dragend` イベントに上記の関数をひもづけます。
+`marker` がドラッグされ終わったときに `dragend` イベントが発火されます。このイベントに、上記の関数をひもづけます。
 
 ```javascript
 marker.on('dragend', onDragEnd)

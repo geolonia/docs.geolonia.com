@@ -18,6 +18,8 @@ rules:
 
   - expected: JavaScript API
 
+  - expected: JavaScript
+
   - expected: MapLibre GL JS
 
   - expected: OpenStreetMap
@@ -50,3 +52,6 @@ rules:
         to: Maputnik
       - from: Maptunik
         to: Maputnik
+
+  - expected: カスタマイズ
+    pattern: /カストマイズ/

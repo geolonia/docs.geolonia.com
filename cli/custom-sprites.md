@@ -33,7 +33,7 @@ breadcrumbs:
 
 ## 概要
 
-地図上に地物にアイコンをつけて表現するのはカスタムマーカーで実現できます。[1個の点について1個のマーカーをつけたい場合は、JavaScriptなどを書かなくても Embed API のみで実現できます。](/cookbook/003/#カスタムマーカーを使用する)
+地図上の地物にアイコンをつけて表現するのはカスタムマーカーで実現できます。[1個の点について1個のマーカーをつけたい場合は、JavaScriptなどを書かなくても Embed API のみで実現できます。](/cookbook/003/#カスタムマーカーを使用する)
 
 ただ、GeoJSONなどのデータソースを使って[複数のマーカーを表示](/cookbook/004/)すると、上記のようなカスタムマーカーを使うことができません。
 
@@ -66,7 +66,7 @@ $ geolonia sprites upload ./custom-icon.svg
 Please select the map key [1]: 1
 ```
 
-最後に、アイコン名を指定します。デフォルトでは拡張子を抜いた名前になりますが、ここでカストマイズできます。
+最後に、アイコン名を指定します。デフォルトでは拡張子を抜いた名前になりますが、ここでカスタマイズできます。
 
 ```
 Please input the sprite ID. Press Return if you are OK with the default name [custom-icon]: custom-icon

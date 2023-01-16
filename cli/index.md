@@ -38,7 +38,7 @@ breadcrumbs:
 
 ### インストール
 
-Geolonia CLI は NodeJS の環境が必要とするツールとなります。 NodeJS 16.x 以上が推奨となっております。
+Geolonia CLI は NodeJS の環境が必要です。 NodeJS 16.x 以上が推奨となっております。
 
 ```
 $ node --version
