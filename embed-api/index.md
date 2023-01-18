@@ -44,8 +44,6 @@ Geolonia の地図サービスでは、Embed API という API を提供して�
 
 [はじめての方は、チュートリアルからはじめてみることをおすすめします。](/tutorial/)
 
-[JavaScript API を使った本格的な地図アプリの開発方法についてはこちらをご覧ください。](/embed-api/javascript/)
-
 ## Embed API の動作環境
 
 * すべてのモダンブラウザ (Edge, Chrome, Safari, Firefox) の最新版。
@@ -141,3 +139,7 @@ Embed API を利用して地図を設置するには、`geolonia` というク�
 ```
 
 <a class="codepen" href="https://codepen.io/pen?template=dyomyrX" target="codepen"><i class="icon icon--codepen"></i> CodePen</a> を使用するとサインアップ無しで Geolonia の地図をお試しいただけます。
+
+## JavaScript API
+
+[JavaScript API を使った本格的な地図アプリの開発方法についてはこちらをご覧ください。](/embed-api/javascript/)
