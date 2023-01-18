@@ -38,7 +38,7 @@ breadcrumbs:
 
 ### インストール
 
-Geolonia CLI は NodeJS の環境が必要です。 NodeJS 16.x 以上が推奨となっております。
+Geolonia CLI は NodeJS の環境が必要です。 NodeJS 16.x 以上が推奨です。
 
 ```
 $ node --version
@@ -51,7 +51,7 @@ v16.xx.x
 $ npm install --global @geolonia/cli
 ```
 
-そうしたら、 `geolonia` が使えるようになります。
+`geolonia` コマンドが使えるようになったかを確認するため、バージョンを表示してみましょう。
 
 ```
 $ geolonia --version
@@ -78,7 +78,7 @@ Please select the team [1 - 3]: [使うチームの番号を入力]
 Successfully selected Geolonia
 ```
 
-この状態で Geolonia CLI のすべての機能が使えるようになりました。それぞれの機能について、下記の資料をご確認ください。
+これで Geolonia CLI のすべての機能が使えるようになりました。それぞれの機能について、下記をご確認ください。
 
 ## CLI で使える機能
 
