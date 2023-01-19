@@ -37,11 +37,18 @@ breadcrumbs:
 `marker-symbol` で使えるアイコンはスタイル（例えば `geolonia/basic` や `geolonia/gsi`）によって変わります。この一覧は `geolonia/basic` を元に表示しています。
 
 <div id="marker-symbol-list">
+  <!-- <form id="marker-symbol-search">
+    <label for="marker-symbol-search-field">
+      検索
+    </label>
+    <input type="search" name="marker-symbol-search-field">
+  </form> -->
   <table>
     <thead>
       <tr>
         <th>アイコン名</th>
         <th>アイコン</th>
+        <th>アイコン (SVGソース)</th>
       </tr>
     </thead>
     <tbody>

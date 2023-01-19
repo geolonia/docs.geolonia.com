@@ -46,7 +46,10 @@
             transform = `transform: scale(${1 / def.pixelRatio});`;
           }
           var image = `<div style="width: ${width}px; height: ${height}px; background: url(${spritesheet}) -${def.x}px -${def.y}px; margin: 0 auto; ${transform}"></div>`;
-          $tbody.append(`<tr><td><code>${key}</code></td><td>${image}</td></tr>`);
+          var imageSvg = `<a href="https://github.com/geoloniamaps/basic/blob/master/icons/${key}.svg"><img src="https://raw.githubusercontent.com/geoloniamaps/basic/master/icons/${key}.svg" style="display: block; margin: 0 auto; transform: scale(2);"></a>`;
+          $tbody.append(
+            `<tr><td><code>${key}</code></td><td>${image}</td><td>${imageSvg}</td></tr>`
+          );
         }
       });
   }
