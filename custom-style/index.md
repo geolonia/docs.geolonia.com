@@ -62,7 +62,13 @@ Geolonia では、デフォルトのスタイル `geolonia/basic` 以外にも�
 
 Geolonia の地図に限らず、MapLibre GL JS ベースの地図は、とてもたくさんのレイヤーから成り立っています。
 
-これらのレイヤーには、地図上に表示される背景（background）の上に、海や陸地、地域、建物などのポリゴン (fill) や、道路などのライン (line)、店舗などの位置情報を示す点 (symbol) などが含まれています。
+これらのレイヤーには、地図上に表示される背景（background）の上に、
+
+* 海や陸地、地域、建物などのポリゴン (fill)
+* 道路などのライン (line)
+* 店舗などの位置情報を示す点 (symbol)
+
+などが含まれています。
 
 MapLibre GL JS のスタイルでは、fill や line、symbol ごとに背景色や輪郭、透視度などを設定することができます。
 
@@ -121,7 +127,7 @@ Maputnik のメニューの "Data Sources" をクリックして表示される�
 
 ![](/img/custom-style-api-key.png)
 
-API キーに対しては、あらかじめ `https://editor.geolonia.com` を許可しておかないと、API キーを変更後に地図が表示されなくなります。（この設定は必須ではありません。）
+API キーに対しては、あらかじめ `https://editor.geolonia.com` を許可しておかないと、API キーを変更後に地図が表示されなくなります。（この設定が必須ではありません。）
 
 ![](/img/custom-style-dashboard.png)
 
@@ -175,4 +181,4 @@ API キーに対しては、あらかじめ `https://editor.geolonia.com` を許
 以下のページですこしずつサンプルを増やしていきますので、よろしくお願いいたします。
 
 
-[JavaScript API](/javascript-api/)
+[JavaScript API](/embed-api/javascript/)

@@ -23,12 +23,12 @@ doks:
               item_url: '/cookbook/'
             - item_name: Embed API
               item_url: '/embed-api/'
-            - item_name: JavaScript API
-              item_url: '/javascript-api/'
             - item_name: カスタムスタイル
               item_url: '/custom-style/'
             - item_name: GeoJSON 仕様
               item_url: '/geojson/'
+            - item_name: CLI
+              item_url: '/cli/'
             - item_name: サインイン
               item_url: 'https://app.geolonia.com/#/signin'
             - item_name: ユーザー登録

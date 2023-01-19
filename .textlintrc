@@ -11,5 +11,8 @@
     "prh": {
       "rulePaths" :[".textlint.prh.yml"]
     }
+  },
+  "filters": {
+    "comments": true
   }
 }
