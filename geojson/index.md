@@ -42,13 +42,13 @@ GeoJSON とは JSON によって空間情報を扱うためのファイルフォ
 
 ## Simplestyle について
 
-Simplestyle とは Mapbox 社が公開した GeoJSON にスタイル情報を埋め込むための仕様で、GitHub 等で採用されています。
+Simplestyle とは Mapbox 社が公開した GeoJSON にスタイル情報を埋め込むための仕様で、GeoJSON を作成、編集できるサイト [geojson.io](https://geojson.io) 等で採用されています。
 
 [simplestyle-spec](https://github.com/mapbox/simplestyle-spec)
 
-[![](https://www.evernote.com/l/ABWRqUPcMf1AwKFp5kH0BSZzScwRaC0TAusB/image.png)](https://github.com/geolonia/docs.geolonia.com/blob/master/geojson/example.geojson)
+![](/img/simplestyle-sample.png)
 
-[Simplestyle 対応の GeoJSON の例](https://github.com/geolonia/docs.geolonia.com/blob/master/geojson/example.geojson)
+[Simplestyle 対応の GeoJSON の例](https://raw.githubusercontent.com/geolonia/docs.geolonia.com/master/geojson/example.geojson)
 
 Geolonia の Embed API の GeoJSON 埋め込み機能でも同様に Simplestyle に対応しています。
 
