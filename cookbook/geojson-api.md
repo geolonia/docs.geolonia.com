@@ -35,14 +35,14 @@ Geolonia Maps なら以下のような簡単なマークアップで地図に表
   <div class="geolonia" data-geojson="<GeoJSON の URL>"></div>
   ```
 
-<p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="RwgJjmE" data-user="geolonia" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
-  <span>See the Pen <a href="https://codepen.io/geolonia/pen/RwgJjmE">
+<p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="oNJmZOj" data-user="geolonia" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
+  <span>See the Pen <a href="https://codepen.io/geolonia/pen/oNJmZOj">
   GeoJSON API デモ</a> by Geolonia (<a href="https://codepen.io/geolonia">@geolonia</a>)
   on <a href="https://codepen.io">CodePen</a>.</span>
 </p>
 <script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
 
-<a class="codepen" href="https://codepen.io/geolonia/pen/RwgJjmE" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
+<a class="codepen" href="https://codepen.io/geolonia/pen/oNJmZOj" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
 
 
 既定のフォーマットに沿った CSV を リポジトリにアップロードすると、GitHub Actions によって自動的に GeoJSON に変換されます。
