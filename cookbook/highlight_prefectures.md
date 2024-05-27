@@ -54,19 +54,16 @@ map.on('load', async () => {
 
 続いて、`addLayer` で取得した GeoJSON データを地図に追加します。
 
-GeoJSON データは、全都道府県のポリゴンデータがまとめて入った FeatureCollection タイプのデータなのですが、個別に指定して表示/非表示が切り替えられるように、それぞれの都道府県(Featureタイプのデータ)に都道府県コード(すでに properties の一つにセットされている)を ID として割り当てる処理を addLayer の前におこなっています。
+GeoJSON データは、全都道府県のポリゴンデータがまとめて入った FeatureCollection タイプのデータなのですが、個別に指定して表示/非表示が切り替えられるように、それぞれの都道府県(Featureタイプのデータ)に都道府県コード (すでに properties の一つにセットされている) を Feature IDとして扱う必要がある。こういった場合は、 source を指定する時に `promoteId` オプションを使います。 `promoteId` オプションは、GeoJSON の Feature の properties から指定した値を Feature ID として利用するようになります。
 
 ```javascript
-const prefectures = geojson.features.map(pref => { return {...pref, ...{id: pref.properties.code}}})
 map.addLayer({
   id: 'prefectures',
   type: 'fill',
   source: {
     type: 'geojson',
-    data: {
-      "type": "FeatureCollection",
-      "features": prefectures
-    }
+    promoteId: 'code',
+    data: geojson,
   },
   layout: {},
   paint: {
@@ -124,6 +121,7 @@ onAdd(map) {
   this._container = document.createElement('div')
   this._container.className = 'maplibregl-ctrl'
   this._container.innerHTML = '<select name="prefecture">'
+    + '<option value=""></option>'
     + this._prefectures.map(pref => { return `<option value="${pref.properties.code}">${pref.properties.name}</option>` })
     + '</select>';
   //...
@@ -183,11 +181,11 @@ onRemove() {
 
 コード全体を見るには、以下の CodePen のサンプルコードを参照してください。
 
-<p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="xxzLwGx" data-user="geolonia" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
-  <span>See the Pen <a href="https://codepen.io/geolonia/pen/xxzLwGx">
+<p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="jOoMgLN" data-user="geolonia" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
+  <span>See the Pen <a href="https://codepen.io/geolonia/pen/jOoMgLN">
   カスタムコントロールのセレクトボックスで選択した都道府県をハイライト表示する</a> by Geolonia (<a href="https://codepen.io/geolonia">@geolonia</a>)
   on <a href="https://codepen.io">CodePen</a>.</span>
 </p>
 <script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
 
-<a class="codepen" href="https://codepen.io/geolonia/pen/xxzLwGx" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
+<a class="codepen" href="https://codepen.io/geolonia/pen/jOoMgLN" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
