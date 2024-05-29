@@ -24,9 +24,9 @@ breadcrumbs:
 
 - CodePen の設定より Bootstrap を読み込んでいます。
 
-<p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="XWwNwvB" data-pen-title="Toggle でマーカーの表示・非表示" data-user="geolonia" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
+<p class="codepen" data-height="300" data-default-tab="js,result" data-slug-hash="XWwNwvB" data-pen-title="トグルボタンでマーカーの表示・非表示" data-user="geolonia" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
   <span>See the Pen <a href="https://codepen.io/geolonia/pen/XWwNwvB">
-  Toggle でマーカーの表示・非表示</a> by Geolonia (<a href="https://codepen.io/geolonia">@geolonia</a>)
+  トグルボタンでマーカーの表示・非表示</a> by Geolonia (<a href="https://codepen.io/geolonia">@geolonia</a>)
   on <a href="https://codepen.io">CodePen</a>.</span>
 </p>
 <script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
