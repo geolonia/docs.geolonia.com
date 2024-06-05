@@ -3,7 +3,7 @@ layout: default
 keywords:
 comments: false
 
-title: 2種類のマーカーをトグルで表示・非表示する
+title: 複数のレイヤーをトグルで表示・非表示する
 description: 複数のレイヤーをトグルで表示・非表示する方法を紹介します。
 
 micro_nav: true
@@ -11,13 +11,13 @@ micro_nav: true
 breadcrumbs:
     - title: クックブック
       url: /cookbook/
-    - title: 2種類のマーカーをトグルで表示・非表示する
+    - title: 複数のレイヤーをトグルで表示・非表示する
       url: /cookbook/switch-marker/
 ---
 
 ## 概要
 
-タイプAとタイプBという2種類のマーカーを表示・非表示する方法を[Geolonia のJavaScript API](https://docs.geolonia.com/embed-api/javascript/)を使用して実装する方法を紹介します。
+複数のレイヤーを表示・非表示する方法を[Geolonia のJavaScript API](https://docs.geolonia.com/embed-api/javascript/)を使用して実装する方法を紹介します。
 
 ## 地図の初期化
 
@@ -112,7 +112,7 @@ map.on("load", () => {
 
   // Category A （赤）のレイヤーを追加
   map.addLayer({
-    id: "layer1",
+    id: "markerA",
     type: "circle",
     source: "source",
     paint: {
@@ -126,7 +126,7 @@ map.on("load", () => {
 
   // Category B （青）のレイヤーを追加
   map.addLayer({
-    id: "layer2",
+    id: "markerB",
     type: "circle",
     source: "source",
     paint: {
