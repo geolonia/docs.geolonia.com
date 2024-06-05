@@ -24,6 +24,7 @@ breadcrumbs:
 以下のように地図を初期化します。
 
 ```css
+/* CSS */
 html,
 body,
 #map {
@@ -35,10 +36,12 @@ body,
 ```
 
 ```html
+<!--HTML-->
 <div id="map"></div>
 ```
 
 ```js
+// JavaScript
 const map = new geolonia.Map({
   container: "#map",
   center: [139.691087, 35.688775],
