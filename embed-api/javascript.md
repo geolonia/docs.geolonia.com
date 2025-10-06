@@ -71,7 +71,7 @@ const map = new geolonia.Map( '#map' )
 
 <div class="callout callout--danger">
   <ul>
-    <li>MapLibre 及び Mapbox と Geolonia の地図では API キーの受け渡しに関する仕様が違うため、API キーに関わる部分だけ互換性がありません。</li>
+    <li>MapLibre と Geolonia の地図では API キーの受け渡しに関する仕様が違うため、API キーに関わる部分だけ互換性がありません。</li>
     <li>また、ベクトルタイルのスキーマが違うため、スタイル用の JSON については仕様は同じですが流用はできません。</li>
   </ul>
 </div>
