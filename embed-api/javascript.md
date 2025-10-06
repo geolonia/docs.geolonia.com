@@ -51,9 +51,9 @@ const map = new geolonia.Map('#map')
 
 <a class="codepen" href="https://codepen.io/geolonia/pen/xxGWwrN" target="codepen"><i class="icon icon--codepen"></i> CodePen でサンプルコードを編集</a>
 
-## Mapbox GL JS 及び MapLibre GL JS との互換性
+## MapLibre GL JS との互換性
 
-Geolonia の JavaScript API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/) を内部で使用しており、MapLibre GL JS のクラス名 `maplibregl` を `geolonia` に置き換えるだけで、すべてのほぼすべてのクラスおよびそのインスタンスメンバー、イベントを利用できます。また、 Mapbox GL JS についても多くの互換性があります。
+Geolonia の JavaScript API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/) を内部で使用しており、MapLibre GL JS のクラス名 `maplibregl` を `geolonia` に置き換えるだけで、すべてのほぼすべてのクラスおよびそのインスタンスメンバー、イベントを利用できます。
 
 MapLibre GL JS:
 

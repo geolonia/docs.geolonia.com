@@ -3,9 +3,9 @@ doks:
     baseurl: 'https://docs.geolonia.com'
     color_theme: # Available themes: blue (default), green, purple, red and yellow
     header:
-        description: Mapbox GL JS、MapLibre GL JS と互換性がある Geolonia Maps 公式ドキュメンテーションです。
+        description: MapLibre GL JS と互換性がある Geolonia Maps 公式ドキュメンテーションです。
         logo:
-            text: Mapbox GL JS、MapLibre GL JS 互換の Geolonia Maps 公式ドキュメンテーション
+            text: MapLibre GL JS 互換の Geolonia Maps 公式ドキュメンテーション
             image: /img/logo.png
         homepage_nav:
             - item_name: Geolonia ホーム
