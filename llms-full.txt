@@ -1,0 +1,1535 @@
+# Geolonia 公式ドキュメント
+
+> MapLibre GL JS と互換性がある Geolonia Maps 公式ドキュメンテーションです。
+
+Geolonia は、簡単な HTML を記述するだけでウェブサイトに地図を埋め込むことができる Embed API を提供しています。JavaScript API（MapLibre GL JS 互換）による高度なカスタマイズも可能です。
+
+---
+
+## チュートリアル
+
+本チュートリアルでは、Geoloniaの地図をウェブサイトに埋め込むための一般的な方法を目的別に紹介します。
+
+### 目次
+
+* [はじめに](/tutorial/001/)
+* [API キーを取得](/tutorial/002/)
+* [Embed API 用の HTML タグを設置](/tutorial/003/)
+* [はじめての地図を設置](/tutorial/004/)
+
+---
+
+## はじめに
+
+URL: https://docs.geolonia.com/tutorial/001/
+
+Geolonia の地図をサイトに埋め込むまでの流れについて紹介します。
+
+### Embed API について
+
+Geolonia の Embed API では、JavaScript の知識がなくても HTML を記述するだけで地図をカスタマイズすることが可能なようになっています。
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.675888"
+  data-lng="139.744858"
+  data-zoom="12"
+>国会議事堂</div>
+```
+
+また、この API は、内部的には [MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/api/) を利用しており、JavaScript を使ってさらに高度なカスタマイズをすることも可能です。
+
+### Embed API の動作環境
+
+* Internet Exploerer 11 以降及びすべてのモダンブラウザの最新版。
+* Firefox などの一部のブラウザでは、WebGL に対する制限により、一つのページ内に16個を超える地図を設置することはできません。
+* API キー `YOUR-API-KEY` に限り、`iframe` 内での利用を許可しておりません。
+
+ご利用中のブラウザが対応ブラウザかどうかは以下のようなコードで確認することができます。
+
+```javascript
+if (!geolonia.supported()) {
+  alert('Your browser does not support MapLibre GL.')
+} else {
+  const map = new geolonia.Map('#map')
+}
+```
+
+### ベクトルタイル
+
+Geolonia の地図では、地図の表示方法にベクトルタイルという仕組みを採用しており、WebGL で動的にレンダリングされています。
+
+これによって、地図のアニメーションや、3D、地図の見た目の大胆なカスタマイズなども可能になっています。
+
+### 遅延読み込みをデフォルトでサポート
+
+Geolonia の地図はそのブロックがページ内に表示されてからはじめてレンダリングを開始するように設計されています。
+
+### 国際化
+
+Geolonia の地図は、日本語および英語に対応しています。
+
+言語の切り替えはユーザーのブラウザの設定に基づいて自動的に行われますので、ウェブマスターのみなさんが、地図の言語について意識する必要はほとんどありません。
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.675888"
+  data-lng="139.744858"
+  data-zoom="12"
+  data-lang="en"
+>国会議事堂</div>
+```
+
+### GeoJSON
+
+Geolonia の地図では、GeoJSON の読み込みをデフォルトでサポートしています。
+
+```html
+<div
+  class="geolonia"
+  data-geojson="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+></div>
+```
+
+### スタイルについて
+
+Embed API では、`data-style` という属性を使ってスタイルを指定することが可能になっています。
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.675888"
+  data-lng="139.744858"
+  data-zoom="16"
+  data-pitch="60"
+  data-style="geolonia/midnight"
+>国会議事堂</div>
+```
+
+### オープンソース
+
+Embed API は、API 用のソースコードそのものがオープンソースで公開されています。
+
+[https://github.com/geolonia/embed](https://github.com/geolonia/embed)
+
+またすべてのスタイルもオープンソースで公開しており、みなさんが自由にフォークしてオリジナルのスタイルを作ることも可能です。
+
+[https://github.com/geolonia/basic](https://github.com/geolonia/basic)
+
+---
+
+## API キーを取得
+
+URL: https://docs.geolonia.com/tutorial/002/
+
+Geolonia の地図をサイトに埋め込むための API キーの取得方法について紹介します。
+
+### API キーについて
+
+Geolonia の地図をみなさんのウェブサイトでご利用いただくには、API キーを取得していただく必要があります。
+
+API キーを取得するには、Geolonia のダッシュボードにサインアップして頂く必要があります。
+
+[https://app.geolonia.com/#/signin](https://app.geolonia.com/#/signin)
+
+API キーは、Geolonia の地図と紐付けられており、API キーを取得する際には実際に地図をご利用されるサイトの URL をダッシュボードでご登録して頂く必要があります。これは、悪意がある第三者による API キーの盗用を防ぐために必要なので、あらかじめご理解をお願いいたします。
+
+ひとつの API キーに対しては、複数の URL を登録していただくことが可能なので、ローカル開発環境やステージング環境なども登録しておくとよいでしょう。
+
+また、ひとつのユーザーアカウントで複数の API キーを取得していただくことも可能です。
+
+### 開発環境での利用について
+
+API キーを、テスト環境の `https://*.test` 及び、`http://127.0.0.1:<ポート番号>` や `http://localhost:<ポート番号>` などのローカル環境で使用した場合、料金が発生しないように設定していますので、安心して開発していただくことができます。
+
+以下の URL に対してはデフォルトでアクセスを許可していますので、API キー作成時に特別な指定をせずにすぐお試し頂くことができます。
+
+#### 対象となる URL およびサービス
+
+* `http://127.0.0.1:*`
+* `http://localhost:*`
+* `https://*.test` (`http` も対応、全てのポート番号対応)
+* `https://*.example` (`http` も対応、全てのポート番号対応)
+* GitHub Pages（`https://*.github.io`） ※ 独自ドメインは対象外。
+* Netlify (`https://*.netlify.com`, `https://*.netlify.app`) ※ 独自ドメインは対象外。
+* Vercel (`https://*.vercel.app`) ※ 独自ドメインは対象外。
+* [CodePen](https://codepen.io/)
+* [JSFiddle](https://jsfiddle.net/)
+* [CodeSandbox](https://codesandbox.io/)
+* [PLAYCODE](https://playcode.io)
+* [Web Maker](https://webmaker.app)
+
+* URL は、スキーマも含めて一致する必要があります。たとえば、`http://127.0.0.1:8000` では利用可能ですが、 `https://127.0.0.1:8000` ではスキーマが違う (`http` と `https`) ため利用できません。
+* 上記の URL で表示された地図へのアクセスは、ダッシュボードの地図表示回数から除外されます。
+
+### YOUR-API-KEY について
+
+Geolonia のドキュメンテーションやサンプルでは、`YOUR-API-KEY` という API キーがサンプルとして使用されています。
+
+この API キーは、「対象となる URL および サービス」で指定された URL で動作するように許可していますので、サインアップしなくてもすぐにお試しいただくことができます。
+
+* `YOUR-API-KEY` を使用した地図に限り `iFrame` 内での利用を禁止させていただいております。
+
+### 地図の表示制限について
+
+地図の表示回数が無料プランの制限を超過した場合、地図の配信が停止されます。なお、上記の無料利用可能な開発環境においては地図の表示回数はカウントされず、無料でご利用いただけます。
+
+地図の表示制限を解除するには、ダッシュボードにサインインしてクレジットカードの登録を行うことで有料プランの申し込みを行うことができます。
+
+[プランの価格を見る](https://geolonia.com/pricing/)
+
+---
+
+## Embed API 用の HTML タグを設置
+
+URL: https://docs.geolonia.com/tutorial/003/
+
+Geolonia の Embed API をページに設置する方法を紹介します。
+
+### Embed API 用の HTML タグを設置する
+
+Geolonia の Embed API をウェブページに設置するには、以下のコードを `</body>` の直前に設置してください。
+
+```html
+<script type="text/javascript" src="https://cdn.geolonia.com/v1/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+`YOUR-API-KEY` の部分は、みなさんの API キーと置き換えてください。
+
+### WordPress への設置方法
+
+例えば WordPress でこのタグを挿入するには、テーマの `functions.php` またはプラグインの中に以下のコードを設置してください。
+
+```php
+add_action( 'wp_enqueue_scripts', function() {
+  wp_enqueue_script(
+    'geolonia-embed-api',
+    'https://cdn.geolonia.com/v1/embed?geolonia-api-key=YOUR-API-KEY',
+    array(),
+    false,
+    true
+  );
+} );
+```
+
+---
+
+## はじめての地図を設置
+
+URL: https://docs.geolonia.com/tutorial/004/
+
+Geolonia の地図をページに設置する方法を紹介します。
+
+### はじめての地図を設置する
+
+Geolonia の Embed API は、ページ内の `geolonia` という値の `class` 属性をもつすべての要素に対して自動的に地図を挿入します。
+
+Embed API 用の `<script />` タグを設置したページの任意の場所に、以下のコードを設置してください。
+
+CSS で、要素に高さが指定されていないと地図は表示されないので、style 属性で `height:300px` を指定しています。
+
+```html
+<div class="geolonia" style="height:300px;"></div>
+```
+
+もし、地図が表示されていなければ、以下の内容を確認してください。
+
+* `</body>` タグの直前に Embed API のコードが挿入されていること。
+* API キーが正しいこと。
+* file:///C:/... のようにファイルを直接ブラウザで開くと動作しません。Web Server for Chrome といったツールを使ったりして、httpでアクセスする必要があります。
+
+### 地図の中心地点の緯度経度を指定する
+
+地図の中心地点は `data-lat` という属性に緯度を、`data-lng` という属性に経度をセットすることで指定することができます。
+
+さらに、`data-zoom` は地図のズームレベルです。数字が大きくなるほどズームインしていき、最大値は `22` です。
+
+```html
+<div
+  class="geolonia"
+  data-lat="34.652499"
+  data-lng="135.506306"
+  data-zoom="16"
+  style="height:300px;"
+></div>
+```
+
+### マーカーを非表示にする
+
+マーカーは、`data-marker` という属性の値に `off` を指定することで非表示にすることができます。
+
+```html
+<div
+  class="geolonia"
+  data-lat="34.652499"
+  data-lng="135.506306"
+  data-zoom="16"
+  data-marker="off"
+  style="height:300px;"
+></div>
+```
+
+### ポップアップを表示する
+
+マーカーをクリックした際に任意のコンテンツをポップアップで表示したい場合は、`<div class="geolonia" ...></div>` の中にポップアップで表示したいコンテンツを挿入してください。
+
+```html
+<div
+  class="geolonia"
+  data-lat="34.652499"
+  data-lng="135.506306"
+  data-zoom="16"
+  style="height:300px;"
+>ここは <strong>通天閣</strong> です。</div>
+```
+
+ポップアップ用のコンテンツでは、HTML が使用できます。
+
+### 地図の角度を指定する
+
+`data-pitch` 属性を使用することで地図の角度を変えることができます。最大値は `60` です。
+
+```html
+<div
+  class="geolonia"
+  data-lat="34.652499"
+  data-lng="135.506306"
+  data-zoom="16"
+  data-pitch="60"
+  style="height:300px;"
+>ここは <strong>通天閣</strong> です。</div>
+```
+
+---
+
+## クックブック
+
+URL: https://docs.geolonia.com/cookbook/
+
+クックブックは、Geolonia地図でできることと、それらを具体的にどう実装するかを紹介するレシピ集です。
+
+### 目次
+
+* [地図のスタイルをカスタマイズ](/cookbook/001/)
+* [地図のコントロールをカスタマイズ](/cookbook/002/)
+* [マーカーをカスタマイズ](/cookbook/003/)
+* [GeoJSON で複数のマーカーを表示](/cookbook/004/)
+* [地図の表示言語を切り替える](/cookbook/005/)
+* [JavaScript を使用した高度なカスタマイズ](/cookbook/006/)
+* [ドラッグしたマーカーの緯度・経度を取得する](/cookbook/draggable_marker/)
+* [カスタムコントロールのセレクトボックスで選択した都道府県をハイライト表示する](/cookbook/highlight_prefectures/)
+* [CSV を GeoJSON に変換し地図で表示する](/cookbook/geojson-api/)
+* [ユーザーの現在位置をトラッキングする](/cookbook/track_user_location/)
+* [複数のカスタムマーカーを追加する](/cookbook/custom_markers/)
+
+---
+
+## 地図のスタイルをカスタマイズ
+
+URL: https://docs.geolonia.com/cookbook/001/
+
+Geolonia の地図のスタイルをカスタマイズする方法を紹介します。
+
+### 地図のスタイルを変更する
+
+Geolonia の地図では、いくつかのスタイルを用意しています。
+
+スタイルは、以下のように `data-style` 属性を使用して指定することができます。
+
+#### geolonia/basic (デフォルト)
+
+geolonia/basic はデフォルトのスタイルです。
+
+`data-style` 属性による指定がない場合はこのスタイルが自動的に選択されます。
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.632546"
+  data-lng="139.881328"
+  data-zoom="16"
+  data-style="geolonia/basic"
+>東京ディズニーランド</div>
+```
+
+#### geolonia/midnight
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.632546"
+  data-lng="139.881328"
+  data-zoom="16"
+  data-style="geolonia/midnight"
+>東京ディズニーランド</div>
+```
+
+#### geolonia/red-planet
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.632546"
+  data-lng="139.881328"
+  data-zoom="16"
+  data-style="geolonia/red-planet"
+>東京ディズニーランド</div>
+```
+
+#### geolonia/notebook
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.632546"
+  data-lng="139.881328"
+  data-zoom="16"
+  data-style="geolonia/notebook"
+>東京ディズニーランド</div>
+```
+
+---
+
+## 地図のコントロールをカスタマイズ
+
+URL: https://docs.geolonia.com/cookbook/002/
+
+地図を操作するための各種のコントロールをカスタマイズする方法を紹介します。
+
+### コントロールとは？
+
+Geolonia の地図には地図の操作を表示するためのボタンや、地図の現在の状態を示す情報などの、いくつかの要素が表示されています。
+
+これらは、コントロールと呼ばれ、以下のコントロールについては表示/非表示をカスタマイズすることが可能です。
+
+* `data-navigation-control` - 地図のズームレベルを変えられるボタン。デフォルトではこのコントロールだけ表示されています。
+* `data-geolocate-control` - ユーザーの現在位置を取得して、地図をそこに移動するためのボタン。
+* `data-fullscreen-control` - 地図を全画面で表示するためのボタン。
+* `data-scale-control` - 地図のスケールを左下に表示。
+
+以下のサンプルは、これらのコントロールをすべて有効化しています。
+
+```html
+<div
+  class="geolonia"
+  data-lat="34.704395"
+  data-lng="135.494771"
+  data-zoom="14"
+  data-navigation-control="on"
+  data-geolocate-control="on"
+  data-fullscreen-control="on"
+  data-scale-control="on"
+>グランフロント</div>
+```
+
+### data-navigation-control - デフォルトのボタン
+
+`data-navigation-control` は、地図のズームレベルや方向、角度を調整するためのコントロールで、デフォルト値は `on` です。
+
+非表示にしたい場合は、値を `off` にしてください。
+
+### data-geolocate-control - ユーザーの位置情報を取得
+
+`data-geolocate-control` は、ユーザーの位置情報を取得し、地図をその位置に移動するためのボタンです。
+
+### data-fullscreen-control - フルスクリーンで地図を表示するためのボタン
+
+`data-fullscreen-control` は、地図をフルスクリーンで表示するためのボタンです。
+
+### data-scale-control - 地図のスケールを表示
+
+`data-scale-control` を `on` にすると、地図の左下に地図のスケールが表示されます。
+
+### OpenStreetMap および Geolonia へのリンクのコントロールについて
+
+地図の右下および左下に表示されている OpenStreetMap および Geolonia へのリンクについては、ご利用規約により非表示にしないことをお願いしております。
+
+---
+
+## マーカーをカスタマイズ
+
+URL: https://docs.geolonia.com/cookbook/003/
+
+Geolonia の地図のマーカーをカスタマイズする方法を紹介します。
+
+### 地図のマーカーの色をカスタマイズする
+
+デフォルトの地図に表示されるマーカーの色は `data-marker-color` 属性を使用してカスタマイズすることができます。
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.7101"
+  data-lng="139.8107"
+  data-zoom="16"
+  data-marker-color="#003399"
+>スカイツリー</div>
+```
+
+`rgba(255, 0, 0, 0.4)` のように指定することで透過度を指定することもできます。
+
+### カスタムマーカーを使用する
+
+Geolonia 地図では、JavaScript を書かなくても簡単に独自のマーカーを表示することができます。
+
+カスタムマーカーを使用するには、まずマーカー用の HTML を用意します。
+
+```html
+<div id="custom-marker">
+  <img src="/img/custom-marker.png" alt="">
+</div>
+```
+
+このマーカーには任意の ID 属性やクラス属性をセットして、CSS セレクタで指定できるようにしてください。
+
+次に、`data-custom-marker` 属性で、CSS セレクタと同じフォーマットで先程のマーカーを指定してください。
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.7101"
+  data-lng="139.8107"
+  data-zoom="16"
+  data-custom-marker="#custom-marker"
+  data-custom-marker-offset="0, 0"
+>スカイツリー</div>
+```
+
+必要に応じて、CSS でマーカーの見た目を調整してください。
+
+```css
+#custom-marker
+{
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: none;
+}
+
+#custom-marker img
+{
+  max-width: 100%;
+  height: auto;
+}
+```
+
+#### マーカーの位置を調整する
+
+デフォルトでは、マーカーの中心点が指定された緯度経度にセットされます。
+
+`data-custom-marker-offset` には、マーカーの中心を基準にした xy 座標を `data-custom-marker-offset="0, 0"` のように指定してください。たとえば、マーカー用のエレメントのサイズが 50 x 50 ピクセルで、マーカーの位置をマーカー用の要素の左下に合わせたい場合は、`25, -25` と指定してください。
+
+### 複数のマーカーを設置する
+
+地図上に複数のマーカーを設置するには、以下の方法のうちのどれか一つを選ぶ必要があります。
+
+#### JavaScript を使用する
+
+Geolonia の JavaScript API を使用すれば、複数マーカーの設置も含めたあらゆることが可能です。
+
+#### GeoJSON を使用する
+
+Geolonia の Embed API は、GeoJSON というフォーマットに対応しており、これを使用すると複数のマーカーを比較的容易に設置することができます。
+
+* [GeoJSON で複数のマーカーを表示](/cookbook/004/)
+* [GeoJSON 仕様](/geojson/)
+
+---
+
+## GeoJSON で複数のマーカーを表示
+
+URL: https://docs.geolonia.com/cookbook/004/
+
+GeoJSON を使って地図上に複数のマーカーや図形を表示する方法を紹介します。
+
+### GeoJSON とは？
+
+GeoJSON とは、特定の座標や空間などを取り扱うための、JSON を用いたファイルフォーマットです。
+
+[GeoJSON - Wikipedia](https://ja.wikipedia.org/wiki/GeoJSON)
+
+Geolonia の Embed API は GeoJSON にも対応しており、これを使うことで、複数のマーカーや図形を簡単に表示することができます。
+
+### GeoJSON の作り方
+
+Geolonia に埋め込むための GeoJSON を簡単に作るには、[geojson.io](https://geojson.io/) を使用するのが近道です。
+
+### GeoJSON を読み込む
+
+GeoJSON を地図で読み込むには2つの方法があります。
+
+#### HTML 内に埋め込む方法
+
+```html
+<script id="example-geojson" type="application/json">
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      ...
+    }
+  ]
+}
+</script>
+
+<div
+  class="geolonia"
+  data-geojson="#example-geojson"
+></div>
+```
+
+GeoJSON がセットされた場合、地図の中心をセットするための `data-lat` および `data-lng` が省略されていれば、自動的に GeoJSON に対して地図をフィットさせます。
+
+#### 外部の GeoJSON を読み込む
+
+外部の GeoJSON を読み込むこともできます。
+
+```html
+<div
+  class="geolonia"
+  data-geojson="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+></div>
+```
+
+### 地図の座標について
+
+GeoJSON を読み込んだ場合、地図の中心地点の座標が省略されていれば、GeoJSON に含まれるすべての地物が地図内に収まるように、中心地点の座標およびズームレベルが自動的に決定されます。
+
+`data-lat` 属性および `data-lng` 属性によって緯度経度が指定されていれば、指定された値が優先されます。
+
+### Cluster 機能について
+
+Geolonia Embed API の GeoJSON 機能では、ポイントマーカーが重なり合うと自動的に結合され、赤い円の中にその数が表示されるようになります。
+
+Cluster 機能は、`data-cluster="off"` という属性を使用して無効化することもできます。
+
+### Cluster の色を指定する
+
+`data-cluster-color` という属性を使って Cluster の色をカスタマイズすることもできます。
+
+```html
+<div
+  class="geolonia"
+  data-geojson="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+  data-cluster-color="#00CCCC"
+></div>
+```
+
+### マーカーやポリゴンのスタイル
+
+マーカーやポリゴンの色やスタイルは、[GeoJSON の Simplestyle というルール](https://github.com/mapbox/simplestyle-spec/blob/master/1.1.0/README.md) に基づいて、色やタイトル、クリック時のポップアップなどを指定することもできます。
+
+[GeoJSON 仕様](/geojson/)
+
+---
+
+## 地図の表示言語を切り替える
+
+URL: https://docs.geolonia.com/cookbook/005/
+
+Geolonia の地図は国際化にも対応しております。このページでは、地図の言語の設定方法について紹介します。
+
+### ユーザーの言語の自動判別
+
+Geolonia の地図は、ユーザーのブラウザの設定をもとに地図の言語を自動判別しており、日本語のユーザーに対しては日本語で、それ以外のユーザーに対しては英語の地図を表示します。
+
+したがって、多くの場合、ユーザーのみなさんが言語について意識する必要はありません。
+
+### 表示言語を固定する
+
+もし地図の言語を特定の言語で固定したい場合には、以下の例のように `data-lang` 属性を使用してください。
+
+地図の言語を日本語に固定:
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.65810422222222"
+  data-lng="139.74135747222223"
+  data-zoom="9"
+  data-lang="ja"
+  data-marker="false"
+></div>
+```
+
+地図の言語を英語に固定:
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.65810422222222"
+  data-lng="139.74135747222223"
+  data-zoom="9"
+  data-lang="en"
+  data-marker="false"
+></div>
+```
+
+言語の値は、`ja` または `en` のみに対応しており、それ以外の言語コードを指定しても英語で表示されます。
+
+---
+
+## JavaScript を使用した高度なカスタマイズ
+
+URL: https://docs.geolonia.com/cookbook/006/
+
+Geolonia の地図は JavaScript を使用して高度にカスタマイズすることができます。このページでは、JavaScript を使用する場合の注意点を説明します。
+
+### MapLibre GL JS との互換性
+
+Geolonia の Embed API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/api/) の拡張クラスであり互換性があります。
+
+```javascript
+const map = new geolonia.Map( '#map' )
+
+map.on('load', () => {
+  setInterval( () => {
+    map.rotateTo( map.getBearing() + 90 )
+  }, 3000 )
+})
+```
+
+Geolonia の JavaScript API の `geolonia.Map` は、`maplibregl.Map` の拡張クラスであり、Map オブジェクトは全く同じものです。`maplibregl.Popup` や `maplibregl.Marker` などの他のクラスも同様に内蔵されていますので、それぞれ `geolonia.Popup` や `geolonia.Marker` として使用することができます。
+
+詳細は [JavaScript API](/embed-api/javascript/) のドキュメントを御覧ください。
+
+### class 属性 `geolonia` について
+
+JavaScript を使用する場合は、クラス属性に `geolonia` という値は使用しないようにご注意願います。
+
+Geolonia の Embed API は、ロードされるとページ内に含まれる `.geolonia` を `document.querySelectorAll()` で検索し、それらを地図用のコンテナとして用いようとします。
+
+この時、地図コンテナが画面の表示範囲内に入るまで（もしくは CSS の `display` プロパティの値が `block` になるまで） Map オブジェクトが空になりますので、クラス属性に `geolonia` という値をセットしてしまうと、JavaScript が期待通りに動作しないことが予測されますのでご注意ください。
+
+> JavaScript API を使用するときは、地図を設置するコンテナのクラス属性の値に `geolonia` を使用しないでください。
+
+---
+
+## ドラッグしたマーカーの緯度・経度を取得する
+
+URL: https://docs.geolonia.com/cookbook/draggable_marker/
+
+位置情報を持ったデータの編集画面などで、マーカーの位置を変更したい場合に使える、ドラックしたマーカーの緯度・経度を取得する方法を紹介します。
+
+### 位置情報を持ったデータの編集画面、更新
+
+位置情報を持ったデータの編集画面を用意する場合、地図上のマーカーをドラッグできるようにしておき、ユーザーがそのマーカーを移動させることで、データの位置情報を更新するという UI が良く使われます。
+
+### ドラッグ可能なマーカーを地図に追加する
+
+```javascript
+const center = [135.506306, 34.652499]
+const map = new geolonia.Map({
+  container: 'map',
+  center: center,
+  zoom: 16
+})
+```
+
+次に geolonia.Marker のインスタンスを生成し、`draggable` オプションを `true` とし、ドラッグできるようにします。
+
+```javascript
+const marker = new geolonia.Marker({
+  draggable: true
+})
+  .setLngLat(center)
+  .addTo(map)
+```
+
+### ドラッグしたマーカーの緯度・経度を取得する
+
+マーカーをドラッグし終わったときに呼び出す関数を以下のように定義します。
+
+```javascript
+function onDragEnd() {
+  const lngLat = marker.getLngLat()
+  alert(`緯度: ${lngLat.lat}, 経度: ${lngLat.lng}`)
+}
+```
+
+`marker` がドラッグされ終わったときに `dragend` イベントが発火されます。
+
+```javascript
+marker.on('dragend', onDragEnd)
+```
+
+---
+
+## カスタムコントロールのセレクトボックスで選択した都道府県をハイライト表示する
+
+URL: https://docs.geolonia.com/cookbook/highlight_prefectures/
+
+### 都道府県のポリゴンデータを取得する
+
+地図が読み込まれたら、[geolonia / prefecture-tiles](https://github.com/geolonia/prefecture-tiles) で公開している prefectures.geojson を取得します。
+
+```javascript
+const map = new geolonia.Map('#map')
+map.on('load', async () => {
+  const resp = await fetch('https://raw.githubusercontent.com/geolonia/prefecture-tiles/master/prefectures.geojson')
+  const geojson = await resp.json()
+  //...
+```
+
+### 都道府県のレイヤーを地図に追加する
+
+`addLayer` で取得した GeoJSON データを地図に追加します。`promoteId` オプションを使って都道府県コードを Feature ID として利用します。
+
+```javascript
+map.addLayer({
+  id: 'prefectures',
+  type: 'fill',
+  source: {
+    type: 'geojson',
+    promoteId: 'code',
+    data: geojson,
+  },
+  layout: {},
+  paint: {
+    'fill-color': '#ff0000',
+    'fill-opacity': [
+      'case', ['boolean', ['feature-state', 'active'], false], 1, 0
+    ]
+  }
+})
+```
+
+paint プロパティでは、各都道府県の `feature-state` の `active` が true のときには1(不透明)が、false のときには0(透明)がセットされます。つまり、`active` を true にセットするとその都道府県がハイライトされます。
+
+### 都道府県セレクトボックス(カスタムコントロール)を追加
+
+```javascript
+const prefectureSelectBox = new PrefectureSelectBox(prefectures)
+map.addControl(prefectureSelectBox)
+```
+
+### カスタムコントロール用のクラスを定義
+
+カスタムコントロール用のクラス `PrefectureSelectBox` を定義します。
+
+```javascript
+class PrefectureSelectBox {
+  constructor(prefectures) {
+    this._prefectures = prefectures
+    this._selectedPrefectureCode = undefined
+  }
+  //...
+```
+
+カスタムコントロール用のクラスを作るときは、コントロールが追加されたときに呼ばれる `onAdd` 関数を定義しなければなりません。
+
+都道府県が選択されたときには、`setFeatureState` を使って前回選択した都道府県のハイライトを無効にし、新たに選択した都道府県のハイライトを有効にします。さらに `fitBounds` で選択された都道府県にフォーカスします。
+
+```javascript
+this._container.addEventListener("change", (e) => {
+  if (this._selectedPrefectureCode) {
+    this._map.setFeatureState(
+      { source: 'prefectures', id: this._selectedPrefectureCode },
+      { active: false }
+    );
+  }
+  this._selectedPrefectureCode = e.target.value
+  this._map.setFeatureState(
+    { source: 'prefectures', id: this._selectedPrefectureCode },
+    { active: true }
+  );
+  const selectedPrefecture = this._prefectures.find(prefecture => prefecture.properties.code === this._selectedPrefectureCode)
+  const prefectureGeojson = {
+    type: 'FeatureCollection',
+    features: [selectedPrefecture]
+  }
+  this._map.fitBounds(geojsonExtent(prefectureGeojson))
+})
+```
+
+---
+
+## CSV を GeoJSON に変換し、地図で表示する
+
+URL: https://docs.geolonia.com/cookbook/geojson-api/
+
+CSV を GeoJSON に変換し地図で表示する方法を紹介します。
+
+### GeoJSON API とは
+
+CSV フォーマットのデータを GitHub Actions で GeoJSON に変換し API として公開するための、テンプレートリポジトリです。
+
+Geolonia Maps なら以下のような簡単なマークアップで地図に表示することが可能です。
+
+```html
+<div class="geolonia" data-geojson="<GeoJSON の URL>"></div>
+```
+
+既定のフォーマットに沿った CSV を リポジトリにアップロードすると、GitHub Actions によって自動的に GeoJSON に変換されます。
+
+GeoJSON は、 `https://<あなたのGitHubユーザー名>.github.io/<リポジトリ名>/<ファイル名>.json` のような URL でアクセスできます。
+
+### 設定手順
+
+#### リポジトリをコピー
+
+[https://github.com/geoloniamaps/geojson-api](https://github.com/geoloniamaps/geojson-api) にアクセスし、「Use this template」をクリックしてください。
+
+#### Google スプレッドシートで CSV を編集する
+
+[サンプルデータ](https://docs.google.com/spreadsheets/d/125tgFwGwkdEX5rapUMQuzVQ0BPshHkU0K_snFagOzwk/edit#gid=0) の URL を開き、メニューの [ファイル] > [コピーを作成] を選んで、自分のアカウントにコピーを作成してください。
+
+ご自身のデータを入力し、メニューの [ファイル] > [ダウンロード] > [カンマ区切り形式（.csv）] を選んで、CSV でエクスポートしてください。
+
+エクスポートした CSV を任意のファイル名でコミットしてください。
+
+緯度経度の取得には、[Community Geocoder](https://community-geocoder.geolonia.com/#12/35.68124/139.76713) をご利用することをご推奨します。
+
+#### GitHub Pages の設定方法
+
+GitHub のリポジトリのメニューの中にある [Settings] をクリック > サイドバーの [Pages] をクリックし、branch を `gh-pages` に、フォルダを `/ (root)` に設定してください。
+
+#### Geolonia Maps での地図の表示方法
+
+GeoJSON の URL をブラウザで確認した後、その URL をコピーし、地図を表示したい場所に以下のような HTML を設置してください。
+
+```html
+<div class="geolonia" data-geojson="<GeoJSON の URL>"></div>
+```
+
+### 備考
+
+* 任意のファイル名の CSV を複数設置することも可能です。
+* 点データのみに対応しています。
+* `marker-color` は、`#FF0000` または `rgba(255,0,0)` のように指定することが可能です。
+* 列の順番に制約はありません。
+* `description` では、HTML も利用可能です。
+* 上記にない列は、`properties` に保存されますが、これらの値を利用するには JavaScript によるプログラミングが必要です。
+
+---
+
+## ユーザーの現在位置をトラッキングする
+
+URL: https://docs.geolonia.com/cookbook/track_user_location/
+
+スマホ上で地図を表示したときに、ユーザーの現在位置をずっと表示し続ける方法を紹介します。
+
+[Embed API](/embed-api/) の `data-geolocate-control` を `on` にすれば、ユーザーの現在位置を指し示すジオロケーションコントロールを表示することができますが、スマホを持って歩いているときなど位置が刻々と変わる場合には、コントロールのボタンを何度も押す必要があります。
+
+このような場合には、ジオロケーションコントロールの `trackUserLocation` オプションを有効にするのが良いのですが、Embed API で追加されるジオロケーションコントロールではこのオプションは無効になっています。そこで、[JavaScript API](/embed-api/javascript/) と組み合わせ、`trackUserLocation` を有効にしたコントロールを地図に追加します。
+
+### 地図を表示する
+
+```html
+<div id="map"
+  data-geojson="https://geolonia.github.io/style-demo-source/cookbook-popup.json"></div>
+```
+
+JavaScript を使用するので、クラス属性 geolonia は使わず id 属性 `map` を使用します。
+
+### ジオロケーションコントロールを追加する
+
+```javascript
+const map = new geolonia.Map('#map');
+const geolocate = new geolonia.GeolocateControl({
+  trackUserLocation: true
+});
+map.addControl(geolocate);
+```
+
+ユーザーをトラッキングできるようにしたジオロケーションコントロールをクリックすると、青く点灯し続け、定期的に端末の位置情報にアクセスしてユーザーの位置を追跡するようになります。
+
+---
+
+## 複数のカスタムマーカーを追加する
+
+URL: https://docs.geolonia.com/cookbook/custom_markers/
+
+複数のカスタムマーカーを追加する方法を紹介します。
+
+> このクックブックでは、JavaScript API を使用した実装方法を紹介しています。Embed API を使った実装はできませんのでご注意下さい。
+
+### 地図の初期化
+
+```html
+<div id="map"></div>
+```
+
+### データを取得する
+
+地図に表示するデータを取得します。
+
+```javascript
+map.on("load", async () => {
+  try {
+    const response = await fetch(
+      "https://geolonia.github.io/style-demo-source/cookbook-popup.json"
+    );
+    const geojson = await response.json();
+  } catch (error) {
+    console.error(error);
+  }
+});
+```
+
+### カスタムマーカーを追加する
+
+カスタムマーカーの HTML要素を作成します。
+
+```javascript
+const markerElm = document.createElement("div");
+markerElm.className = "custom-marker";
+markerElm.innerHTML = feature.properties.title;
+```
+
+`geolonia.Marker` を使用して、カスタムマーカーを追加します。
+
+```javascript
+const marker = new geolonia.Marker(markerElm)
+  .setLngLat(feature.geometry.coordinates)
+  .addTo(map);
+```
+
+GeoJSON の features をループし、feature の数だけ繰り返すことで、複数のカスタムマーカーを追加できます。
+
+```javascript
+map.on("load", async () => {
+  // ... 省略 ...
+  geojson.features.forEach((feature) => {
+    const markerElm = document.createElement("div");
+    markerElm.className = "custom-marker";
+    markerElm.innerHTML = feature.properties.title;
+
+    const marker = new geolonia.Marker(markerElm)
+      .setLngLat(feature.geometry.coordinates)
+      .addTo(map);
+  });
+  // ... 省略 ...
+});
+```
+
+### マーカーを CSS でカスタマイズする
+
+```css
+.custom-marker {
+  background-color: #f5f5f5;
+  color: #333333;
+  padding: 5px 10px;
+  font-weight: bold;
+  border: 1px solid #333333;
+  box-shadow: rgb(50 50 93 / 25%) 0px 13px 27px -5px,
+    rgb(0 0 0 / 30%) 0px 8px 16px -8px;
+}
+```
+
+---
+
+## Embed API 仕様
+
+URL: https://docs.geolonia.com/embed-api/
+
+Embed API の仕様を紹介します。
+
+### Embed API とは
+
+Geolonia の地図サービスでは、Embed API という API を提供しています。
+
+この API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/api/) 互換の JavaScript API に加えて、簡単な HTML を記述するだけでユーザーの皆さんのウェブサイトに地図を埋め込むことも可能にしています。
+
+[はじめての方は、チュートリアルからはじめてみることをおすすめします。](/tutorial/)
+
+### Embed API の動作環境
+
+* すべてのモダンブラウザ (Edge, Chrome, Safari, Firefox) の最新版。
+* Firefox などの一部のブラウザでは、WebGL に対する制限により、一つのページ内に16個を超える地図を設置することはできません。
+* API キー `YOUR-API-KEY` に限り、`iframe` 内での利用を許可しておりません。
+
+### Embed API の設置
+
+Embed API を利用するには、地図を設置したいページの `</body>` の直前に以下のコードを記述してください。
+
+```html
+<script type="text/javascript" src="https://cdn.geolonia.com/v1/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+`YOUR-API-KEY` の部分は、みなさんの API キーと置き換えてください。
+
+### HTML の記述
+
+Embed API を利用して地図を設置するには、`geolonia` というクラス属性を持つ `<div />` 要素を設置してください。この要素には、CSS 等で高さが指定されている必要があります。
+
+```html
+<div class="geolonia"></div>
+```
+
+地図用の `<div />` 要素の子要素は、マーカーをクリックした際に表示されるポップアップのコンテンツとして使用されます。
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.65810422222222"
+  data-lng="139.74135747222223"
+  data-zoom="9"
+><strong>日本経緯度原点</strong><br>東京都港区麻布台二丁目</div>
+```
+
+### 属性の一覧
+
+表示される地図をカスタマイズするための属性は以下のとおりです。
+
+| 属性 | 内容 | 初期値 |
+|---|---|---|
+| data-lat | 表示する地図の緯度。例: `35.6581` | `0` |
+| data-lng | 表示する地図の経度。例: `139.7413` | `0` |
+| data-zoom | 表示する地図のズーム。`0` から `24` までの数字を指定してください。 | `0` |
+| data-min-zoom | 表示する地図の最小ズームレベル。 | `` |
+| data-max-zoom | 表示する地図のズームレベル。 | `` |
+| data-bearing | 地図の方角を `0` から `359` までの数字で指定してください。`0` の場合、地図は北が上になり、`180` の場合は南が上になります。 | `0` |
+| data-pitch | 地図の傾斜角を `0` から `60` までの数字で指定してください。 | `0` |
+| data-hash | 地図をマウス等で動かした際に、地図の座標やズームがページ URL のハッシュ値と連動させるかどうかを `on` または `off` で指定します。 | `off` |
+| data-marker | `data-lat` および `data-lng` で指定した座標にマーカーを設置させるかどうかを `on` または `off` で指定します。 | `on` |
+| data-marker-color | マーカーの色を `#FF0000` または `rgba(255, 0, 0, 0.5)` の様に指定してください。 | `#E4402F` |
+| data-open-popup | マーカーのポップアップがデフォルトで開いた状態で地図を表示させるかどうかを `on` または `off` で指定します。 | `off` |
+| data-custom-marker | カスタムマーカーとして使用するための HTML 要素のセレクタを指定してください。例: `#my-custom-marker` |  |
+| data-custom-marker-offset | カスタムマーカーの位置のオフセット値のピクセル数を数字で指定してください。例: `0, 25` | `0, 0` |
+| data-gesture-handling | マウスホイールやタッチ操作によるページのスクロールの邪魔にならないように、`alt` キーまたは、2本指による操作を強制します。 | `on` |
+| data-geolonia-control | Geolonia のロゴの位置を `top-right`、`bottom-right`、`bottom-left`、`top-left` で指定します。 | `bottom-left` |
+| data-navigation-control | ナビゲーションコントロールを表示させるかどうかを `on` または `off` で指定します。`top-right`、`bottom-right`、`bottom-left`、`top-left` のいずれかを指定すると表示位置を変更できます。 | `on` |
+| data-geolocate-control | ジオロケーションコントロールを表示させるかどうかを `on` または `off` で指定します。`top-right`、`bottom-right`、`bottom-left`、`top-left` のいずれかを指定すると表示位置を変更できます。 | `off` |
+| data-fullscreen-control | フルスクリーンコントロールを表示させるかどうかを `on` または `off` で指定します。`top-right`、`bottom-right`、`bottom-left`、`top-left` のいずれかを指定すると表示位置を変更できます。 | `off` |
+| data-scale-control | 地図のスケールを表示させるかどうかを `on` または `off` で指定します。`top-right`、`bottom-right`、`bottom-left`、`top-left` のいずれかを指定すると表示位置を変更できます。 | `off` |
+| data-geojson | GeoJSON が記述されている要素のセレクタ、もしくは URL を指定します。 |  |
+| data-cluster | GeoJSON のクラスタ機能を有効化させるかどうかを `on` または `off` で指定します。 | `on` |
+| data-cluster-color | クラスタ用のサークルの色を指定します。 | `#ff0000` |
+| data-style | 地図のスタイルを指定します。 | `osm-bright` |
+| data-lang | 地図の言語を `auto` または `ja`、`en` のいずれかで指定します。 | `auto` |
+| data-loader | 地図のローディング中のアニメーションを表示させるかどうかを `on` または `off` で指定します。 | `on` |
+| data-lazy-loading | 地図の遅延ローディングを行うかどうかを `on` または `off` で指定します。 | `on` |
+
+属性の使用例:
+
+```html
+<div
+  class="geolonia"
+  data-lat="35.65810422222222"
+  data-lng="139.74135747222223"
+  data-zoom="9"
+><strong>日本経緯度原点</strong><br>東京都港区麻布台二丁目</div>
+```
+
+### JavaScript API
+
+[JavaScript API を使った本格的な地図アプリの開発方法についてはこちらをご覧ください。](/embed-api/javascript/)
+
+---
+
+## JavaScript API
+
+URL: https://docs.geolonia.com/embed-api/javascript/
+
+Geolonia の JavaScript API の概要を説明いたします。
+
+### Geolonia の JavaScript API について
+
+Geolonia の JavaScript API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/) の拡張クラスで、同じオプションやプロパティ、メソッド等が使用できます。
+
+また、[Embed API](/embed-api/) によって、緯度や経度などのオプションを HTML の `data-*` 属性を使用して設定することができ、少ない記述で地図アプリケーションの開発を始めることができます。
+
+**HTML**
+
+```html
+<div
+  id="map"
+  data-lat="35.6759"
+  data-lng="139.7449"
+  data-zoom="14"
+></div>
+```
+
+**JavaScript**
+
+```javascript
+const map = new geolonia.Map('#map')
+```
+
+### MapLibre GL JS との互換性
+
+Geolonia の JavaScript API は、[MapLibre GL JS](https://maplibre.org/maplibre-gl-js-docs/) を内部で使用しており、MapLibre GL JS のクラス名 `maplibregl` を `geolonia` に置き換えるだけで、ほぼすべてのクラスおよびそのインスタンスメンバー、イベントを利用できます。
+
+MapLibre GL JS:
+
+```javascript
+const map = new maplibregl.Map( '#map' )
+```
+
+Geolonia:
+
+```javascript
+const map = new geolonia.Map( '#map' )
+```
+
+`Map()` 以外のクラスも同様に `geolonia` に置き換えてご利用ください。 (例: `geolonia.Popup()` など)
+
+> * MapLibre と Geolonia の地図では API キーの受け渡しに関する仕様が違うため、API キーに関わる部分だけ互換性がありません。
+> * また、ベクトルタイルのスキーマが違うため、スタイル用の JSON については仕様は同じですが流用はできません。
+
+#### プロパティ、メソッドおよびイベントについて
+
+`geolonia` に含まれる API は `maplibregl` と互換性があります。
+
+`geolonia` に含まれる各クラスのインスタンスメンバーや、イベントについては、MapLibre GL JS のドキュメントを御覧ください。
+
+[https://maplibre.org/maplibre-gl-js-docs/api/](https://maplibre.org/maplibre-gl-js-docs/api/)
+
+以下は、`moveend` イベントで、地図の中心点の座標をコンソールに出力するサンプルです。
+
+```javascript
+const map = new geolonia.Map('#map')
+
+map.on('moveend', () => {
+  console.log(map.getCenter().toArray())
+})
+```
+
+### Simplestyle を JavaScript で扱う
+
+JavaScript API で [Simplestyle](/geojson/#simplestyle-について) を適用する場合は、`geolonia.SimpleStyle` のインターフェースを利用できます。
+
+```javascript
+const map = new geolonia.Map('#map')
+map.on('load', async () => {
+  const resp = await fetch('https://raw.githubusercontent.com/geolonia/docs.geolonia.com/master/geojson/example.geojson')
+  const geojson = await resp.json()
+
+  new geolonia.SimpleStyle(geojson)
+    .addTo(map)
+    .fitBounds()
+})
+```
+
+`fitBounds` メソッドのオプションは `Map.fitBounds` メソッドと互換性があります。
+
+---
+
+## カスタムスタイル
+
+URL: https://docs.geolonia.com/custom-style/
+
+地図のスタイルをカスタマイズする方法についてご紹介します。
+
+### カスタムスタイル
+
+Geolonia では、デフォルトのスタイル `geolonia/basic` 以外にもいくつかのスタイルを用意しています。
+
+私たちは、すべてのスタイルを GitHub で公開しており、これらのスタイルのリポジトリの README に **DEMO on editor** というリンクがあり、そこでみなさんご自身の好みのスタイルを作ることが可能になっています。
+
+* [geolonia/basic](https://github.com/geolonia/basic)
+* [geolonia/midnight](https://github.com/geolonia/midnight)
+* [geolonia/red-planet](https://github.com/geolonia/red-planet)
+* [geolonia/notebook](https://github.com/geolonia/notebook)
+
+これは、[Maputnik](https://maputnik.github.io/) というオープンソースのソフトウエアで、MapLibre GL JS ベースの地図のスタイルを GUI で簡単に編集することができます。
+
+### カスタムスタイルをつくるための手順
+
+カスタムスタイルをつくるための最も簡単な手順は、[geolonia/midnight](https://github.com/geolonia/midnight) をベースに Maputnik をカスタマイズしていくことです。
+
+[geolonia/midnight を編集する](https://editor.geolonia.com/?style=https://raw.githubusercontent.com/geolonia/midnight/master/style.json)
+
+Geolonia の地図に限らず、MapLibre GL JS ベースの地図は、とてもたくさんのレイヤーから成り立っています。
+
+これらのレイヤーには、地図上に表示される背景（background）の上に、
+
+* 海や陸地、地域、建物などのポリゴン (fill)
+* 道路などのライン (line)
+* 店舗などの位置情報を示す点 (symbol)
+
+などが含まれています。
+
+MapLibre GL JS のスタイルでは、fill や line、symbol ごとに背景色や輪郭、透視度などを設定することができます。
+
+### 背景色を変更する
+
+左側のレイヤー選択メニューで `background` をクリックし、カラーピッカーを用いて、好きな色に変更できます。
+
+### 海などの水の色を変更する
+
+地図上で海をクリックして表示されるツールチップ内の `water` をクリックし、カラーピッカーを用いて色を選択してください。
+
+### 建物などの色を変更する
+
+建物の場合はいくつかのレイヤーと重なっている場合があり、ツールチップ上にそれぞれのレイヤーが表示されますので、その中から編集したいレイヤーをクリックしてください。
+
+### テキストを変更する
+
+地図上に表示されているテキストの多くは `poi` というレイヤーに含まれています。（`poi` は "point of interest" の略です。）
+
+地図上で適当な店舗をクリックして、ツールチップ内の `poi` をクリックし、"Text paint properties" を探して、テキストの色 (`Color`) や輪郭の色 (`Halo color`) を変更してください。
+
+> MapLibre GL ではフォントを変更することも可能ですが、日本語フォントを埋め込むにはフォントのフォーマットを変更する必要がある上に独自にホスティングする必要があり、地図の表示に時間がかかるようになります。Geolonia ではユーザーのローカルフォントを使用するように Embed API にてあらかじめ設定されていますので、フォントを変更しても意図したとおりに表示されません。
+
+### カスタムスタイルを使用する
+
+#### 1. API キーを変更する
+
+Maputnik のメニューの "Data Sources" をクリックして表示されるポップアップウインドウの中の `YOUR-API-KEY` を、ダッシュボードであらかじめ取得した API キーに変更してください。
+
+API キーに対しては、あらかじめ `https://editor.geolonia.com` を許可しておかないと、API キーを変更後に地図が表示されなくなります。
+
+* とりあえず試したい方は、GitHub ページを利用することをおすすめします。その場合、API キーは `YOUR-API-KEY` のままでご利用いただけます。
+
+#### 2. スタイルをサーバーにアップロードする
+
+上部のメニューにある "Export" をクリックして JSON フォーマットのファイルをダウンロードし、ウェブサーバーにアップロードしてください。
+
+次に地図を表示するための HTML に、アップロードしたスタイルにアクセスするための URL を記述してください。
+
+```html
+<div class="geolonia" data-style="https://example.com/my-style.json">
+```
+
+手早く試したい場合は、GitHub にアップロードするのがおすすめです。Geolonia の地図は、GitHub ページ上では無料で使えるようになっています。
+
+### スタイルテンプレート
+
+直接スタイルをカスタマイズしたい場合は、[Geolonia Maps](https://github.com/geoloniamaps/) にあるスタイルのテンプレートレポジトリを編集して下さい。
+
+例：Basic スタイルのテンプレートレポジトリ
+
+[https://github.com/geoloniamaps/basic](https://github.com/geoloniamaps/basic)
+
+> [Geolonia Maps](https://github.com/geoloniamaps/) は スタイルのテンプレートをはじめ便利なツールなどを集めた GitHub の Organization (組織) です。
+
+### さらに高度なカスタマイズ
+
+実際にはもっと多くのことが可能です。
+
+* ズームレベルや各地物が持つプロパティなどの条件に応じて表示非表示を切り替えたりデザインを切り替える。
+* 道路の幅をズームレベルに応じて切り替える。
+* ズームレベルを特定の範囲内に固定する。
+* 各地物がもつメタデータに含まれる数字を元にヒートマップを表示する。
+
+詳しくは、MapLibre GL JS のドキュメントを御覧ください。
+
+[https://maplibre.org/maplibre-gl-js-docs/style-spec/](https://maplibre.org/maplibre-gl-js-docs/style-spec/)
+
+また、JavaScript を使用してダイナミックにスタイルを変更することも可能です。
+
+[JavaScript API](/embed-api/javascript/)
+
+---
+
+## GeoJSON 仕様
+
+URL: https://docs.geolonia.com/geojson/
+
+GeoJSON のスタイルを定義するための仕様について紹介します。
+
+### GeoJSON について
+
+GeoJSON とは JSON によって空間情報を扱うためのファイルフォーマットです。
+
+[GeoJSON - Wikipedia](https://ja.wikipedia.org/wiki/GeoJSON)
+
+### Simplestyle について
+
+Simplestyle とは Mapbox 社が公開した GeoJSON にスタイル情報を埋め込むための仕様で、GeoJSON を作成、編集できるサイト [geojson.io](https://geojson.io) 等で採用されています。
+
+[simplestyle-spec](https://github.com/mapbox/simplestyle-spec)
+
+Geolonia の Embed API の GeoJSON 埋め込み機能でも同様に Simplestyle に対応しています。
+
+```html
+<div
+  class="geolonia"
+  data-geojson="/geojson/example.geojson"
+></div>
+```
+
+### Simplestyle のスキーマ
+
+GeoJSON は、以下のようなルート要素を持っています。
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": []
+}
+```
+
+`features` の中には `feature` オブジェクト（地物）が配列で保存されており、それらも含めると以下の通りになります。
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": []
+      },
+      "properties": {}
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": []
+      },
+      "properties": {}
+    }
+  ]
+}
+```
+
+`feature` オブジェクトにはいくつかのタイプがあり、それは `geometry` プロパティの中にある `type` プロパティで指定されています。
+
+Geolonia の Embed API が対応しているタイプは以下の3種類です。
+
+* `Point`: 特定の座標を示すためのマーカーを設置します。
+* `LineString`: 複数の座標を結ぶ線を設置します。
+* `Polygon`: 多角形の図形を設置します。
+
+### タイプごとに指定可能なスタイル情報
+
+上述した `Point` などの各 `feature` タイプに対してスタイルを指定するには、それぞれのオブジェクトの `properties` にスタイル情報を埋め込みます。
+
+| プロパティ| 内容| Point | LineString | Polygon |
+|---------|---------| :---: | :---:   | :---: |
+| title          | 地物のタイトル。 | ○ | ○ | ○ |
+| description    | 地物をクリックした際に表示されるコンテンツ | ○ | ○ | ○ |
+| marker-size    | マーカーのサイズを `small`、`medium`、`large` のいずれかで指定 | ○ |   |   |
+| marker-symbol  | マーカーのアイコン。 | ○ |   |   |
+| marker-color   | マーカーの色。例: `#7e7e7e` | ○ |   |   |
+| stroke         | 線の色。例: `#555555` | ○ | ○ | ○ |
+| stroke-width   | 線の太さ。例: `2` | ○ | ○ |   |
+| fill           | 塗りつぶし色。例: `#7e7e7e` |   |   | ○ |
+
+* `○` がついているものが対応しているプロパティです。
+* [geojson.io](http://geojson.io/) を使用するとブラウザベースの GUI でスタイル情報を設定することができます。
+* `marker-symbol` で使えるアイコンの一覧は、[こちらをご確認](/geojson/marker-symbol/)ください。
+* `marker-symbol` については、一部のスタイルで意図したとおりにアイコンを表示できないことがあります。
+
+---
+
+## マーカーのアイコン一覧
+
+URL: https://docs.geolonia.com/geojson/marker-symbol/
+
+GeoJSON で使えるマーカーのアイコンの一覧。
+
+`marker-symbol` で使えるアイコンはスタイル（例えば `geolonia/basic` や `geolonia/gsi`）によって変わります。
+
+---
+
+## Geolonia CLI
+
+URL: https://docs.geolonia.com/cli/
+
+Geolonia CLI はコマンドラインから Geolonia のサービスを連携したりアップロードしたりできます。
+
+### はじめに
+
+#### インストール
+
+Geolonia CLI は NodeJS の環境が必要です。 NodeJS 16.x 以上が推奨です。
+
+```
+$ node --version
+v16.xx.x
+```
+
+まずは、 NPM からインストールします。
+
+```
+$ npm install --global @geolonia/cli
+```
+
+`geolonia` コマンドが使えるようになったかを確認するため、バージョンを表示してみましょう。
+
+```
+$ geolonia --version
+x.x.x
+```
+
+#### 認証
+
+Geolonia CLI を利用する前にログインと、チームの選択が必要です。
+
+```
+$ geolonia login
+username: [あなたのユーザー名]
+password: [パスワード（表示されません）]
+Successfully logged in and got user sub and tokens.
+```
+
+```
+$ geolonia teams select
+  [1] Geolonia
+  [2] Test Team A
+  [3] Test Team B
+Please select the team [1 - 3]: [使うチームの番号を入力]
+Successfully selected Geolonia
+```
+
+これで Geolonia CLI のすべての機能が使えるようになりました。
+
+### CLI で使える機能
+
+* [カスタムスプライト](/cli/custom-sprites/)
+
+---
+
+## カスタムスプライト
+
+URL: https://docs.geolonia.com/cli/custom-sprites/
+
+Geolonia CLI でカスタムスプライトをアップロードする方法を紹介します。
+
+### 概要
+
+地図上のマーカーを好きなアイコンに置き換えることは、カスタムマーカーで実現できます。[1つのマーカーを置き換える場合は、JavaScriptを書かなくても Embed API のみで実現できます。](/cookbook/003/#カスタムマーカーを使用する)
+
+ただ、GeoJSONなどのデータソースを使って[複数のマーカーを表示](/cookbook/004/)すると、上記のようなカスタムマーカーを使うことができません。その場合には、カスタムスプライトを使います。
+
+### 地図用スプライトシートについて
+
+各スタイルには、その地図スタイルが使うスプライトシートが用意されています。
+
+[GeoJSON 仕様を確認](/geojson/)すると、「指定可能なスタイル情報」の `marker-symbol` の値は、このスプライトシート内のアイコンに相当するものです。
+
+このスプライトシートに自分のアイコンを追加するには、 Geolonia CLI のカスタムスプライト機能を使います。
+
+### スプライトをアップロードします
+
+カスタムスプライトは API キーとひも付きます。複数 API キーでスプライトを使用したい場合はもう一度下記の手順でアップロードしてください。
+
+現在対応フォーマット： SVG (推奨), PNG
+
+※ SVGの用意が難しいためPNGも対応可能です。PNGの2倍画質のものが用意されていれば、 `[アイコン名]@2x.png` としてアップロードすると認識し、2倍用のスプライトシートに使われます。
+
+まずは、アイコンをアップロードしましょう。
+
+```
+$ geolonia sprites upload ./custom-icon.svg
+```
+
+続けて、どの API キーと紐づけるかを選びます。
+
+```
+[1] API キー (ユーザー名 が 日付 に作成)
+Please select the map key [1]: 1
+```
+
+最後に、アイコン名を指定します。デフォルトでは拡張子を抜いた名前になりますが、ここでカスタマイズできます。
+
+```
+Please input the sprite ID. Press Return if you are OK with the default name [custom-icon]: custom-icon
+```
+
+下記メッセージは、正常にアップロードが完了したことを示しています。
+
+```
+Successfully uploaded ./custom-icon.svg as custom-icon
+```
+
+以上で、先程選択した API キーで表示されている地図に、このアイコンが含まれているスプライトシートが配信されます。

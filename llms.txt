@@ -1,0 +1,47 @@
+# Geolonia 公式ドキュメント
+
+> MapLibre GL JS と互換性がある Geolonia Maps 公式ドキュメンテーションです。
+
+Geolonia は、簡単な HTML を記述するだけでウェブサイトに地図を埋め込むことができる Embed API を提供しています。JavaScript API（MapLibre GL JS 互換）による高度なカスタマイズも可能です。
+
+## チュートリアル
+
+- [チュートリアル](https://docs.geolonia.com/tutorial/): Geolonia の地図をウェブサイトに埋め込むための方法を紹介します
+- [はじめに](https://docs.geolonia.com/tutorial/001/): Embed API の概要、動作環境、ベクトルタイル、遅延読み込み、国際化、GeoJSON 対応について
+- [API キーを取得](https://docs.geolonia.com/tutorial/002/): API キーの取得方法、開発環境での利用、YOUR-API-KEY について
+- [Embed API 用の HTML タグを設置](https://docs.geolonia.com/tutorial/003/): Embed API の script タグの設置方法（WordPress 対応含む）
+- [はじめての地図を設置](https://docs.geolonia.com/tutorial/004/): 地図の設置、中心座標・ズーム指定、マーカー、ポップアップ、角度の設定
+
+## クックブック
+
+- [クックブック](https://docs.geolonia.com/cookbook/): Geolonia 地図でできることと実装方法のレシピ集
+- [地図のスタイルをカスタマイズ](https://docs.geolonia.com/cookbook/001/): basic, midnight, red-planet, notebook などのスタイル切り替え
+- [地図のコントロールをカスタマイズ](https://docs.geolonia.com/cookbook/002/): ナビゲーション、ジオロケーション、フルスクリーン、スケールコントロール
+- [マーカーをカスタマイズ](https://docs.geolonia.com/cookbook/003/): マーカーの色変更、カスタムマーカーの使用、位置調整
+- [GeoJSON で複数のマーカーを表示](https://docs.geolonia.com/cookbook/004/): GeoJSON の作成・読み込み、Cluster 機能、Simplestyle
+- [地図の表示言語を切り替える](https://docs.geolonia.com/cookbook/005/): 自動言語判別と data-lang による言語固定
+- [JavaScript を使用した高度なカスタマイズ](https://docs.geolonia.com/cookbook/006/): MapLibre GL JS との互換性、class 属性の注意点
+- [ドラッグしたマーカーの緯度・経度を取得する](https://docs.geolonia.com/cookbook/draggable_marker/): ドラッグ可能なマーカーの実装と座標取得
+- [都道府県をハイライト表示する](https://docs.geolonia.com/cookbook/highlight_prefectures/): カスタムコントロールで都道府県を選択しハイライト表示
+- [CSV を GeoJSON に変換し地図で表示する](https://docs.geolonia.com/cookbook/geojson-api/): GeoJSON API テンプレートで CSV から地図表示
+- [ユーザーの現在位置をトラッキングする](https://docs.geolonia.com/cookbook/track_user_location/): trackUserLocation を使った位置追跡
+- [複数のカスタムマーカーを追加する](https://docs.geolonia.com/cookbook/custom_markers/): JavaScript API で複数のカスタムマーカーを表示
+
+## Embed API
+
+- [Embed API 仕様](https://docs.geolonia.com/embed-api/): Embed API の設置方法、HTML 属性の一覧と詳細仕様
+- [JavaScript API](https://docs.geolonia.com/embed-api/javascript/): MapLibre GL JS 互換の JavaScript API、SimpleStyle、サンプルアプリケーション
+
+## カスタムスタイル
+
+- [カスタムスタイル](https://docs.geolonia.com/custom-style/): Maputnik を使った地図スタイルの編集方法、背景色・水・建物・テキストの変更
+
+## GeoJSON 仕様
+
+- [GeoJSON 仕様](https://docs.geolonia.com/geojson/): GeoJSON と Simplestyle の仕様、タイプごとのスタイル情報
+- [マーカーのアイコン一覧](https://docs.geolonia.com/geojson/marker-symbol/): marker-symbol で使えるアイコンの一覧
+
+## Geolonia CLI
+
+- [Geolonia CLI](https://docs.geolonia.com/cli/): CLI のインストール方法と認証
+- [カスタムスプライト](https://docs.geolonia.com/cli/custom-sprites/): CLI でカスタムスプライトをアップロードする方法
