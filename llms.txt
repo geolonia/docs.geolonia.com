@@ -4,6 +4,8 @@
 
 Geolonia provides an Embed API that allows you to embed maps into your website by simply writing HTML. Advanced customization is also possible through the JavaScript API (compatible with MapLibre GL JS).
 
+For full documentation content, see: https://docs.geolonia.com/llms-full.txt
+
 ## Tutorial
 
 - [Tutorial](https://docs.geolonia.com/tutorial/): How to embed Geolonia maps into your website
