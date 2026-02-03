@@ -1,0 +1,49 @@
+# Geolonia Official Documentation
+
+> Official documentation for Geolonia Maps, compatible with MapLibre GL JS.
+
+Geolonia provides an Embed API that allows you to embed maps into your website by simply writing HTML. Advanced customization is also possible through the JavaScript API (compatible with MapLibre GL JS).
+
+For full documentation content, see: https://docs.geolonia.com/llms-full.txt
+
+## Tutorial
+
+- [Tutorial](https://docs.geolonia.com/tutorial/): How to embed Geolonia maps into your website
+- [Introduction](https://docs.geolonia.com/tutorial/001/): Overview of Embed API, supported browsers, vector tiles, lazy loading, internationalization, and GeoJSON support
+- [Get an API Key](https://docs.geolonia.com/tutorial/002/): How to obtain an API key, usage in development environments, and about YOUR-API-KEY
+- [Set Up HTML Tags for Embed API](https://docs.geolonia.com/tutorial/003/): How to add the Embed API script tag (including WordPress integration)
+- [Place Your First Map](https://docs.geolonia.com/tutorial/004/): Placing a map, setting center coordinates and zoom, markers, popups, and pitch
+
+## Cookbook
+
+- [Cookbook](https://docs.geolonia.com/cookbook/): A collection of recipes showing what you can do with Geolonia maps and how to implement them
+- [Customize Map Styles](https://docs.geolonia.com/cookbook/001/): Switching between styles such as basic, midnight, red-planet, and notebook
+- [Customize Map Controls](https://docs.geolonia.com/cookbook/002/): Navigation, geolocation, fullscreen, and scale controls
+- [Customize Markers](https://docs.geolonia.com/cookbook/003/): Changing marker color, using custom markers, and adjusting position
+- [Display Multiple Markers with GeoJSON](https://docs.geolonia.com/cookbook/004/): Creating and loading GeoJSON, cluster feature, and Simplestyle
+- [Switch Map Display Language](https://docs.geolonia.com/cookbook/005/): Automatic language detection and fixing language with data-lang
+- [Advanced Customization with JavaScript](https://docs.geolonia.com/cookbook/006/): Compatibility with MapLibre GL JS, notes on the class attribute
+- [Get Coordinates of a Dragged Marker](https://docs.geolonia.com/cookbook/draggable_marker/): Implementing a draggable marker and retrieving its coordinates
+- [Highlight Prefectures](https://docs.geolonia.com/cookbook/highlight_prefectures/): Selecting and highlighting prefectures using a custom control
+- [Convert CSV to GeoJSON and Display on Map](https://docs.geolonia.com/cookbook/geojson-api/): Displaying maps from CSV using the GeoJSON API template
+- [Track User's Current Location](https://docs.geolonia.com/cookbook/track_user_location/): Location tracking with trackUserLocation
+- [Add Multiple Custom Markers](https://docs.geolonia.com/cookbook/custom_markers/): Displaying multiple custom markers with the JavaScript API
+
+## Embed API
+
+- [Embed API Specification](https://docs.geolonia.com/embed-api/): How to set up the Embed API, complete list of HTML attributes and detailed specification
+- [JavaScript API](https://docs.geolonia.com/embed-api/javascript/): MapLibre GL JS-compatible JavaScript API, SimpleStyle, and sample applications
+
+## Custom Styles
+
+- [Custom Styles](https://docs.geolonia.com/custom-style/): How to edit map styles using Maputnik, changing background, water, building, and text colors
+
+## GeoJSON Specification
+
+- [GeoJSON Specification](https://docs.geolonia.com/geojson/): GeoJSON and Simplestyle specification, style properties by feature type
+- [Marker Icon List](https://docs.geolonia.com/geojson/marker-symbol/): List of icons available for marker-symbol
+
+## Geolonia CLI
+
+- [Geolonia CLI](https://docs.geolonia.com/cli/): How to install and authenticate the CLI
+- [Custom Sprites](https://docs.geolonia.com/cli/custom-sprites/): How to upload custom sprites using the CLI

@@ -30,5 +30,8 @@
   <link rel="icon" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/icon.png" type="image/png">
   <link rel="stylesheet" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/doks-theme/assets/css/style.css">
 
+  <link rel="alternate" type="text/plain" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/llms.txt" title="LLM documentation index">
+  <link rel="alternate" type="text/plain" href="{% if jekyll.environment == 'production' %}{{ site.doks.baseurl }}{% endif %}/llms-full.txt" title="LLM full documentation">
+
   {% include google-analytics.html %}
 </head>
