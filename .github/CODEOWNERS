@@ -1,0 +1,5 @@
+# Require operations team review for team access configuration changes.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+/.github/CODEOWNERS @geolonia/operations
+/catalog-info.yaml @geolonia/operations

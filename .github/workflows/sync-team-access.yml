@@ -1,0 +1,14 @@
+name: Sync Team Access
+
+on:
+  push:
+    branches: [main]
+    paths: ['catalog-info.yaml']
+
+jobs:
+  sync:
+    uses: geolonia/.github/.github/workflows/reusable-sync-team-access.yml@92c8c6d56730650205ca4be5c7bdba72245d304f # v1.16.0
+    secrets: inherit
+    # Optional settings (uncomment to override defaults):
+    # with:
+    #   dispatch_repo: geolonia/geolonia-operations
