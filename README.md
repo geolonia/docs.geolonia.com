@@ -1,3 +1,5 @@
+# docs.geolonia.com (Astro renewal)
+
 # Astro Starter Kit: Minimal
 
 ```sh
