@@ -1,19 +1,17 @@
-import BaseLayout from '../../layouts/BaseLayout.astro'
+---
+layout: ../../layouts/DocLayout.astro
+title: 段2：データを載せる
+page: tutorial
+kicker: チュートリアル ／ 段2
+badge: tutorial
+---
 import GeoloniaMap from '../../components/GeoloniaMap.astro'
 import Callout from '../../components/Callout.astro'
-import QuadBadge from '../../components/QuadBadge.astro'
 import Tag from '../../components/Tag.astro'
 import Lens from '../../components/Lens.astro'
 
-<BaseLayout title="段2：データを載せる — チュートリアル" page="tutorial">
-<main class="content">
-
-<p class="kicker">チュートリアル ／ 段2</p>
-
-# 段2：データを載せる <QuadBadge kind="tutorial">チュートリアル</QuadBadge>
-
 <Callout title="前の段でできたこと">
-段1までで地図を「自分の見たい場所」にできました。でも今のっているのは中心の点ひとつだけ。次は<b>自分のデータ（複数の地点）</b>を地図に重ねます。
+段1までで地図を「自分の見たい場所」にできました。でも今のっているのは中心の点ひとつだけ。次は**自分のデータ（複数の地点）**を地図に重ねます。
 </Callout>
 
 ## ① 用意したデータを出す
@@ -21,7 +19,7 @@ import Lens from '../../components/Lens.astro'
 地図の `div` に `data-geojson` を1つ足すだけ。まずはこちらで用意したサンプル（東京の5地点）で動かします。レンズ切替でコードが変わります。
 
 <Lens name="embed">
-<p><Tag k="embed" /> 宣言型。属性に GeoJSON の URL を渡すだけ。</p>
+<Tag k="embed" /> 宣言型。属性に GeoJSON の URL を渡すだけ。
 
 ```html
 <div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11"
@@ -30,7 +28,7 @@ import Lens from '../../components/Lens.astro'
 </Lens>
 
 <Lens name="suite">
-<p><Tag k="suite" /> 命令型。<code>addSource</code> ＋ <code>addLayer</code> で重ねる。</p>
+<Tag k="suite" /> 命令型。`addSource` ＋ `addLayer` で重ねる。
 
 ```js
 map.on('load', () => {
@@ -41,7 +39,7 @@ map.on('load', () => {
 </Lens>
 
 <Lens name="react">
-<p><Tag k="react" /> 宣言型コンポーネント。</p>
+<Tag k="react" /> 宣言型コンポーネント。
 
 ```jsx
 <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
@@ -61,14 +59,11 @@ map.on('load', () => {
 </ol>
 
 <Callout title="つまずいたら">
-- 点が海に出る → 座標が <code>[緯度, 経度]</code> 逆。<code>[経度, 緯度]</code> に直す。
+- 点が海に出る → 座標が `[緯度, 経度]` 逆。`[経度, 緯度]` に直す。
 - 何も出ない → URL の 404 か GeoJSON の文法エラー。ファイルを直接開いて確認。
 - 外部 URL が読めない → CORS。まず同一オリジンに置く。
 </Callout>
 
-<div class="next">
-点は出た。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。サンプルの各点には <code>category</code> が入っています——<b>次の段3で色分け</b>します。
-</div>
-
-</main>
-</BaseLayout>
+<Callout title="次は">
+点は出た。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。サンプルの各点には `category` が入っています——**次の段3で色分け**します。
+</Callout>

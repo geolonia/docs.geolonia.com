@@ -3,8 +3,6 @@
    デザイナーはここで各部品の質感を調整できる。構造は .astro/.md 側。
    ===================================================================== */
 .kicker { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--brand-dark); margin: 0 0 4px; }
-.lead { font-size: 16px; color: var(--text-soft); }
-.hint { font-size: 13px; color: var(--text-faint); }
 
 /* 象限バッジ */
 .qb { display: inline-block; font-size: 12px; font-weight: 800; color: #fff; border-radius: 7px; padding: 2px 9px; }
@@ -50,10 +48,3 @@
 .steps li { counter-increment: s; position: relative; padding: 4px 0 14px 38px; }
 .steps li::before { content: counter(s); position: absolute; left: 0; top: 2px; width: 26px; height: 26px; border-radius: 50%; background: var(--q-tutorial); color: #fff; font-weight: 800; font-size: 13px; display: grid; place-items: center; }
 .steps li .obj { display: inline-block; margin-top: 4px; font-size: 13px; color: var(--q-tutorial); font-weight: 700; }
-
-/* 梯子（簡易） */
-.ladder { padding-left: 20px; line-height: 2.1; }
-
-/* 次の段への箱 */
-.next { border: 1px solid var(--border); border-top: 4px solid var(--q-tutorial); border-radius: var(--radius); padding: 14px 18px; margin: 18px 0; }
-.next > :last-child { margin-bottom: 0; }

@@ -1,19 +1,23 @@
 ---
-// Markdown ページ用のレイアウト。.md の frontmatter から layout で指定して使う。
+// Markdown / MDX ページ用のレイアウト。frontmatter の layout で指定して使う。
 //   ---
 //   layout: ../../layouts/DocLayout.astro
 //   title: ...
 //   page: howto
-//   quadrant: ハウツー / レシピ
+//   kicker: ハウツー / レシピ   # 見出し上のアイキャッチ（旧 quadrant も可）
+//   badge: tutorial            # 任意。H1 の頭に象限バッジを付ける
 //   ---
 import BaseLayout from './BaseLayout.astro';
+import QuadBadge from '../components/QuadBadge.astro';
 const { frontmatter } = Astro.props;
-const { title, page = '', quadrant } = frontmatter ?? {};
+const { title, page = '', kicker, quadrant, badge } = frontmatter ?? {};
+const eyebrow = kicker ?? quadrant;
+const badgeLabels = { tutorial: 'チュートリアル', howto: 'ハウツー', reference: 'リファレンス', explanation: '解説' };
 ---
 <BaseLayout title={`${title} — Geolonia Docs`} page={page}>
   <main class="content">
-    {quadrant && <p class="kicker">{quadrant}</p>}
-    <h1>{title}</h1>
+    {eyebrow && <p class="kicker">{eyebrow}</p>}
+    <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
     <slot />
   </main>
 </BaseLayout>

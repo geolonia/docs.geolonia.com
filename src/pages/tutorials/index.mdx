@@ -1,25 +1,18 @@
-import BaseLayout from '../../layouts/BaseLayout.astro'
-import QuadBadge from '../../components/QuadBadge.astro'
+---
+layout: ../../layouts/DocLayout.astro
+title: 手を動かして「できる」を作る
+page: tutorial
+kicker: Diátaxis / 学習 × 行動
+badge: tutorial
+---
 
-<BaseLayout title="チュートリアル — Geolonia Docs" page="tutorial">
-<main class="content">
+能力の梯子を、下から順に登ります。各段は短く、必ず動くものを作ります。新規の方を置いていきません。
 
-<p class="kicker">Diátaxis / 学習 × 行動</p>
+1. **段0** 地図を出す
+2. **段1** 場所と視点
+3. **段2** [データを載せる](/tutorials/data/) ← この雛形で実装済み（.mdx / インタラクティブ）
+4. **段3** 見た目を変える
+5. **段4** 対話を足す
+6. **段5** 公開する
 
-# <QuadBadge kind="tutorial">チュートリアル</QuadBadge> 手を動かして「できる」を作る
-
-<p class="lead">能力の梯子を、下から順に登ります。各段は短く、必ず動くものを作ります。新規の方を置いていきません。</p>
-
-<ol class="ladder">
-  <li><b>段0</b> 地図を出す</li>
-  <li><b>段1</b> 場所と視点</li>
-  <li><b>段2</b> <a href="/tutorials/data/">データを載せる</a> ← この雛形で実装済み（.mdx / インタラクティブ）</li>
-  <li><b>段3</b> 見た目を変える</li>
-  <li><b>段4</b> 対話を足す</li>
-  <li><b>段5</b> 公開する</li>
-</ol>
-
-<p class="hint">チュートリアルはインタラクティブにしたいので <code>.mdx</code> で作ります。ハウツー・解説は <code>.md</code>。</p>
-
-</main>
-</BaseLayout>
+チュートリアルはインタラクティブにしたいので `.mdx` で作ります。ハウツー・解説は `.md`。
