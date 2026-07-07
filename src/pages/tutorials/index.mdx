@@ -1,0 +1,25 @@
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import QuadBadge from '../../components/QuadBadge.astro'
+
+<BaseLayout title="チュートリアル — Geolonia Docs" page="tutorial">
+<main class="content">
+
+<p class="kicker">Diátaxis / 学習 × 行動</p>
+
+# <QuadBadge kind="tutorial">チュートリアル</QuadBadge> 手を動かして「できる」を作る
+
+<p class="lead">能力の梯子を、下から順に登ります。各段は短く、必ず動くものを作ります。新規の方を置いていきません。</p>
+
+<ol class="ladder">
+  <li><b>段0</b> 地図を出す</li>
+  <li><b>段1</b> 場所と視点</li>
+  <li><b>段2</b> <a href="/tutorials/data/">データを載せる</a> ← この雛形で実装済み（.mdx / インタラクティブ）</li>
+  <li><b>段3</b> 見た目を変える</li>
+  <li><b>段4</b> 対話を足す</li>
+  <li><b>段5</b> 公開する</li>
+</ol>
+
+<p class="hint">チュートリアルはインタラクティブにしたいので <code>.mdx</code> で作ります。ハウツー・解説は <code>.md</code>。</p>
+
+</main>
+</BaseLayout>
