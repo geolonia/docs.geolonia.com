@@ -1,0 +1,12 @@
+---
+// 自動生成 API Markdown 用のレイアウト。md 側に既に H1・パンくずがあるので、
+// ここでは h1 を注入せず、共通ヘッダ＋CSS の外枠だけを与える。
+import BaseLayout from './BaseLayout.astro';
+const { frontmatter } = Astro.props;
+const { title, page = 'reference' } = frontmatter ?? {};
+---
+<BaseLayout title={`${title} — Geolonia Docs`} page={page}>
+  <main class="content api-doc">
+    <slot />
+  </main>
+</BaseLayout>

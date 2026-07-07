@@ -1,0 +1,28 @@
+---
+// 再利用する地図コンポーネント。embed CDN がページ読み込み時に .geolonia を走査して描画する。
+// 見た目（高さ・枠）は components.css の .map-box 側。ここは「データ」だけを属性で渡す。
+const {
+  lat = 35.681236,
+  lng = 139.767125,
+  zoom = 14,
+  marker = 'on',
+  geojson,
+  cluster,
+  tall = false,
+  caption,
+} = Astro.props;
+---
+<figure class="map-figure">
+  <div class={tall ? 'map-box tall' : 'map-box'}>
+    <div
+      class="geolonia"
+      data-lat={lat}
+      data-lng={lng}
+      data-zoom={zoom}
+      data-marker={marker}
+      data-geojson={geojson}
+      data-cluster={cluster}
+    ></div>
+  </div>
+  {caption && <figcaption class="map-cap">{caption}</figcaption>}
+</figure>

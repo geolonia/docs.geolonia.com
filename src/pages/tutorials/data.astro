@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GeoloniaMap from '../../components/GeoloniaMap.astro';
+import Callout from '../../components/Callout.astro';
+---
+<BaseLayout title="段2：データを載せる — チュートリアル" page="tutorial">
+  <main class="content">
+    <p class="kicker">チュートリアル ／ 段2</p>
+    <h1>段2：データを載せる <span class="qb tutorial">チュートリアル</span></h1>
+
+    <Callout title="前の段でできたこと">
+      <p style="margin:0">段1までで地図を「自分の見たい場所」にできました。でも今のっているのは中心の点ひとつだけ。次は<b>自分のデータ（複数の地点）</b>を地図に重ねます。</p>
+    </Callout>
+
+    <h2>① 用意したデータを出す</h2>
+    <p>地図の <code>div</code> に <code>data-geojson</code> を1つ足すだけ。まずはこちらで用意したサンプル（東京の5地点）で動かします。レンズ切替でコードが変わります。</p>
+
+    <div class="lens embed">
+      <p><span class="tag embed">embed</span> 宣言型。属性に GeoJSON の URL を渡すだけ。</p>
+      <pre><code>&lt;div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-geojson="/data/sample-spots.geojson"&gt;&lt;/div&gt;</code></pre>
+    </div>
+    <div class="lens suite" hidden>
+      <p><span class="tag suite">suite</span> 命令型。<code>addSource</code> ＋ <code>addLayer</code> で重ねる。</p>
+      <pre><code>map.on('load', () =&gt; &#123;
+  map.addSource('spots', &#123; type: 'geojson', data: '/data/sample-spots.geojson' &#125;);
+  map.addLayer(&#123; id: 'spots', type: 'circle', source: 'spots' &#125;);
+&#125;);</code></pre>
+    </div>
+    <div class="lens react" hidden>
+      <p><span class="tag react">react</span> 宣言型コンポーネント。</p>
+      <pre><code>&lt;Source id="spots" type="geojson" data="/data/sample-spots.geojson"&gt;
+  &lt;Layer type="circle" /&gt;
+&lt;/Source&gt;</code></pre>
+    </div>
+
+    <GeoloniaMap lat={35.68} lng={139.75} zoom={11} marker="off"
+      geojson="/data/sample-spots.geojson" cluster="on"
+      caption="本物の地図。サンプル data/sample-spots.geojson の5点。" />
+
+    <h2>② 自分のデータに差し替える</h2>
+    <ol class="steps">
+      <li><h3>CSV に経度・緯度の列を用意する</h3><span class="obj">到達目標：1行 = 1地点で座標を持てている</span></li>
+      <li><h3>GeoJSON に変換する</h3><span class="obj">到達目標：自分の一覧が FeatureCollection になっている</span></li>
+      <li><h3><code>data-geojson</code> の参照先を差し替える</h3><span class="obj">到達目標：自分のデータの点が地図に出る</span></li>
+    </ol>
+
+    <Callout title="つまずいたら">
+      <ul style="margin:0">
+        <li>点が海に出る → 座標が <code>[緯度, 経度]</code> 逆。<code>[経度, 緯度]</code> に直す。</li>
+        <li>何も出ない → URL の 404 か GeoJSON の文法エラー。ファイルを直接開いて確認。</li>
+        <li>外部 URL が読めない → CORS。まず同一オリジンに置く。</li>
+      </ul>
+    </Callout>
+
+    <div class="next">
+      <p style="margin:0">点は出た。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。サンプルの各点には <code>category</code> が入っています——<b>次の段3で色分け</b>します。</p>
+    </div>
+  </main>
+</BaseLayout>

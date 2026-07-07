@@ -1,0 +1,19 @@
+---
+// Markdown ページ用のレイアウト。.md の frontmatter から layout で指定して使う。
+//   ---
+//   layout: ../../layouts/DocLayout.astro
+//   title: ...
+//   page: howto
+//   quadrant: ハウツー / レシピ
+//   ---
+import BaseLayout from './BaseLayout.astro';
+const { frontmatter } = Astro.props;
+const { title, page = '', quadrant } = frontmatter ?? {};
+---
+<BaseLayout title={`${title} — Geolonia Docs`} page={page}>
+  <main class="content">
+    {quadrant && <p class="kicker">{quadrant}</p>}
+    <h1>{title}</h1>
+    <slot />
+  </main>
+</BaseLayout>
