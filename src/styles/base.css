@@ -1,0 +1,45 @@
+/* =====================================================================
+   base.css — リセットと素の要素タイポグラフィ（h1/p/a/code/pre/table…）
+   ===================================================================== */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--text);
+  background: var(--bg);
+}
+h1 { font-size: 30px; line-height: 1.25; letter-spacing: -0.02em; margin: 0 0 12px; }
+h2 { font-size: 21px; margin: 30px 0 10px; }
+h3 { font-size: 16px; margin: 0 0 6px; }
+p  { margin: 0 0 12px; }
+a  { color: var(--brand-dark); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul, ol { margin: 0 0 12px; }
+
+code {
+  font-family: var(--font-mono);
+  font-size: .9em;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border-radius: 10px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+}
+pre code { background: none; border: none; padding: 0; color: inherit; }
+
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 12px 0; }
+th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+th { background: var(--bg-soft); }
+img { max-width: 100%; }
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }

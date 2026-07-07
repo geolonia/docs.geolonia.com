@@ -1,0 +1,62 @@
+---
+// 全ページ共通の外枠。CSS は src/styles/ から読み込むだけ（分離方針）。
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/layout.css';
+import '../styles/components.css';
+
+const { title = 'Geolonia Docs', page = '', lens = 'embed' } = Astro.props;
+
+const nav = [
+  { href: '/',             sec: 'home',        label: '入口' },
+  { href: '/tutorials/',   sec: 'tutorial',    label: 'チュートリアル' },
+  { href: '/howto/',       sec: 'howto',       label: 'ハウツー' },
+  { href: '/reference/',   sec: 'reference',   label: 'リファレンス' },
+  { href: '/explanation/', sec: 'explanation', label: '解説' },
+];
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body data-page={page} data-lens={lens}>
+    <header class="site-top">
+      <a class="brand" href="/"><span class="dot"></span>Geolonia Docs <span class="v2">v2</span></a>
+      <nav class="dtx-nav">
+        {nav.map((n) => (
+          <a href={n.href} data-sec={n.sec} class={page === n.sec ? 'active' : ''}>{n.label}</a>
+        ))}
+      </nav>
+      <div class="lens-switch" role="group" aria-label="レンズ切替">
+        <button data-lens="embed">embed</button><button data-lens="suite">suite</button><button data-lens="react">react</button>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="site-foot">プロトタイプ（docs-astro）。地図は localhost / *.github.io で実描画されます。</footer>
+
+    <!-- Geolonia embed（デモキー。localhost / github.io で描画） -->
+    <script is:inline src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+
+    <!-- レンズ切替：.lens 要素は現在のレンズのクラスを持つものだけ表示 -->
+    <script>
+      function applyLens(lens) {
+        document.body.setAttribute('data-lens', lens);
+        document.querySelectorAll('.lens-switch button').forEach((b) =>
+          b.classList.toggle('active', b.getAttribute('data-lens') === lens)
+        );
+        document.querySelectorAll('.lens').forEach((el) => {
+          el.hidden = !el.classList.contains(lens);
+        });
+      }
+      document.querySelectorAll('.lens-switch button').forEach((b) =>
+        b.addEventListener('click', () => applyLens(b.getAttribute('data-lens')))
+      );
+      applyLens(document.body.getAttribute('data-lens') || 'embed');
+    </script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] }, "properties": { "name": "東京駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.700258, 35.690921] }, "properties": { "name": "新宿駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.701636, 35.658034] }, "properties": { "name": "渋谷駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.796747, 35.714765] }, "properties": { "name": "浅草寺", "category": "観光" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.745438, 35.658581] }, "properties": { "name": "東京タワー", "category": "観光" } }
+  ]
+}

@@ -1,0 +1,41 @@
+/* =====================================================================
+   tokens.css — デザイントークン（デザイナーが最初に触る場所）
+   色・タイポ・余白・角丸を変数で集中管理。ここを変えれば全ページに反映。
+   コンテンツ（.astro / .md）には色や数値を直書きしない方針。
+   ===================================================================== */
+:root {
+  /* --- プロダクトレンズの色 --- */
+  --lens-embed: #16a4d8;
+  --lens-suite: #e4402f;
+  --lens-react: #6f42c1;
+
+  /* --- Diátaxis 4象限の色 --- */
+  --q-tutorial:    #1f9d57;  /* 緑：学習×行動 */
+  --q-howto:       #e08a1e;  /* 橙：仕事×行動 */
+  --q-reference:   #16a4d8;  /* 青：仕事×認知 */
+  --q-explanation: #6f42c1;  /* 紫：学習×認知 */
+
+  /* --- 基調色 --- */
+  --brand:       #16a4d8;
+  --brand-dark:  #0f7aa3;
+  --accent-soft: #e8f6fc;
+  --bg:          #ffffff;
+  --bg-soft:     #f5f8fa;
+  --text:        #1b2733;
+  --text-soft:   #51606e;
+  --text-faint:  #8a9aab;
+  --border:      #e2e8ee;
+  --code-bg:     #0f1b27;
+  --code-fg:     #d6e2ef;
+
+  /* --- タイポグラフィ --- */
+  --font-sans: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-base: 15px;
+  --lh-base: 1.7;
+
+  /* --- 余白・形 --- */
+  --space: 16px;
+  --radius: 12px;
+  --maxw: 980px;
+}

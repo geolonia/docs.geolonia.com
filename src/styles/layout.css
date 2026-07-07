@@ -1,0 +1,26 @@
+/* =====================================================================
+   layout.css — ページ骨格（ヘッダ・ナビ・レンズ切替・本文コンテナ・フッタ）
+   ===================================================================== */
+.site-top {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 12px 22px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+}
+.brand { font-weight: 800; font-size: 16px; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.brand:hover { text-decoration: none; }
+.brand .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 4px var(--accent-soft); }
+.brand .v2 { font-size: 11px; font-weight: 800; color: #fff; background: var(--brand); border-radius: 6px; padding: 1px 6px; }
+
+.dtx-nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.dtx-nav a { font-size: 13px; font-weight: 700; color: var(--text-soft); padding: 5px 10px; border-radius: 7px; }
+.dtx-nav a:hover { background: var(--bg-soft); text-decoration: none; }
+.dtx-nav a.active { background: var(--accent-soft); color: var(--brand-dark); }
+
+.lens-switch { margin-left: auto; display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.lens-switch button { font: inherit; font-size: 12px; font-weight: 700; border: none; border-left: 1px solid var(--border); background: #fff; color: var(--text-soft); padding: 6px 11px; cursor: pointer; }
+.lens-switch button:first-child { border-left: none; }
+.lens-switch button.active { background: var(--brand); color: #fff; }
+
+.content { max-width: var(--maxw); margin: 0 auto; padding: 28px 22px 80px; }
+.site-foot { max-width: var(--maxw); margin: 0 auto; padding: 30px 22px; color: var(--text-faint); font-size: 12.5px; border-top: 1px solid var(--border); }
