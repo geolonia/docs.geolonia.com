@@ -1,0 +1,6 @@
+---
+// 象限バッジ。<QuadBadge kind="tutorial">チュートリアル</QuadBadge>
+// 見た目は components.css の .qb 側。
+const { kind } = Astro.props;
+---
+<span class={`qb ${kind}`}><slot /></span>

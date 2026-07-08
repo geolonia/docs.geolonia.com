@@ -1,0 +1,24 @@
+---
+layout: ../layouts/DocLayout.astro
+title: 地図づくり、ここから。
+page: home
+kicker: はじめての方へ
+---
+import GeoloniaMap from '../components/GeoloniaMap.astro'
+import Callout from '../components/Callout.astro'
+import QuadGrid from '../components/QuadGrid.astro'
+import Tag from '../components/Tag.astro'
+
+コードをほとんど書かなくても、数分で本物の地図が動きます。まず下の地図を見てください——これは画像ではなく、 **実際に動く地図** です。
+
+<GeoloniaMap lat={35.68} lng={139.75} zoom={11} marker="off" geojson="/data/sample-spots.geojson" cluster="on" tall={true} caption="本物の地図（localhost / GitHub Pages で描画）。東京の5スポット。" />
+
+## 4つの入口
+
+目的に合わせて選べます。迷ったら **チュートリアル** から。
+
+<QuadGrid />
+
+<Callout title="3つのレンズ">
+同じ地図を <Tag k="embed" /> <Tag k="suite" /> <Tag k="react" /> の3つの実装手段で読み解けます。ヘッダ右上の **レンズ切替** を押すと、本文のコード例が切り替わります（チュートリアルで体験できます）。
+</Callout>

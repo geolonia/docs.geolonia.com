@@ -1,0 +1,69 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 段2：データを載せる
+page: tutorial
+kicker: チュートリアル ／ 段2
+badge: tutorial
+---
+import GeoloniaMap from '../../components/GeoloniaMap.astro'
+import Callout from '../../components/Callout.astro'
+import Tag from '../../components/Tag.astro'
+import Lens from '../../components/Lens.astro'
+
+<Callout title="前の段でできたこと">
+段1までで地図を「自分の見たい場所」にできました。でも今のっているのは中心の点ひとつだけ。次は **自分のデータ（複数の地点）** を地図に重ねます。
+</Callout>
+
+## ① 用意したデータを出す
+
+地図の `div` に `data-geojson` を1つ足すだけ。まずはこちらで用意したサンプル（東京の5地点）で動かします。レンズ切替でコードが変わります。
+
+<Lens name="embed">
+<Tag k="embed" /> 宣言型。属性に GeoJSON の URL を渡すだけ。
+
+```html
+<div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-geojson="/data/sample-spots.geojson"></div>
+```
+</Lens>
+
+<Lens name="suite">
+<Tag k="suite" /> 命令型。`addSource` ＋ `addLayer` で重ねる。
+
+```js
+map.on('load', () => {
+  map.addSource('spots', { type: 'geojson', data: '/data/sample-spots.geojson' });
+  map.addLayer({ id: 'spots', type: 'circle', source: 'spots' });
+});
+```
+</Lens>
+
+<Lens name="react">
+<Tag k="react" /> 宣言型コンポーネント。
+
+```jsx
+<Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+  <Layer type="circle" />
+</Source>
+```
+</Lens>
+
+<GeoloniaMap lat={35.68} lng={139.75} zoom={11} marker="off" geojson="/data/sample-spots.geojson" cluster="on" caption="本物の地図。サンプル data/sample-spots.geojson の5点。" />
+
+## ② 自分のデータに差し替える
+
+<ol class="steps">
+  <li><h3>CSV に経度・緯度の列を用意する</h3><span class="obj">到達目標：1行 = 1地点で座標を持てている</span></li>
+  <li><h3>GeoJSON に変換する</h3><span class="obj">到達目標：自分の一覧が FeatureCollection になっている</span></li>
+  <li><h3><code>data-geojson</code> の参照先を差し替える</h3><span class="obj">到達目標：自分のデータの点が地図に出る</span></li>
+</ol>
+
+<Callout title="つまずいたら">
+- 点が海に出る → 座標が `[緯度, 経度]` 逆。`[経度, 緯度]` に直す。
+- 何も出ない → URL の 404 か GeoJSON の文法エラー。ファイルを直接開いて確認。
+- 外部 URL が読めない → CORS。まず同一オリジンに置く。
+</Callout>
+
+<Callout title="次は">
+点は出た。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。サンプルの各点には `category` が入っています—— **次の段3で色分け** します。
+</Callout>
