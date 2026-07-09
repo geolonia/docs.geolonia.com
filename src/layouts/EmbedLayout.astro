@@ -1,0 +1,13 @@
+---
+// BaseLayout に Geolonia embed CDN スクリプトだけを足したレイアウト。
+// embed はページ全体を走査して .geolonia を地図化し、CDN へリクエストする副作用があるため、
+// 地図を使うページだけがこれを土台にする（BaseLayout 自体には embed を入れない）。
+// frontmatter の layout に直接指定するのではなく、DocLayout が embed: true のとき土台として使う。
+import BaseLayout from './BaseLayout.astro';
+const props = Astro.props;
+---
+<BaseLayout {...props}>
+  <slot />
+  <!-- Geolonia embed（デモキー。localhost / github.io で描画） -->
+  <script is:inline src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+</BaseLayout>
