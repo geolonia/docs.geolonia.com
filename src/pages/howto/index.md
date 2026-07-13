@@ -22,4 +22,12 @@ quadrant: Diátaxis / 仕事 × 行動
 - [現在地を表示するには](/howto/current-location/)
 - [全地点が画面に収まるように表示するには](/howto/fit-bounds/)
 
+## 応用（難しめ）
+
+- [大量の点をクラスタリングするには](/howto/clustering/)
+- [値に応じてエリアを色分けするには（コロプレス）](/howto/choropleth/)
+- [ヒートマップで密度を可視化するには](/howto/heatmap/)
+- [建物・地形を3Dで表示するには](/howto/3d/)
+- [独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
+
 > このページ自体が `.md`（Markdown）です。チュートリアルの `.astro` と同じ見た目・同じヘッダで描画され、デザインの整合性が取れていることを確認できます。
