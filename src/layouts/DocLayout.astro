@@ -8,16 +8,19 @@
 //   badge: tutorial            # 任意。H1 の頭に象限バッジを付ける
 //   ---
 import BaseLayout from './BaseLayout.astro';
+import EmbedLayout from './EmbedLayout.astro';
 import QuadBadge from '../components/QuadBadge.astro';
 const { frontmatter } = Astro.props;
-const { title, page = '', kicker, quadrant, badge } = frontmatter ?? {};
+const { title, page = '', kicker, quadrant, badge, embed } = frontmatter ?? {};
 const eyebrow = kicker ?? quadrant;
+// 地図を使うページは frontmatter に embed: true を付ける。その時だけ embed スクリプトを読み込む。
+const Shell = embed ? EmbedLayout : BaseLayout;
 const badgeLabels = { tutorial: 'チュートリアル', howto: 'ハウツー', reference: 'リファレンス', explanation: '解説' };
 ---
-<BaseLayout title={`${title} — Geolonia Docs`} page={page}>
+<Shell title={`${title} — Geolonia Docs`} page={page}>
   <main class="content">
     {eyebrow && <p class="kicker">{eyebrow}</p>}
     <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
     <slot />
   </main>
-</BaseLayout>
+</Shell>
