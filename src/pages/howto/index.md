@@ -16,5 +16,10 @@ quadrant: Diátaxis / 仕事 × 行動
 ## レシピ
 
 - [マーカーを複数置くには](/howto/multiple-markers/)
+- [地図の見た目（スタイル）を切り替えるには](/howto/change-style/)
+- [クリックでポップアップを出すには](/howto/popup-on-click/)
+- [外部データ（GeoJSON）を地図に読み込むには](/howto/geojson-data/)
+- [現在地を表示するには](/howto/current-location/)
+- [全地点が画面に収まるように表示するには](/howto/fit-bounds/)
 
 > このページ自体が `.md`（Markdown）です。チュートリアルの `.astro` と同じ見た目・同じヘッダで描画され、デザインの整合性が取れていることを確認できます。
