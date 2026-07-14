@@ -1,14 +1,23 @@
 ---
-layout: ../../layouts/DocLayout.astro
+layout: ../../../layouts/DocLayout.astro
 title: 段2：データを載せる
 page: tutorial
 kicker: チュートリアル ／ 段2
 badge: tutorial
 ---
-import GeoloniaMap from '../../components/GeoloniaMap.astro'
-import Callout from '../../components/Callout.astro'
-import Tag from '../../components/Tag.astro'
-import Lens from '../../components/Lens.astro'
+import GeoloniaMap from '../../../components/GeoloniaMap.astro'
+import Callout from '../../../components/Callout.astro'
+import Tag from '../../../components/Tag.astro'
+import Lens from '../../../components/Lens.astro'
+
+{/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
+- [ ] 載せるデータ（GeoJSON など）の形を説明する
+- [ ] データを地図に重ねる方法を書く
+- [ ] コードを示す
+- [ ] 自分の点が地図に出たか確認する
+- [ ] つまずき（座標の順序・読み込み失敗）を書く
+- [ ] 次の段（見た目を変える）へ繋ぐ
+*/}
 
 <Callout title="前の段でできたこと">
 段1までで地図を「自分の見たい場所」にできました。でも今のっているのは中心の点ひとつだけ。次は **自分のデータ（複数の地点）** を地図に重ねます。

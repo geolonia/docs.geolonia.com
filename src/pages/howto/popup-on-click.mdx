@@ -1,0 +1,56 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: クリックでポップアップを出すには
+page: howto
+kicker: ハウツー ／ レシピ
+badge: howto
+embed: true
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import Tag from '../../components/Tag.astro'
+
+マーカーをクリックしたときに情報をポップアップで表示します。
+
+## コード
+
+<Lens name="embed">
+<Tag k="embed" /> `.geolonia` の `div` の中に HTML を書くと、それがマーカーのポップアップになります。
+
+```html
+<div class="geolonia"
+     data-lat="35.681236" data-lng="139.767125"
+     data-zoom="15">
+  <strong>東京駅</strong><br>JR・地下鉄各線
+</div>
+```
+
+- **`div` の子要素**がそのままポップアップの内容です。HTML なので、太字・リンク・画像なども使えます。
+- 子要素を書くと中心にマーカーが立ち、クリックでポップアップが開きます。
+- embed のポップアップは**中心の1つのマーカーだけ**に付けられます。複数のマーカーそれぞれにポップアップを付けたい場合は suite や react を使ってください。
+
+</Lens>
+
+<Lens name="suite">
+
+> 🚧 suite のコードは準備中です。
+
+</Lens>
+
+<Lens name="react">
+
+> 🚧 react のコードは準備中です。
+
+</Lens>
+
+## 結果
+
+マーカーをクリックするとポップアップが開きます。
+
+<div class="map-box"><div class="geolonia" data-lat="35.681236" data-lng="139.767125" data-zoom="15"><strong>東京駅</strong><br />JR・地下鉄各線</div></div>
+
+<Callout title="うまくいかないとき">
+- マーカーが出ない → `data-marker="off"` が付いていないか確認。ポップアップを使うときはマーカーが必要です。
+- ポップアップが空 → `div` の子要素が空になっていないか確認。空白文字だけではポップアップは開きません。
+- クリックしても何も出ない → `div` タグの閉じ忘れに注意。`<div class="geolonia" ...>内容</div>` と正しく閉じてください。
+</Callout>

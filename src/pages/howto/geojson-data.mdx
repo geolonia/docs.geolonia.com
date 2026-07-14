@@ -1,0 +1,73 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 外部データ（GeoJSON）を地図に読み込むには
+page: howto
+kicker: ハウツー ／ レシピ
+badge: howto
+embed: true
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import Tag from '../../components/Tag.astro'
+
+GeoJSON ファイルを地図に重ねて、自分のデータ（点・線・面）を表示します。
+
+## コード
+
+<Lens name="embed">
+<Tag k="embed" /> `data-geojson` 属性に GeoJSON ファイルの URL を書くだけです。
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/sample-spots.geojson"></div>
+```
+
+- **`data-geojson`** — GeoJSON ファイルのパスまたは URL。同じサーバー上のパスか、CORS を許可した外部 URL を指定します。
+- **`data-marker="off"`** — 中心のデフォルトマーカーを非表示にしています。データの点だけを見たいときに便利です。
+
+</Lens>
+
+<Lens name="suite">
+
+> 🚧 suite のコードは準備中です。
+
+</Lens>
+
+<Lens name="react">
+
+> 🚧 react のコードは準備中です。
+
+</Lens>
+
+## 結果
+
+GeoJSON に含まれる地点がマーカーとして地図に表示されます。
+
+<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-marker="off" data-geojson="/data/sample-spots.geojson"></div></div>
+
+## GeoJSON の形式
+
+GeoJSON は地理データの標準フォーマットです。最小の例はこのようになります。
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] },
+      "properties": { "name": "東京駅" }
+    }
+  ]
+}
+```
+
+`coordinates` は **`[経度, 緯度]`** の順です。`data-lat`/`data-lng` とは逆なので注意してください。
+
+<Callout title="うまくいかないとき">
+- 点が海に出る → `coordinates` の経度と緯度が逆になっています。`[経度, 緯度]` の順に直してください。
+- 何も出ない → ブラウザの開発者ツール（ネットワークタブ）でファイルの HTTP ステータスを確認。404 や JSON の文法エラーが多い原因です。
+- 外部 URL の GeoJSON が読めない → CORS の制限です。同じサーバーにファイルを置くか、CORS ヘッダを設定してください。
+</Callout>

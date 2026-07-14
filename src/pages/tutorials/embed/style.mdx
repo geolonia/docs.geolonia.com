@@ -1,0 +1,65 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段3：見た目を変える
+page: tutorial
+kicker: チュートリアル ／ 段3
+badge: tutorial
+embed: true
+---
+import Callout from '../../../components/Callout.astro'
+
+<Callout title="前の段でできたこと">
+段2で、自分のデータを GeoJSON として地図に載せました。でもベースの地図はデフォルトのまま。この段では、**地図全体のスタイル**を差し替えます。
+</Callout>
+
+## スタイルとは
+
+地図の「見た目」——道路の色、文字の大きさ、建物の塗りなど——はすべて**スタイル**で決まっています。スタイルは JSON ファイルで定義され、URL で指定します。
+
+embed では `data-style` 属性に URL を書くだけでベースの地図を丸ごと差し替えられます。
+
+## スタイルを差し替える
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/sample-spots.geojson"
+     data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div>
+```
+
+- **`data-style`** — スタイル JSON の URL。上の例は OpenStreetMap Japan が提供するスタイルです。
+- `data-style` を省略すると、Geolonia の標準スタイルが使われます。
+
+実際に描画される地図がこちらです。段2と同じデータが、別のスタイルの地図に載っています。
+
+<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-marker="off" data-geojson="/data/sample-spots.geojson" data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div></div>
+
+## Geolonia が用意するスタイル
+
+Geolonia Maps にはいくつかのスタイルが用意されています。`data-style` に名前を書くだけで切り替えられます。
+
+```html
+<div class="geolonia" data-style="geolonia/basic"></div>
+<div class="geolonia" data-style="geolonia/midnight"></div>
+<div class="geolonia" data-style="geolonia/notebook"></div>
+```
+
+利用できるスタイル名の一覧は [Geolonia Maps のドキュメント](https://docs.geolonia.com/)を参照してください。
+
+## ダークモードの地図を使う
+
+たとえば背景の暗いサイトには、暗めのスタイルが合います。`data-style` にダーク系のスタイルを指定するだけで、地図をサイトのデザインに馴染ませることができます。
+
+## 動いたか確認する
+
+地図の背景（道路や建物）が変わっていれば成功です。複数のスタイルを試して、自分のサイトに合うものを探してみてください。
+
+<Callout title="うまくいかないとき">
+- 地図が真っ白になった → スタイル URL のつづりを確認。存在しない URL を指定すると何も描画されません。
+- GeoJSON のデータが消えた → `data-geojson` 属性を消してしまっていないか確認。スタイルとデータは独立した設定なので、両方を同時に指定できます。
+</Callout>
+
+## 次は
+
+地図の見た目を変えられるようになりました。次の[段4：対話を足す](../interaction/)で、**マーカーをクリックしたらポップアップを出す**対話を追加します。

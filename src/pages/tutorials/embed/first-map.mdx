@@ -1,0 +1,55 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段0：地図を出す
+page: tutorial
+kicker: チュートリアル ／ 段0
+badge: tutorial
+embed: true
+---
+import Callout from '../../../components/Callout.astro'
+
+embed チュートリアルへようこそ。embed は、Geolonia Maps の中でも**最も簡単な地図表示**を目指したライブラリです。この段では、HTML ファイルを1つ作って、ブラウザに地図を出すところまでをやります。
+
+## 地図を表示する
+
+embed はとにかく簡単です。1つの動く HTML ファイルがあれば、地図を表示することができます。次の内容を `index.html` という名前で保存して、ブラウザで開いてください。
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>embed</title>
+    <style>
+      .geolonia { width: 100%; height: 400px; }
+    </style>
+  </head>
+  <body>
+    <div class="geolonia"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+仕組みは2つだけです。
+
+- **`class="geolonia"` を持つ `div`** — ここが地図になります。`div` 自体には大きさがないので、CSS で高さを与えています（高さが 0 だと地図は見えません）。
+- **CDN の `<script>`** — 読み込まれると、ページ内の `.geolonia` 要素を探して地図に変えます。URL の `YOUR-API-KEY` はお試し用のデモキーで、`localhost` と `*.github.io` でのみ地図が描画されます（自分のキーの発行は[段5](../publish/)でやります）。
+
+実際に描画される地図がこちらです。
+
+<div class="map-box"><div class="geolonia"></div></div>
+
+## 動いたか確認する
+
+何も指定しなかったので、地図は既定の場所——**東京駅**を中心に、マーカーが1本立った状態で表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
+
+<Callout title="うまく出ないとき">
+- 真っ白で何も出ない → `.geolonia` の**高さが 0** になっていないか。`<style>` の指定を確認。
+- 「地図が表示できません」のような表示 → デモキーは `localhost` / `*.github.io` 以外では描画されません。ローカルのファイルをそのまま開いた場合（`file://`）も対象外なので、ローカルサーバー（例：`npx serve`）経由で開く。
+- 何も起きない → `<script>` の URL のつづりを確認。ネットワークがオフラインでも出ません。
+</Callout>
+
+## 次は
+
+地図は出ました。でも、見たいのは東京駅ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心・拡大率・傾きを指定します。

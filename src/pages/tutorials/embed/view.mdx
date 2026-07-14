@@ -1,0 +1,55 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段1：場所と視点
+page: tutorial
+kicker: チュートリアル ／ 段1
+badge: tutorial
+embed: true
+---
+import Callout from '../../../components/Callout.astro'
+
+<Callout title="前の段でできたこと">
+段0で、HTML 1ファイルから地図を出せるようになりました。ただし場所は既定の東京駅のまま。この段では、地図を**自分の見たい場所・見たい角度**にします。
+</Callout>
+
+## 場所と拡大率を指定する
+
+embed の設定は、すべて `div` の **`data-*` 属性**で書きます。場所は `data-lat`（緯度）と `data-lng`（経度）、拡大率は `data-zoom` です。
+
+```html
+<div class="geolonia"
+     data-lat="35.658581" data-lng="139.745438" data-zoom="16"></div>
+```
+
+- **`data-lat` / `data-lng`** — 地図の中心の緯度・経度。上の値は東京タワーです。自分の見たい場所の座標は、Google マップ等で右クリックすると取得できます。
+- **`data-zoom`** — 拡大率。数字が大きいほど寄ります。目安は、**11** で都市の全体、**14** で街区、**16** で建物が見えるくらいです。
+
+## 視点を傾ける・回す
+
+平面図だけでなく、視点そのものも変えられます。`data-pitch`（傾き）と `data-bearing`（回転）です。
+
+```html
+<div class="geolonia"
+     data-lat="35.658581" data-lng="139.745438" data-zoom="16"
+     data-pitch="45" data-bearing="20"></div>
+```
+
+- **`data-pitch`** — 地図を手前に倒す角度（度）。`0` が真上からの平面図。
+- **`data-bearing`** — 地図を回す角度（度）。`0` が北が上。
+
+実際に描画される地図がこちらです。東京タワーを、45度傾けて、少し回した視点で見ています。
+
+<div class="map-box"><div class="geolonia" data-lat="35.658581" data-lng="139.745438" data-zoom="16" data-pitch="45" data-bearing="20"></div></div>
+
+## 動いたか確認する
+
+中心が東京タワーになり、地図が斜めから見た構図になっていれば成功です。`data-lat` / `data-lng` を自分の場所に差し替えて、狙った場所が中心に出ることも確かめてください。
+
+<Callout title="うまくいかないとき">
+- 中心が海や別の国に飛ぶ → **緯度と経度を取り違え**ています。日本国内なら `data-lat` はおよそ 24〜46、`data-lng` はおよそ 123〜146 です。
+- 属性を書いたのに反映されない → 属性名のつづりを確認（間違った属性は黙って無視されます）。値は数字だけを書きます（`"35.65"` のように単位や度記号は付けない）。
+</Callout>
+
+## 次は
+
+地図を自分の場所にできました。でも、のっているのは中心の点ひとつだけです。次の[段2：データを載せる](../data/)で、**自分のデータ（複数の地点）**を地図に重ねます。
