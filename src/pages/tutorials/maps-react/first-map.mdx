@@ -1,10 +1,44 @@
 ---
 layout: ../../../layouts/DocLayout.astro
-title: 段0：地図を出す
+title: maps-reactチュートリアル：地図を出す
 page: tutorial
 kicker: チュートリアル ／ 段0
 badge: tutorial
 ---
+
+import { Map } from '@geolonia/maps-react';
+
+# 最初の一歩
+
+`maps-react`はReactにフレンドリーなライブラリです。基本的にReactで構築されたサイトやアプリケーションならどの環境でも動きますが、ない方は[Vite](https://ja.vite.dev/)を参考にインストールしてください。
+
+## maps-reactのインストール
+
+`maps-react`で地図を表示するためには、まずインストールが必要です。`npm`の場合以下のコマンドでインストールできます。
+
+```
+npm install @geolonia/maps-react maplibre-gl
+```
+
+# 地図を表示する
+
+では、あなたのReactアプリケーションに地図を表示してみましょう。
+
+まず`Map`コンポーネントをインポートします。
+
+```
+import { Map } from "@geolonia/maps-react";
+```
+
+次に、`Map`コンポーネントを使いたい場所に埋め込みます。
+
+```
+<Map containerStyle={{ width: "100%", height: "100vh" }} />
+```
+
+<Map containerStyle={{ width: "100%", height: "100vh" }} />
+
+これで東京駅周辺の地図が表示できます！
 
 {/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
 - [ ] 地図の表示方法を書く（このトラックでの最小の出し方）
@@ -14,4 +48,3 @@ badge: tutorial
 - [ ] 次の段（場所と視点）へ繋ぐ
 */}
 
-> 🚧 このページは準備中です。

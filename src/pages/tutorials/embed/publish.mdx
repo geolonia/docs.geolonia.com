@@ -4,14 +4,88 @@ title: 段5：公開する
 page: tutorial
 kicker: チュートリアル ／ 段5
 badge: tutorial
+embed: true
 ---
+import Callout from '../../../components/Callout.astro'
 
-{/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
-- [ ] 公開の前提（APIキー・置き場所）を説明する
-- [ ] 公開の手順を書く
-- [ ] 本番用の設定・注意点を示す
-- [ ] 公開URLで動いたか確認する
-- [ ] チュートリアル完了。次に読むもの（ハウツー・解説）へ繋ぐ
-*/}
+<Callout title="前の段でできたこと">
+段0〜4で、地図の表示・場所の指定・データの表示・スタイルの変更・ポップアップまでできました。この段では、作った地図を**自分のドメインで公開**します。
+</Callout>
 
-> 🚧 このページは準備中です。
+## デモキーと本番キーの違い
+
+これまでのコードでは、CDN の URL に `YOUR-API-KEY` と書いていました。これは Geolonia が用意した**デモキー**で、`localhost` と `*.github.io` でだけ動きます。
+
+自分のドメインで公開するには、**本番用の API キー**を発行する必要があります。
+
+## API キーを取得する
+
+1. [Geolonia のダッシュボード](https://app.geolonia.com/)にログインする。
+2. API キーの管理画面で新しいキーを作成する。
+3. **利用するドメイン**を登録する（例：`example.com`）。登録したドメインでのみ地図が描画されます。
+
+## コードを書き換える
+
+取得した API キーで `YOUR-API-KEY` を差し替えます。それ以外のコードは変わりません。
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>My Map</title>
+    <style>
+      .geolonia { width: 100%; height: 400px; }
+    </style>
+  </head>
+  <body>
+    <div class="geolonia"
+         data-lat="35.68" data-lng="139.75" data-zoom="11"
+         data-marker="off"
+         data-geojson="/data/sample-spots.geojson"
+         data-cluster="on">
+    </div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-REAL-API-KEY"></script>
+  </body>
+</html>
+```
+
+`YOUR-REAL-API-KEY` の部分を、ダッシュボードで取得した実際のキーに置き換えてください。
+
+## 公開する
+
+embed は HTML ファイルだけで動くので、ビルドは不要です。ファイルをそのまま静的ホスティングにアップロードすれば公開できます。
+
+- **GitHub Pages** — リポジトリに `index.html` を置いて Pages を有効にする。
+- **Netlify / Vercel** — リポジトリを接続するだけ。
+- **レンタルサーバー** — FTP 等でファイルをアップロード。
+
+GeoJSON ファイルも忘れずに同じサーバーに置いてください（`data-geojson` のパスが解決できる場所）。
+
+## 動いたか確認する
+
+公開した URL をブラウザで開いて、地図が表示されれば成功です。
+
+<Callout title="うまくいかないとき">
+- 「地図が表示できません」と出る → API キーに登録したドメインと、実際のドメインが一致しているか確認。`www.example.com` と `example.com` は別のドメインとして扱われます。
+- ローカルでは出たのにサーバーで出ない → デモキー（`YOUR-API-KEY`）のままになっていないか確認。
+- GeoJSON だけ出ない → サーバー上に GeoJSON ファイルが配置されているか、パスが正しいか確認。
+</Callout>
+
+## チュートリアル完了
+
+おめでとうございます。embed チュートリアルはこれで完了です。
+
+段0〜5を通して、次のことができるようになりました。
+
+- HTML だけで地図を表示する
+- 場所・視点を指定する
+- GeoJSON データを重ねる
+- 地図のスタイルを変える
+- ポップアップで情報を出す
+- API キーを使って本番公開する
+
+さらに詳しく知りたいときは、次のリソースが参考になります。
+
+- **[ハウツー](/howto/)** — 「〜したい」に答えるレシピ集。
+- **embed 以外のチュートリアル** — [suite](/tutorials/suite/)（JavaScript で細かく制御）、[react](/tutorials/react/)（React コンポーネントとして使う）。

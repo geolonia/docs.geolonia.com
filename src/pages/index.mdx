@@ -1,6 +1,6 @@
 ---
-layout: ../layouts/DocLayout.astro
-title: 地図づくり、ここから。
+layout: ../layouts/EmbedLayout.astro
+title: Geolonia Maps ドキュメント
 page: home
 kicker: はじめての方へ
 ---
@@ -9,13 +9,19 @@ import Callout from '../components/Callout.astro'
 import QuadGrid from '../components/QuadGrid.astro'
 import Tag from '../components/Tag.astro'
 
-コードをほとんど書かなくても、数分で本物の地図が動きます。まず下の地図を見てください——これは画像ではなく、 **実際に動く地図** です。
+# はじめに
+
+Geolonia Mapsは、Geoloniaの提供する地図を利用できるライブラリです。まず、例を見てみましょう。
 
 <GeoloniaMap lat={35.68} lng={139.75} zoom={11} marker="off" geojson="/data/sample-spots.geojson" cluster="on" tall={true} caption="本物の地図（localhost / GitHub Pages で描画）。東京の5スポット。" />
 
-## 4つの入口
+もっと例を見たい方は、[ハウツー](/how-to)で見ることができます。
 
-目的に合わせて選べます。迷ったら **チュートリアル** から。
+## 3つのライブラリからスタート
+
+Geolonia Mapsは、様々な方に使っていただけるように、コア技術に加えて3つのライブラリを提供しています。簡単なものから最先端のWeb技術まで、様々な書き方ができます。チュートリアルでは、導入する環境やすでに使っているライブラリに合わせて3つのルートを用意しています。
+
+[チュートリアル](/tutorials)
 
 <QuadGrid />
 

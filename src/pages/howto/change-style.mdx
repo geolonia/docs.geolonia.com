@@ -1,0 +1,60 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 地図の見た目（スタイル）を切り替えるには
+page: howto
+kicker: ハウツー ／ レシピ
+badge: howto
+embed: true
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import Tag from '../../components/Tag.astro'
+
+地図のベーススタイル（道路の色、文字の大きさ、建物の塗りなど）を差し替えます。
+
+## コード
+
+<Lens name="embed">
+<Tag k="embed" /> `data-style` 属性にスタイル名または URL を書きます。
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-style="geolonia/gsi"></div>
+```
+
+- **`data-style`** — Geolonia が用意するスタイル名（`geolonia/basic`、`geolonia/midnight`、`geolonia/gsi` など）か、外部スタイル JSON の URL を指定できます。
+- 省略すると Geolonia の標準スタイルが使われます。
+
+外部の URL を使う例:
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div>
+```
+
+</Lens>
+
+<Lens name="suite">
+
+> 🚧 suite のコードは準備中です。
+
+</Lens>
+
+<Lens name="react">
+
+> 🚧 react のコードは準備中です。
+
+</Lens>
+
+## 結果
+
+スタイルを `geolonia/gsi` に切り替えた地図です。道路や地名の描き方がデフォルトと変わっています。
+
+<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-style="geolonia/gsi"></div></div>
+
+<Callout title="うまくいかないとき">
+- 地図が真っ白になった → スタイル名や URL のつづりを確認。存在しないスタイルを指定すると何も描画されません。
+- 属性を書いたのに反映されない → `data-style` のハイフンやつづりを確認。間違った属性名は黙って無視されます。
+</Callout>

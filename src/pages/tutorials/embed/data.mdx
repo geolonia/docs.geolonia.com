@@ -4,75 +4,85 @@ title: 段2：データを載せる
 page: tutorial
 kicker: チュートリアル ／ 段2
 badge: tutorial
+embed: true
 ---
-import GeoloniaMap from '../../../components/GeoloniaMap.astro'
 import Callout from '../../../components/Callout.astro'
-import Tag from '../../../components/Tag.astro'
-import Lens from '../../../components/Lens.astro'
-
-{/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
-- [ ] 載せるデータ（GeoJSON など）の形を説明する
-- [ ] データを地図に重ねる方法を書く
-- [ ] コードを示す
-- [ ] 自分の点が地図に出たか確認する
-- [ ] つまずき（座標の順序・読み込み失敗）を書く
-- [ ] 次の段（見た目を変える）へ繋ぐ
-*/}
 
 <Callout title="前の段でできたこと">
-段1までで地図を「自分の見たい場所」にできました。でも今のっているのは中心の点ひとつだけ。次は **自分のデータ（複数の地点）** を地図に重ねます。
+段1で、地図を自分の見たい場所・角度にできました。でも、のっているのは中心の点ひとつだけ。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
 </Callout>
 
-## ① 用意したデータを出す
+## GeoJSON を知る
 
-地図の `div` に `data-geojson` を1つ足すだけ。まずはこちらで用意したサンプル（東京の5地点）で動かします。レンズ切替でコードが変わります。
+embed で地図にデータを載せるには、**GeoJSON** という形式のファイルを使います。GeoJSON は地理データの標準フォーマットで、テキストエディタで読み書きできる JSON です。
 
-<Lens name="embed">
-<Tag k="embed" /> 宣言型。属性に GeoJSON の URL を渡すだけ。
+最小の GeoJSON は次のような形をしています。
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] },
+      "properties": { "name": "東京駅" }
+    }
+  ]
+}
+```
+
+- **`FeatureCollection`** — 地物（Feature）の入れ物。
+- **`geometry`** — 点・線・面などの形状。`coordinates` は **`[経度, 緯度]`** の順です（`data-lat`/`data-lng` とは逆なので注意）。
+- **`properties`** — 名前や分類など、地物に付けたい属性。何でも自由に入れられます。
+
+## データを地図に重ねる
+
+GeoJSON ファイルを Web サーバーに置いたら、`div` に `data-geojson` 属性を追加するだけです。
 
 ```html
-<div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11"
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
      data-geojson="/data/sample-spots.geojson"></div>
 ```
-</Lens>
 
-<Lens name="suite">
-<Tag k="suite" /> 命令型。`addSource` ＋ `addLayer` で重ねる。
+- **`data-geojson`** — GeoJSON ファイルの URL。同じサーバー上のパスか、CORS を許可した外部 URL を指定します。
+- **`data-marker="off"`** — 中心のマーカーを消しています。データの点を見たいときに、中心マーカーがあると紛らわしいので消すのが定番です。
 
-```js
-map.on('load', () => {
-  map.addSource('spots', { type: 'geojson', data: '/data/sample-spots.geojson' });
-  map.addLayer({ id: 'spots', type: 'circle', source: 'spots' });
-});
+## クラスタリングで見やすくする
+
+データが数十〜数百点になると、点が重なって読めなくなります。`data-cluster="on"` を足すと、近い点を自動でまとめてくれます。
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/sample-spots.geojson"
+     data-cluster="on"></div>
 ```
-</Lens>
 
-<Lens name="react">
-<Tag k="react" /> 宣言型コンポーネント。
+拡大するとクラスターが分かれて個別の点になります。色を変えたい場合は `data-cluster-color="#ff0000"` のように指定できます。
 
-```jsx
-<Source id="spots" type="geojson" data="/data/sample-spots.geojson">
-  <Layer type="circle" />
-</Source>
-```
-</Lens>
+実際に描画される地図がこちらです。東京の5地点がマーカーで表示されます。
 
-<GeoloniaMap lat={35.68} lng={139.75} zoom={11} marker="off" geojson="/data/sample-spots.geojson" cluster="on" caption="本物の地図。サンプル data/sample-spots.geojson の5点。" />
+<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-marker="off" data-geojson="/data/sample-spots.geojson" data-cluster="on"></div></div>
 
-## ② 自分のデータに差し替える
+## 自分のデータに差し替える
 
-<ol class="steps">
-  <li><h3>CSV に経度・緯度の列を用意する</h3><span class="obj">到達目標：1行 = 1地点で座標を持てている</span></li>
-  <li><h3>GeoJSON に変換する</h3><span class="obj">到達目標：自分の一覧が FeatureCollection になっている</span></li>
-  <li><h3><code>data-geojson</code> の参照先を差し替える</h3><span class="obj">到達目標：自分のデータの点が地図に出る</span></li>
-</ol>
+1. スプレッドシートや CSV で、1行 = 1地点のデータを用意する（経度・緯度の列が必要）。
+2. GeoJSON に変換する。手で書いてもよいですし、[geojson.io](https://geojson.io/) などのツールを使うと楽です。
+3. ファイルを Web サーバーに置いて、`data-geojson` のパスを差し替える。
 
-<Callout title="つまずいたら">
-- 点が海に出る → 座標が `[緯度, 経度]` 逆。`[経度, 緯度]` に直す。
-- 何も出ない → URL の 404 か GeoJSON の文法エラー。ファイルを直接開いて確認。
-- 外部 URL が読めない → CORS。まず同一オリジンに置く。
+## 動いたか確認する
+
+地図上にマーカーが複数表示されていれば成功です。拡大・縮小してクラスターが分かれるのも確認してください。
+
+<Callout title="うまくいかないとき">
+- 点が海や別の大陸に出る → **座標の順序**を確認。GeoJSON の `coordinates` は `[経度, 緯度]` です（HTML の `data-lat`/`data-lng` とは逆）。
+- 何も出ない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。404 や JSON の文法エラーが多い原因です。
+- 外部 URL の GeoJSON が読めない → CORS の制限です。まずは同じサーバーにファイルを置いてみてください。
 </Callout>
 
-<Callout title="次は">
-点は出た。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。サンプルの各点には `category` が入っています—— **次の段3で色分け** します。
-</Callout>
+## 次は
+
+自分のデータが地図にのりました。でも見た目はデフォルトのまま。次の[段3：見た目を変える](../style/)で、**地図全体のスタイルを差し替え**ます。
