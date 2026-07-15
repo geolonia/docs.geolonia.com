@@ -36,4 +36,12 @@ export default defineConfig({
       remarkStripHtmlComments,
     ],
   },
+  vite: {
+    // maplibre-gl は CJS/UMD でのみ配布されている（ESM ビルドなし）。
+    // Astro の client:only 島は推移的な CJS 依存を自動 pre-bundle しないため、
+    // 生の UMD が配信され `does not provide an export named 'default'` で落ちる。
+    // ここで明示的に pre-bundle させると ESM 化され、maps-react から読めるようになる。
+    // 地図系 React ラッパー全般（react-map-gl 等）で必要な定番設定。
+    optimizeDeps: { include: ['maplibre-gl', '@geolonia/maps-core'] },
+  },
 });

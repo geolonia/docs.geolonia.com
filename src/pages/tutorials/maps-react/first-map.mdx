@@ -8,7 +8,9 @@ badge: tutorial
 
 # 最初の一歩
 
-`maps-react`はReactにフレンドリーなライブラリです。基本的にReactで構築されたサイトやアプリケーションならどの環境でも動きますが、ない方は[Vite](https://ja.vite.dev/)を参考にインストールしてください。
+`maps-react`はReactにフレンドリーなライブラリです。Vite・Next.js・webpack など、ほとんどのReactビルド環境でそのまま動きます。まだビルド環境が無い方は[Vite](https://ja.vite.dev/)を参考にセットアップしてください。
+
+地図の描画エンジンである`maplibre-gl`は`maps-react`とは別にインストールします（下記のコマンドに含まれています）。`maplibre-gl`は`react-map-gl`など他のReact地図ライブラリと同じく、この描画エンジンを土台にしています。
 
 ## maps-reactのインストール
 
@@ -41,6 +43,29 @@ import { Map } from "@geolonia/maps-react";
 <Map client:only="react" containerStyle={{ width: "100%", height: "100vh" }} />
 
 これで東京駅周辺の地図が表示できます！
+
+## うまく表示されないとき
+
+ブラウザのコンソールに次のようなエラーが出る場合があります。
+
+```
+The requested module '/node_modules/maplibre-gl/dist/maplibre-gl.js' does not provide an export named 'default'
+```
+
+これは描画エンジンの`maplibre-gl`がCJS形式で配布されているため、一部のビルド環境（Astro の `client:only` や、依存を自動解決しきれない Vite 構成）で事前バンドルされず、そのまま読み込まれてしまうのが原因です。その環境で`maplibre-gl`を明示的に事前バンドル対象に加えると解決します。`react-map-gl`など同じ描画エンジンを使うライブラリでも同様の設定が必要です。
+
+Astro の場合は`astro.config.mjs`に次を追加します。
+
+```js
+export default defineConfig({
+  // ...
+  vite: {
+    optimizeDeps: { include: ['maplibre-gl', '@geolonia/maps-core'] },
+  },
+});
+```
+
+Vite 単体（SPA）では通常この設定は不要です。
 
 {/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
 - [ ] 地図の表示方法を書く（このトラックでの最小の出し方）
