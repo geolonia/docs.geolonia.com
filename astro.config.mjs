@@ -9,6 +9,8 @@ import mdx from '@astrojs/mdx';
 import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import remarkCjkFriendlyGfmStrikethrough from 'remark-cjk-friendly-gfm-strikethrough/parseOnly';
 
+import react from '@astrojs/react';
+
 // .md 内の HTML コメント（<!-- OUTLINE ... --> など執筆用メモ）を
 // ビルド出力から除去する。MDX の {/* */} は元々出力に残らないので対象外。
 // これにより執筆用アウトラインが公開HTMLのソースに漏れない。
@@ -26,7 +28,7 @@ function remarkStripHtmlComments() {
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [mdx()],
+  integrations: [mdx(), react()],
   markdown: {
     remarkPlugins: [
       remarkCjkFriendly,
