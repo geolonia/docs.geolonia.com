@@ -34,8 +34,21 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="react">
+<Tag k="react" /> `geolocateControl` プロパティを付けるだけです。
 
-> 🚧 react のコードは準備中です。
+```jsx
+import { Map } from "@geolonia/maps-react";
+
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+  geolocateControl
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+- **`geolocateControl`** — 地図の右上に現在地ボタンが追加されます。ボタンを押すとブラウザが位置情報の許可を求め、許可するとその地点に移動します。
 
 </Lens>
 

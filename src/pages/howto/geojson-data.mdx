@@ -36,8 +36,26 @@ GeoJSON ファイルを地図に重ねて、自分のデータ（点・線・面
 </Lens>
 
 <Lens name="react">
+<Tag k="react" /> `Map` の子に `Source`（データ）と `Layer`（描き方）を置きます。
 
-> 🚧 react のコードは準備中です。
+```jsx
+import { Map, Source, Layer } from "@geolonia/maps-react";
+
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+  containerStyle={{ width: "100%", height: "100vh" }}
+>
+  <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+    <Layer id="spots" type="circle" />
+  </Source>
+</Map>
+```
+
+- **`<Source>`** — `type="geojson"` で、`data` に GeoJSON の URL（またはオブジェクトそのもの）を渡します。
+- **`<Layer>`** — データの描き方。`type="circle"` は各点を丸として描きます。**`id` は必須**です——省略するとエラーも出ずにレイヤが追加されず、何も表示されません。
+- CSS のインポートなどセットアップは [maps-react チュートリアル 段0](/tutorials/maps-react/first-map/) を参照してください。
 
 </Lens>
 

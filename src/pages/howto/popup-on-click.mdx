@@ -38,8 +38,27 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="react">
+<Tag k="react" /> `Marker` コンポーネントの**子要素**が、そのままポップアップの内容になります。
 
-> 🚧 react のコードは準備中です。
+```jsx
+import { Map, Marker } from "@geolonia/maps-react";
+
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.767125, 35.681236]}
+  zoom={15}
+  containerStyle={{ width: "100%", height: "100vh" }}
+>
+  <Marker lat={35.681236} lng={139.767125} color="#e4402f">
+    <strong>東京駅</strong>
+    <p style={{ margin: 0 }}>JR・地下鉄各線</p>
+  </Marker>
+</Map>
+```
+
+- **`lat` / `lng`** — マーカーを立てる場所。個別の props で渡します（`Map` の `center` は `[経度, 緯度]` の配列なので混同に注意）。
+- **子要素** — クリックしたときに開くポップアップの中身。JSX なので React コンポーネントも書けます。
+- embed と違い、`Marker` を複数並べて**それぞれにポップアップ**を付けられます（[マーカーを複数置くには](/howto/multiple-markers/)を参照）。
 
 </Lens>
 

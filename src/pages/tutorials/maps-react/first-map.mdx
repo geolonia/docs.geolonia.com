@@ -1,77 +1,58 @@
 ---
 layout: ../../../layouts/DocLayout.astro
-title: maps-reactチュートリアル：地図を出す
+title: 段0：地図を出す
 page: tutorial
 kicker: チュートリアル ／ 段0
 badge: tutorial
 ---
+import Callout from '../../../components/Callout.astro'
 
-# 最初の一歩
+maps-react チュートリアルへようこそ。maps-react は、Geolonia Maps を **React コンポーネント**として使うためのライブラリです。この段では、React アプリに地図を1枚出すところまでをやります。
 
-`maps-react`はReactにフレンドリーなライブラリです。Vite・Next.js・webpack など、ほとんどのReactビルド環境でそのまま動きます。まだビルド環境が無い方は[Vite](https://ja.vite.dev/)を参考にセットアップしてください。
+React のビルド環境（Vite・Next.js・webpack など）ならほとんどそのまま動きます。まだ環境がない方は [Vite](https://ja.vite.dev/) で作るのが手軽です。
 
-地図の描画エンジンである`maplibre-gl`は`maps-react`とは別にインストールします（下記のコマンドに含まれています）。`maplibre-gl`は`react-map-gl`など他のReact地図ライブラリと同じく、この描画エンジンを土台にしています。
+## インストールする
 
-## maps-reactのインストール
-
-import { Map } from "@geolonia/maps-react";
-import 'maplibre-gl/dist/maplibre-gl.css';
-import '@geolonia/maps-core/css';
-
-`maps-react`で地図を表示するためには、まずインストールが必要です。`npm`の場合以下のコマンドでインストールできます。
+maps-react と、地図の描画エンジンである maplibre-gl をインストールします。maplibre-gl は `react-map-gl` など他の React 地図ライブラリでも土台になっている描画エンジンで、maps-react とは別のパッケージとして入れます。
 
 ```
 npm install @geolonia/maps-react maplibre-gl
 ```
 
-# 地図を表示する
+## 地図を表示する
 
-では、あなたのReactアプリケーションに地図を表示してみましょう。
+`Map` コンポーネントと、地図の描画に必要な CSS をインポートして、JSX に置きます。
 
-まず`Map`コンポーネントをインポートします。
-
-```
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
 ```
 
-次に、`Map`コンポーネントを使いたい場所に埋め込みます。スタイルの指定はReactのやり方で問題ありません。また、APIキー(テスト用に`YOUR-API-KEY`を設定しています)はapiKeyによって設定します。
+ポイントは3つです。
 
-```
-<Map containerStyle={{ width: "100%", height: "100vh" }} apiKey="YOUR-API-KEY" />
-```
+- **CSS のインポート** — `maplibre-gl/dist/maplibre-gl.css` と `@geolonia/maps-core/css` の2つが必要です。忘れるとコントロールやポップアップの表示が崩れます。
+- **`containerStyle`** — 地図を入れる要素の大きさ。大きさが 0 だと地図は見えないので、必ず高さを与えます。
+- **`apiKey`** — `YOUR-API-KEY` はお試し用のデモキーで、`localhost` と `*.github.io` でのみ地図が描画されます（自分のキーの発行は[段5](../publish/)でやります）。
 
-<Map client:only="react" containerStyle={{ width: "100%", height: "100vh" }} apiKey="YOUR-API-KEY" />
+## 動いたか確認する
 
-これで東京駅周辺の地図が表示できます！
+`npm run dev` で開発サーバーを起動してブラウザで開くと、既定の場所——**東京駅**を中心にした地図が表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
 
-## うまく表示されないとき
+<Callout title="うまく出ないとき">
+- 真っ白で何も出ない → `containerStyle` の**高さが 0** になっていないか確認。親要素が `height: 0` の場合も同じです。
+- 表示が崩れる（コントロールのアイコンが変な場所に出る等）→ **CSS のインポート忘れ**。2つとも読み込んでいるか確認。
+- コンソールに `The requested module '.../maplibre-gl.js' does not provide an export named 'default'` と出る → maplibre-gl が CJS 形式で配布されているため、一部のビルド環境で事前バンドルされないのが原因です。Astro など Vite ベースの環境では、設定に `vite: { optimizeDeps: { include: ['maplibre-gl', '@geolonia/maps-core'] } }` を追加すると解決します（Vite 単体の SPA では通常不要）。
+</Callout>
 
-ブラウザのコンソールに次のようなエラーが出る場合があります。
+## 次は
 
-```
-The requested module '/node_modules/maplibre-gl/dist/maplibre-gl.js' does not provide an export named 'default'
-```
-
-これは描画エンジンの`maplibre-gl`がCJS形式で配布されているため、一部のビルド環境（Astro の `client:only` や、依存を自動解決しきれない Vite 構成）で事前バンドルされず、そのまま読み込まれてしまうのが原因です。その環境で`maplibre-gl`を明示的に事前バンドル対象に加えると解決します。`react-map-gl`など同じ描画エンジンを使うライブラリでも同様の設定が必要です。
-
-Astro の場合は`astro.config.mjs`に次を追加します。
-
-```js
-export default defineConfig({
-  // ...
-  vite: {
-    optimizeDeps: { include: ['maplibre-gl', '@geolonia/maps-core'] },
-  },
-});
-```
-
-Vite 単体（SPA）では通常この設定は不要です。
-
-{/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
-- [ ] 地図の表示方法を書く（このトラックでの最小の出し方）
-- [ ] コードを示す
-- [ ] 動いたか確認する（何が見えれば成功か）
-- [ ] うまく出ないときの確認ポイントを書く
-- [ ] 次の段（場所と視点）へ繋ぐ
-*/}
-
+地図は出ました。でも、見たいのは東京駅ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心・拡大率・傾きを props で指定します。
