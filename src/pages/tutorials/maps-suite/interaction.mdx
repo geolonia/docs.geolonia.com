@@ -5,13 +5,71 @@ page: tutorial
 kicker: チュートリアル ／ 段4
 badge: tutorial
 ---
+import Callout from '../../../components/Callout.astro'
 
-{/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
-- [ ] 足す操作（クリック→ポップアップ など）を決めて説明する
-- [ ] 操作を受け取る書き方を示す
-- [ ] コードを示す
-- [ ] 触って反応するか確認する
-- [ ] 次の段（公開する）へ繋ぐ
-*/}
+<Callout title="前の段でできたこと">
+段3で、データを属性に応じて色分けしました。この段では、**マーカーをクリックしたら情報ウィンドウが出る**対話を追加します。
+</Callout>
 
-> 🚧 このページは準備中です。
+## Marker と InfoWindow
+
+maps-suite には、地図上の1点に立てる `Marker` と、吹き出しを出す `InfoWindow` のクラスがあります。マーカーのクリックイベントで情報ウィンドウを開く、という組み立てです。
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.681236, lng: 139.767125 },
+  zoom: 15,
+});
+
+const marker = new geolonia.maps.Marker({
+  position: { lat: 35.681236, lng: 139.767125 },
+  map,
+  title: "東京駅",
+});
+
+const infoWindow = new geolonia.maps.InfoWindow({
+  content: "<strong>東京駅</strong><br>JR・地下鉄各線",
+});
+
+marker.addListener("click", () => {
+  infoWindow.open(map, marker);
+});
+```
+
+部品ごとに見ていきます。
+
+- **`Marker`** — `position`（`{ lat, lng }`）と `map` を渡すと、その場所にマーカーが立ちます。`title` はホバー時のツールチップです。後から `marker.setMap(null)` で外したり、`setPosition` で動かしたりできます。
+- **`InfoWindow`** — `content` に HTML 文字列（または HTML 要素）を渡して作ります。この時点ではまだ表示されません。
+- **`marker.addListener("click", ...)`** — マーカーのクリックを受け取ります。
+- **`infoWindow.open(map, marker)`** — 情報ウィンドウを、指定したマーカーの位置に開きます。引数は**この順番の2つ**（地図、アンカー）です。
+
+## 地図のクリックを受け取る
+
+マーカーではなく地図そのもののクリックも受け取れます。クリック位置の座標は `e.latLng` に入っています。
+
+```js
+map.addListener("click", (e) => {
+  console.log("クリック位置:", e.latLng.lat(), e.latLng.lng());
+});
+```
+
+「クリックした場所にマーカーを立てる」なら、この中で `new geolonia.maps.Marker({ position: e.latLng.toJSON(), map })` とするだけです（`toJSON()` で `{ lat, lng }` のプレーンなオブジェクトに変換できます）。
+
+## 動いたか確認する
+
+マーカーをクリックして、書いた内容が吹き出しで出れば成功です。
+
+<Callout title="うまくいかないとき">
+- マーカーが出ない → `Marker` のオプションに `map` を渡し忘れていないか確認。`map` がないと、作られても地図に取り付けられません。
+- クリックしても開かない → `open(map, marker)` の**引数の順番**を確認。第1引数が地図、第2引数がマーカーです。
+- 吹き出しが空 → `content` が空文字になっていないか確認。
+</Callout>
+
+## 次は
+
+地図に対話が付きました。ここまでで、地図の表示・場所の指定・データの表示・色分け・情報ウィンドウと、ひと通りの道具が揃っています。最後の[段5：公開する](../publish/)で、**ビルドして本番公開**します。

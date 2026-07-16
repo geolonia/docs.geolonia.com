@@ -5,13 +5,76 @@ page: tutorial
 kicker: チュートリアル ／ 段4
 badge: tutorial
 ---
+import Callout from '../../../components/Callout.astro'
 
-{/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
-- [ ] 足す操作（クリック→ポップアップ など）を決めて説明する
-- [ ] 操作を受け取る書き方を示す
-- [ ] コードを示す
-- [ ] 触って反応するか確認する
-- [ ] 次の段（公開する）へ繋ぐ
-*/}
+<Callout title="前の段でできたこと">
+段3で、データを属性に応じて色分けしました。この段では、**マーカーをクリックしたらポップアップが出る**対話を追加します。
+</Callout>
 
-> 🚧 このページは準備中です。
+## Marker コンポーネント
+
+maps-react には、地図上の1点に立てる `Marker` コンポーネントがあります。`Map` の子として置き、`lat` / `lng` で場所を指定します。
+
+そして maps-react らしいところ——**`Marker` の子要素が、そのままポップアップの内容になります**。
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Marker } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.767125, 35.681236]}
+    zoom={15}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Marker lat={35.681236} lng={139.767125} color="#e4402f">
+      <strong>東京駅</strong>
+      <p style={{ margin: 0 }}>JR・地下鉄各線</p>
+    </Marker>
+  </Map>,
+);
+```
+
+- **`lat` / `lng`** — マーカーを立てる場所。`Map` の `center`（`[経度, 緯度]` の配列）と違い、こちらは**個別の props** で渡します。
+- **`color`** — マーカーの色。
+- **子要素** — マーカーをクリックしたときに開くポップアップの中身。JSX なので、React コンポーネントも含めて自由に書けます。
+
+## データから複数のマーカーを作る
+
+`Marker` はただの React コンポーネントなので、配列から `map()` で並べれば、データ駆動で複数のマーカーが立ちます。
+
+```jsx
+const spots = [
+  { name: "東京駅", lat: 35.681236, lng: 139.767125 },
+  { name: "新宿駅", lat: 35.690921, lng: 139.700258 },
+  { name: "渋谷駅", lat: 35.658034, lng: 139.701636 },
+];
+
+<Map apiKey="YOUR-API-KEY" center={[139.73, 35.68]} zoom={12}
+     containerStyle={{ width: "100%", height: "100vh" }}>
+  {spots.map((s) => (
+    <Marker key={s.name} lat={s.lat} lng={s.lng}>
+      <strong>{s.name}</strong>
+    </Marker>
+  ))}
+</Map>
+```
+
+state と組み合わせれば、「一覧をクリックすると地図のマーカーが増える」のような UI も、ふつうの React の書き方だけで作れます。
+
+## 動いたか確認する
+
+マーカーをクリックして、書いた JSX の内容がポップアップに出れば成功です。もう一度クリックすると閉じます。
+
+<Callout title="うまくいかないとき">
+- マーカーが変な場所に出る → `lat` と `lng` の**取り違え**を確認。`center` は `[経度, 緯度]` の配列ですが、`Marker` は `lat=` `lng=` と名前付きで渡します。
+- ポップアップが開かない → 子要素が空になっていないか確認。子要素のない `Marker` はポップアップなしのマーカーになります。
+- 複数のマーカーで警告が出る → 配列から作るときは `key` を忘れずに（ふつうの React のルールです）。
+</Callout>
+
+## 次は
+
+地図に対話が付きました。ここまでで、地図の表示・場所の指定・データの表示・色分け・ポップアップと、ひと通りの道具が揃っています。最後の[段5：公開する](../publish/)で、**ビルドして本番公開**します。

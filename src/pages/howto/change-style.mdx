@@ -37,14 +37,55 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> 初期スタイルは `Map` の `style` オプションで指定します。実行時に切り替えるには、基盤の地図の `setStyle` を使います。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+  style: "geolonia/gsi",
+});
+
+// 実行時の切り替えは基盤の地図の setStyle で（URL またはスタイル定義オブジェクト）
+document.getElementById("osm").onclick = () =>
+  map._getImpl().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.json");
+```
+
+- **`style` オプション** — スタイル名（例: `geolonia/gsi`）または URL。
+- **`map._getImpl().setStyle(...)`** — 実行時の切り替え。スタイル JSON の URL か、インラインのスタイル定義オブジェクトを渡します。
 
 </Lens>
 
 <Lens name="react">
+<Tag k="react" /> `Map` の `style` プロパティにスタイル名または URL を渡します。state と組み合わせると、**実行時にボタンで切り替える** UI も作れます。
 
-> 🚧 react のコードは準備中です。
+```jsx
+import { useState } from "react";
+import { Map } from "@geolonia/maps-react";
+
+function App() {
+  const [style, setStyle] = useState("geolonia/basic");
+  return (
+    <>
+      <button onClick={() => setStyle("geolonia/basic")}>標準</button>
+      <button onClick={() => setStyle("geolonia/gsi")}>地理院</button>
+      <Map
+        apiKey="YOUR-API-KEY"
+        style={style}
+        center={[139.75, 35.68]}
+        zoom={11}
+        containerStyle={{ width: "100%", height: "100vh" }}
+      />
+    </>
+  );
+}
+```
+
+- **`style`** — スタイル名か、スタイル JSON の URL。state を差し替えるとベース地図が丸ごと切り替わります。
+- スタイルを**オブジェクト**（インラインのスタイル定義）で渡す場合は、モジュール定数などにして参照を安定させてください。レンダーのたびに新しいオブジェクトを作ると、毎回スタイルが再読み込みされます。
 
 </Lens>
 

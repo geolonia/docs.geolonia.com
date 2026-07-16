@@ -1,0 +1,99 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 独自のデータソース（ベクトルタイル等）を追加するには
+page: howto
+kicker: ハウツー ／ レシピ（応用）
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import Tag from '../../components/Tag.astro'
+
+GeoJSON では収まらない大きなデータや、他所が配信しているタイルを地図に重ねるには、**タイルソース**を追加します。`{z}/{x}/{y}` のテンプレート URL で配信されるラスタタイル・ベクトルタイルが対象です。
+
+## コード
+
+<Lens name="embed">
+<Tag k="embed" /> embed（HTML の属性だけ）ではこの機能は使えません。右上のレンズ切替から suite / react のコードを参照してください。
+
+</Lens>
+
+<Lens name="suite">
+<Tag k="suite" /> 読み込みを待ってから、`addSource` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
+
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.6812, lng: 139.7671 },
+  zoom: 12,
+});
+
+await map._whenReady();
+const impl = map._getImpl();
+impl.addSource("gsi", {
+  type: "raster",
+  tiles: ["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"],
+  tileSize: 256,
+  attribution: "地理院タイル",
+});
+impl.addLayer({ id: "gsi", type: "raster", source: "gsi" });
+```
+
+- **`tiles`** — タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
+- **`attribution`** — データの出典表示。配信元の利用規約が求める表記を必ず入れます。
+- **ベクトルタイル**の場合は `type: "vector"` にして、レイヤ側に **`"source-layer"`**（タイル内のレイヤ名）を指定します。
+
+```js
+impl.addSource("mytiles", { type: "vector", tiles: ["https://example.com/tiles/{z}/{x}/{y}.pbf"] });
+impl.addLayer({ id: "mytiles-line", type: "line", source: "mytiles", "source-layer": "roads" });
+```
+
+</Lens>
+
+<Lens name="react">
+<Tag k="react" /> `Source` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
+
+```jsx
+import { Map, Source, Layer } from "@geolonia/maps-react";
+
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.7671, 35.6812]}
+  zoom={12}
+  containerStyle={{ width: "100%", height: "100vh" }}
+>
+  <Source
+    id="gsi"
+    type="raster"
+    tiles={["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"]}
+    tileSize={256}
+    attribution="地理院タイル"
+  >
+    <Layer id="gsi-raster" type="raster" />
+  </Source>
+</Map>
+```
+
+- **`tiles`** — タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
+- **`attribution`** — データの出典表示。配信元の利用規約が求める表記を必ず入れます。
+- **ベクトルタイル**の場合は `type="vector"` にして、`Layer` 側に **`source-layer`**（タイル内のレイヤ名）を指定します。
+
+```jsx
+<Source id="mytiles" type="vector" tiles={["https://example.com/tiles/{z}/{x}/{y}.pbf"]}>
+  <Layer id="mytiles-line" type="line" source-layer="roads" />
+</Source>
+```
+
+</Lens>
+
+## 結果
+
+ベース地図の上に、追加したタイルが重なって表示されます。ラスタタイルなら画像がそのまま、ベクトルタイルなら `Layer` で指定した描き方で描かれます。
+
+<Callout title="うまくいかないとき">
+- 何も出ない（ラスタ）→ テンプレート URL をブラウザで直接確認。`{z}/{x}/{y}` に実数（例: `12/3637/1612`）を入れて画像が返るか見ると早いです。
+- 何も出ない（ベクトル）→ **`source-layer` 名の不一致**が一番多い原因です。タイルの仕様書か、配信元のスタイル定義で正確な名前を確認してください。
+- タイルがずれる・粗い → `tileSize` を確認（256 か 512 か、配信元によって異なります）。
+</Callout>

@@ -1,0 +1,124 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 値に応じてエリアを色分けするには（コロプレス）
+page: howto
+kicker: ハウツー ／ レシピ（応用）
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import Tag from '../../components/Tag.astro'
+
+人口や売上のような数値を、エリア（ポリゴン）の色の濃淡で見せる地図を**コロプレス**と呼びます。ポリゴンの GeoJSON に数値プロパティを持たせ、値から色への対応を式で書きます。
+
+## データの用意
+
+各ポリゴンの `properties` に数値（ここでは `value`）を持たせた GeoJSON を用意します。
+
+```json
+{
+  "type": "Feature",
+  "geometry": { "type": "Polygon", "coordinates": [ ... ] },
+  "properties": { "name": "エリアA", "value": 72 }
+}
+```
+
+## コード
+
+<Lens name="embed">
+<Tag k="embed" /> embed（HTML の属性だけ）ではこの機能は使えません。右上のレンズ切替から suite / react のコードを参照してください。
+
+</Lens>
+
+<Lens name="suite">
+<Tag k="suite" /> 読み込みを待ってから、`fill` レイヤの `fill-color` に `interpolate` 式を書いて重ねます。
+
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.665, lng: 139.725 },
+  zoom: 12,
+});
+
+await map._whenReady();
+const impl = map._getImpl();
+impl.addSource("areas", { type: "geojson", data: "/data/areas.geojson" });
+impl.addLayer({
+  id: "areas",
+  type: "fill",
+  source: "areas",
+  paint: {
+    "fill-color": [
+      "interpolate", ["linear"], ["get", "value"],
+      0, "#ffffcc",
+      50, "#fd8d3c",
+      100, "#bd0026",
+    ],
+    "fill-opacity": 0.75,
+    "fill-outline-color": "#ffffff",
+  },
+});
+```
+
+`interpolate` 式の読み方は、
+
+1. `["linear"]` — 値の間を直線的に補間する。
+2. `["get", "value"]` — 各ポリゴンの `properties.value` を取り出す。
+3. 以降は「値, 色」のペア。`0` なら薄い黄色、`100` なら濃い赤、その間は連続的に変化します。
+
+`fill-opacity` を 1 未満にしておくと、下の地図（道路や地名）が透けて位置が分かります。
+
+</Lens>
+
+<Lens name="react">
+<Tag k="react" /> `fill` レイヤの `fill-color` に `interpolate` 式を書いて、値を色に対応させます。
+
+```jsx
+import { Map, Source, Layer } from "@geolonia/maps-react";
+
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.725, 35.665]}
+  zoom={12}
+  containerStyle={{ width: "100%", height: "100vh" }}
+>
+  <Source id="areas" type="geojson" data="/data/areas.geojson">
+    <Layer
+      id="areas-fill"
+      type="fill"
+      paint={{
+        "fill-color": [
+          "interpolate", ["linear"], ["get", "value"],
+          0, "#ffffcc",
+          50, "#fd8d3c",
+          100, "#bd0026",
+        ],
+        "fill-opacity": 0.75,
+        "fill-outline-color": "#ffffff",
+      }}
+    />
+  </Source>
+</Map>
+```
+
+`interpolate` 式の読み方は、
+
+1. `["linear"]` — 値の間を直線的に補間する。
+2. `["get", "value"]` — 各ポリゴンの `properties.value` を取り出す。
+3. 以降は「値, 色」のペア。`0` なら薄い黄色、`100` なら濃い赤、その間は連続的に変化します。
+
+`fill-opacity` を 1 未満にしておくと、下の地図（道路や地名）が透けて位置が分かります。
+
+</Lens>
+
+## 結果
+
+値の小さいエリアは薄く、大きいエリアは濃く塗り分けられます。凡例を添える場合は、式に書いた「値, 色」のペアをそのまま使うと一致します。
+
+<Callout title="うまくいかないとき">
+- 全部同じ色になる → プロパティ名のつづり（`value`）と、値が**数値型**であることを確認。`"72"` のような文字列だと式が効きません。
+- 一部のエリアだけ黒っぽくなる → そのポリゴンにプロパティが**欠損**しています。データ側で埋めるか、`["coalesce", ["get", "value"], 0]` のように既定値を与えます。
+- 何も出ない → `Layer` の `id` の書き忘れ、または GeoJSON の 404 を確認。
+</Callout>

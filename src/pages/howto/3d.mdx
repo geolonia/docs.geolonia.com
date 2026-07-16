@@ -1,0 +1,108 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 建物・地形を3Dで表示するには
+page: howto
+kicker: ハウツー ／ レシピ（応用）
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import Tag from '../../components/Tag.astro'
+
+視点を `pitch` で傾け、建物を **`fill-extrusion`**（高さを持つ塗り）で立ち上げると、都市が立体で見えます。建物の形と高さのデータはベーススタイルに含まれるベクトルタイルのものを使うので、自分でデータを用意する必要はありません。
+
+## コード
+
+<Lens name="embed">
+<Tag k="embed" /> embed は `data-pitch` で視点を傾けることはできますが、建物の立ち上げレイヤを足すことはできません。右上のレンズ切替から suite / react のコードを参照してください。
+
+</Lens>
+
+<Lens name="suite">
+<Tag k="suite" /> 読み込みを待ってから、視点を傾けて `fill-extrusion` レイヤを追加します。
+
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  center: { lat: 35.6812, lng: 139.7671 },
+  zoom: 15.5,
+  style: "https://tile.openstreetmap.jp/styles/osm-bright/style.json",
+});
+
+await map._whenReady();
+const impl = map._getImpl();
+impl.setPitch(60);
+impl.setBearing(-20);
+impl.addLayer({
+  id: "buildings-3d",
+  source: "openmaptiles",
+  "source-layer": "building",
+  type: "fill-extrusion",
+  minzoom: 14,
+  paint: {
+    "fill-extrusion-color": "#aaa",
+    "fill-extrusion-height": ["get", "render_height"],
+    "fill-extrusion-base": ["get", "render_min_height"],
+    "fill-extrusion-opacity": 0.7,
+  },
+});
+```
+
+- **`setPitch` / `setBearing`** — 視点の傾きと回転。基盤の地図（`_getImpl()`）に対して呼びます。
+- **`source` / `source-layer`** — ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`・レイヤ `building`）。
+- **`fill-extrusion-height`** — 立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
+- **`minzoom: 14`** — 建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
+
+</Lens>
+
+<Lens name="react">
+<Tag k="react" /> 建物ソースは**ベーススタイル側の持ち物**なので、`<Source>`/`<Layer>` コンポーネントではなく、スタイル読み込み後の `onLoad` でレイヤを追加します。
+
+```jsx
+import { Map } from "@geolonia/maps-react";
+
+const add3dBuildings = (map) => {
+  map.addLayer({
+    id: "buildings-3d",
+    source: "openmaptiles",
+    "source-layer": "building",
+    type: "fill-extrusion",
+    minzoom: 14,
+    paint: {
+      "fill-extrusion-color": "#aaa",
+      "fill-extrusion-height": ["get", "render_height"],
+      "fill-extrusion-base": ["get", "render_min_height"],
+      "fill-extrusion-opacity": 0.7,
+    },
+  });
+};
+
+<Map
+  style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"
+  center={[139.7671, 35.6812]}
+  zoom={15.5}
+  pitch={60}
+  bearing={-20}
+  onLoad={add3dBuildings}
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+- **`onLoad` で追加する理由** — `<Layer>` を単独で（`<Source>` の外に）置くと、スタイルの読み込みが終わる前にレイヤを追加しようとしてエラーになります。ベーススタイル内のソースを参照するレイヤは `onLoad` で足すのが確実です。
+- **`source` / `source-layer`** — ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`・レイヤ `building`）。
+- **`fill-extrusion-height`** — 立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
+- **`minzoom: 14`** — 建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
+
+</Lens>
+
+## 結果
+
+斜めから見た構図で、建物が高さを持って立ち上がって見えます。`pitch` を 0 にすると通常の平面図に戻ります。
+
+<Callout title="うまくいかないとき">
+- 建物が出ない → `source` / `source-layer` の名前が使っているスタイルと合っているか確認。スタイル JSON の `sources` と、建物系レイヤの `source-layer` を見ると分かります。
+- ズームアウトすると消える → `minzoom` 未満では描画されません。仕様どおりの挙動です。
+- 「Style is not done loading」エラー → レイヤの追加が早すぎます。`onLoad` の中で `addLayer` してください。
+- 動作が重い → 3D 描画は負荷が高めです。`minzoom` を上げる、表示範囲を絞るなどで軽くなります。
+</Callout>

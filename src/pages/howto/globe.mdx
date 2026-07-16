@@ -1,0 +1,69 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 地図を地球儀（グローブ）で表示するには
+page: howto
+kicker: ハウツー ／ レシピ（応用）
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import Tag from '../../components/Tag.astro'
+
+地図の投影を **globe** に切り替えると、ズームアウトしたときに平面地図ではなく地球儀として表示されます。深くズームインすると自動的に通常の地図表示へなめらかに移行するので、普段の使い勝手は変わりません。
+
+## コード
+
+<Lens name="embed">
+<Tag k="embed" /> embed（HTML の属性だけ）ではこの機能は使えません。右上のレンズ切替から suite / react のコードを参照してください。
+
+</Lens>
+
+<Lens name="suite">
+<Tag k="suite" /> 読み込みを待ってから、基盤の地図の `setProjection` で投影を切り替えます。
+
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 20, lng: 0 },
+  zoom: 2,
+});
+
+await map._whenReady();
+map._getImpl().setProjection({ type: "globe" });
+```
+
+- **`setProjection({ type: "globe" })`** — 投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
+- タイルは普段と同じものがそのまま使えます。データやスタイルの変更は不要です。
+
+</Lens>
+
+<Lens name="react">
+<Tag k="react" /> `onLoad` で地図インスタンスを受け取り、`setProjection` で投影を切り替えます。
+
+```jsx
+import { Map } from "@geolonia/maps-react";
+
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[0, 20]}
+  zoom={2}
+  onLoad={(map) => map.setProjection({ type: "globe" })}
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+- **`setProjection({ type: "globe" })`** — 投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
+- タイルは普段と同じものがそのまま使えます。データやスタイルの変更は不要です。
+
+</Lens>
+
+## 結果
+
+ズームレベルが低いとき（世界全体〜大陸くらい）は地球儀として描画され、ドラッグで地球が回ります。ズームインしていくと、通常の平面地図になめらかに移行します。
+
+<Callout title="うまくいかないとき">
+- 平面のまま変わらない → globe 投影は描画エンジン MapLibre GL JS の **v5 以降**の機能です。`maplibre-gl` のバージョンを確認してください。
+- 地球儀になっているか分からない → ズームアウトしてください。高ズームでは通常の地図と見た目が変わりません。
+</Callout>

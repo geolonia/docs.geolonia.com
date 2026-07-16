@@ -5,13 +5,92 @@ page: tutorial
 kicker: チュートリアル ／ 段3
 badge: tutorial
 ---
+import Callout from '../../../components/Callout.astro'
 
-{/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
-- [ ] 変えられる見た目（色・大きさ・アイコンなど）を挙げる
-- [ ] スタイルの指定方法を書く
-- [ ] コードを示す
-- [ ] 見た目が変わったか確認する
-- [ ] 次の段（対話を足す）へ繋ぐ
-*/}
+<Callout title="前の段でできたこと">
+段2で、5地点のデータを地図に載せました。でも全部同じ色。データには `category`（ターミナル／観光）が入っているので、この段では**属性に応じて点を色分け**します。
+</Callout>
 
-> 🚧 このページは準備中です。
+## paint プロパティで描き方を決める
+
+`addLayer` に渡すレイヤ定義の **`paint`** で、描き方を細かく指定できます。まず色分けの前に、点を見やすくしてみます。
+
+```js
+impl.addLayer({
+  id: "spots",
+  type: "circle",
+  source: "spots",
+  paint: {
+    "circle-radius": 8,
+    "circle-stroke-width": 2,
+    "circle-stroke-color": "#fff",
+    "circle-color": "#e4402f",
+  },
+});
+```
+
+- **`circle-radius`** — 丸の半径（ピクセル）。
+- **`circle-stroke-width` / `circle-stroke-color`** — 縁取りの太さと色。白い縁取りを付けると、地図の上で点が読みやすくなります。
+- **`circle-color`** — 塗りの色。
+
+## データの属性で色を変える
+
+`circle-color` には、固定の色だけでなく**式**も書けます。`match` 式を使うと、「`category` の値がこれなら、この色」という対応表になります。
+
+```js
+await map._whenReady();
+const impl = map._getImpl();
+impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+impl.addLayer({
+  id: "spots",
+  type: "circle",
+  source: "spots",
+  paint: {
+    "circle-radius": 8,
+    "circle-stroke-width": 2,
+    "circle-stroke-color": "#fff",
+    "circle-color": [
+      "match",
+      ["get", "category"],
+      "ターミナル", "#e4402f",
+      "観光", "#2b6cb0",
+      "#888888",
+    ],
+  },
+});
+```
+
+配列の読み方は上から順に、
+
+1. `"match"` — 対応表を引く式。
+2. `["get", "category"]` — 各地点の `properties.category` の値を取り出す。
+3. `"ターミナル", "#e4402f"` — 値が「ターミナル」なら赤。
+4. `"観光", "#2b6cb0"` — 値が「観光」なら青。
+5. `"#888888"` — どれにも当てはまらないときの色（フォールバック。**必須**です）。
+
+このように、データの属性から見た目を決める書き方を**データ駆動スタイル**と呼びます。色以外にも、値に応じて `circle-radius` を変える（数が大きい点ほど大きく）といった使い方ができます。
+
+## ベース地図ごと変えるには
+
+点の色ではなく、背景の地図そのものの見た目を変えたいときは、`Map` を作るときの `style` オプションにスタイル名や URL を指定します。
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  style: "geolonia/midnight",
+});
+```
+
+## 動いたか確認する
+
+駅の3点が赤、観光地の2点が青で表示されていれば成功です。GeoJSON の `category` の値を書き換えて、色が追従することも確かめてください。
+
+<Callout title="うまくいかないとき">
+- 全部フォールバックの色になる → `match` に書いた値と、GeoJSON の `properties` の値が**完全一致**しているか確認。全角・半角や余分な空白にも注意。
+- 何も出なくなった → `match` 式の**フォールバック（最後の1つ）を書き忘れる**と式が不正になります。必ず末尾に既定の色を置いてください。
+- プロパティ名を間違えるとエラーは出ずに反映されません（`circle-colour` 等のつづりに注意）。
+</Callout>
+
+## 次は
+
+データが色で語るようになりました。次の[段4：対話を足す](../interaction/)で、**マーカーのクリックで情報ウィンドウを出す**対話を追加します。
