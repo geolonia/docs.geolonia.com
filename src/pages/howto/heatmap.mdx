@@ -19,8 +19,48 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> 読み込みを待ってから、点の GeoJSON を `heatmap` レイヤで重ねます。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.668, lng: 139.735 },
+  zoom: 11,
+});
+
+await map._whenReady();
+const impl = map._getImpl();
+impl.addSource("pts", { type: "geojson", data: "/data/dense-points.geojson" });
+impl.addLayer({
+  id: "heat",
+  type: "heatmap",
+  source: "pts",
+  paint: {
+    "heatmap-weight": ["interpolate", ["linear"], ["get", "weight"], 0, 0, 6, 1],
+    "heatmap-intensity": 1,
+    "heatmap-radius": 20,
+    "heatmap-opacity": 0.8,
+    "heatmap-color": [
+      "interpolate", ["linear"], ["heatmap-density"],
+      0, "rgba(0,0,255,0)",
+      0.2, "royalblue",
+      0.4, "cyan",
+      0.6, "lime",
+      0.8, "yellow",
+      1, "red",
+    ],
+  },
+});
+```
+
+調整するのは主に4つです。
+
+- **`heatmap-weight`** — 点1つの重み。上の例では各点の `weight` プロパティ（0〜6）を 0〜1 に換算しています。全点を同じ扱いにするなら `1` の固定値で構いません。
+- **`heatmap-radius`** — 1点が影響する半径（ピクセル）。大きいほどなだらかに広がります。
+- **`heatmap-intensity`** — 全体の強さ。ズームレベルに応じて上げると、拡大しても濃淡が保たれます。
+- **`heatmap-color`** — 密度（0〜1）から色への対応。密度 0 を透明にしておくのが定番です。
 
 </Lens>
 

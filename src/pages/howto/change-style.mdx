@@ -37,8 +37,25 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> 初期スタイルは `Map` の `style` オプションで指定します。実行時に切り替えるには、基盤の地図の `setStyle` を使います。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+  style: "geolonia/gsi",
+});
+
+// 実行時の切り替えは基盤の地図の setStyle で（URL またはスタイル定義オブジェクト）
+document.getElementById("osm").onclick = () =>
+  map._getImpl().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.json");
+```
+
+- **`style` オプション** — スタイル名（例: `geolonia/gsi`）または URL。
+- **`map._getImpl().setStyle(...)`** — 実行時の切り替え。スタイル JSON の URL か、インラインのスタイル定義オブジェクトを渡します。
 
 </Lens>
 

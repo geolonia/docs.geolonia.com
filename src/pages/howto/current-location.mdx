@@ -28,8 +28,29 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> ブラウザの位置情報 API で現在地を取得し、`setCenter` で移動してマーカーを立てます。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+navigator.geolocation.getCurrentPosition(
+  (pos) => {
+    const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    map.setCenter(c);
+    new geolonia.maps.Marker({ position: c, map, title: "現在地" });
+  },
+  (err) => console.warn("位置情報を取得できません", err),
+);
+```
+
+- **`navigator.geolocation.getCurrentPosition`** — ブラウザ標準の位置情報 API。呼ぶとユーザーに許可を求めます。
+- 第2引数のエラーコールバックで、許可拒否や取得失敗時のフォールバック（既定の場所のまま表示するなど）を用意しておきます。
 
 </Lens>
 

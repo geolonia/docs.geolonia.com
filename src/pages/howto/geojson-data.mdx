@@ -30,8 +30,26 @@ GeoJSON ファイルを地図に重ねて、自分のデータ（点・線・面
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> 地図の読み込みを待ってから、基盤の地図に `addSource`（データ）と `addLayer`（描き方）で重ねます。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+await map._whenReady();
+const impl = map._getImpl();
+impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+impl.addLayer({ id: "spots", type: "circle", source: "spots" });
+```
+
+- **`_whenReady()` / `_getImpl()`** — ソースやレイヤの操作は高レベル API にないので、読み込み完了を待って基盤の地図（maplibre）に対して行います。
+- **`addSource` → `addLayer` の順**で呼びます。`type: "circle"` は各点を丸として描きます。
+- CSS のインポートなどセットアップは [maps-suite チュートリアル 段0](/tutorials/maps-suite/first-map/) を参照してください。
 
 </Lens>
 

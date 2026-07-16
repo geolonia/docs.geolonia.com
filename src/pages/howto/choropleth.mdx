@@ -31,8 +31,44 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> 読み込みを待ってから、`fill` レイヤの `fill-color` に `interpolate` 式を書いて重ねます。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.665, lng: 139.725 },
+  zoom: 12,
+});
+
+await map._whenReady();
+const impl = map._getImpl();
+impl.addSource("areas", { type: "geojson", data: "/data/areas.geojson" });
+impl.addLayer({
+  id: "areas",
+  type: "fill",
+  source: "areas",
+  paint: {
+    "fill-color": [
+      "interpolate", ["linear"], ["get", "value"],
+      0, "#ffffcc",
+      50, "#fd8d3c",
+      100, "#bd0026",
+    ],
+    "fill-opacity": 0.75,
+    "fill-outline-color": "#ffffff",
+  },
+});
+```
+
+`interpolate` 式の読み方は、
+
+1. `["linear"]` — 値の間を直線的に補間する。
+2. `["get", "value"]` — 各ポリゴンの `properties.value` を取り出す。
+3. 以降は「値, 色」のペア。`0` なら薄い黄色、`100` なら濃い赤、その間は連続的に変化します。
+
+`fill-opacity` を 1 未満にしておくと、下の地図（道路や地名）が透けて位置が分かります。
 
 </Lens>
 

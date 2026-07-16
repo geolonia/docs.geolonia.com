@@ -31,8 +31,33 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> マーカーの配列を `MarkerClusterer` に渡すと、近い点を自動でまとめてくれます。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.67, lng: 139.74 },
+  zoom: 10,
+});
+
+const res = await fetch("/data/dense-points.geojson");
+const gj = await res.json();
+
+const markers = gj.features.map(
+  (f) =>
+    new geolonia.maps.Marker({
+      position: { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] },
+    }),
+);
+
+new geolonia.maps.MarkerClusterer({ map, markers });
+```
+
+- **`Marker` は `map` を渡さずに**作ります（取り外した状態）。地図への取り付けは `MarkerClusterer` が管理します。
+- **`MarkerClusterer({ map, markers })`** — 近いマーカーを件数付きのクラスターにまとめ、ズームすると分かれます。
+- GeoJSON の `coordinates` は `[経度, 緯度]` の順なので、`position` に詰め替えるときの順序に注意してください。
 
 </Lens>
 

@@ -5,74 +5,69 @@ page: tutorial
 kicker: チュートリアル ／ 段2
 badge: tutorial
 ---
-import GeoloniaMap from '../../../components/GeoloniaMap.astro'
 import Callout from '../../../components/Callout.astro'
-import Tag from '../../../components/Tag.astro'
-import Lens from '../../../components/Lens.astro'
-
-{/* OUTLINE（構成=Claude / 本文=人が執筆。書けた項目は行ごと消す）
-- [ ] 載せるデータ（GeoJSON など）の形を説明する
-- [ ] データを地図に重ねる方法を書く
-- [ ] コードを示す
-- [ ] 自分の点が地図に出たか確認する
-- [ ] つまずき（座標の順序・読み込み失敗）を書く
-- [ ] 次の段（見た目を変える）へ繋ぐ
-*/}
 
 <Callout title="前の段でできたこと">
-段1までで地図を「自分の見たい場所」にできました。でも今のっているのは中心の点ひとつだけ。次は **自分のデータ（複数の地点）** を地図に重ねます。
+段1で、地図を自分の見たい場所・角度にできました。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
 </Callout>
 
-## ① 用意したデータを出す
+## GeoJSON を知る
 
-地図の `div` に `data-geojson` を1つ足すだけ。まずはこちらで用意したサンプル（東京の5地点）で動かします。レンズ切替でコードが変わります。
+地図にデータを載せるには、**GeoJSON** という形式のファイルを使います。GeoJSON は地理データの標準フォーマットで、テキストエディタで読み書きできる JSON です。
 
-<Lens name="embed">
-<Tag k="embed" /> 宣言型。属性に GeoJSON の URL を渡すだけ。
+このチュートリアルでは、東京の5地点を入れたサンプルを使います。次の内容を `public/data/sample-spots.geojson` として保存してください（Vite の場合、`public/` 以下のファイルは `/data/...` という URL で配信されます）。
 
-```html
-<div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11"
-     data-geojson="/data/sample-spots.geojson"></div>
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] }, "properties": { "name": "東京駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.700258, 35.690921] }, "properties": { "name": "新宿駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.701636, 35.658034] }, "properties": { "name": "渋谷駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.796747, 35.714765] }, "properties": { "name": "浅草寺", "category": "観光" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.745438, 35.658581] }, "properties": { "name": "東京タワー", "category": "観光" } }
+  ]
+}
 ```
-</Lens>
 
-<Lens name="suite">
-<Tag k="suite" /> 命令型。`addSource` ＋ `addLayer` で重ねる。
+- **`geometry`** — 点・線・面などの形状。`coordinates` は **`[経度, 緯度]`** の順です（`center` の `{ lat, lng }` とは逆順なので注意）。
+- **`properties`** — 名前や分類など、地物に付けたい属性。ここでは `name` と `category` を持たせています（`category` は次の段で使います）。
+
+## データを地図に重ねる
+
+データの追加は、段1で覚えたエスケープハッチのパターン——**読み込みを待って `_getImpl()` で基盤の地図に触る**——を使います。ソース（データ）を登録し、レイヤ（描き方）を重ねます。
 
 ```js
-map.on('load', () => {
-  map.addSource('spots', { type: 'geojson', data: '/data/sample-spots.geojson' });
-  map.addLayer({ id: 'spots', type: 'circle', source: 'spots' });
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
 });
+
+await map._whenReady();
+const impl = map._getImpl();
+impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 ```
-</Lens>
 
-<Lens name="react">
-<Tag k="react" /> 宣言型コンポーネント。
+- **`addSource`** — データの供給元を登録します。`type: "geojson"` で、`data` に URL（またはオブジェクトそのもの）を渡します。
+- **`addLayer`** — データの描き方を重ねます。`type: "circle"` は各点を丸として描きます。`source` に、登録したソースの名前を指定します。
+- **順番が大事** — `addLayer` が参照するソースは先に `addSource` してある必要があります。そして両方とも、地図の読み込み完了（`_whenReady()`）より後に呼びます。
 
-```jsx
-<Source id="spots" type="geojson" data="/data/sample-spots.geojson">
-  <Layer type="circle" />
-</Source>
-```
-</Lens>
+## 動いたか確認する
 
-<GeoloniaMap lat={35.68} lng={139.75} zoom={11} marker="off" geojson="/data/sample-spots.geojson" cluster="on" caption="本物の地図。サンプル data/sample-spots.geojson の5点。" />
+地図上に5つの丸（東京駅・新宿駅・渋谷駅・浅草寺・東京タワー）が出ていれば成功です。GeoJSON の中身を自分のデータに差し替えて、自分の点が出ることも確かめてください。
 
-## ② 自分のデータに差し替える
-
-<ol class="steps">
-  <li><h3>CSV に経度・緯度の列を用意する</h3><span class="obj">到達目標：1行 = 1地点で座標を持てている</span></li>
-  <li><h3>GeoJSON に変換する</h3><span class="obj">到達目標：自分の一覧が FeatureCollection になっている</span></li>
-  <li><h3><code>data-geojson</code> の参照先を差し替える</h3><span class="obj">到達目標：自分のデータの点が地図に出る</span></li>
-</ol>
-
-<Callout title="つまずいたら">
-- 点が海に出る → 座標が `[緯度, 経度]` 逆。`[経度, 緯度]` に直す。
-- 何も出ない → URL の 404 か GeoJSON の文法エラー。ファイルを直接開いて確認。
-- 外部 URL が読めない → CORS。まず同一オリジンに置く。
+<Callout title="うまくいかないとき">
+- 「Style is not done loading」のようなエラー → `_whenReady()` を**待たずに** `addSource`/`addLayer` を呼んでいます。`await` を確認してください。
+- 点が海や別の大陸に出る → GeoJSON の `coordinates` の**経度と緯度が逆**。`[経度, 緯度]` の順に直します。
+- 何も出ないがエラーもない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。404 や JSON の文法エラーが多い原因です。
 </Callout>
 
-<Callout title="次は">
-点は出た。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。サンプルの各点には `category` が入っています—— **次の段3で色分け** します。
-</Callout>
+## 次は
+
+自分のデータが地図にのりました。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。各点には `category` が入っています——次の[段3：見た目を変える](../style/)で、**属性に応じて色分け**します。

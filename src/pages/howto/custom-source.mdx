@@ -19,8 +19,36 @@ GeoJSON では収まらない大きなデータや、他所が配信している
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> 読み込みを待ってから、`addSource` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.6812, lng: 139.7671 },
+  zoom: 12,
+});
+
+await map._whenReady();
+const impl = map._getImpl();
+impl.addSource("gsi", {
+  type: "raster",
+  tiles: ["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"],
+  tileSize: 256,
+  attribution: "地理院タイル",
+});
+impl.addLayer({ id: "gsi", type: "raster", source: "gsi" });
+```
+
+- **`tiles`** — タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
+- **`attribution`** — データの出典表示。配信元の利用規約が求める表記を必ず入れます。
+- **ベクトルタイル**の場合は `type: "vector"` にして、レイヤ側に **`"source-layer"`**（タイル内のレイヤ名）を指定します。
+
+```js
+impl.addSource("mytiles", { type: "vector", tiles: ["https://example.com/tiles/{z}/{x}/{y}.pbf"] });
+impl.addLayer({ id: "mytiles-line", type: "line", source: "mytiles", "source-layer": "roads" });
+```
 
 </Lens>
 

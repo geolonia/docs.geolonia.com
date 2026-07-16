@@ -19,8 +19,23 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> 読み込みを待ってから、基盤の地図の `setProjection` で投影を切り替えます。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 20, lng: 0 },
+  zoom: 2,
+});
+
+await map._whenReady();
+map._getImpl().setProjection({ type: "globe" });
+```
+
+- **`setProjection({ type: "globe" })`** — 投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
+- タイルは普段と同じものがそのまま使えます。データやスタイルの変更は不要です。
 
 </Lens>
 

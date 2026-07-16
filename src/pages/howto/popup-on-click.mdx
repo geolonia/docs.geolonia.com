@@ -32,8 +32,32 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
+<Tag k="suite" /> `Marker` を置き、クリックイベントで `InfoWindow` を開きます。
 
-> 🚧 suite のコードは準備中です。
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.681236, lng: 139.767125 },
+  zoom: 15,
+});
+
+const marker = new geolonia.maps.Marker({
+  position: { lat: 35.681236, lng: 139.767125 },
+  map,
+  title: "東京駅",
+});
+
+const infoWindow = new geolonia.maps.InfoWindow({
+  content: "<strong>東京駅</strong><br>JR・地下鉄各線",
+});
+
+marker.addListener("click", () => infoWindow.open(map, marker));
+```
+
+- **`InfoWindow`** — `content` に HTML を渡して作り、`open(map, marker)` でマーカーの位置に開きます。引数は**この順番の2つ**（地図、アンカー）です。
+- マーカーを複数作って、それぞれにリスナーを付ければ、複数の点で個別のポップアップが出せます。
 
 </Lens>
 
