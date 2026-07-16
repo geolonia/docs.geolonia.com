@@ -15,7 +15,14 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.2",
+    "@astrojs/react": "^6.0.1",
+    "@geolonia/maps-react": "^0.1.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "astro": "^7.0.6",
+    "maplibre-gl": "^5.24.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "remark-cjk-friendly": "^2.3.1",
     "remark-cjk-friendly-gfm-strikethrough": "^2.3.1"
   },
