@@ -6,13 +6,14 @@
    ===================================================================== */
 :root {
   /* --- プロダクトレンズの色 ---
-     [GAP] DS 未提供。design-system の chart トークン導入後に置き換え予定 */
+     [GAP] DS 未提供。当面 docs 固有色として維持する（2026-07 デザインチーム決定）。
+     変更・追加の要望は design-system リポジトリの Issue に起票する */
   --lens-embed: #16a4d8;
   --lens-suite: #e4402f;
   --lens-react: #6f42c1;
 
   /* --- Diátaxis 4象限の色 ---
-     [GAP] DS 未提供。design-system の chart トークン導入後に置き換え予定 */
+     [GAP] DS 未提供。当面 docs 固有色として維持する（同上） */
   --q-tutorial:    #1f9d57;  /* 緑：学習×行動 */
   --q-howto:       #e08a1e;  /* 橙：仕事×行動 */
   --q-reference:   #16a4d8;  /* 青：仕事×認知 */
