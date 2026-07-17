@@ -7,7 +7,7 @@ badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
 
-<Callout title="前の段でできたこと">
+<Callout kind="success" title="前の段でできたこと">
 段1で、地図を自分の見たい場所・角度にできました。でも、のっているのは中心の点ひとつだけ。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
 </Callout>
 
@@ -64,7 +64,7 @@ createRoot(document.getElementById("root")).render(
 
 地図上に5つの丸（東京駅・新宿駅・渋谷駅・浅草寺・東京タワー）が出ていれば成功です。GeoJSON の中身を自分のデータに差し替えて、自分の点が出ることも確かめてください。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - 何も出ないがエラーもない → `<Layer>` の **`id` の書き忘れ**が一番多い原因です。必ず `id` を付けてください。
 - 点が海や別の大陸に出る → `coordinates` の**経度と緯度が逆**。`[経度, 緯度]` の順に直します。
 - それでも出ない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。404 や JSON の文法エラーが多い原因です。

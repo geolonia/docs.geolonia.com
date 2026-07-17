@@ -8,7 +8,7 @@ embed: true
 ---
 import Callout from '../../../components/Callout.astro'
 
-<Callout title="前の段でできたこと">
+<Callout kind="success" title="前の段でできたこと">
 段0〜4で、地図の表示・場所の指定・データの表示・スタイルの変更・ポップアップまでできました。この段では、作った地図を**自分のドメインで公開**します。
 </Callout>
 
@@ -66,7 +66,7 @@ GeoJSON ファイルも忘れずに同じサーバーに置いてください（
 
 公開した URL をブラウザで開いて、地図が表示されれば成功です。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - 「地図が表示できません」と出る → API キーに登録したドメインと、実際のドメインが一致しているか確認。`www.example.com` と `example.com` は別のドメインとして扱われます。
 - ローカルでは出たのにサーバーで出ない → デモキー（`YOUR-API-KEY`）のままになっていないか確認。
 - GeoJSON だけ出ない → サーバー上に GeoJSON ファイルが配置されているか、パスが正しいか確認。

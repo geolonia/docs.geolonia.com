@@ -113,7 +113,7 @@ import { Map, Source, Layer } from "@geolonia/maps-react";
 
 点が密集している場所ほど赤く、まばらな場所は青く表示されます。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - ほとんど色が付かない → 点が少ないと密度が上がりません。`heatmap-radius` か `heatmap-intensity` を上げてみてください。
 - 拡大すると消えていく → ズームが上がると点がばらけて密度が下がるためです。ズーム連動で `heatmap-intensity` を上げるか、高ズームでは `circle` レイヤに切り替えて個別の点を見せる構成が定番です。
 - 何も出ない → `Layer` の `id` の書き忘れ、または GeoJSON の 404 を確認。

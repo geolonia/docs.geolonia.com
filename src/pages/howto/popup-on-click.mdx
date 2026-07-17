@@ -92,7 +92,7 @@ import { Map, Marker } from "@geolonia/maps-react";
 
 <div class="map-box"><div class="geolonia" data-lat="35.681236" data-lng="139.767125" data-zoom="15"><strong>東京駅</strong><br />JR・地下鉄各線</div></div>
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - マーカーが出ない → `data-marker="off"` が付いていないか確認。ポップアップを使うときはマーカーが必要です。
 - ポップアップが空 → `div` の子要素が空になっていないか確認。空白文字だけではポップアップは開きません。
 - クリックしても何も出ない → `div` タグの閉じ忘れに注意。`<div class="geolonia" ...>内容</div>` と正しく閉じてください。

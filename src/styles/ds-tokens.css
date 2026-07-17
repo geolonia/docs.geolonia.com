@@ -1,4 +1,4 @@
-/* geolonia-design-system の tokens.css のベンダーコピー（3ec6aa5 時点・オレンジテーマ含む）
+/* geolonia-design-system の tokens.css のベンダーコピー（210d1a3 時点・オレンジテーマ含む）
    npm 公開後は @geolonia/design-tokens に置き換えて削除する。編集禁止。 */
 :root {
   /* === カラー（意味で名付けたセマンティックトークン） === */
@@ -12,7 +12,8 @@
   --color-accent-text: #9A3D0E;   /* 薄いオレンジ地に乗せる濃いオレンジ文字 */
   --color-accent-surface: #FBEADF; /* バッジ等の薄いオレンジ地 */
 
-  /* 構造：濃紺。ヘッダーの濃い面・見出し・テキスト強調 */
+  /* 構造：濃紺。見出し・テキスト強調・フッター等の濃い面。
+     ヘッダーは白ベース（ロゴ設置を想定。background + border-bottom: var(--color-border)） */
   --color-structure-navy: #1B2A4A;
 
   /* 状態色（機能カラー） */
@@ -33,6 +34,30 @@
   --color-status-danger-text: #A5221A;
   --color-status-info-surface: #DDEAF2;
   --color-status-info-text: #0A5B8E;
+
+  /* 稼働状態：success ペアの別名。「処理の成功」ではなく「現在動いている」を表す */
+  --color-status-active-surface: #E0ECE4;
+  --color-status-active-text: #196432;
+
+  /* 差分表示：追加＝緑・削除＝赤。地は状態ペアの surface を白で55%に薄めたもの
+     （モノスペース本文の可読性優先）。文字は状態ペアの text と同値 */
+  --color-diff-added-surface: #EEF5F0;
+  --color-diff-added-text: #196432;
+  --color-diff-removed-surface: #FAEFEE;
+  --color-diff-removed-text: #A5221A;
+
+  /* === グラフ用パレット ===
+     系列色は番号順に使う。全色とも既存トークンの参照（新色は chart-4 のみ、
+     オレンジテーマの warning と同値）。グラフの塗りは図形なので AA 4.5:1 は
+     不要（3:1 目安）。chart-4 に明るい金色を使えるのはそのため。
+     テーマによらず同一（ブランドテーマでも変わらない） */
+  --color-chart-1: #1E4FB8; /* 青（action-primary） */
+  --color-chart-2: #E85A19; /* オレンジ（action-accent） */
+  --color-chart-3: #1F7A3D; /* 緑（status-success） */
+  --color-chart-4: #D98E00; /* 金色アンバー（オレンジテーマの warning と同値） */
+  --color-chart-5: #1B2A4A; /* 濃紺（structure-navy） */
+  --color-chart-success: #1F7A3D; /* 成功系列（status-success） */
+  --color-chart-error: #C0271E;   /* エラー系列（status-danger） */
 
   /* テキスト・面・境界（ニュートラル） */
   --color-text-primary: #1A1A1A;
@@ -63,7 +88,8 @@
 
   /* === 角丸 === */
   --radius-tight: 2px;   /* 通知・タグなど「面より帯」の部品。ほぼ直角 */
-  --radius-control: 6px; /* ボタン・入力欄 */
+  --radius-control: 6px; /* 入力欄・パネル等のコントロール */
+  --radius-button: 6px;  /* ボタン専用。デフォルトは control と同じ。オレンジテーマでカプセル型になる */
   --radius-card: 10px;   /* カード・パネル */
 
   /* === シャドウ（elevation） ===
@@ -132,4 +158,8 @@
   /* 面・境界：上書きしない（ニュートラルグレーを継承）。
      コーポレートサイト同様、ベースは白/グレーでオレンジを効かせる。
      暖色に寄せるのはアクセント面（--color-accent-surface）のみ */
+
+  /* 角丸：ボタンのみカプセル型（geolonia.com のボタンに合わせる）。
+     入力欄・パネル等（--radius-control）は 6px のまま */
+  --radius-button: 999px;
 }

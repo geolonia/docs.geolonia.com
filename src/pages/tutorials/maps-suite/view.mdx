@@ -7,7 +7,7 @@ badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
 
-<Callout title="前の段でできたこと">
+<Callout kind="success" title="前の段でできたこと">
 段0で、Web ページに地図を出せるようになりました。ただし場所は既定の東京駅のまま。この段では、地図を**自分の見たい場所・見たい角度**にします。
 </Callout>
 
@@ -49,7 +49,7 @@ map._whenReady().then(() => {
 
 中心が東京タワーになり、地図が斜めから見た構図になっていれば成功です。`center` を自分の場所に差し替えて、狙った場所が中心に出ることも確かめてください。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - 中心が海や別の国に飛ぶ → `lat` と `lng` の**取り違え**を確認。日本国内なら `lat` はおよそ 24〜46、`lng` はおよそ 123〜146 です。
 - `setPitch` などで「関数がない」エラー → `map` 本体ではなく `map._getImpl()` の戻り値に対して呼んでいるか確認。
 - 傾きが反映されない → `_whenReady()` を待ってから呼んでいるか確認。

@@ -79,7 +79,7 @@ import { Map } from "@geolonia/maps-react";
 
 <div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-geolocate-control="on"></div></div>
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - ボタンを押しても何も起きない → ブラウザの位置情報の許可を確認。ブロックしている場合はアドレスバーの鍵アイコンから許可を変更できます。
 - 「位置情報を取得できません」→ HTTPS（または `localhost`）でないと位置情報 API は動きません。`http://` のサイトでは使えません。
 - 現在地がずれる → GPS やネットワーク環境による誤差です。特にデスクトップでは IP ベースの推定になるため、大きくずれることがあります。

@@ -47,7 +47,7 @@ createRoot(document.getElementById("root")).render(
 
 `npm run dev` で開発サーバーを起動してブラウザで開くと、既定の場所——**東京駅**を中心にした地図が表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
 
-<Callout title="うまく出ないとき">
+<Callout kind="warning" title="うまく出ないとき">
 - 真っ白で何も出ない → `containerStyle` の**高さが 0** になっていないか確認。親要素が `height: 0` の場合も同じです。
 - 表示が崩れる（コントロールのアイコンが変な場所に出る等）→ **CSS のインポート忘れ**。2つとも読み込んでいるか確認。
 - コンソールに `The requested module '.../maplibre-gl.js' does not provide an export named 'default'` と出る → maplibre-gl が CJS 形式で配布されているため、一部のビルド環境で事前バンドルされないのが原因です。Astro など Vite ベースの環境では、設定に `vite: { optimizeDeps: { include: ['maplibre-gl', '@geolonia/maps-core'] } }` を追加すると解決します（Vite 単体の SPA では通常不要）。
