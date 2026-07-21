@@ -38,50 +38,62 @@ const nav = [
     <footer class="site-foot">プロトタイプ（docs-astro）。地図は localhost / *.github.io で実描画されます。</footer>
 
     <!-- 記事内レンズタブ：連続する .lens 兄弟を1つのタブ群にまとめ、直下のコードを切り替える。
-         タブ群ごとに独立（同期・記憶なし）。JS 無効時は先頭レンズのみ表示。 -->
+         選択中のレンズ（ライブラリ）はサイト全体で同期し、localStorage に保存して
+         ページ遷移後も保持する。ページ内の全タブ群が連動する。
+         JS 無効時は先頭レンズのみ表示。 -->
     <script>
-      function buildLensTabs(group) {
-        if (group.length < 2) { group.forEach((p) => (p.hidden = false)); return; }
-        const bar = document.createElement('div');
-        bar.className = 'lens-tabs__bar';
-        bar.setAttribute('role', 'tablist');
-        const buttons = group.map((panel, i) => {
-          const name = [...panel.classList].find((c) => c !== 'lens') || 'code';
-          const b = document.createElement('button');
-          b.type = 'button';
-          b.className = 'lens-tab' + (i === 0 ? ' active' : '');
-          b.dataset.lens = name;
-          b.setAttribute('role', 'tab');
-          b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
-          b.textContent = name;
-          b.addEventListener('click', () => {
-            group.forEach((p, j) => (p.hidden = j !== i));
-            buttons.forEach((btn, j) => {
-              btn.classList.toggle('active', j === i);
-              btn.setAttribute('aria-selected', j === i ? 'true' : 'false');
-            });
-          });
-          return b;
-        });
-        buttons.forEach((b) => bar.appendChild(b));
-        group[0].parentNode.insertBefore(bar, group[0]);
-        group.forEach((p, i) => (p.hidden = i !== 0));
-      }
       (function initLensTabs() {
+        const KEY = 'geolonia-docs-lens';
+        const read = () => { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
+        const write = (v) => { try { localStorage.setItem(KEY, v); } catch (e) {} };
+
+        const groups = [];
         const seen = new Set();
         document.querySelectorAll('.lens').forEach((first) => {
           if (seen.has(first)) return;
           const prev = first.previousElementSibling;
           if (prev && prev.classList.contains('lens')) return; // 群の途中はスキップ
-          const group = [];
+          const panels = [];
           let el = first;
           while (el && el.classList && el.classList.contains('lens')) {
-            group.push(el);
+            panels.push(el);
             seen.add(el);
             el = el.nextElementSibling;
           }
-          buildLensTabs(group);
+          if (panels.length < 2) { panels.forEach((p) => (p.hidden = false)); return; }
+
+          const names = panels.map((p) => [...p.classList].find((c) => c !== 'lens') || 'code');
+          const bar = document.createElement('div');
+          bar.className = 'lens-tabs__bar';
+          bar.setAttribute('role', 'tablist');
+          const buttons = names.map((name) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'lens-tab';
+            b.dataset.lens = name;
+            b.setAttribute('role', 'tab');
+            b.textContent = name;
+            b.addEventListener('click', () => { write(name); applyAll(name); });
+            bar.appendChild(b);
+            return b;
+          });
+          panels[0].parentNode.insertBefore(bar, panels[0]);
+          groups.push({ panels, buttons, names });
         });
+
+        function applyAll(lens) {
+          groups.forEach(({ panels, buttons, names }) => {
+            let idx = names.indexOf(lens); // その群に無ければ先頭を表示（全体の保存値は変えない）
+            if (idx < 0) idx = 0;
+            panels.forEach((p, j) => (p.hidden = j !== idx));
+            buttons.forEach((b, j) => {
+              b.classList.toggle('active', j === idx);
+              b.setAttribute('aria-selected', j === idx ? 'true' : 'false');
+            });
+          });
+        }
+
+        applyAll(read() || 'embed');
       })();
     </script>
   </body>
