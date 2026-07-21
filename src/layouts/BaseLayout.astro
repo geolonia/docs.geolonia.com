@@ -1,5 +1,6 @@
 ---
 // 全ページ共通の外枠。CSS は src/styles/ から読み込むだけ（分離方針）。
+import '../styles/ds-tokens.css'; // Geolonia デザインシステム（エイリアス元。必ず tokens.css より先）
 import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/layout.css';
@@ -16,7 +17,7 @@ const nav = [
 ];
 ---
 <!doctype html>
-<html lang="ja">
+<html lang="ja" data-theme="orange">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -7,7 +7,7 @@ badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
 
-<Callout title="前の段でできたこと">
+<Callout kind="success" title="前の段でできたこと">
 段3で、データを属性に応じて色分けしました。この段では、**マーカーをクリックしたら情報ウィンドウが出る**対話を追加します。
 </Callout>
 
@@ -64,7 +64,7 @@ map.addListener("click", (e) => {
 
 マーカーをクリックして、書いた内容が吹き出しで出れば成功です。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - マーカーが出ない → `Marker` のオプションに `map` を渡し忘れていないか確認。`map` がないと、作られても地図に取り付けられません。
 - クリックしても開かない → `open(map, marker)` の**引数の順番**を確認。第1引数が地図、第2引数がマーカーです。
 - 吹き出しが空 → `content` が空文字になっていないか確認。

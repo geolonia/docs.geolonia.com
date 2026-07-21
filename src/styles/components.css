@@ -20,7 +20,7 @@
 /* 象限カード（トップの4入口） */
 .quad-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
 .quad { display: block; border: 1px solid var(--border); border-top: 4px solid var(--border); border-radius: var(--radius); padding: 18px; background: var(--bg); transition: box-shadow .15s, transform .15s; }
-.quad:hover { box-shadow: 0 8px 24px rgba(20,40,60,0.09); transform: translateY(-2px); text-decoration: none; }
+.quad:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); text-decoration: none; }
 .quad h3 { margin: 8px 0 4px; }
 .quad p { margin: 0; font-size: 13px; color: var(--text-soft); }
 .quad.tutorial    { border-top-color: var(--q-tutorial); }
@@ -32,6 +32,15 @@
 .callout { border: 1px solid var(--border); background: var(--bg-soft); border-radius: var(--radius); padding: 14px 18px; margin: 16px 0; }
 .callout .ttl { display: block; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
 .callout > :last-child { margin-bottom: 0; }
+/* 状態付き callout：DS の status surface/text ペア（ペア側で AA 4.5:1 を保証） */
+.callout.info    { background: var(--color-status-info-surface);    border-color: var(--color-status-info); }
+.callout.info .ttl    { color: var(--color-status-info-text); }
+.callout.success { background: var(--color-status-success-surface); border-color: var(--color-status-success); }
+.callout.success .ttl { color: var(--color-status-success-text); }
+.callout.warning { background: var(--color-status-warning-surface); border-color: var(--color-status-warning); }
+.callout.warning .ttl { color: var(--color-status-warning-text); }
+.callout.danger  { background: var(--color-status-danger-surface);  border-color: var(--color-status-danger); }
+.callout.danger .ttl  { color: var(--color-status-danger-text); }
 
 /* 地図 */
 .map-figure { margin: 16px 0; }

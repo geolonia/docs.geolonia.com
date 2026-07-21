@@ -8,7 +8,7 @@ embed: true
 ---
 import Callout from '../../../components/Callout.astro'
 
-<Callout title="前の段でできたこと">
+<Callout kind="success" title="前の段でできたこと">
 段3で、地図のスタイルを差し替えました。この段では、**マーカーをクリックしたらポップアップが出る**対話を追加します。
 </Callout>
 
@@ -53,7 +53,7 @@ embed のポップアップは**中心の1つのマーカーだけ**に付けら
 
 マーカーをクリックして、書いた HTML の内容がポップアップに出れば成功です。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - マーカーが出ない → `data-marker="off"` が残っていないか確認。ポップアップを使うときはマーカーが必要です。
 - ポップアップが空 → `div` の子要素が空になっていないか確認。空白文字だけではポップアップは開きません。
 - 子要素を書いたが反映されない → `div` タグの閉じ忘れに注意。`<div class="geolonia" ...>内容</div>` のように正しく閉じてください。

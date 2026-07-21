@@ -7,7 +7,7 @@ badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
 
-<Callout title="前の段でできたこと">
+<Callout kind="success" title="前の段でできたこと">
 段2で、5地点のデータを地図に載せました。でも全部同じ色。データには `category`（ターミナル／観光）が入っているので、この段では**属性に応じて点を色分け**します。
 </Callout>
 
@@ -85,7 +85,7 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 駅の3点が赤、観光地の2点が青で表示されていれば成功です。GeoJSON の `category` の値を書き換えて、色が追従することも確かめてください。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - 全部フォールバックの色になる → `match` に書いた値と、GeoJSON の `properties` の値が**完全一致**しているか確認。全角・半角や余分な空白にも注意。
 - 何も出なくなった → `match` 式の**フォールバック（最後の1つ）を書き忘れる**と式が不正になります。必ず末尾に既定の色を置いてください。
 - プロパティ名を間違えるとエラーは出ずに反映されません（`circle-colour` 等のつづりに注意）。

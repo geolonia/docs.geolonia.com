@@ -1,41 +1,46 @@
 /* =====================================================================
    tokens.css — デザイントークン（デザイナーが最初に触る場所）
-   色・タイポ・余白・角丸を変数で集中管理。ここを変えれば全ページに反映。
-   コンテンツ（.astro / .md）には色や数値を直書きしない方針。
+   Geolonia デザインシステム（ds-tokens.css・オレンジテーマ）を正とし、
+   このファイルはサイト内変数 → DS トークンへのエイリアスに徹する。
+   コンテンツ（.astro / .md）には色や数値を直書きしない方針（従来どおり）。
    ===================================================================== */
 :root {
-  /* --- プロダクトレンズの色 --- */
+  /* --- プロダクトレンズの色 ---
+     [GAP] DS 未提供。当面 docs 固有色として維持する（2026-07 デザインチーム決定）。
+     変更・追加の要望は design-system リポジトリの Issue に起票する */
   --lens-embed: #16a4d8;
   --lens-suite: #e4402f;
   --lens-react: #6f42c1;
 
-  /* --- Diátaxis 4象限の色 --- */
+  /* --- Diátaxis 4象限の色 ---
+     [GAP] DS 未提供。当面 docs 固有色として維持する（同上） */
   --q-tutorial:    #1f9d57;  /* 緑：学習×行動 */
   --q-howto:       #e08a1e;  /* 橙：仕事×行動 */
   --q-reference:   #16a4d8;  /* 青：仕事×認知 */
   --q-explanation: #6f42c1;  /* 紫：学習×認知 */
 
-  /* --- 基調色 --- */
-  --brand:       #16a4d8;
-  --brand-dark:  #0f7aa3;
-  --accent-soft: #e8f6fc;
-  --bg:          #ffffff;
-  --bg-soft:     #f5f8fa;
-  --text:        #1b2733;
-  --text-soft:   #51606e;
-  --text-faint:  #8a9aab;
-  --border:      #e2e8ee;
-  --code-bg:     #0f1b27;
-  --code-fg:     #d6e2ef;
+  /* --- 基調色（DS エイリアス） --- */
+  --brand:       var(--color-action-primary);
+  --brand-dark:  var(--color-action-primary-hover);
+  --accent-soft: var(--color-accent-surface);
+  --link:        var(--color-accent-text); /* 本文リンク。白地 AA を満たす濃オレンジ */
+  --bg:          var(--color-background);
+  --bg-soft:     var(--color-surface);
+  --text:        var(--color-text-primary);
+  --text-soft:   var(--color-text-secondary);
+  --text-faint:  #8a9aab; /* [GAP] DS に3段階目のテキスト色なし */
+  --border:      var(--color-border);
+  --code-bg:     #0f1b27; /* [GAP] DS にコードブロック色なし */
+  --code-fg:     #d6e2ef; /* [GAP] 同上 */
 
-  /* --- タイポグラフィ --- */
-  --font-sans: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --fs-base: 15px;
-  --lh-base: 1.7;
+  /* --- タイポグラフィ（DS エイリアス） --- */
+  --font-sans: var(--font-family-base);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; /* [GAP] DS に mono なし */
+  --fs-base: var(--font-size-body);
+  --lh-base: var(--line-height-body);
 
-  /* --- 余白・形 --- */
-  --space: 16px;
-  --radius: 12px;
-  --maxw: 980px;
+  /* --- 余白・形（DS エイリアス） --- */
+  --space: var(--space-4);
+  --radius: var(--radius-card);
+  --maxw: 980px; /* サイト固有のレイアウト値 */
 }

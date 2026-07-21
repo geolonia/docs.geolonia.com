@@ -100,7 +100,7 @@ const add3dBuildings = (map) => {
 
 斜めから見た構図で、建物が高さを持って立ち上がって見えます。`pitch` を 0 にすると通常の平面図に戻ります。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - 建物が出ない → `source` / `source-layer` の名前が使っているスタイルと合っているか確認。スタイル JSON の `sources` と、建物系レイヤの `source-layer` を見ると分かります。
 - ズームアウトすると消える → `minzoom` 未満では描画されません。仕様どおりの挙動です。
 - 「Style is not done loading」エラー → レイヤの追加が早すぎます。`onLoad` の中で `addLayer` してください。

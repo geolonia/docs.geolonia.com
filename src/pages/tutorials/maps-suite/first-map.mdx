@@ -62,7 +62,7 @@ new geolonia.maps.Map(document.getElementById("map"), {
 
 `npm run dev` で開発サーバーを起動してブラウザで開くと、既定の場所——**東京駅**を中心にした地図が表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
 
-<Callout title="うまく出ないとき">
+<Callout kind="warning" title="うまく出ないとき">
 - 真っ白で何も出ない → `#map` の**高さが 0** になっていないか確認。`<style>` の指定を確認してください。
 - 「The first argument must be an HTMLElement」という例外 → `Map` に id **文字列**を渡しています。`document.getElementById("map")` で要素を取得して渡してください。
 - 表示が崩れる（コントロールのアイコンが変な場所に出る等）→ **CSS のインポート忘れ**。2つとも読み込んでいるか確認。

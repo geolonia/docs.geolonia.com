@@ -8,7 +8,7 @@ embed: true
 ---
 import Callout from '../../../components/Callout.astro'
 
-<Callout title="前の段でできたこと">
+<Callout kind="success" title="前の段でできたこと">
 段1で、地図を自分の見たい場所・角度にできました。でも、のっているのは中心の点ひとつだけ。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
 </Callout>
 
@@ -77,7 +77,7 @@ GeoJSON ファイルを Web サーバーに置いたら、`div` に `data-geojso
 
 地図上にマーカーが複数表示されていれば成功です。拡大・縮小してクラスターが分かれるのも確認してください。
 
-<Callout title="うまくいかないとき">
+<Callout kind="warning" title="うまくいかないとき">
 - 点が海や別の大陸に出る → **座標の順序**を確認。GeoJSON の `coordinates` は `[経度, 緯度]` です（HTML の `data-lat`/`data-lng` とは逆）。
 - 何も出ない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。404 や JSON の文法エラーが多い原因です。
 - 外部 URL の GeoJSON が読めない → CORS の制限です。まずは同じサーバーにファイルを置いてみてください。
