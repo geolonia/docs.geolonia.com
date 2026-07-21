@@ -23,7 +23,7 @@ const nav = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
   </head>
-  <body data-page={page} data-lens={lens}>
+  <body data-page={page}>
     <header class="site-top">
       <a class="brand" href="/"><span class="dot"></span>Geolonia Docs <span class="v2">v2</span></a>
       <nav class="dtx-nav">
@@ -31,30 +31,58 @@ const nav = [
           <a href={n.href} data-sec={n.sec} class={page === n.sec ? 'active' : ''}>{n.label}</a>
         ))}
       </nav>
-      <div class="lens-switch" role="group" aria-label="レンズ切替">
-        <button data-lens="embed">embed</button><button data-lens="suite">suite</button><button data-lens="react">react</button>
-      </div>
     </header>
 
     <slot />
 
     <footer class="site-foot">プロトタイプ（docs-astro）。地図は localhost / *.github.io で実描画されます。</footer>
 
-    <!-- レンズ切替：.lens 要素は現在のレンズのクラスを持つものだけ表示 -->
+    <!-- 記事内レンズタブ：連続する .lens 兄弟を1つのタブ群にまとめ、直下のコードを切り替える。
+         タブ群ごとに独立（同期・記憶なし）。JS 無効時は先頭レンズのみ表示。 -->
     <script>
-      function applyLens(lens) {
-        document.body.setAttribute('data-lens', lens);
-        document.querySelectorAll('.lens-switch button').forEach((b) =>
-          b.classList.toggle('active', b.getAttribute('data-lens') === lens)
-        );
-        document.querySelectorAll('.lens').forEach((el) => {
-          el.hidden = !el.classList.contains(lens);
+      function buildLensTabs(group) {
+        if (group.length < 2) { group.forEach((p) => (p.hidden = false)); return; }
+        const bar = document.createElement('div');
+        bar.className = 'lens-tabs__bar';
+        bar.setAttribute('role', 'tablist');
+        const buttons = group.map((panel, i) => {
+          const name = [...panel.classList].find((c) => c !== 'lens') || 'code';
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'lens-tab' + (i === 0 ? ' active' : '');
+          b.dataset.lens = name;
+          b.setAttribute('role', 'tab');
+          b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+          b.textContent = name;
+          b.addEventListener('click', () => {
+            group.forEach((p, j) => (p.hidden = j !== i));
+            buttons.forEach((btn, j) => {
+              btn.classList.toggle('active', j === i);
+              btn.setAttribute('aria-selected', j === i ? 'true' : 'false');
+            });
+          });
+          return b;
         });
+        buttons.forEach((b) => bar.appendChild(b));
+        group[0].parentNode.insertBefore(bar, group[0]);
+        group.forEach((p, i) => (p.hidden = i !== 0));
       }
-      document.querySelectorAll('.lens-switch button').forEach((b) =>
-        b.addEventListener('click', () => applyLens(b.getAttribute('data-lens')))
-      );
-      applyLens(document.body.getAttribute('data-lens') || 'embed');
+      (function initLensTabs() {
+        const seen = new Set();
+        document.querySelectorAll('.lens').forEach((first) => {
+          if (seen.has(first)) return;
+          const prev = first.previousElementSibling;
+          if (prev && prev.classList.contains('lens')) return; // 群の途中はスキップ
+          const group = [];
+          let el = first;
+          while (el && el.classList && el.classList.contains('lens')) {
+            group.push(el);
+            seen.add(el);
+            el = el.nextElementSibling;
+          }
+          buildLensTabs(group);
+        });
+      })();
     </script>
   </body>
 </html>
