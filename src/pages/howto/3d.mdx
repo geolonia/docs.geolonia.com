@@ -1,6 +1,6 @@
 ---
 layout: ../../layouts/DocLayout.astro
-title: 建物・地形を3Dで表示するには
+title: 建物や地形を3Dで表示するには
 page: howto
 kicker: ハウツー ／ レシピ（応用）
 badge: howto
@@ -49,10 +49,10 @@ impl.addLayer({
 });
 ```
 
-- **`setPitch` / `setBearing`** — 視点の傾きと回転。基盤の地図（`_getImpl()`）に対して呼びます。
-- **`source` / `source-layer`** — ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`・レイヤ `building`）。
-- **`fill-extrusion-height`** — 立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
-- **`minzoom: 14`** — 建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
+- **`setPitch` / `setBearing`**：視点の傾きと回転。基盤の地図（`_getImpl()`）に対して呼びます。
+- **`source` / `source-layer`**：ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`、レイヤ `building`）。
+- **`fill-extrusion-height`**：立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
+- **`minzoom: 14`**：建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
 
 </Lens>
 
@@ -89,10 +89,10 @@ const add3dBuildings = (map) => {
 />
 ```
 
-- **`onLoad` で追加する理由** — `<Layer>` を単独で（`<Source>` の外に）置くと、スタイルの読み込みが終わる前にレイヤを追加しようとしてエラーになります。ベーススタイル内のソースを参照するレイヤは `onLoad` で足すのが確実です。
-- **`source` / `source-layer`** — ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`・レイヤ `building`）。
-- **`fill-extrusion-height`** — 立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
-- **`minzoom: 14`** — 建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
+- **`onLoad` で追加する理由**：`<Layer>` を単独で（`<Source>` の外に）置くと、スタイルの読み込みが終わる前にレイヤを追加しようとしてエラーになります。ベーススタイル内のソースを参照するレイヤは `onLoad` で足すのが確実です。
+- **`source` / `source-layer`**：ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`、レイヤ `building`）。
+- **`fill-extrusion-height`**：立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
+- **`minzoom: 14`**：建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
 
 </Lens>
 

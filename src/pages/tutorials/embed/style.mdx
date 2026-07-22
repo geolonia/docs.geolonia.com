@@ -14,7 +14,7 @@ import Callout from '../../../components/Callout.astro'
 
 ## スタイルとは
 
-地図の「見た目」——道路の色、文字の大きさ、建物の塗りなど——はすべて**スタイル**で決まっています。スタイルは JSON ファイルで定義され、URL で指定します。
+地図の「見た目」（道路の色、文字の大きさ、建物の塗りなど）はすべて**スタイル**で決まっています。スタイルは JSON ファイルで定義され、URL で指定します。
 
 embed では `data-style` 属性に URL を書くだけでベースの地図を丸ごと差し替えられます。
 
@@ -28,7 +28,7 @@ embed では `data-style` 属性に URL を書くだけでベースの地図を�
      data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div>
 ```
 
-- **`data-style`** — スタイル JSON の URL。上の例は OpenStreetMap Japan が提供するスタイルです。
+- **`data-style`**：スタイル JSON の URL。上の例は OpenStreetMap Japan が提供するスタイルです。
 - `data-style` を省略すると、Geolonia の標準スタイルが使われます。
 
 実際に描画される地図がこちらです。段2と同じデータが、別のスタイルの地図に載っています。

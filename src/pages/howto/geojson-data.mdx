@@ -10,7 +10,7 @@ import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
 
-GeoJSON ファイルを地図に重ねて、自分のデータ（点・線・面）を表示します。
+GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面）を表示します。
 
 ## コード
 
@@ -24,8 +24,8 @@ GeoJSON ファイルを地図に重ねて、自分のデータ（点・線・面
      data-geojson="/data/sample-spots.geojson"></div>
 ```
 
-- **`data-geojson`** — GeoJSON ファイルのパスまたは URL。同じサーバー上のパスか、CORS を許可した外部 URL を指定します。
-- **`data-marker="off"`** — 中心のデフォルトマーカーを非表示にしています。データの点だけを見たいときに便利です。
+- **`data-geojson`**：GeoJSON ファイルのパスまたは URL。同じサーバー上のパスか、CORS を許可した外部 URL を指定します。
+- **`data-marker="off"`**：中心のデフォルトマーカーを非表示にしています。データの点だけを見たいときに便利です。
 
 </Lens>
 
@@ -47,7 +47,7 @@ impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" })
 impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 ```
 
-- **`_whenReady()` / `_getImpl()`** — ソースやレイヤの操作は高レベル API にないので、読み込み完了を待って基盤の地図（maplibre）に対して行います。
+- **`_whenReady()` / `_getImpl()`**：ソースやレイヤの操作は高レベル API にないので、読み込み完了を待って基盤の地図（maplibre）に対して行います。
 - **`addSource` → `addLayer` の順**で呼びます。`type: "circle"` は各点を丸として描きます。
 - CSS のインポートなどセットアップは [maps-suite チュートリアル 段0](/tutorials/maps-suite/first-map/) を参照してください。
 
@@ -71,8 +71,8 @@ import { Map, Source, Layer } from "@geolonia/maps-react";
 </Map>
 ```
 
-- **`<Source>`** — `type="geojson"` で、`data` に GeoJSON の URL（またはオブジェクトそのもの）を渡します。
-- **`<Layer>`** — データの描き方。`type="circle"` は各点を丸として描きます。**`id` は必須**です——省略するとエラーも出ずにレイヤが追加されず、何も表示されません。
+- **`<Source>`**：`type="geojson"` で、`data` に GeoJSON の URL（またはオブジェクトそのもの）を渡します。
+- **`<Layer>`**：データの描き方。`type="circle"` は各点を丸として描きます。**`id` は必須**です。省略するとエラーも出ずにレイヤが追加されず、何も表示されません。
 - CSS のインポートなどセットアップは [maps-react チュートリアル 段0](/tutorials/maps-react/first-map/) を参照してください。
 
 </Lens>

@@ -19,7 +19,7 @@ import Tag from '../../components/Tag.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 全点の最小・最大の座標から範囲を求めて、`fitBounds` を呼びます。
+<Tag k="suite" /> 全点の最小と最大の座標から範囲を求めて、`fitBounds` を呼びます。
 
 ```js
 import { geolonia } from "@geolonia/maps-suite";
@@ -51,13 +51,13 @@ await map._whenReady();
 map.fitBounds({ north, south, east, west }, 40);
 ```
 
-- **`fitBounds({ north, south, east, west }, padding)`** — 指定した範囲に地図を合わせます。第2引数は画面の縁からの余白（ピクセル）で、これがないと端の点がぎりぎりに切れます。
+- **`fitBounds({ north, south, east, west }, padding)`**：指定した範囲に地図を合わせます。第2引数は画面の縁からの余白（ピクセル）で、これがないと端の点がぎりぎりに切れます。
 - 読み込み完了（`_whenReady()`）を待ってから呼びます。
 
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `onLoad` で地図インスタンスを受け取り、全点の最小・最大の座標から範囲を求めて `fitBounds` を呼びます。
+<Tag k="react" /> `onLoad` で地図インスタンスを受け取り、全点の最小と最大の座標から範囲を求めて `fitBounds` を呼びます。
 
 ```jsx
 import { Map, Marker } from "@geolonia/maps-react";
@@ -91,8 +91,8 @@ const handleLoad = (map) => {
 </Map>
 ```
 
-- **`onLoad`** — 地図の準備ができたときに、地図インスタンスを引数にして呼ばれます。
-- **`fitBounds`** — `[[西, 南], [東, 北]]` の範囲に地図を合わせます。`padding` は画面の縁からの余白（ピクセル）で、これがないと端の点がぎりぎりに切れます。
+- **`onLoad`**：地図の準備ができたときに、地図インスタンスを引数にして呼ばれます。
+- **`fitBounds`**：`[[西, 南], [東, 北]]` の範囲に地図を合わせます。`padding` は画面の縁からの余白（ピクセル）で、これがないと端の点がぎりぎりに切れます。
 
 </Lens>
 
@@ -102,5 +102,5 @@ const handleLoad = (map) => {
 
 <Callout kind="warning" title="うまくいかないとき">
 - 端の点が切れる → `padding` を増やしてください。マーカーはピンの高さがあるので、上側は特に余白が要ります。
-- 点が1つしかない・全点が同じ座標 → 範囲の面積が 0 になり、極端にズームインします。点が1つのときは `center` と `zoom` を直接指定する方が簡単です。
+- 点が1つしかない、または全点が同じ座標 → 範囲の面積が 0 になり、極端にズームインします。点が1つのときは `center` と `zoom` を直接指定する方が簡単です。
 </Callout>

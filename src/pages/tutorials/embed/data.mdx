@@ -9,7 +9,7 @@ embed: true
 import Callout from '../../../components/Callout.astro'
 
 <Callout kind="success" title="前の段でできたこと">
-段1で、地図を自分の見たい場所・角度にできました。でも、のっているのは中心の点ひとつだけ。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
+段1で、地図を自分の見たい場所と角度にできました。でも、のっているのは中心の点ひとつだけ。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
 </Callout>
 
 ## GeoJSON を知る
@@ -31,9 +31,9 @@ embed で地図にデータを載せるには、**GeoJSON** という形式の�
 }
 ```
 
-- **`FeatureCollection`** — 地物（Feature）の入れ物。
-- **`geometry`** — 点・線・面などの形状。`coordinates` は **`[経度, 緯度]`** の順です（`data-lat`/`data-lng` とは逆なので注意）。
-- **`properties`** — 名前や分類など、地物に付けたい属性。何でも自由に入れられます。
+- **`FeatureCollection`**：地物（Feature）の入れ物。
+- **`geometry`**：点、線、面などの形状。`coordinates` は **`[経度, 緯度]`** の順です（`data-lat`/`data-lng` とは逆なので注意）。
+- **`properties`**：名前や分類など、地物に付けたい属性。何でも自由に入れられます。
 
 ## データを地図に重ねる
 
@@ -46,8 +46,8 @@ GeoJSON ファイルを Web サーバーに置いたら、`div` に `data-geojso
      data-geojson="/data/sample-spots.geojson"></div>
 ```
 
-- **`data-geojson`** — GeoJSON ファイルの URL。同じサーバー上のパスか、CORS を許可した外部 URL を指定します。
-- **`data-marker="off"`** — 中心のマーカーを消しています。データの点を見たいときに、中心マーカーがあると紛らわしいので消すのが定番です。
+- **`data-geojson`**：GeoJSON ファイルの URL。同じサーバー上のパスか、CORS を許可した外部 URL を指定します。
+- **`data-marker="off"`**：中心のマーカーを消しています。データの点を見たいときに、中心マーカーがあると紛らわしいので消すのが定番です。
 
 ## クラスタリングで見やすくする
 
@@ -69,13 +69,13 @@ GeoJSON ファイルを Web サーバーに置いたら、`div` に `data-geojso
 
 ## 自分のデータに差し替える
 
-1. スプレッドシートや CSV で、1行 = 1地点のデータを用意する（経度・緯度の列が必要）。
+1. スプレッドシートや CSV で、1行 = 1地点のデータを用意する（経度と緯度の列が必要）。
 2. GeoJSON に変換する。手で書いてもよいですし、[geojson.io](https://geojson.io/) などのツールを使うと楽です。
 3. ファイルを Web サーバーに置いて、`data-geojson` のパスを差し替える。
 
 ## 動いたか確認する
 
-地図上にマーカーが複数表示されていれば成功です。拡大・縮小してクラスターが分かれるのも確認してください。
+地図上にマーカーが複数表示されていれば成功です。拡大や縮小をしてクラスターが分かれるのも確認してください。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 点が海や別の大陸に出る → **座標の順序**を確認。GeoJSON の `coordinates` は `[経度, 緯度]` です（HTML の `data-lat`/`data-lng` とは逆）。

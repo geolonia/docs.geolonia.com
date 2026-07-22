@@ -8,7 +8,7 @@ badge: tutorial
 import Callout from '../../../components/Callout.astro'
 
 <Callout kind="success" title="前の段でできたこと">
-段1で、地図を自分の見たい場所・角度にできました。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
+段1で、地図を自分の見たい場所と角度にできました。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
 </Callout>
 
 ## GeoJSON を知る
@@ -30,12 +30,12 @@ import Callout from '../../../components/Callout.astro'
 }
 ```
 
-- **`geometry`** — 点・線・面などの形状。`coordinates` は **`[経度, 緯度]`** の順です（`center` の `{ lat, lng }` とは逆順なので注意）。
-- **`properties`** — 名前や分類など、地物に付けたい属性。ここでは `name` と `category` を持たせています（`category` は次の段で使います）。
+- **`geometry`**：点、線、面などの形状。`coordinates` は **`[経度, 緯度]`** の順です（`center` の `{ lat, lng }` とは逆順なので注意）。
+- **`properties`**：名前や分類など、地物に付けたい属性。ここでは `name` と `category` を持たせています（`category` は次の段で使います）。
 
 ## データを地図に重ねる
 
-データの追加は、段1で覚えたエスケープハッチのパターン——**読み込みを待って `_getImpl()` で基盤の地図に触る**——を使います。ソース（データ）を登録し、レイヤ（描き方）を重ねます。
+データの追加は、段1で覚えたエスケープハッチのパターン（**読み込みを待って `_getImpl()` で基盤の地図に触る**）を使います。ソース（データ）を登録し、レイヤ（描き方）を重ねます。
 
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -54,13 +54,13 @@ impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" })
 impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 ```
 
-- **`addSource`** — データの供給元を登録します。`type: "geojson"` で、`data` に URL（またはオブジェクトそのもの）を渡します。
-- **`addLayer`** — データの描き方を重ねます。`type: "circle"` は各点を丸として描きます。`source` に、登録したソースの名前を指定します。
-- **順番が大事** — `addLayer` が参照するソースは先に `addSource` してある必要があります。そして両方とも、地図の読み込み完了（`_whenReady()`）より後に呼びます。
+- **`addSource`**：データの供給元を登録します。`type: "geojson"` で、`data` に URL（またはオブジェクトそのもの）を渡します。
+- **`addLayer`**：データの描き方を重ねます。`type: "circle"` は各点を丸として描きます。`source` に、登録したソースの名前を指定します。
+- **順番が大事**：`addLayer` が参照するソースは先に `addSource` してある必要があります。そして両方とも、地図の読み込み完了（`_whenReady()`）より後に呼びます。
 
 ## 動いたか確認する
 
-地図上に5つの丸（東京駅・新宿駅・渋谷駅・浅草寺・東京タワー）が出ていれば成功です。GeoJSON の中身を自分のデータに差し替えて、自分の点が出ることも確かめてください。
+地図上に5つの丸（東京駅、新宿駅、渋谷駅、浅草寺、東京タワー）が出ていれば成功です。GeoJSON の中身を自分のデータに差し替えて、自分の点が出ることも確かめてください。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 「Style is not done loading」のようなエラー → `_whenReady()` を**待たずに** `addSource`/`addLayer` を呼んでいます。`await` を確認してください。
@@ -70,4 +70,4 @@ impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 
 ## 次は
 
-自分のデータが地図にのりました。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。各点には `category` が入っています——次の[段3：見た目を変える](../style/)で、**属性に応じて色分け**します。
+自分のデータが地図にのりました。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。各点には `category` が入っています。次の[段3：見た目を変える](../style/)で、**属性に応じて色分け**します。
