@@ -1,0 +1,63 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 地図の表示言語を切り替えるには
+page: howto
+kicker: ハウツー ／ レシピ
+badge: howto
+embed: true
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import Tag from '../../components/Tag.astro'
+
+地名などのラベルの言語を、`ja`（日本語）、`en`（英語）、`auto`（閲覧者のブラウザ設定に合わせる）から選べます。初期値は `auto` です。
+
+## コード
+
+<Lens name="embed">
+<Tag k="embed" /> `data-lang` 属性で指定します。
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-lang="en"></div>
+```
+
+- **`data-lang`**：`ja`、`en`、`auto` のいずれか。省略すると `auto`（ブラウザの言語設定に従う）です。
+
+</Lens>
+
+<Lens name="suite">
+<Tag k="suite" /> maps-suite の初期化オプションには言語指定がなく、表示言語はブラウザの設定に従います（`auto` 相当）。言語を明示的に固定したい場合は、embed か maps-react を使ってください。
+
+</Lens>
+
+<Lens name="react">
+<Tag k="react" /> `Map` の `lang` プロパティで指定します。
+
+```jsx
+import { Map } from "@geolonia/maps-react";
+
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+  lang="en"
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+- **`lang`**：`"ja"`、`"en"`、`"auto"` のいずれか。省略すると `auto` です。
+
+</Lens>
+
+## 結果
+
+`data-lang="en"` を指定した地図です。英語名を持つラベル（この範囲では鉄道路線名など）が英語で表示されます。市区町村名などの地名は、そのスタイルのデータが英語名を持つ範囲でだけ切り替わり、英語名がない部分は現地表記のまま残ります。`data-lang="ja"`（または `lang="ja"`）にすると日本語に固定できます。
+
+<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-lang="en"></div></div>
+
+<Callout kind="warning" title="うまくいかないとき">
+- 言語が変わらない → ラベルの言語はスタイルが持つデータに依存します。英語の地名を持たない地域では、指定しても現地表記のままになることがあります。
+- 一部だけ言語が混ざる → その地物に対応する言語のラベルがデータに無いためです。仕様どおりの挙動で、欠けている箇所は現地表記で補われます。
+</Callout>
