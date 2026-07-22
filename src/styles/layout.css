@@ -23,4 +23,13 @@
 .lens-switch button.active { background: var(--color-accent-surface); color: var(--color-accent-text); }
 
 .content { max-width: var(--maxw); margin: 0 auto; padding: 28px 22px 80px; }
-.site-foot { max-width: var(--maxw); margin: 0 auto; padding: 30px 22px; color: var(--text-faint); font-size: 12.5px; border-top: 1px solid var(--border); }
+.site-foot { border-top: 1px solid var(--border); }
+.site-foot__inner { max-width: var(--maxw); margin: 0 auto; padding: 30px 22px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.site-foot__brand { display: flex; flex-direction: column; gap: 8px; }
+.site-foot__logo { font-weight: 800; font-size: 14px; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.site-foot__logo:hover { text-decoration: none; color: var(--color-accent-text); }
+.site-foot__logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 4px var(--accent-soft); }
+.site-foot__copyright { margin: 0; color: var(--text-faint); font-size: 12.5px; line-height: 1.5; }
+.site-foot__social { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; }
+.site-foot__social-link { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; color: var(--text-soft); border: 1px solid var(--border); }
+.site-foot__social-link:hover { color: var(--color-accent-text); background: var(--accent-soft); border-color: transparent; text-decoration: none; }
