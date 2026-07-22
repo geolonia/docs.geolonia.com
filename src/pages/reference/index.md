@@ -28,6 +28,10 @@ quadrant: Diátaxis / 仕事 × 認知
 | `data-geojson` | URL | なし | 重ねる GeoJSON |
 | `data-cluster` | `on` / `off` | `on` | `data-geojson` の点をクラスタリング |
 
+`@geolonia/embed` の型定義から生成した全属性のリファレンスも取り込み済みです。
+
+- [embed API インデックス](/reference/embed/)：`EmbedAttributes`（`data-*` 属性の全一覧と既定値）/ `EmbedPlugin`
+
 ## maps-suite API（自動生成）
 
 `@geolonia/maps-suite` の型定義から生成した API リファレンスを取り込み済み（プロトタイプのためコピー）。
