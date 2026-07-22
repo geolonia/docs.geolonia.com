@@ -17,11 +17,6 @@
 .dtx-nav a:hover { background: var(--bg-soft); text-decoration: none; }
 .dtx-nav a.active { background: var(--accent-soft); color: var(--color-accent-text); }
 
-.lens-switch { margin-left: auto; display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-.lens-switch button { font: inherit; font-size: 12px; font-weight: 700; border: none; border-left: 1px solid var(--border); background: #fff; color: var(--text-soft); padding: 6px 11px; cursor: pointer; }
-.lens-switch button:first-child { border-left: none; }
-.lens-switch button.active { background: var(--color-accent-surface); color: var(--color-accent-text); }
-
 .content { max-width: var(--maxw); margin: 0 auto; padding: 28px 22px 80px; }
 .site-foot { border-top: 1px solid var(--border); }
 .site-foot__inner { max-width: var(--maxw); margin: 0 auto; padding: 30px 22px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }

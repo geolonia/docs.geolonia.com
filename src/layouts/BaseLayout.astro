@@ -23,7 +23,7 @@ const nav = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
   </head>
-  <body data-page={page} data-lens={lens}>
+  <body data-page={page}>
     <header class="site-top">
       <a class="brand" href="/"><span class="dot"></span>Geolonia Docs <span class="v2">v2</span></a>
       <nav class="dtx-nav">
@@ -31,9 +31,6 @@ const nav = [
           <a href={n.href} data-sec={n.sec} class={page === n.sec ? 'active' : ''}>{n.label}</a>
         ))}
       </nav>
-      <div class="lens-switch" role="group" aria-label="レンズ切替">
-        <button data-lens="embed">embed</button><button data-lens="suite">suite</button><button data-lens="react">react</button>
-      </div>
     </header>
 
     <slot />
@@ -54,21 +51,64 @@ const nav = [
       </div>
     </footer>
 
-    <!-- レンズ切替：.lens 要素は現在のレンズのクラスを持つものだけ表示 -->
+    <!-- 記事内レンズタブ：連続する .lens 兄弟を1つのタブ群にまとめ、直下のコードを切り替える。
+         選択中のレンズ（ライブラリ）はサイト全体で同期し、localStorage に保存して
+         ページ遷移後も保持する。ページ内の全タブ群が連動する。
+         JS 無効時は先頭レンズのみ表示。 -->
     <script>
-      function applyLens(lens) {
-        document.body.setAttribute('data-lens', lens);
-        document.querySelectorAll('.lens-switch button').forEach((b) =>
-          b.classList.toggle('active', b.getAttribute('data-lens') === lens)
-        );
-        document.querySelectorAll('.lens').forEach((el) => {
-          el.hidden = !el.classList.contains(lens);
+      (function initLensTabs() {
+        const KEY = 'geolonia-docs-lens';
+        const read = () => { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
+        const write = (v) => { try { localStorage.setItem(KEY, v); } catch (e) {} };
+
+        const groups = [];
+        const seen = new Set();
+        document.querySelectorAll('.lens').forEach((first) => {
+          if (seen.has(first)) return;
+          const prev = first.previousElementSibling;
+          if (prev && prev.classList.contains('lens')) return; // 群の途中はスキップ
+          const panels = [];
+          let el = first;
+          while (el && el.classList && el.classList.contains('lens')) {
+            panels.push(el);
+            seen.add(el);
+            el = el.nextElementSibling;
+          }
+          if (panels.length < 2) { panels.forEach((p) => (p.hidden = false)); return; }
+
+          const names = panels.map((p) => [...p.classList].find((c) => c !== 'lens') || 'code');
+          const bar = document.createElement('div');
+          bar.className = 'lens-tabs__bar';
+          bar.setAttribute('role', 'tablist');
+          const buttons = names.map((name) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'lens-tab';
+            b.dataset.lens = name;
+            b.setAttribute('role', 'tab');
+            b.textContent = name;
+            b.addEventListener('click', () => { write(name); applyAll(name); });
+            bar.appendChild(b);
+            return b;
+          });
+          panels[0].parentNode.insertBefore(bar, panels[0]);
+          groups.push({ panels, buttons, names });
         });
-      }
-      document.querySelectorAll('.lens-switch button').forEach((b) =>
-        b.addEventListener('click', () => applyLens(b.getAttribute('data-lens')))
-      );
-      applyLens(document.body.getAttribute('data-lens') || 'embed');
+
+        function applyAll(lens) {
+          groups.forEach(({ panels, buttons, names }) => {
+            let idx = names.indexOf(lens); // その群に無ければ先頭を表示（全体の保存値は変えない）
+            if (idx < 0) idx = 0;
+            panels.forEach((p, j) => (p.hidden = j !== idx));
+            buttons.forEach((b, j) => {
+              b.classList.toggle('active', j === idx);
+              b.setAttribute('aria-selected', j === idx ? 'true' : 'false');
+            });
+          });
+        }
+
+        applyAll(read() || 'embed');
+      })();
     </script>
   </body>
 </html>
