@@ -54,13 +54,13 @@ new geolonia.maps.Map(document.getElementById("map"), {
 
 ポイントは3つです。
 
-- **CSS のインポート** — `maplibre-gl/dist/maplibre-gl.css` と `@geolonia/maps-core/css` の2つが必要です。忘れるとコントロールやポップアップの表示が崩れます。
-- **`new geolonia.maps.Map(要素, オプション)`** — 第1引数は **HTML 要素そのもの**です（`"map"` のような id 文字列を渡すと例外になります）。
-- **`apiKey`** — `YOUR-API-KEY` はお試し用のデモキーで、`localhost` と `*.github.io` でのみ地図が描画されます（自分のキーの発行は[段5](../publish/)でやります）。
+- **CSS のインポート**：`maplibre-gl/dist/maplibre-gl.css` と `@geolonia/maps-core/css` の2つが必要です。忘れるとコントロールやポップアップの表示が崩れます。
+- **`new geolonia.maps.Map(要素, オプション)`**：第1引数は **HTML 要素そのもの**です（`"map"` のような id 文字列を渡すと例外になります）。
+- **`apiKey`**：`YOUR-API-KEY` はお試し用のデモキーで、`localhost` と `*.github.io` でのみ地図が描画されます（自分のキーの発行は[段5](../publish/)でやります）。
 
 ## 動いたか確認する
 
-`npm run dev` で開発サーバーを起動してブラウザで開くと、既定の場所——**東京駅**を中心にした地図が表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
+`npm run dev` で開発サーバーを起動してブラウザで開くと、既定の場所（**東京駅**）を中心にした地図が表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
 
 <Callout kind="warning" title="うまく出ないとき">
 - 真っ白で何も出ない → `#map` の**高さが 0** になっていないか確認。`<style>` の指定を確認してください。
@@ -70,4 +70,4 @@ new geolonia.maps.Map(document.getElementById("map"), {
 
 ## 次は
 
-地図は出ました。でも、見たいのは東京駅ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心・拡大率・傾きを指定します。
+地図は出ました。でも、見たいのは東京駅ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心、拡大率、傾きを指定します。

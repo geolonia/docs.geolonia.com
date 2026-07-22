@@ -9,7 +9,7 @@ import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
 
-GeoJSON では収まらない大きなデータや、他所が配信しているタイルを地図に重ねるには、**タイルソース**を追加します。`{z}/{x}/{y}` のテンプレート URL で配信されるラスタタイル・ベクトルタイルが対象です。
+GeoJSON では収まらない大きなデータや、他所が配信しているタイルを地図に重ねるには、**タイルソース**を追加します。`{z}/{x}/{y}` のテンプレート URL で配信されるラスタタイルやベクトルタイルが対象です。
 
 ## コード
 
@@ -41,8 +41,8 @@ impl.addSource("gsi", {
 impl.addLayer({ id: "gsi", type: "raster", source: "gsi" });
 ```
 
-- **`tiles`** — タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
-- **`attribution`** — データの出典表示。配信元の利用規約が求める表記を必ず入れます。
+- **`tiles`**：タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
+- **`attribution`**：データの出典表示。配信元の利用規約が求める表記を必ず入れます。
 - **ベクトルタイル**の場合は `type: "vector"` にして、レイヤ側に **`"source-layer"`**（タイル内のレイヤ名）を指定します。
 
 ```js
@@ -76,8 +76,8 @@ import { Map, Source, Layer } from "@geolonia/maps-react";
 </Map>
 ```
 
-- **`tiles`** — タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
-- **`attribution`** — データの出典表示。配信元の利用規約が求める表記を必ず入れます。
+- **`tiles`**：タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
+- **`attribution`**：データの出典表示。配信元の利用規約が求める表記を必ず入れます。
 - **ベクトルタイル**の場合は `type="vector"` にして、`Layer` 側に **`source-layer`**（タイル内のレイヤ名）を指定します。
 
 ```jsx
@@ -95,5 +95,5 @@ import { Map, Source, Layer } from "@geolonia/maps-react";
 <Callout kind="warning" title="うまくいかないとき">
 - 何も出ない（ラスタ）→ テンプレート URL をブラウザで直接確認。`{z}/{x}/{y}` に実数（例: `12/3637/1612`）を入れて画像が返るか見ると早いです。
 - 何も出ない（ベクトル）→ **`source-layer` 名の不一致**が一番多い原因です。タイルの仕様書か、配信元のスタイル定義で正確な名前を確認してください。
-- タイルがずれる・粗い → `tileSize` を確認（256 か 512 か、配信元によって異なります）。
+- タイルがずれる、粗い → `tileSize` を確認（256 か 512 か、配信元によって異なります）。
 </Callout>

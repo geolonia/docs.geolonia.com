@@ -25,7 +25,7 @@ import Tag from '../../components/Tag.astro'
 </div>
 ```
 
-- **`div` の子要素**がそのままポップアップの内容です。HTML なので、太字・リンク・画像なども使えます。
+- **`div` の子要素**がそのままポップアップの内容です。HTML なので、太字やリンク、画像なども使えます。
 - 子要素を書くと中心にマーカーが立ち、クリックでポップアップが開きます。
 - embed のポップアップは**中心の1つのマーカーだけ**に付けられます。複数のマーカーそれぞれにポップアップを付けたい場合は suite や react を使ってください。
 
@@ -56,7 +56,7 @@ const infoWindow = new geolonia.maps.InfoWindow({
 marker.addListener("click", () => infoWindow.open(map, marker));
 ```
 
-- **`InfoWindow`** — `content` に HTML を渡して作り、`open(map, marker)` でマーカーの位置に開きます。引数は**この順番の2つ**（地図、アンカー）です。
+- **`InfoWindow`**：`content` に HTML を渡して作り、`open(map, marker)` でマーカーの位置に開きます。引数は**この順番の2つ**（地図、アンカー）です。
 - マーカーを複数作って、それぞれにリスナーを付ければ、複数の点で個別のポップアップが出せます。
 
 </Lens>
@@ -80,8 +80,8 @@ import { Map, Marker } from "@geolonia/maps-react";
 </Map>
 ```
 
-- **`lat` / `lng`** — マーカーを立てる場所。個別の props で渡します（`Map` の `center` は `[経度, 緯度]` の配列なので混同に注意）。
-- **子要素** — クリックしたときに開くポップアップの中身。JSX なので React コンポーネントも書けます。
+- **`lat` / `lng`**：マーカーを立てる場所。個別の props で渡します（`Map` の `center` は `[経度, 緯度]` の配列なので混同に注意）。
+- **子要素**：クリックしたときに開くポップアップの中身。JSX なので React コンポーネントも書けます。
 - embed と違い、`Marker` を複数並べて**それぞれにポップアップ**を付けられます（[マーカーを複数置くには](/howto/multiple-markers/)を参照）。
 
 </Lens>

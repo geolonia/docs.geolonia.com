@@ -8,7 +8,7 @@ badge: tutorial
 import Callout from '../../../components/Callout.astro'
 
 <Callout kind="success" title="前の段でできたこと">
-段0〜4で、地図の表示・場所の指定・データの表示・色分け・ポップアップまでできました。この段では、作ったアプリを**自分のドメインで公開**します。
+段0〜4で、地図の表示、場所の指定、データの表示、色分け、ポップアップまでできました。この段では、作ったアプリを**自分のドメインで公開**します。
 </Callout>
 
 ## デモキーと本番キーの違い
@@ -48,17 +48,17 @@ React アプリはビルドすると静的ファイルになります。Vite の
 npm run build
 ```
 
-`dist/` ディレクトリに HTML・JS・CSS が出力されるので、これを静的ホスティングに置けば公開できます。
+`dist/` ディレクトリに HTML、JS、CSS が出力されるので、これを静的ホスティングに置けば公開できます。
 
-- **GitHub Pages** — `dist/` の中身をデプロイする（Actions を使うのが定番です）。
-- **Netlify / Vercel** — リポジトリを接続すると、ビルドコマンドを検出して自動でデプロイされます。
-- **レンタルサーバー** — `dist/` の中身を FTP 等でアップロード。
+- **GitHub Pages**：`dist/` の中身をデプロイする（Actions を使うのが定番です）。
+- **Netlify / Vercel**：リポジトリを接続すると、ビルドコマンドを検出して自動でデプロイされます。
+- **レンタルサーバー**：`dist/` の中身を FTP 等でアップロード。
 
 `public/data/` に置いた GeoJSON はビルドで `dist/data/` にコピーされるので、そのまま一緒に公開されます。
 
 ## 動いたか確認する
 
-公開した URL をブラウザで開いて、これまで作ってきた地図——色分けされた点とポップアップ——が表示されれば成功です。
+公開した URL をブラウザで開いて、これまで作ってきた地図（色分けされた点とポップアップ）が表示されれば成功です。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 「地図が表示できません」と出る → API キーに登録したドメインと、実際のドメインが一致しているか確認。`www.example.com` と `example.com` は別のドメインとして扱われます。
@@ -73,7 +73,7 @@ npm run build
 段0〜5を通して、次のことができるようになりました。
 
 - `<Map>` コンポーネントで React アプリに地図を出す
-- 場所・視点を props で指定する
+- 場所と視点を props で指定する
 - `<Source>` と `<Layer>` で GeoJSON データを重ねる
 - `paint` の式でデータ駆動の色分けをする
 - `<Marker>` と子要素でポップアップを出す
@@ -81,5 +81,5 @@ npm run build
 
 さらに詳しく知りたいときは、次のリソースが参考になります。
 
-- **[ハウツー](/howto/)** — 「〜したい」に答えるレシピ集。
-- **maps-react 以外のチュートリアル** — [embed](/tutorials/embed/)（HTML だけで最速表示）、[suite](/tutorials/maps-suite/)（JavaScript で細かく制御）。
+- **[ハウツー](/howto/)**：「〜したい」に答えるレシピ集。
+- **maps-react 以外のチュートリアル**：[embed](/tutorials/embed/)（HTML だけで最速表示）、[suite](/tutorials/maps-suite/)（JavaScript で細かく制御）。

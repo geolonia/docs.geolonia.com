@@ -23,7 +23,7 @@ import Tag from '../../components/Tag.astro'
      data-style="geolonia/gsi"></div>
 ```
 
-- **`data-style`** — Geolonia が用意するスタイル名（`geolonia/basic`、`geolonia/midnight`、`geolonia/gsi` など）か、外部スタイル JSON の URL を指定できます。
+- **`data-style`**：Geolonia が用意するスタイル名（`geolonia/basic`、`geolonia/midnight`、`geolonia/gsi` など）か、外部スタイル JSON の URL を指定できます。
 - 省略すると Geolonia の標準スタイルが使われます。
 
 外部の URL を使う例:
@@ -54,8 +54,8 @@ document.getElementById("osm").onclick = () =>
   map._getImpl().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.json");
 ```
 
-- **`style` オプション** — スタイル名（例: `geolonia/gsi`）または URL。
-- **`map._getImpl().setStyle(...)`** — 実行時の切り替え。スタイル JSON の URL か、インラインのスタイル定義オブジェクトを渡します。
+- **`style` オプション**：スタイル名（例: `geolonia/gsi`）または URL。
+- **`map._getImpl().setStyle(...)`**：実行時の切り替え。スタイル JSON の URL か、インラインのスタイル定義オブジェクトを渡します。
 
 </Lens>
 
@@ -84,7 +84,7 @@ function App() {
 }
 ```
 
-- **`style`** — スタイル名か、スタイル JSON の URL。state を差し替えるとベース地図が丸ごと切り替わります。
+- **`style`**：スタイル名か、スタイル JSON の URL。state を差し替えるとベース地図が丸ごと切り替わります。
 - スタイルを**オブジェクト**（インラインのスタイル定義）で渡す場合は、モジュール定数などにして参照を安定させてください。レンダーのたびに新しいオブジェクトを作ると、毎回スタイルが再読み込みされます。
 
 </Lens>
