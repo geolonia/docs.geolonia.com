@@ -14,7 +14,17 @@ import Tag from '../../components/Tag.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed は `data-pitch` で視点を傾けることはできますが、建物の立ち上げレイヤを足すことはできません。上のタブで suite / react のコードに切り替えてください。
+<Tag k="embed" /> `data-3d="on"` を足すだけです。視点は `data-pitch`（傾き）と `data-bearing`（回転）で調整します。
+
+```html
+<div class="geolonia"
+     data-lat="35.6812" data-lng="139.7671" data-zoom="15.5"
+     data-pitch="60" data-bearing="-20"
+     data-3d="on"></div>
+```
+
+- **`data-3d="on"`**：3D 建物を表示します。suite / react のように `fill-extrusion` レイヤを自分で足すのではなく、**Geolonia のベーススタイル（既定の `geolonia/basic-v2` など）に組み込まれた 3D 建物レイヤを表示に切り替える**しくみです。そのため自前のスタイルやデータは不要な一方、この属性が効くのは 3D 建物を含む Geolonia スタイルを使っているときだけです（`data-style` で外部スタイルを指定した場合は効きません）。
+- **`data-pitch` / `data-bearing`**：視点の傾き（度）と回転（度）。建物の立体感を出すには傾けておきます。
 
 </Lens>
 
