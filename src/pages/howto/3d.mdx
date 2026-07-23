@@ -4,17 +4,29 @@ title: 建物や地形を3Dで表示するには
 page: howto
 kicker: ハウツー ／ レシピ（応用）
 badge: howto
+embed: true
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import GeoloniaMap from '../../components/GeoloniaMap.astro'
 
 視点を `pitch` で傾け、建物を **`fill-extrusion`**（高さを持つ塗り）で立ち上げると、都市が立体で見えます。建物の形と高さのデータはベーススタイルに含まれるベクトルタイルのものを使うので、自分でデータを用意する必要はありません。
 
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed は `data-pitch` で視点を傾けることはできますが、建物の立ち上げレイヤを足すことはできません。上のタブで suite / react のコードに切り替えてください。
+<Tag k="embed" /> `data-3d="on"` を足すだけです。視点は `data-pitch`（傾き）と `data-bearing`（回転）で調整します。
+
+```html
+<div class="geolonia"
+     data-lat="35.6812" data-lng="139.7671" data-zoom="15.5"
+     data-pitch="60" data-bearing="-20"
+     data-3d="on"></div>
+```
+
+- **`data-3d="on"`**：3D 建物を表示します。suite / react のように `fill-extrusion` レイヤを自分で足すのではなく、**Geolonia のベーススタイル（既定の `geolonia/basic-v2` など）に組み込まれた 3D 建物レイヤ（`building-3d`）を表示に切り替える**しくみです。そのため自前のスタイルやデータは不要な一方、この属性が効くのは 3D 建物を含む Geolonia スタイルを使っているときだけです（`data-style` で外部スタイルを指定した場合は効きません）。
+- **`data-pitch` / `data-bearing`**：視点の傾き（度）と回転（度）。**3D 建物の表示は `data-3d="on"` だけで有効になり、`data-pitch` は不要です**。真上から見たままだと高さが分かりにくいので、立体感を出したいときに傾けます。
 
 </Lens>
 
@@ -98,7 +110,11 @@ const add3dBuildings = (map) => {
 
 ## 結果
 
-斜めから見た構図で、建物が高さを持って立ち上がって見えます。`pitch` を 0 にすると通常の平面図に戻ります。
+斜めから見た構図で、建物が高さを持って立ち上がって見えます。`pitch` を 0 にすると真上から見た平面的な見え方に戻りますが、3D 建物レイヤ自体は表示されたままです（高さが知覚しにくくなるだけです）。
+
+下は embed（`data-3d="on"`）で東京駅周辺を表示した例です。ズームを上げると建物が立体で描画されます。
+
+<GeoloniaMap lat={35.6812} lng={139.7671} zoom={16} pitch={60} bearing={-20} threeD="on" marker="off" tall={true} caption="embed の data-3d='on' による 3D 建物表示（東京駅周辺、geolonia/basic-v2）。" />
 
 <Callout kind="warning" title="うまくいかないとき">
 - 建物が出ない → `source` / `source-layer` の名前が使っているスタイルと合っているか確認。スタイル JSON の `sources` と、建物系レイヤの `source-layer` を見ると分かります。
