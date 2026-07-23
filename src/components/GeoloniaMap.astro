@@ -8,6 +8,9 @@ const {
   marker = 'on',
   geojson,
   cluster,
+  pitch,
+  bearing,
+  threeD,
   tall = false,
   caption,
 } = Astro.props;
@@ -22,6 +25,9 @@ const {
       data-marker={marker}
       data-geojson={geojson}
       data-cluster={cluster}
+      data-pitch={pitch}
+      data-bearing={bearing}
+      data-3d={threeD}
     ></div>
   </div>
   {caption && <figcaption class="map-cap">{caption}</figcaption>}
