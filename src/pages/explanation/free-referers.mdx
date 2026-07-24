@@ -1,0 +1,45 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: デモキーで無料で試せる環境
+page: explanation
+kicker: 解説 ／ デモキー
+badge: explanation
+---
+import Callout from '../../components/Callout.astro'
+
+ドキュメントやサンプルに出てくる `YOUR-API-KEY` は、キーを発行しなくても地図を試せる**デモキー**です。あらかじめ許可された環境（ドメイン）からのアクセスに限り、実際の API キーが無くても地図が描画されます。「まず動かして確かめてから、公開するときにキーを取る」という順番で学べるようにするための仕組みです。
+
+## どこで動くのか
+
+デモキーは、開発中やプロトタイプでよく使う環境で動くように許可ドメインが設定されています。代表的なものは次のとおりです（これがすべてではありません）。
+
+### ローカル開発
+
+- `localhost` / `127.0.0.1`（任意のポート）
+- `*.test` / `*.local` / `*.example` などの開発用ドメイン
+
+### オンラインエディタ・playground
+
+- CodePen（`codepen.io`）
+- CodeSandbox（`*.csb.app`）
+- JSFiddle
+- PlayCode
+
+### 無料ホスティング・プレビュー
+
+- GitHub Pages（`*.github.io`）
+- Netlify（`*.netlify.app`）
+- Vercel（`*.vercel.app`）
+- Cloudflare Pages / Workers（`*.pages.dev` / `*.workers.dev`）
+
+つまり CodePen に貼り付けたり、GitHub Pages や Netlify / Vercel にそのままデプロイしたりするだけで、キーの発行を待たずに地図を表示して確認できます。
+
+## 本番公開には実キーが必要
+
+<Callout kind="warning" title="独自ドメインで公開するときは実キーを">
+デモキーは上記のような「試す・プロトタイプする」ための環境でのみ動きます。`example.com` のような独自ドメインで公開する場合は、[Geolonia のダッシュボード](https://app.geolonia.com/)で本番用の API キーを発行し、利用するドメインを登録してください。発行から差し替えまでの手順は [embed の段5：公開する](/tutorials/embed/publish/) などにあります。
+</Callout>
+
+## 完全なリスト
+
+許可ドメインは随時更新されるため、上記はあくまで主要なものの抜粋です。完全なリストは [geolonia/free-referers の `referers.json`](https://github.com/geolonia/free-referers/blob/master/referers.json) を見てください。
