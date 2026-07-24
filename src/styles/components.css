@@ -61,6 +61,10 @@
 .lens-tab[data-lens="suite"].active { color: var(--lens-suite); border-bottom-color: var(--lens-suite); }
 .lens-tab[data-lens="react"].active { color: var(--lens-react); border-bottom-color: var(--lens-react); }
 
+/* 動くデモ（iframe を遅延ロードで埋め込む LensDemo） */
+.lens-demo { margin: 14px 0; }
+.lens-demo__frame { width: 100%; height: 360px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); display: block; }
+
 /* 手順 */
 .steps { list-style: none; counter-reset: s; padding: 0; }
 .steps li { counter-increment: s; position: relative; padding: 4px 0 14px 38px; }

@@ -1,0 +1,11 @@
+---
+// maps-react のライブデモ（iframe 埋め込み用）。client:only で React 島として描画。
+// 使い方は tutorials/maps-react/first-map と同じ（検証済み構成）。
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+import { Map } from '@geolonia/maps-react';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import '@geolonia/maps-core/css';
+---
+<DemoLayout title="maps-react — 地図を出す">
+  <Map client:only="react" apiKey="YOUR-API-KEY" containerStyle={{ width: '100%', height: '100vh' }} />
+</DemoLayout>

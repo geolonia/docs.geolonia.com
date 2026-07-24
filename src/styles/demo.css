@@ -1,0 +1,9 @@
+/* =====================================================================
+   demo.css — iframe に埋め込む動くデモ専用の最小スタイル。
+   サイト本体のトークンは読み込まず、地図がフレーム一杯に出ることだけを担保。
+   ===================================================================== */
+html, body { margin: 0; height: 100%; }
+.demo-body { height: 100vh; overflow: hidden; }
+.demo-body .geolonia,
+.demo-body #map { width: 100%; height: 100vh; }
+.demo-placeholder { display: grid; place-items: center; height: 100vh; padding: 1rem; text-align: center; font-family: system-ui, sans-serif; color: #55606b; }

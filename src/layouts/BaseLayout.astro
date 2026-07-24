@@ -109,6 +109,23 @@ const nav = [
 
         applyAll(read() || 'embed');
       })();
+
+      // 動くデモ（LensDemo の iframe）の遅延ロード。
+      // data-src だけ持つ iframe を、ビューポートに入った時に初めて読み込む。
+      // タブで表示に切り替わった時も（display 変化で交差判定され）読み込まれる。
+      (function initLazyDemos() {
+        const load = (f) => {
+          if (!f.getAttribute('src')) f.setAttribute('src', f.getAttribute('data-src'));
+        };
+        const frames = document.querySelectorAll('iframe[data-src]');
+        if (!('IntersectionObserver' in window)) { frames.forEach(load); return; }
+        const io = new IntersectionObserver((entries, obs) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) { load(e.target); obs.unobserve(e.target); }
+          });
+        }, { rootMargin: '200px' });
+        frames.forEach((f) => io.observe(f));
+      })();
     </script>
   </body>
 </html>
