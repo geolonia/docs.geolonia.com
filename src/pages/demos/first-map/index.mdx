@@ -1,0 +1,51 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 地図を出す — 3レンズ ライブデモ（試作）
+kicker: デモ試作
+---
+import Lens from '../../../components/Lens.astro'
+import Tag from '../../../components/Tag.astro'
+import LensDemo from '../../../components/LensDemo.astro'
+
+同じ「東京駅の地図を出す」を、3つのライブラリそれぞれの**動くコード**で示す試作です。上のタブで切り替えると、コードとその下の**動くデモ（iframe）**が入れ替わります。iframe はビューポートに入った時に初めて読み込まれる（遅延ロード）ので、見えている地図だけが動きます。
+
+<Lens name="embed">
+<Tag k="embed" /> HTML の属性だけで地図を出せます。
+
+```html
+<div class="geolonia" data-lat="35.681236" data-lng="139.767125" data-zoom="14"></div>
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+<LensDemo src="/demos/first-map/embed/" title="embed のライブデモ" />
+</Lens>
+
+<Lens name="suite">
+<Tag k="suite" /> 命令型 API で地図を生成します（コードは参考。ライブデモは準備中）。
+
+```js
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.681236, lng: 139.767125 },
+  zoom: 14,
+});
+```
+
+<LensDemo src="/demos/first-map/suite/" title="maps-suite のライブデモ（準備中）" />
+</Lens>
+
+<Lens name="react">
+<Tag k="react" /> React コンポーネントとして置きます。
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { Map } from "@geolonia/maps-react";
+
+<Map apiKey="YOUR-API-KEY" containerStyle={{ width: "100%", height: "100vh" }} />
+```
+
+<LensDemo src="/demos/first-map/react/" title="maps-react のライブデモ" />
+</Lens>

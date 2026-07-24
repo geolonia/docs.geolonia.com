@@ -1,0 +1,17 @@
+---
+// iframe に埋め込む「動くデモ」専用の最小レイアウト（サイトのヘッダ等は無し）。
+// 各レンズのランタイムを iframe で分離するための土台。CSS は demo.css のみ。
+import '../styles/demo.css';
+const { title = 'demo' } = Astro.props;
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body class="demo-body">
+    <slot />
+  </body>
+</html>
