@@ -34,7 +34,7 @@ embed はとにかく簡単です。1つの動く HTML ファイルがあれば�
 仕組みは2つだけです。
 
 - **`class="geolonia"` を持つ `div`**：ここが地図になります。`div` 自体には大きさがないので、CSS で高さを与えています（高さが 0 だと地図は見えません）。
-- **CDN の `<script>`**：読み込まれると、ページ内の `.geolonia` 要素を探して地図に変えます。URL の `YOUR-API-KEY` はお試し用のデモキーで、`localhost` と `*.github.io` でのみ地図が描画されます（自分のキーの発行は[段5](../publish/)でやります）。
+- **CDN の `<script>`**：読み込まれると、ページ内の `.geolonia` 要素を探して地図に変えます。URL の `YOUR-API-KEY` はお試し用のデモキーで、`localhost` や GitHub Pages・CodePen などの開発・プレビュー環境で地図が描画されます（[動く環境の一覧](/explanation/free-referers/)。自分のキーの発行は[段5](../publish/)でやります）。
 
 実際に描画される地図がこちらです。
 
@@ -46,7 +46,7 @@ embed はとにかく簡単です。1つの動く HTML ファイルがあれば�
 
 <Callout kind="warning" title="うまく出ないとき">
 - 真っ白で何も出ない → `.geolonia` の**高さが 0** になっていないか。`<style>` の指定を確認。
-- 「地図が表示できません」のような表示 → デモキーは `localhost` / `*.github.io` 以外では描画されません。ローカルのファイルをそのまま開いた場合（`file://`）も対象外なので、ローカルサーバー（例：`npx serve`）経由で開く。
+- 「地図が表示できません」のような表示 → デモキーは開発・プレビュー環境（`localhost` や GitHub Pages など。[動く環境](/explanation/free-referers/)）でのみ描画されます。ローカルのファイルをそのまま開いた場合（`file://`）も対象外なので、ローカルサーバー（例：`npx serve`）経由で開く。
 - 何も起きない → `<script>` の URL のつづりを確認。ネットワークがオフラインでも出ません。
 </Callout>
 
