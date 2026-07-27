@@ -6,21 +6,37 @@
 //   page: howto
 //   kicker: ハウツー / レシピ   # 見出し上のアイキャッチ（旧 quadrant も可）
 //   badge: tutorial            # 任意。H1 の頭に象限バッジを付ける
+//   sidebar: api               # 任意。API リファレンスのツリーを左に出す
 //   ---
 import BaseLayout from './BaseLayout.astro';
 import EmbedLayout from './EmbedLayout.astro';
 import QuadBadge from '../components/QuadBadge.astro';
+import ApiNav from '../components/ApiNav.astro';
 const { frontmatter } = Astro.props;
-const { title, page = '', kicker, quadrant, badge, embed } = frontmatter ?? {};
+const { title, page = '', kicker, quadrant, badge, embed, sidebar } = frontmatter ?? {};
 const eyebrow = kicker ?? quadrant;
 // 地図を使うページは frontmatter に embed: true を付ける。その時だけ embed スクリプトを読み込む。
 const Shell = embed ? EmbedLayout : BaseLayout;
 const badgeLabels = { tutorial: 'チュートリアル', howto: 'ハウツー', reference: 'リファレンス', explanation: '解説' };
+// 手書きページでも API ツリーを出せるようにする（/reference/ の索引が使う）。
+// 自動生成ページ側は ApiLayout が同じ ApiNav を使う。
+const withApiNav = sidebar === 'api';
 ---
 <Shell title={`${title} — Geolonia Docs`} page={page}>
-  <main class="content">
-    {eyebrow && <p class="kicker">{eyebrow}</p>}
-    <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
-    <slot />
-  </main>
+  {withApiNav ? (
+    <div class="api-shell">
+      <ApiNav />
+      <main class="content">
+        {eyebrow && <p class="kicker">{eyebrow}</p>}
+        <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
+        <slot />
+      </main>
+    </div>
+  ) : (
+    <main class="content">
+      {eyebrow && <p class="kicker">{eyebrow}</p>}
+      <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
+      <slot />
+    </main>
+  )}
 </Shell>

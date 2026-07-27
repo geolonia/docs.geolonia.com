@@ -82,3 +82,51 @@
 .steps li { counter-increment: s; position: relative; padding: 4px 0 14px 38px; }
 .steps li::before { content: counter(s); position: absolute; left: 0; top: 2px; width: 26px; height: 26px; border-radius: 50%; background: var(--q-tutorial); color: #fff; font-weight: 800; font-size: 13px; display: grid; place-items: center; }
 .steps li .obj { display: inline-block; margin-top: 4px; font-size: 13px; color: var(--q-tutorial); font-weight: 700; }
+
+/* API リファレンスの左ツリー（ApiLayout）。
+   details/summary で開閉するので JS を持たない。現在地のパッケージと
+   種別グループだけが開いた状態で描画される。 */
+.api-nav__pkg { margin-bottom: 10px; }
+.api-nav__pkg-name,
+.api-nav__group-name {
+  cursor: pointer; list-style: none;
+  display: flex; align-items: center; gap: 6px;
+  border-radius: 7px;
+}
+.api-nav__pkg-name::-webkit-details-marker,
+.api-nav__group-name::-webkit-details-marker { display: none; }
+.api-nav__pkg-name::before,
+.api-nav__group-name::before {
+  content: '▸'; font-size: 10px; color: var(--text-faint);
+  transition: transform 0.12s ease; flex: none;
+}
+.api-nav__pkg[open] > .api-nav__pkg-name::before,
+.api-nav__group[open] > .api-nav__group-name::before { transform: rotate(90deg); }
+
+.api-nav__pkg-name {
+  font-size: 12.5px; font-weight: 800; color: var(--text);
+  padding: 5px 8px; font-family: var(--font-mono);
+}
+.api-nav__group-name {
+  font-size: 12px; font-weight: 700; color: var(--text-soft);
+  padding: 4px 8px 4px 16px;
+}
+.api-nav__pkg-name:hover,
+.api-nav__group-name:hover { background: var(--bg-soft); }
+
+.api-nav__count {
+  margin-left: auto; font-size: 10.5px; font-weight: 700;
+  color: var(--text-faint); font-family: var(--font-mono);
+}
+
+.api-nav__list { list-style: none; margin: 0; padding: 0; }
+.api-nav__link {
+  display: block; font-size: 12.5px; color: var(--text-soft);
+  padding: 3px 8px 3px 30px; border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+.api-nav__link--index { padding-left: 16px; font-weight: 700; }
+.api-nav__link:hover { background: var(--bg-soft); text-decoration: none; color: var(--text); }
+.api-nav__link.is-current {
+  background: var(--accent-soft); color: var(--color-accent-text); font-weight: 700;
+}

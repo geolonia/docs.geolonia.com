@@ -1,12 +1,22 @@
 ---
-// 自動生成 API Markdown 用のレイアウト。md 側に既に H1・パンくずがあるので、
-// ここでは h1 を注入せず、共通ヘッダ＋CSS の外枠だけを与える。
+// 自動生成 API Markdown 用のレイアウト。
+// md 側に既に H1 があるのでここでは h1 を注入しない。TypeDoc のパンくずは
+// astro.config.mjs の remarkStripTypedocBreadcrumb が落としているので、
+// ナビゲーションは左のツリーだけが担う。
+//
+// ツリーは src/pages/reference/**/*.md を走査して組み立てる。手で維持する
+// 一覧を持たない（持つと TypeDoc の再生成とずれる）。
 import BaseLayout from './BaseLayout.astro';
+import ApiNav from '../components/ApiNav.astro';
+
 const { frontmatter } = Astro.props;
 const { title, page = 'reference' } = frontmatter ?? {};
 ---
 <BaseLayout title={`${title} — Geolonia Docs`} page={page}>
-  <main class="content api-doc">
-    <slot />
-  </main>
+  <div class="api-shell">
+    <ApiNav />
+    <main class="content api-doc">
+      <slot />
+    </main>
+  </div>
 </BaseLayout>

@@ -3,6 +3,7 @@ layout: ../../layouts/DocLayout.astro
 title: リファレンス
 page: reference
 quadrant: Diátaxis / 仕事 × 認知
+sidebar: api
 ---
 
 <!-- OUTLINE（構成=Claude / 本文=人が執筆。書けたら該当行にチェック）
@@ -36,7 +37,7 @@ quadrant: Diátaxis / 仕事 × 認知
 
 `@geolonia/maps-suite` の型定義から生成した API リファレンスを取り込み済み（プロトタイプのためコピー）。
 
-- [maps-suite API インデックス](/reference/suite/)：Map / Marker / InfoWindow / MarkerClusterer など
+- [maps-suite API インデックス](/reference/suite/geolonia.Namespace.maps)：Map / Marker / InfoWindow / MarkerClusterer など
 
 ## maps-core API（自動生成）
 
