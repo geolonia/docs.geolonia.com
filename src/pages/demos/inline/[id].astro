@@ -1,0 +1,49 @@
+---
+/**
+ * ドキュメントに直接書かれたスニペットの実体ページ（iframe の中身）。
+ *
+ * integrations/livecode.mjs が .mdx から集めたスニペットの数だけ、この1ファイルが
+ * /demos/inline/<ID>/ を生やす。通常のページなので実オリジンを持ち、地図も普通に動く
+ * （srcdoc の opaque origin では動かなかった）。
+ *
+ *   html      … そのまま埋め込む。<!doctype> 始まりならページ全体として出す。
+ *   js / ts   … #map を用意し、仮想モジュールを import して実行
+ *   jsx / tsx … #root を用意し、同じくモジュール側で React をマウント
+ */
+import manifest from 'virtual:livecode-manifest';
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+import { isModuleLang, isReactLang, isFullDocument, wrapAsDocument } from '../../../lib/livecode';
+
+export function getStaticPaths() {
+  return Object.keys(manifest).map((id) => ({ params: { id } }));
+}
+
+const { id } = Astro.params as { id: string };
+const snippet = manifest[id];
+if (!snippet) throw new Error(`LiveCode: スニペット ${id} が見つかりません`);
+
+const fullDocument = !isModuleLang(snippet.lang) && isFullDocument(snippet.code);
+---
+{fullDocument ? (
+  <Fragment set:html={snippet.code} />
+) : !isModuleLang(snippet.lang) ? (
+  <Fragment set:html={wrapAsDocument(snippet.code)} />
+) : (
+  <DemoLayout title={`${snippet.lang} — ${id}`}>
+    <div id={isReactLang(snippet.lang) ? 'root' : 'map'} data-livecode-id={id}></div>
+
+    <script>
+      // このページのスニペットだけをクライアントで読み込んで実行する。
+      // loaders は各スニペットへの import() を並べたものなので、
+      // 実際に落ちてくるのは該当の1チャンクだけ。
+      import loaders from 'virtual:livecode-loaders';
+      const mount = document.querySelector<HTMLElement>('[data-livecode-id]');
+      const id = mount?.dataset.livecodeId;
+      if (id) {
+        const load = (loaders as Record<string, () => Promise<unknown>>)[id];
+        if (load) load();
+        else console.error(`[livecode] スニペットを読み込めません: ${id}`);
+      }
+    </script>
+  </DemoLayout>
+)}

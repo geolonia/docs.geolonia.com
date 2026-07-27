@@ -43,9 +43,21 @@ npm install @geolonia/maps-suite maplibre-gl
 
 次に `main.js` で、CSS を読み込んで `Map` を作ります。
 
-<LiveCode slug="tutorials/maps-suite/first-map" lens="suite" title="maps-suite で地図を出す" />
+<LiveCode title="maps-suite で地図を出す">
 
-上のコードと、その下で動いている地図は同じファイルです。
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+});
+```
+
+</LiveCode>
+
+上のコードが、そのまま下で動いています。
 
 ポイントは3つです。
 

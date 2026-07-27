@@ -14,9 +14,28 @@ embed チュートリアルへようこそ。embed は、Geolonia Maps の中で
 
 embed はとにかく簡単です。1つの動く HTML ファイルがあれば、地図を表示することができます。次の内容を `index.html` という名前で保存して、ブラウザで開いてください。
 
-<LiveCode slug="tutorials/embed/first-map" lens="embed" title="embed で地図を出す" height={400} />
+<LiveCode title="embed で地図を出す" height={400}>
 
-上のコードと、その下で動いている地図は同じファイルです。この `index.html` がそのまま動いています。
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>embed</title>
+    <style>
+      .geolonia { width: 100%; height: 400px; }
+    </style>
+  </head>
+  <body>
+    <div class="geolonia"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+上に書いた `index.html` が、そのまま下で動いています。
 
 仕組みは2つだけです。
 

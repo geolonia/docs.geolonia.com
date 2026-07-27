@@ -11,6 +11,9 @@ import remarkCjkFriendlyGfmStrikethrough from 'remark-cjk-friendly-gfm-strikethr
 
 import react from '@astrojs/react';
 
+// ドキュメントに直接書いた <LiveCode> のコードを、動くデモページに書き出す。
+import livecode from './integrations/livecode.mjs';
+
 // .md 内の HTML コメント（<!-- OUTLINE ... --> など執筆用メモ）を
 // ビルド出力から除去する。MDX の {/* */} は元々出力に残らないので対象外。
 // これにより執筆用アウトラインが公開HTMLのソースに漏れない。
@@ -28,7 +31,7 @@ function remarkStripHtmlComments() {
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [mdx(), react()],
+  integrations: [mdx(), react(), livecode()],
   markdown: {
     remarkPlugins: [
       remarkCjkFriendly,

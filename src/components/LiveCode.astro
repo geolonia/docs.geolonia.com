@@ -1,41 +1,88 @@
 ---
 /**
- * コード表示と実行結果を一体で出すブロック。
+ * コード表示と実行結果を一体で出すブロック。コードはここに直接書く。
  *
- * 表示するコードも iframe で動くデモも、同じ src/demos/<slug>/<lens>.<ext> から作る。
- * ここに手書きのコードは書かない ＝ 載っているコードは必ず動いているコード。
+ *   <LiveCode>
  *
- *   <LiveCode slug="first-map" lens="embed" />              全文＋デモ
- *   <LiveCode slug="first-map" lens="embed" region="map" /> 一部だけ表示＋デモ
- *   <LiveCode slug="first-map" lens="embed" demo={false} /> コードだけ（デモは別の場所に1つ）
+ *   ```html
+ *   <div class="geolonia" …></div>
+ *   <script src="…/embed?geolonia-api-key=YOUR-API-KEY"></script>
+ *   ```
  *
- * iframe は data-src だけ持ち、BaseLayout の initLazyDemos が
- * ビューポートに入った時に読み込む。見た目は components.css の .livecode 側。
+ *   </LiveCode>
+ *
+ * 書いたフェンスがそのまま
+ *   - 表示されるコード（Shiki 済み HTML をそのまま出す）
+ *   - 下の iframe で動くデモ（同じ本文から生成された /demos/inline/<ID>/）
+ * の両方になる。手書きのコードを別に持たないので、表示と実行がズレない。
+ *
+ * js / jsx は仮想モジュールとして実際にバンドルされるため、構文エラーや
+ * import ミスはビルドエラーになる。
+ *
+ * オプション:
+ *   demo={false}  デモを出さずコード表示だけにする（実行できない断片など）
+ *   height={400}  デモ枠の高さ(px)。コード側で高さを宣言しているならそれに合わせる
  */
-import { Code } from 'astro:components';
-import { getCode, demoUrl } from '../lib/snippets';
+import manifest from 'virtual:livecode-manifest';
+import {
+  shikiHtmlToSource,
+  shikiLang,
+  normalizeCode,
+  countCodeBlocks,
+} from '../lib/livecode';
 
 interface Props {
-  slug: string;
-  lens: string;
-  region?: string;
   demo?: boolean;
   title?: string;
-  /** デモ枠の高さ(px)。コード側で高さを宣言している場合はそれに合わせる。 */
   height?: number;
 }
 
-const { slug, lens, region, demo = true, title, height } = Astro.props;
-const { code, lang } = getCode(slug, lens, region);
+const { demo = true, title, height } = Astro.props;
+
+if (!Astro.slots.has('default')) {
+  throw new Error('LiveCode: コードブロックを子として書いてください');
+}
+
+const slotHtml = await Astro.slots.render('default');
+
+// 実行されるのは最初の1つだけなので、2つ以上あると
+// 「表示されているのに動いていないコード」ができてしまう。
+const blockCount = countCodeBlocks(slotHtml);
+if (blockCount !== 1) {
+  throw new Error(
+    `LiveCode: コードブロックはちょうど1つにしてください（見つかった数: ${blockCount}）。\n` +
+      '複数見せたい場合は <LiveCode> を分けるか、動かさない方は素のフェンスで書いてください。',
+  );
+}
+
+const lang = shikiLang(slotHtml);
+const code = normalizeCode(shikiHtmlToSource(slotHtml));
+
+// ビルド前にドキュメントを走査して作った ID と突き合わせる。
+// 一致しなければ（＝デモページが生成されていなければ）黙って落とさずビルドを止める。
+const entry = Object.values(manifest).find((s: any) => s.code === code) as
+  | { id: string; lang: string }
+  | undefined;
+
+if (demo && !entry) {
+  throw new Error(
+    `LiveCode: このコードに対応するデモページが生成されていません（lang=${lang}）。\n` +
+      `<LiveCode> の中は「言語付きのフェンス1つ」にしてください。\n` +
+      `--- 復元されたコード ---\n${code.slice(0, 300)}`,
+  );
+}
+
+const showDemo = demo && !!entry;
 ---
-<div class="livecode" data-has-demo={demo ? 'true' : 'false'}>
-  <Code code={code} lang={lang} />
-  {demo && (
+<div class="livecode" data-has-demo={showDemo ? 'true' : 'false'}>
+  <Fragment set:html={slotHtml} />
+
+  {showDemo && (
     <div class="livecode__demo">
       <iframe
         class="livecode__frame"
-        data-src={demoUrl(slug, lens)}
-        title={title ?? `${lens} のライブデモ`}
+        data-src={`/demos/inline/${entry!.id}/`}
+        title={title ?? `${lang} のライブデモ`}
         loading="lazy"
         style={height ? `height: ${height}px` : undefined}
       ></iframe>
