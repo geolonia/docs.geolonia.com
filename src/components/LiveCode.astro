@@ -21,9 +21,11 @@ interface Props {
   region?: string;
   demo?: boolean;
   title?: string;
+  /** デモ枠の高さ(px)。コード側で高さを宣言している場合はそれに合わせる。 */
+  height?: number;
 }
 
-const { slug, lens, region, demo = true, title } = Astro.props;
+const { slug, lens, region, demo = true, title, height } = Astro.props;
 const { code, lang } = getCode(slug, lens, region);
 ---
 <div class="livecode" data-has-demo={demo ? 'true' : 'false'}>
@@ -35,6 +37,7 @@ const { code, lang } = getCode(slug, lens, region);
         data-src={demoUrl(slug, lens)}
         title={title ?? `${lens} のライブデモ`}
         loading="lazy"
+        style={height ? `height: ${height}px` : undefined}
       ></iframe>
     </div>
   )}

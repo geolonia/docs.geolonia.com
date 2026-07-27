@@ -1,36 +1,30 @@
 ---
 layout: ../../../layouts/DocLayout.astro
-title: 地図を出す — 3レンズ ライブデモ
+title: 地図を出す — 3レンズ比較
 kicker: デモ
 ---
 import Lens from '../../../components/Lens.astro'
 import Tag from '../../../components/Tag.astro'
 import LiveCode from '../../../components/LiveCode.astro'
 
-同じ「東京駅の地図を出す」を、3つのライブラリそれぞれの**動くコード**で示します。上のタブで切り替えると、コードとその下の**動くデモ**が入れ替わります。
+チュートリアル段0「地図を出す」を、3つのライブラリで並べたものです。上のタブで切り替えると、コードとその下の**動くデモ**が入れ替わります。
 
-表示しているコードと、下で動いているデモは**同じ1つのファイル**（`src/demos/first-map/<レンズ>.<拡張子>`）から作られています。コードを書き換えればデモも変わり、壊れればビルドが落ちます。
+表示しているコードと下で動いているデモは、**同じ1つのファイル**（`src/demos/tutorials/<トラック>/first-map/`）から作られています。各チュートリアルのページが読み込んでいるのも同じファイルです。
 
 <Lens name="embed">
 <Tag k="embed" /> HTML の属性だけで地図を出せます。
 
-<LiveCode slug="first-map" lens="embed" />
+<LiveCode slug="tutorials/embed/first-map" lens="embed" />
 </Lens>
 
 <Lens name="suite">
 <Tag k="suite" /> 命令型 API で地図を生成します。
 
-<LiveCode slug="first-map" lens="suite" />
+<LiveCode slug="tutorials/maps-suite/first-map" lens="suite" />
 </Lens>
 
 <Lens name="react">
 <Tag k="react" /> React コンポーネントとして置きます。
 
-<LiveCode slug="first-map" lens="react" />
+<LiveCode slug="tutorials/maps-react/first-map" lens="react" />
 </Lens>
-
-## 一部だけを見せる
-
-`region` を指定すると、ファイルの一部だけを表示できます。表示は抜粋でも、**動いているのはファイル全体**なので、抜粋したコードが壊れていないことは変わらず保証されます。
-
-<LiveCode slug="first-map" lens="embed" region="map" demo={false} />

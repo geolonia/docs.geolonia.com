@@ -7,22 +7,25 @@
  * の両方をここから導出する。表示と実行が同一ファイルなので、原理的にズレない。
  *
  * 拡張子が実行方式を決める：
- *   .html … そのまま HTML として差し込む（スクリプトタグ込みで自己完結）
- *   .ts   … クライアントで import して実行するモジュール。#map に描画する
- *   .tsx  … 同上。React として #root にマウントする
+ *   .html      … そのまま HTML として差し込む（スクリプトタグ込みで自己完結）
+ *   .js / .ts  … クライアントで import して実行するモジュール。#map に描画する
+ *   .jsx/.tsx  … 同上。React として #root にマウントする
+ *
+ * 拡張子は「読者が実際に書くファイル」に合わせる。チュートリアルが `main.js` を
+ * 書かせるなら .js にする（表示される言語ラベルもそれに従う）。
  */
 
 // 表示用：全スニペットのソーステキスト（ビルド時に埋め込む）
-const SOURCES = import.meta.glob('/src/demos/**/*.{html,ts,tsx}', {
+const SOURCES = import.meta.glob('/src/demos/**/*.{html,js,jsx,ts,tsx}', {
   query: '?raw',
   import: 'default',
   eager: true,
 }) as Record<string, string>;
 
-export type SnippetExt = 'html' | 'ts' | 'tsx';
+export type SnippetExt = 'html' | 'js' | 'jsx' | 'ts' | 'tsx';
 
 export type Snippet = {
-  /** 例: /src/demos/first-map/embed.html */
+  /** 例: /src/demos/tutorials/embed/first-map/embed.html */
   path: string;
   slug: string;
   lens: string;
@@ -33,7 +36,15 @@ export type Snippet = {
   raw: string;
 };
 
-const PATH_RE = /^\/src\/demos\/(.+)\/([^/]+)\.(html|ts|tsx)$/;
+const PATH_RE = /^\/src\/demos\/(.+)\/([^/]+)\.(html|js|jsx|ts|tsx)$/;
+
+/** React としてマウントする（#root）か、素のモジュール（#map）か。 */
+export function isReactSnippet(ext: SnippetExt): boolean {
+  return ext === 'jsx' || ext === 'tsx';
+}
+export function isModuleSnippet(ext: SnippetExt): boolean {
+  return ext !== 'html';
+}
 
 function parse(path: string): Snippet | null {
   const m = PATH_RE.exec(path);
@@ -55,7 +66,7 @@ export function getSnippet(slug: string, lens: string): Snippet {
   if (!hit) {
     // 存在しないスニペットを指したらビルドを落とす（黙って空にしない）。
     throw new Error(
-      `スニペットが見つかりません: src/demos/${slug}/${lens}.{html,ts,tsx}\n` +
+      `スニペットが見つかりません: src/demos/${slug}/${lens}.{html,js,jsx,ts,tsx}\n` +
         `存在するもの: ${listSnippets().map((s) => `${s.slug}/${s.lens}`).join(', ')}`,
     );
   }
@@ -65,6 +76,15 @@ export function getSnippet(slug: string, lens: string): Snippet {
 /** iframe が読み込むデモページの URL。 */
 export function demoUrl(slug: string, lens: string): string {
   return `/demos/${slug}/${lens}/`;
+}
+
+/**
+ * 完全な HTML ドキュメント（<!doctype> や <html> から始まる）かどうか。
+ * 完全なドキュメントはハーネスで包まず、そのままページとして出す
+ * ＝ ドキュメントに載っている HTML ファイルが、そのまま動いている状態になる。
+ */
+export function isFullDocument(raw: string): boolean {
+  return /^\s*<(?:!doctype\s+html|html[\s>])/i.test(raw);
 }
 
 /**
