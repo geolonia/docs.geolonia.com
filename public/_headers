@@ -1,0 +1,21 @@
+# Cloudflare Workers 静的アセットのレスポンスヘッダ。
+# public/ に置いたものは Astro がそのまま dist/ に配る。
+#
+# frame-ancestors 'self'
+#   このサイトを iframe に入れてよいのは自オリジンだけ、という意味。
+#
+#   - 通す必要がある: LiveCode のデモ。チュートリアルのページが、同じオリジンの
+#     /demos/inline/<ID>/ を iframe で読み込んで動く地図を見せている。
+#   - 塞ぐ必要がある: 第三者のサイトからの埋め込み。デモページはデモ用 API キーで
+#     地図を描画するので、外部ページに貼られると意図しない利用になる。
+#
+#   X-Frame-Options: DENY にしてはいけない。DENY は同一オリジンの iframe も
+#   止めるため、LiveCode のデモが全ページで表示されなくなる（旧 Netlify 版の
+#   docs.geolonia.com は DENY だったので、カットオーバー時に持ち込まないこと）。
+#   同じことを X-Frame-Options で書くなら SAMEORIGIN にあたる。
+#
+#   X-Frame-Options を併記していないのは、frame-ancestors に対応しない
+#   ブラウザが実質的に無く、両方書くと片方だけ直して食い違う事故が起きるため。
+
+/*
+  Content-Security-Policy: frame-ancestors 'self'
