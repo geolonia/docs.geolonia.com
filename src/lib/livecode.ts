@@ -49,18 +49,16 @@ export function shikiHtmlToSource(html: string): string {
   return decodeEntities(inner.replace(/<[^>]+>/g, ''));
 }
 
-/** integrations/livecode.mjs の normalizeCode と同じ規則。 */
-export function normalizeCode(code: string): string {
-  return code.replace(/\r\n/g, '\n').trim();
-}
-
-/** html はそのまま埋め込み、それ以外はモジュールとしてバンドルして実行する。 */
-export function isModuleLang(lang: string): boolean {
-  return lang !== 'html';
-}
-export function isReactLang(lang: string): boolean {
-  return lang === 'jsx' || lang === 'tsx';
-}
+// 正規化・ハッシュ・言語判定は走査側と共有する。
+// ここで別実装を持つと、ずれた瞬間に全ページのデモが一斉に外れる。
+export {
+  normalizeCode,
+  snippetId,
+  isModuleLang,
+  isReactLang,
+  isRunnableLang,
+  RUNNABLE_LANGS,
+} from '../../integrations/livecode-shared.mjs';
 
 /** 完全な HTML ドキュメント（<!doctype> や <html> から始まる）かどうか。 */
 export function isFullDocument(raw: string): boolean {

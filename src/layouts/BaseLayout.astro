@@ -111,18 +111,13 @@ const nav = [
       })();
 
       // 動くデモ（LiveCode の iframe）の遅延ロード。
-      // data-src（別ページを読む＝ファイル方式）か data-srcdoc（その場の
-      // コードをそのまま流し込む＝インライン方式）を、ビューポートに
-      // 入った時に初めて設定する。タブで表示に切り替わった時も（display 変化で
-      // 交差判定され）読み込まれる。
+      // data-src だけ持つ iframe を、ビューポートに入った時に初めて読み込む。
+      // タブで表示に切り替わった時も（display 変化で交差判定され）読み込まれる。
       (function initLazyDemos() {
         const load = (f) => {
-          if (f.getAttribute('src') || f.getAttribute('srcdoc')) return;
-          const doc = f.getAttribute('data-srcdoc');
-          if (doc !== null) f.setAttribute('srcdoc', doc);
-          else f.setAttribute('src', f.getAttribute('data-src'));
+          if (!f.getAttribute('src')) f.setAttribute('src', f.getAttribute('data-src'));
         };
-        const frames = document.querySelectorAll('iframe[data-src], iframe[data-srcdoc]');
+        const frames = document.querySelectorAll('iframe[data-src]');
         if (!('IntersectionObserver' in window)) { frames.forEach(load); return; }
         const io = new IntersectionObserver((entries, obs) => {
           entries.forEach((e) => {

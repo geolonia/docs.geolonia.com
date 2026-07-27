@@ -20,7 +20,8 @@
  * import ミスはビルドエラーになる。
  *
  * オプション:
- *   demo={false}  デモを出さずコード表示だけにする（実行できない断片など）
+ *   demo={false}  デモを出さずコード表示だけにする。動かない断片や、
+ *                 html/js/jsx 以外の言語（bash など）はこれを付ける。
  *   height={400}  デモ枠の高さ(px)。コード側で高さを宣言しているならそれに合わせる
  */
 import manifest from 'virtual:livecode-manifest';
@@ -28,6 +29,9 @@ import {
   shikiHtmlToSource,
   shikiLang,
   normalizeCode,
+  snippetId,
+  isRunnableLang,
+  RUNNABLE_LANGS,
   countCodeBlocks,
 } from '../lib/livecode';
 
@@ -58,16 +62,24 @@ if (blockCount !== 1) {
 const lang = shikiLang(slotHtml);
 const code = normalizeCode(shikiHtmlToSource(slotHtml));
 
-// ビルド前にドキュメントを走査して作った ID と突き合わせる。
-// 一致しなければ（＝デモページが生成されていなければ）黙って落とさずビルドを止める。
-const entry = Object.values(manifest).find((s: any) => s.code === code) as
-  | { id: string; lang: string }
-  | undefined;
+// 動かせない言語をデモ付きで書いてしまった場合。ビルドを止めて理由を伝える。
+// （走査側もこの言語を集めないので、放置すると「デモページが無い」という
+//   分かりにくいエラーになってしまう）
+if (demo && !isRunnableLang(lang)) {
+  throw new Error(
+    `LiveCode: ${lang} は動かせません（動かせるのは ${RUNNABLE_LANGS.join(' / ')}）。\n` +
+      'デモが不要なら demo={false} を付けるか、素のフェンスで書いてください。',
+  );
+}
+
+// 走査側と同じ規則で ID を出して、生成済みのデモページを引く。
+const entry = demo ? manifest[snippetId(lang, code)] : undefined;
 
 if (demo && !entry) {
   throw new Error(
     `LiveCode: このコードに対応するデモページが生成されていません（lang=${lang}）。\n` +
-      `<LiveCode> の中は「言語付きのフェンス1つ」にしてください。\n` +
+      '<LiveCode> の中は「言語付きのフェンス1つ」にしてください。\n' +
+      'リストや引用の中に置いている場合は、インデントを外して書いてみてください。\n' +
       `--- 復元されたコード ---\n${code.slice(0, 300)}`,
   );
 }

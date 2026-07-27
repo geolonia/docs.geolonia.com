@@ -3,23 +3,35 @@
  *
  * ドキュメント（.mdx）に直接書いたコードブロックを、そのまま動くデモページにする。
  *
- *   1. ビルド前に src/pages/**\/*.mdx を走査し、<LiveCode> の中のフェンスを取り出す
- *   2. 内容のハッシュを ID にして「マニフェスト」を作る
+ *   1. ビルド前に src/pages 以下の .md / .mdx を走査し、<LiveCode> の中のフェンスを取り出す
+ *   2. 言語と本文のハッシュを ID にして「マニフェスト」を作る
  *   3. /demos/inline/<ID>/ という実ページを ID の数だけ生成する
  *   4. ページ側の <LiveCode> は、スロットから復元した同じ本文のハッシュを計算して
  *      その URL を iframe で指す
  *
- * 2 と 4 は同じ文字列から同じハッシュを得るので、確実に一致する。
+ * 2 と 4 は同じ規則（livecode-shared.mjs）で同じ ID を出すので、確実に一致する。
  * 一致しなければコンポーネント側で例外にする（取りこぼしを黙って捨てない）。
  *
  * js / jsx のスニペットは仮想モジュールとして Vite に渡すため、実際にバンドルされる。
  * つまり構文エラーや import ミスはビルドエラーになる。srcdoc に流し込む方式と違い、
  * 生成ページは通常のオリジンを持つので地図も普通に動く。
+ *
+ * 【前提】生成ページは docs と同一オリジンで、スニペットのコードをそのまま実行する。
+ * デモに入れてよいのはこのリポジトリで管理しているコードだけ。外部から受け取った
+ * コードを流し込む用途には使わないこと。
  */
-import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  normalizeCode,
+  snippetId,
+  isModuleLang,
+  isReactLang,
+  isRunnableLang,
+} from './livecode-shared.mjs';
+
+export { normalizeCode, snippetId, isModuleLang, isReactLang, isRunnableLang };
 
 const MANIFEST_ID = 'virtual:livecode-manifest';
 const LOADERS_ID = 'virtual:livecode-loaders';
@@ -28,26 +40,55 @@ const SNIPPET_PREFIX = 'virtual:livecode/';
  *  スニペット内の bare import（@geolonia/... など）が通常どおり解決される。 */
 const SNIPPET_DIR = '.livecode';
 
-/** <LiveCode …> … </LiveCode> の中身 */
+/** <LiveCode …> … </LiveCode> */
 const BLOCK_RE = /<LiveCode\b([^>]*)>([\s\S]*?)<\/LiveCode>/g;
-/** その中のフェンス */
-const FENCE_RE = /^[ \t]*```([A-Za-z0-9]+)[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*```[ \t]*$/m;
+/** その中のフェンス。開始フェンスのインデント幅も捕まえる。 */
+const FENCE_RE = /^([ \t]*)```([A-Za-z0-9]+)[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*```[ \t]*$/m;
+/** <LiveCode demo={false}> — デモを出さない指定 */
+const DEMO_FALSE_RE = /\bdemo\s*=\s*(?:\{\s*false\s*\}|"false"|'false')/;
 
-/** 表示と実行で同じ文字列になるよう正規化してからハッシュする。 */
-export function normalizeCode(code) {
-  return code.replace(/\r\n/g, '\n').trim();
+/**
+ * コードフェンスの中身を潰す（改行は保つ）。
+ *
+ * 走査は .mdx を素のテキストとして見るので、そのままだと
+ * 「LiveCode の使い方を説明するために ``` の中に書いた <LiveCode> の例」まで
+ * 拾って、動かすつもりのないデモページを黙って生やしてしまう。
+ * 先にフェンス領域を消しておけば、本物の <LiveCode> だけが残る。
+ */
+function maskFencedRegions(src) {
+  let fence = null; // { char, len }
+  return src
+    .split('\n')
+    .map((line) => {
+      const open = /^[ \t]*(`{3,}|~{3,})(.*)$/.exec(line);
+      // 文字位置を変えないよう、消す行は同じ長さの空白に置き換える。
+      // （マスク後の一致位置をそのまま原文の切り出しに使うため）
+      const blank = ' '.repeat(line.length);
+      if (!fence) {
+        if (!open) return line;
+        fence = { char: open[1][0], len: open[1].length };
+        return blank;
+      }
+      // 閉じフェンス：開いたものと同じ記号・同じ長さ以上・後ろに情報なし
+      if (open && open[1][0] === fence.char && open[1].length >= fence.len && open[2].trim() === '') {
+        fence = null;
+      }
+      return blank;
+    })
+    .join('\n');
 }
 
-export function snippetId(code) {
-  return createHash('sha256').update(normalizeCode(code)).digest('hex').slice(0, 12);
-}
-
-/** html はそのまま埋め込む。それ以外はモジュールとしてバンドルして実行する。 */
-export function isModuleLang(lang) {
-  return lang !== 'html';
-}
-export function isReactLang(lang) {
-  return lang === 'jsx' || lang === 'tsx';
+/** 各行の先頭から最大 n 文字ぶんの空白を落とす。 */
+function stripIndent(body, n) {
+  if (!n) return body;
+  return body
+    .split('\n')
+    .map((line) => {
+      let i = 0;
+      while (i < n && (line[i] === ' ' || line[i] === '\t')) i++;
+      return line.slice(i);
+    })
+    .join('\n');
 }
 
 async function walk(dir, out = []) {
@@ -65,18 +106,38 @@ async function walk(dir, out = []) {
   return out;
 }
 
-/** ドキュメントを走査して、埋め込まれたスニペットを全部集める。 */
+/** ドキュメントを走査して、実行するスニペットを集める。 */
 export async function collectSnippets(pagesDir) {
   const files = await walk(pagesDir);
   const snippets = new Map();
   for (const file of files) {
     const src = await readFile(file, 'utf8');
-    for (const m of src.matchAll(BLOCK_RE)) {
-      const fence = FENCE_RE.exec(m[2]);
-      if (!fence) continue; // フェンスを含まない <LiveCode> は対象外
-      const [, lang, body] = fence;
-      const code = normalizeCode(body);
-      const id = snippetId(code);
+    // <LiveCode> を探す前に、フェンスの中（＝説明のために書かれた例）を潰す。
+    // マスクは文字位置を変えないので、見つけた範囲をそのまま原文から切り出せる。
+    const masked = maskFencedRegions(src);
+
+    const re = new RegExp(BLOCK_RE.source, 'g');
+    let m;
+    while ((m = re.exec(masked)) !== null) {
+      const block = src.slice(m.index, m.index + m[0].length);
+      const parsed = new RegExp(BLOCK_RE.source).exec(block);
+      if (!parsed) continue;
+      const [, attrs, inner] = parsed;
+
+      // デモを出さない指定のものはバンドルしない（＝動かない断片も載せられる）
+      if (DEMO_FALSE_RE.test(attrs)) continue;
+
+      const fence = FENCE_RE.exec(inner);
+      if (!fence) continue; // フェンスが無い場合は描画側でエラーにする
+      const [, indent, lang, rawBody] = fence;
+
+      // 動かせない言語（bash など）は描画側で理由付きのエラーにする
+      if (!isRunnableLang(lang)) continue;
+
+      // リストの中などインデントされた位置に書かれた場合、MDX 側はインデントを
+      // 剥がした本文を渡してくる。走査側でも同じだけ落として揃える。
+      const code = normalizeCode(stripIndent(rawBody, indent.length));
+      const id = snippetId(lang, code);
       if (!snippets.has(id)) snippets.set(id, { id, lang, code, file });
     }
   }
