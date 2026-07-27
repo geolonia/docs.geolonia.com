@@ -14,6 +14,23 @@ import react from '@astrojs/react';
 // ドキュメントに直接書いた <LiveCode> のコードを、動くデモページに書き出す。
 import livecode from './integrations/livecode.mjs';
 
+// TypeDoc が本文の冒頭に出すパンくず（パッケージ名 → 名前空間 → 現在地）を落とす。
+// ナビゲーションは ApiLayout の左サイドバーが担うので、本文側には要らない。
+//
+// 取り込んだ .md は TypeDoc 出力の忠実なミラーにしておきたい（上流との差分を
+// 取りやすくするため）ので、取り込みスクリプト側ではなくここで落とす。
+// 手でコピーされた場合にも効く。
+//
+// パンくずは必ず最初の H1 より前にあり、H1 以降が本文。
+function remarkStripTypedocBreadcrumb() {
+  return (tree, file) => {
+    const p = (file?.path ?? '').replace(/\\/g, '/');
+    if (!p.includes('/src/pages/reference/')) return;
+    const h1 = tree.children.findIndex((n) => n.type === 'heading' && n.depth === 1);
+    if (h1 > 0) tree.children.splice(0, h1);
+  };
+}
+
 // .md 内の HTML コメント（<!-- OUTLINE ... --> など執筆用メモ）を
 // ビルド出力から除去する。MDX の {/* */} は元々出力に残らないので対象外。
 // これにより執筆用アウトラインが公開HTMLのソースに漏れない。
@@ -37,6 +54,7 @@ export default defineConfig({
       remarkCjkFriendly,
       remarkCjkFriendlyGfmStrikethrough,
       remarkStripHtmlComments,
+      remarkStripTypedocBreadcrumb,
     ],
   },
   vite: {

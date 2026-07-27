@@ -36,7 +36,7 @@ quadrant: Diátaxis / 仕事 × 認知
 
 `@geolonia/maps-suite` の型定義から生成した API リファレンスを取り込み済み（プロトタイプのためコピー）。
 
-- [maps-suite API インデックス](/reference/suite/)：Map / Marker / InfoWindow / MarkerClusterer など
+- [maps-suite API インデックス](/reference/suite/geolonia.Namespace.maps)：Map / Marker / InfoWindow / MarkerClusterer など
 
 ## maps-core API（自動生成）
 

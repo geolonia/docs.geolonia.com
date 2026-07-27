@@ -1,12 +1,64 @@
 ---
-// 自動生成 API Markdown 用のレイアウト。md 側に既に H1・パンくずがあるので、
-// ここでは h1 を注入せず、共通ヘッダ＋CSS の外枠だけを与える。
+// 自動生成 API Markdown 用のレイアウト。
+// md 側に既に H1 があるのでここでは h1 を注入しない。TypeDoc のパンくずは
+// astro.config.mjs の remarkStripTypedocBreadcrumb が落としているので、
+// ナビゲーションは左のツリーだけが担う。
+//
+// ツリーは src/pages/reference/**/*.md を走査して組み立てる。手で維持する
+// 一覧を持たない（持つと TypeDoc の再生成とずれる）。
 import BaseLayout from './BaseLayout.astro';
+import { buildApiTree } from '../lib/api-nav';
+
 const { frontmatter } = Astro.props;
 const { title, page = 'reference' } = frontmatter ?? {};
+
+const pages = import.meta.glob('../pages/reference/*/*.md', { eager: true });
+const currentPath = Astro.url.pathname.replace(/\/$/, '');
+const tree = buildApiTree(pages, currentPath);
 ---
 <BaseLayout title={`${title} — Geolonia Docs`} page={page}>
-  <main class="content api-doc">
-    <slot />
-  </main>
+  <div class="api-shell">
+    <nav class="api-nav" aria-label="API リファレンス">
+      {tree.map((pkg) => (
+        <details class="api-nav__pkg" open={pkg.current}>
+          <summary class="api-nav__pkg-name">
+            {pkg.label}
+            {!pkg.current && <span class="api-nav__count">{pkg.count}</span>}
+          </summary>
+
+          {pkg.index && (
+            <a
+              class:list={['api-nav__link', 'api-nav__link--index', { 'is-current': pkg.index.current }]}
+              href={pkg.index.href}
+              aria-current={pkg.index.current ? 'page' : undefined}
+            >概要</a>
+          )}
+
+          {pkg.groups.map((group) => (
+            <details class="api-nav__group" open={group.current}>
+              <summary class="api-nav__group-name">
+                {group.label}
+                <span class="api-nav__count">{group.items.length}</span>
+              </summary>
+              <ul class="api-nav__list">
+                {group.items.map((item) => (
+                  <li>
+                    <a
+                      class:list={['api-nav__link', { 'is-current': item.current }]}
+                      href={item.href}
+                      aria-current={item.current ? 'page' : undefined}
+                    >{item.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ))}
+        </details>
+      ))}
+    </nav>
+
+    <main class="content api-doc">
+      <slot />
+    </main>
+  </div>
 </BaseLayout>
