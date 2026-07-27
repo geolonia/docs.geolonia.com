@@ -11,7 +11,16 @@
     "preview": "astro preview",
     "astro": "astro",
     "cf:dev": "wrangler dev",
-    "deploy": "astro build && wrangler deploy"
+    "deploy": "astro build && wrangler deploy",
+    "docs:build:suite": "cd vendor/maps-suite && npm ci && npm run docs",
+    "docs:build:core": "cd vendor/maps-core && npm ci && npm run docs",
+    "docs:build:embed": "cd vendor/maps-embed && npm ci && npm run docs",
+    "docs:import:suite": "node scripts/to-reference.mjs vendor/maps-suite/api-docs src/pages/reference/suite /reference/suite --skip README.md,Namespace.geolonia.md",
+    "docs:import:core": "node scripts/to-reference.mjs vendor/maps-core/api-docs src/pages/reference/core /reference/core",
+    "docs:import:embed": "node scripts/to-reference.mjs vendor/maps-embed/api-docs src/pages/reference/embed /reference/embed",
+    "docs:sync:suite": "npm run docs:build:suite && npm run docs:import:suite",
+    "docs:sync:core": "npm run docs:build:core && npm run docs:import:core",
+    "docs:sync:embed": "npm run docs:build:embed && npm run docs:import:embed"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.2",
