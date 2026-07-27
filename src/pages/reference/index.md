@@ -3,6 +3,7 @@ layout: ../../layouts/DocLayout.astro
 title: リファレンス
 page: reference
 quadrant: Diátaxis / 仕事 × 認知
+sidebar: api
 ---
 
 <!-- OUTLINE（構成=Claude / 本文=人が執筆。書けたら該当行にチェック）

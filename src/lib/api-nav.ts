@@ -56,7 +56,10 @@ export interface NavPackage {
   index: NavItem | null;
   groups: NavGroup[];
   count: number;
+  /** 現在地がこのパッケージの中にあるか。 */
   current: boolean;
+  /** 開いた状態で描画するか。索引ページ（どれも現在地でない）では全部開く。 */
+  expanded: boolean;
 }
 
 /** ファイル名（拡張子なし）を種別と名前に分解する。 */
@@ -113,7 +116,7 @@ export function buildApiTree(
     .sort()
     .map((dir) => ({ dir, label: dir }));
 
-  return [...known, ...unknown].map(({ dir, label }) => {
+  const packages = [...known, ...unknown].map(({ dir, label }) => {
     const bucket = byDir.get(dir)!;
 
     const groups: NavGroup[] = KIND_ORDER.flatMap(({ kind, label: kindLabel }) => {
@@ -133,6 +136,15 @@ export function buildApiTree(
       groups,
       count,
       current: groups.some((g) => g.current) || !!bucket.index?.current,
+      expanded: false,
     };
   });
+
+  // 索引ページ（/reference/）のようにどのページも現在地でないときは、
+  // 3パッケージとも開いて構成が見える状態にする。種別グループは閉じたまま
+  // なので、全メンバーが一度に出て縦に伸びきることはない。
+  const anyCurrent = packages.some((p) => p.current);
+  for (const p of packages) p.expanded = anyCurrent ? p.current : true;
+
+  return packages;
 }
