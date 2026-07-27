@@ -6,6 +6,7 @@ kicker: チュートリアル ／ 段1
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段0で、Web ページに地図を出せるようになりました。ただし場所は既定の東京駅のまま。この段では、地図を**自分の見たい場所と見たい角度**にします。
@@ -32,13 +33,29 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 視点の傾き（pitch）と回転（bearing）は、maps-suite の高レベル API にはありません。こういうときのために、**基盤の地図（maplibre）に直接触るためのエスケープハッチ**が用意されています。
 
+ここまでを入れた `main.js` の全体が次のコードです。
+
+<LiveCode title="maps-suite で東京タワーを傾けて見る">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.658581, lng: 139.745438 },
+  zoom: 16,
+});
+
 map._whenReady().then(() => {
   const impl = map._getImpl();
   impl.setPitch(45);    // 地図を手前に倒す角度（度）。0 が真上からの平面図
   impl.setBearing(20);  // 地図を回す角度（度）。0 が北が上
 });
 ```
+
+</LiveCode>
 
 - **`map._whenReady()`**：地図の読み込み完了を待つ Promise を返します。
 - **`map._getImpl()`**：基盤の maplibre の地図インスタンスを返します。maps-suite にない操作はすべてここから呼べます。

@@ -8,6 +8,7 @@ badge: howto
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 マーカーをドラッグで動かし、離した位置の緯度と経度を受け取ります。地点を登録、編集する画面で、ユーザーにピンを置いてもらう用途に使えます。
 
@@ -21,7 +22,11 @@ import Tag from '../../components/Tag.astro'
 <Lens name="suite">
 <Tag k="suite" /> maps-suite の `Marker` はドラッグに対応していないため、読み込みを待ってから基盤の地図（maplibre）のマーカーを使います。`dragend`（ドラッグ終了）で位置を取り出します。
 
+<LiveCode title="maps-suite でドラッグできるマーカーを置く">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 import maplibregl from "maplibre-gl";
 
@@ -43,6 +48,8 @@ marker.on("dragend", () => {
 });
 ```
 
+</LiveCode>
+
 - **`new maplibregl.Marker({ draggable: true })`**：ドラッグを有効にしてマーカーを作ります。`setLngLat` は `[経度, 緯度]` の順です。
 - **`marker.on("dragend", ...)`**：離した瞬間に一度だけ呼ばれます。動いている最中に追いたいときは `drag` を使います。
 - **`marker.getLngLat()`**：現在位置を返します。フォームの緯度と経度の欄に書き戻すなどして使います。
@@ -52,20 +59,25 @@ marker.on("dragend", () => {
 <Lens name="react">
 <Tag k="react" /> `Marker` に `draggable` を付け、`onDragEnd` で位置を受け取ります。
 
+<LiveCode title="maps-react でドラッグできるマーカーを置く">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { useState } from "react";
+import { createRoot } from "react-dom/client";
 import { Map, Marker } from "@geolonia/maps-react";
 
 function App() {
   const [pos, setPos] = useState({ lat: 35.6812, lng: 139.7671 });
   return (
-    <>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <p>緯度: {pos.lat.toFixed(6)} / 経度: {pos.lng.toFixed(6)}</p>
       <Map
         apiKey="YOUR-API-KEY"
         center={[139.7671, 35.6812]}
         zoom={14}
-        containerStyle={{ width: "100%", height: "100vh" }}
+        containerStyle={{ flex: 1 }}
       >
         <Marker
           lat={pos.lat}
@@ -77,10 +89,14 @@ function App() {
           }}
         />
       </Map>
-    </>
+    </div>
   );
 }
+
+createRoot(document.getElementById("root")).render(<App />);
 ```
+
+</LiveCode>
 
 - **`draggable`**：マーカーをドラッグで動かせるようにします。
 - **`onDragEnd`**：ドラッグを離したときに呼ばれます。`e.target.getLngLat()` で離した位置を取り出せます。
@@ -90,7 +106,7 @@ function App() {
 
 ## 結果
 
-マーカーをドラッグして離すと、その位置の緯度と経度が取得できます。取得した座標は、フォームの入力欄に書き戻したり、サーバーへ送信したりして使います。
+上のコードは、それぞれのタブの下でそのまま動いています。マーカーをドラッグして離すと、その位置の緯度と経度が取得できます（suite の例はコンソールに出力、react の例は地図の上に表示します）。取得した座標は、フォームの入力欄に書き戻したり、サーバーへ送信したりして使います。
 
 <Callout kind="warning" title="うまくいかないとき">
 - ドラッグできない → `draggable`（suite は `new maplibregl.Marker({ draggable: true })`）を付け忘れていないか確認します。

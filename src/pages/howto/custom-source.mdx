@@ -8,6 +8,7 @@ badge: howto
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 GeoJSON では収まらない大きなデータや、他所が配信しているタイルを地図に重ねるには、**タイルソース**を追加します。`{z}/{x}/{y}` のテンプレート URL で配信されるラスタタイルやベクトルタイルが対象です。
 
@@ -21,7 +22,11 @@ GeoJSON では収まらない大きなデータや、他所が配信している
 <Lens name="suite">
 <Tag k="suite" /> 読み込みを待ってから、`addSource` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
 
+<LiveCode title="maps-suite で地理院タイルを重ねる">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
@@ -41,6 +46,8 @@ impl.addSource("gsi", {
 impl.addLayer({ id: "gsi", type: "raster", source: "gsi" });
 ```
 
+</LiveCode>
+
 - **`tiles`**：タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
 - **`attribution`**：データの出典表示。配信元の利用規約が求める表記を必ず入れます。
 - **ベクトルタイル**の場合は `type: "vector"` にして、レイヤ側に **`"source-layer"`**（タイル内のレイヤ名）を指定します。
@@ -55,26 +62,35 @@ impl.addLayer({ id: "mytiles-line", type: "line", source: "mytiles", "source-lay
 <Lens name="react">
 <Tag k="react" /> `Source` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
 
+<LiveCode title="maps-react で地理院タイルを重ねる">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map, Source, Layer } from "@geolonia/maps-react";
 
-<Map
-  apiKey="YOUR-API-KEY"
-  center={[139.7671, 35.6812]}
-  zoom={12}
-  containerStyle={{ width: "100%", height: "100vh" }}
->
-  <Source
-    id="gsi"
-    type="raster"
-    tiles={["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"]}
-    tileSize={256}
-    attribution="地理院タイル"
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.7671, 35.6812]}
+    zoom={12}
+    containerStyle={{ width: "100%", height: "100vh" }}
   >
-    <Layer id="gsi-raster" type="raster" />
-  </Source>
-</Map>
+    <Source
+      id="gsi"
+      type="raster"
+      tiles={["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"]}
+      tileSize={256}
+      attribution="地理院タイル"
+    >
+      <Layer id="gsi-raster" type="raster" />
+    </Source>
+  </Map>,
+);
 ```
+
+</LiveCode>
 
 - **`tiles`**：タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
 - **`attribution`**：データの出典表示。配信元の利用規約が求める表記を必ず入れます。
@@ -90,7 +106,9 @@ import { Map, Source, Layer } from "@geolonia/maps-react";
 
 ## 結果
 
-ベース地図の上に、追加したタイルが重なって表示されます。ラスタタイルなら画像がそのまま、ベクトルタイルなら `Layer` で指定した描き方で描かれます。
+上のコードは、それぞれのタブの下でそのまま動いています。ベース地図の上に、追加した地理院タイルが重なって表示されます。ラスタタイルなら画像がそのまま、ベクトルタイルなら `Layer` で指定した描き方で描かれます。
+
+なお、ベクトルタイルの例（`example.com`）は URL が架空なのでそのままでは動きません。自分の配信元に差し替えてください。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 何も出ない（ラスタ）→ テンプレート URL をブラウザで直接確認。`{z}/{x}/{y}` に実数（例: `12/3637/1612`）を入れて画像が返るか見ると早いです。

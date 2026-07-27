@@ -6,6 +6,7 @@ kicker: チュートリアル ／ 段2
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段1で、地図を自分の見たい場所と角度にできました。でも、のっているのは中心の点ひとつだけ。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
@@ -37,6 +38,8 @@ import Callout from '../../../components/Callout.astro'
 
 maps-react では、データも JSX で宣言します。`Map` の子として `Source`（データ）を置き、その中に `Layer`（描き方）を置きます。
 
+<LiveCode title="maps-react で GeoJSON を重ねる">
+
 ```jsx
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
@@ -56,6 +59,8 @@ createRoot(document.getElementById("root")).render(
   </Map>,
 );
 ```
+
+</LiveCode>
 
 - **`<Source>`**：データの供給元。`type="geojson"` で、`data` に GeoJSON の URL（またはオブジェクトそのもの）を渡します。
 - **`<Layer>`**：データの描き方。`type="circle"` は各点を丸として描きます。**`id` は必須**です。省略するとエラーも出ずにレイヤが追加されず、何も表示されません。

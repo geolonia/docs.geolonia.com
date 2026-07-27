@@ -6,6 +6,7 @@ kicker: チュートリアル ／ 段3
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段2で、5地点のデータを地図に載せました。でも全部同じ色。データには `category`（ターミナル／観光）が入っているので、この段では**属性に応じて点を色分け**します。
@@ -36,26 +37,44 @@ import Callout from '../../../components/Callout.astro'
 
 `circle-color` には、固定の色だけでなく**式**も書けます。`match` 式を使うと、「`category` の値がこれなら、この色」という対応表になります。
 
+<LiveCode title="maps-react で属性に応じて色分けする">
+
 ```jsx
-<Source id="spots" type="geojson" data="/data/sample-spots.geojson">
-  <Layer
-    id="spots"
-    type="circle"
-    paint={{
-      "circle-radius": 8,
-      "circle-stroke-width": 2,
-      "circle-stroke-color": "#fff",
-      "circle-color": [
-        "match",
-        ["get", "category"],
-        "ターミナル", "#e4402f",
-        "観光", "#2b6cb0",
-        "#888888",
-      ],
-    }}
-  />
-</Source>
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Layer, Map, Source } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+      <Layer
+        id="spots"
+        type="circle"
+        paint={{
+          "circle-radius": 8,
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#fff",
+          "circle-color": [
+            "match",
+            ["get", "category"],
+            "ターミナル", "#e4402f",
+            "観光", "#2b6cb0",
+            "#888888",
+          ],
+        }}
+      />
+    </Source>
+  </Map>,
+);
 ```
+
+</LiveCode>
 
 配列の読み方は上から順に、
 

@@ -6,6 +6,7 @@ kicker: チュートリアル ／ 段2
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段1で、地図を自分の見たい場所と角度にできました。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
@@ -37,6 +38,8 @@ import Callout from '../../../components/Callout.astro'
 
 データの追加は、段1で覚えたエスケープハッチのパターン（**読み込みを待って `_getImpl()` で基盤の地図に触る**）を使います。ソース（データ）を登録し、レイヤ（描き方）を重ねます。
 
+<LiveCode title="maps-suite で GeoJSON を重ねる">
+
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
@@ -53,6 +56,8 @@ const impl = map._getImpl();
 impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
 impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 ```
+
+</LiveCode>
 
 - **`addSource`**：データの供給元を登録します。`type: "geojson"` で、`data` に URL（またはオブジェクトそのもの）を渡します。
 - **`addLayer`**：データの描き方を重ねます。`type: "circle"` は各点を丸として描きます。`source` に、登録したソースの名前を指定します。

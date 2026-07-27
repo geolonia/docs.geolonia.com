@@ -4,9 +4,9 @@ title: 段3：見た目を変える
 page: tutorial
 kicker: チュートリアル ／ 段3
 badge: tutorial
-embed: true
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段2で、自分のデータを GeoJSON として地図に載せました。でもベースの地図はデフォルトのまま。この段では、**地図全体のスタイル**を差し替えます。
@@ -20,20 +20,28 @@ embed では `data-style` 属性に URL を書くだけでベースの地図を�
 
 ## スタイルを差し替える
 
+<LiveCode title="embed でスタイルを差し替える">
+
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.68" data-lng="139.75" data-zoom="11"
      data-marker="off"
      data-geojson="/data/sample-spots.geojson"
      data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
+
+</LiveCode>
 
 - **`data-style`**：スタイル JSON の URL。上の例は OpenStreetMap Japan が提供するスタイルです。
 - `data-style` を省略すると、Geolonia の標準スタイルが使われます。
 
-実際に描画される地図がこちらです。段2と同じデータが、別のスタイルの地図に載っています。
-
-<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-marker="off" data-geojson="/data/sample-spots.geojson" data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div></div>
+上のコードは、そのまま下で動いています。段2と同じデータが、別のスタイルの地図に載っています。
 
 ## Geolonia が用意するスタイル
 
