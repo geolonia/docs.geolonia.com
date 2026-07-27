@@ -6,6 +6,7 @@ kicker: チュートリアル ／ 段0
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 maps-suite チュートリアルへようこそ。maps-suite は、Geolonia Maps を **JavaScript から命令的に操作する**ためのライブラリです。この段では、Web ページに地図を1枚出すところまでをやります。
 
@@ -42,6 +43,8 @@ npm install @geolonia/maps-suite maplibre-gl
 
 次に `main.js` で、CSS を読み込んで `Map` を作ります。
 
+<LiveCode title="maps-suite で地図を出す">
+
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
@@ -52,6 +55,10 @@ new geolonia.maps.Map(document.getElementById("map"), {
 });
 ```
 
+</LiveCode>
+
+上のコードが、そのまま下で動いています。
+
 ポイントは3つです。
 
 - **CSS のインポート**：`maplibre-gl/dist/maplibre-gl.css` と `@geolonia/maps-core/css` の2つが必要です。忘れるとコントロールやポップアップの表示が崩れます。
@@ -60,7 +67,7 @@ new geolonia.maps.Map(document.getElementById("map"), {
 
 ## 動いたか確認する
 
-`npm run dev` で開発サーバーを起動してブラウザで開くと、既定の場所（**東京駅**）を中心にした地図が表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
+`npm run dev` で開発サーバーを起動してブラウザで開くと、地図が表示されます。maps-suite は中心を指定しないと**東京駅**を既定の中心にします。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
 
 <Callout kind="warning" title="うまく出ないとき">
 - 真っ白で何も出ない → `#map` の**高さが 0** になっていないか確認。`<style>` の指定を確認してください。
