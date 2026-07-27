@@ -3,7 +3,7 @@
  *
  * ドキュメント（.mdx）に直接書いたコードブロックを、そのまま動くデモページにする。
  *
- *   1. ビルド前に src/pages 以下の .md / .mdx を走査し、<LiveCode> の中のフェンスを取り出す
+ *   1. ビルド前に src/pages 以下の .mdx を MDX パーサで読み、<LiveCode> の中のフェンスを取り出す
  *   2. 言語と本文のハッシュを ID にして「マニフェスト」を作る
  *   3. /demos/inline/<ID>/ という実ページを ID の数だけ生成する
  *   4. ページ側の <LiveCode> は、スロットから復元した同じ本文のハッシュを計算して
@@ -23,6 +23,10 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkMdx from 'remark-mdx';
+import { visit } from 'unist-util-visit';
 import {
   normalizeCode,
   snippetId,
@@ -40,55 +44,27 @@ const SNIPPET_PREFIX = 'virtual:livecode/';
  *  スニペット内の bare import（@geolonia/... など）が通常どおり解決される。 */
 const SNIPPET_DIR = '.livecode';
 
-/** <LiveCode …> … </LiveCode> */
-const BLOCK_RE = /<LiveCode\b([^>]*)>([\s\S]*?)<\/LiveCode>/g;
-/** その中のフェンス。開始フェンスのインデント幅も捕まえる。 */
-const FENCE_RE = /^([ \t]*)```([A-Za-z0-9]+)[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*```[ \t]*$/m;
-/** <LiveCode demo={false}> — デモを出さない指定 */
-const DEMO_FALSE_RE = /\bdemo\s*=\s*(?:\{\s*false\s*\}|"false"|'false')/;
-
 /**
- * コードフェンスの中身を潰す（改行は保つ）。
+ * .mdx を実際にパースするための最小のプロセッサ。
  *
- * 走査は .mdx を素のテキストとして見るので、そのままだと
- * 「LiveCode の使い方を説明するために ``` の中に書いた <LiveCode> の例」まで
- * 拾って、動かすつもりのないデモページを黙って生やしてしまう。
- * 先にフェンス領域を消しておけば、本物の <LiveCode> だけが残る。
+ * ここで自前の正規表現を使わないことが重要。フェンスの記法（バッククォート／
+ * チルダ、meta 文字列）、リスト内でのインデント、JSX 属性の書き方はいずれも
+ * 仕様があり、手書きの近似はその差がそのままバグになる。MDX と同じパーサに
+ * 解釈させて、出てきた木を読む。
  */
-function maskFencedRegions(src) {
-  let fence = null; // { char, len }
-  return src
-    .split('\n')
-    .map((line) => {
-      const open = /^[ \t]*(`{3,}|~{3,})(.*)$/.exec(line);
-      // 文字位置を変えないよう、消す行は同じ長さの空白に置き換える。
-      // （マスク後の一致位置をそのまま原文の切り出しに使うため）
-      const blank = ' '.repeat(line.length);
-      if (!fence) {
-        if (!open) return line;
-        fence = { char: open[1][0], len: open[1].length };
-        return blank;
-      }
-      // 閉じフェンス：開いたものと同じ記号・同じ長さ以上・後ろに情報なし
-      if (open && open[1][0] === fence.char && open[1].length >= fence.len && open[2].trim() === '') {
-        fence = null;
-      }
-      return blank;
-    })
-    .join('\n');
-}
+const mdxParser = unified().use(remarkParse).use(remarkMdx);
 
-/** 各行の先頭から最大 n 文字ぶんの空白を落とす。 */
-function stripIndent(body, n) {
-  if (!n) return body;
-  return body
-    .split('\n')
-    .map((line) => {
-      let i = 0;
-      while (i < n && (line[i] === ' ' || line[i] === '\t')) i++;
-      return line.slice(i);
-    })
-    .join('\n');
+/** <LiveCode demo={false}> か。`{false}` という式のときだけ「出さない」。 */
+function isDemoDisabled(node) {
+  for (const attr of node.attributes ?? []) {
+    if (attr.type !== 'mdxJsxAttribute' || attr.name !== 'demo') continue;
+    // demo={false} は式ノード。demo="false" は文字列なので JSX 的には truthy で、
+    // 描画側も truthy として扱う（＝デモを出す）。ここでも同じ判断にする。
+    if (attr.value && typeof attr.value === 'object') {
+      return String(attr.value.value).trim() === 'false';
+    }
+  }
+  return false;
 }
 
 async function walk(dir, out = []) {
@@ -101,7 +77,8 @@ async function walk(dir, out = []) {
   for (const e of entries) {
     const full = path.join(dir, e.name);
     if (e.isDirectory()) await walk(full, out);
-    else if (/\.mdx?$/.test(e.name)) out.push(full);
+    // .md は JSX を解釈しないので <LiveCode> は動かない。孤児ページを作らないよう .mdx だけ見る。
+    else if (e.name.endsWith('.mdx')) out.push(full);
   }
   return out;
 }
@@ -112,34 +89,34 @@ export async function collectSnippets(pagesDir) {
   const snippets = new Map();
   for (const file of files) {
     const src = await readFile(file, 'utf8');
-    // <LiveCode> を探す前に、フェンスの中（＝説明のために書かれた例）を潰す。
-    // マスクは文字位置を変えないので、見つけた範囲をそのまま原文から切り出せる。
-    const masked = maskFencedRegions(src);
+    let tree;
+    try {
+      tree = mdxParser.parse(src);
+    } catch {
+      continue; // パースできないものは Astro 側が本来のエラーを出す
+    }
 
-    const re = new RegExp(BLOCK_RE.source, 'g');
-    let m;
-    while ((m = re.exec(masked)) !== null) {
-      const block = src.slice(m.index, m.index + m[0].length);
-      const parsed = new RegExp(BLOCK_RE.source).exec(block);
-      if (!parsed) continue;
-      const [, attrs, inner] = parsed;
+    visit(tree, (node) => {
+      if (node.type !== 'mdxJsxFlowElement' || node.name !== 'LiveCode') return;
 
       // デモを出さない指定のものはバンドルしない（＝動かない断片も載せられる）
-      if (DEMO_FALSE_RE.test(attrs)) continue;
+      if (isDemoDisabled(node)) return;
 
-      const fence = FENCE_RE.exec(inner);
-      if (!fence) continue; // フェンスが無い場合は描画側でエラーにする
-      const [, indent, lang, rawBody] = fence;
+      // 中のコードブロック。フェンスの記法やリストのインデントはパーサが
+      // 解決済みで、value にはコード本来の字下げだけが残っている。
+      const codes = [];
+      visit(node, 'code', (c) => codes.push(c));
+      // 1つでないときは描画側が理由付きのエラーを出す
+      if (codes.length !== 1) return;
 
-      // 動かせない言語（bash など）は描画側で理由付きのエラーにする
-      if (!isRunnableLang(lang)) continue;
+      const { lang, value } = codes[0];
+      // 動かせない言語（bash など）も描画側で理由付きのエラーにする
+      if (!lang || !isRunnableLang(lang)) return;
 
-      // リストの中などインデントされた位置に書かれた場合、MDX 側はインデントを
-      // 剥がした本文を渡してくる。走査側でも同じだけ落として揃える。
-      const code = normalizeCode(stripIndent(rawBody, indent.length));
+      const code = normalizeCode(value);
       const id = snippetId(lang, code);
       if (!snippets.has(id)) snippets.set(id, { id, lang, code, file });
-    }
+    });
   }
   return snippets;
 }
@@ -203,7 +180,7 @@ export default function livecode() {
                   return null;
                 },
                 async handleHotUpdate({ file, server }) {
-                  if (!/\.mdx?$/.test(file)) return;
+                  if (!file.endsWith('.mdx')) return;
                   snippets = await collectSnippets(pagesDir);
                   for (const vid of ['\0' + MANIFEST_ID, '\0' + LOADERS_ID]) {
                     const mod = server.moduleGraph.getModuleById(vid);

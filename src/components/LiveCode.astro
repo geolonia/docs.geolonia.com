@@ -43,6 +43,15 @@ interface Props {
 
 const { demo = true, title, height } = Astro.props;
 
+// demo="false" は JSX では文字列（truthy）なので、書き手の意図と逆に働く。
+// 走査側も同じ判断をするため実害は出ないが、意図が通らないので止める。
+if (typeof demo !== 'boolean') {
+  throw new Error(
+    `LiveCode: demo は真偽値で書いてください（受け取った値: ${JSON.stringify(demo)}）。\n` +
+      'デモを出さないときは demo={false} です（demo="false" は文字列なので効きません）。',
+  );
+}
+
 if (!Astro.slots.has('default')) {
   throw new Error('LiveCode: コードブロックを子として書いてください');
 }
@@ -78,8 +87,8 @@ const entry = demo ? manifest[snippetId(lang, code)] : undefined;
 if (demo && !entry) {
   throw new Error(
     `LiveCode: このコードに対応するデモページが生成されていません（lang=${lang}）。\n` +
-      '<LiveCode> の中は「言語付きのフェンス1つ」にしてください。\n' +
-      'リストや引用の中に置いている場合は、インデントを外して書いてみてください。\n' +
+      '走査（integrations/livecode.mjs）が拾った本文と、表示から復元した本文が食い違っています。\n' +
+      'LiveCode 側の不具合の可能性が高いので、下のコードを添えて報告してください。\n' +
       `--- 復元されたコード ---\n${code.slice(0, 300)}`,
   );
 }
