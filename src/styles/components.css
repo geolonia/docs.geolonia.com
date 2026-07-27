@@ -61,9 +61,21 @@
 .lens-tab[data-lens="suite"].active { color: var(--lens-suite); border-bottom-color: var(--lens-suite); }
 .lens-tab[data-lens="react"].active { color: var(--lens-react); border-bottom-color: var(--lens-react); }
 
-/* 動くデモ（iframe を遅延ロードで埋め込む LensDemo） */
-.lens-demo { margin: 14px 0; }
-.lens-demo__frame { width: 100%; height: 360px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); display: block; }
+/* コード表示と実行結果の一体ブロック（LiveCode）。
+   同じスニペットから作られる2つなので、見た目も1つの塊として繋げる。 */
+.livecode { margin: 16px 0; }
+.livecode[data-has-demo="true"] pre {
+  margin-bottom: 0;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+.livecode__demo {
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+.livecode__frame { display: block; width: 100%; height: 360px; border: 0; }
 
 /* 手順 */
 .steps { list-style: none; counter-reset: s; padding: 0; }

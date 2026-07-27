@@ -1,0 +1,41 @@
+---
+/**
+ * コード表示と実行結果を一体で出すブロック。
+ *
+ * 表示するコードも iframe で動くデモも、同じ src/demos/<slug>/<lens>.<ext> から作る。
+ * ここに手書きのコードは書かない ＝ 載っているコードは必ず動いているコード。
+ *
+ *   <LiveCode slug="first-map" lens="embed" />              全文＋デモ
+ *   <LiveCode slug="first-map" lens="embed" region="map" /> 一部だけ表示＋デモ
+ *   <LiveCode slug="first-map" lens="embed" demo={false} /> コードだけ（デモは別の場所に1つ）
+ *
+ * iframe は data-src だけ持ち、BaseLayout の initLazyDemos が
+ * ビューポートに入った時に読み込む。見た目は components.css の .livecode 側。
+ */
+import { Code } from 'astro:components';
+import { getCode, demoUrl } from '../lib/snippets';
+
+interface Props {
+  slug: string;
+  lens: string;
+  region?: string;
+  demo?: boolean;
+  title?: string;
+}
+
+const { slug, lens, region, demo = true, title } = Astro.props;
+const { code, lang } = getCode(slug, lens, region);
+---
+<div class="livecode" data-has-demo={demo ? 'true' : 'false'}>
+  <Code code={code} lang={lang} />
+  {demo && (
+    <div class="livecode__demo">
+      <iframe
+        class="livecode__frame"
+        data-src={demoUrl(slug, lens)}
+        title={title ?? `${lens} のライブデモ`}
+        loading="lazy"
+      ></iframe>
+    </div>
+  )}
+</div>

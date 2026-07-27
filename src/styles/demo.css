@@ -1,9 +1,15 @@
 /* =====================================================================
    demo.css — iframe に埋め込む動くデモ専用の最小スタイル。
-   サイト本体のトークンは読み込まず、地図がフレーム一杯に出ることだけを担保。
+   サイト本体のトークンは読み込まない。
+
+   ここに書いてよいのは「スニペット自身では書けない土台」だけ。
+   CSS を持てるスニペット（.html）は自分で高さを指定させる
+   ＝ ドキュメントに表示されるコードが、実際に効いているコードになる。
+   .ts / .tsx はスタイルを持てないので、マウント先の大きさだけここで与える。
    ===================================================================== */
 html, body { margin: 0; height: 100%; }
 .demo-body { height: 100vh; overflow: hidden; }
-.demo-body .geolonia,
-.demo-body #map { width: 100%; height: 100vh; }
-.demo-placeholder { display: grid; place-items: center; height: 100vh; padding: 1rem; text-align: center; font-family: system-ui, sans-serif; color: #55606b; }
+
+/* モジュール系スニペット（.ts / .tsx）のマウント先 */
+.demo-body #map,
+.demo-body #root { width: 100%; height: 100vh; }
