@@ -8,11 +8,16 @@
 // 一覧を持たない（持つと TypeDoc の再生成とずれる）。
 import BaseLayout from './BaseLayout.astro';
 import ApiNav from '../components/ApiNav.astro';
+import { packageLabel } from '../lib/api-nav';
 
 const { frontmatter } = Astro.props;
 const { title, page = 'reference', description } = frontmatter ?? {};
+
+// /reference/core/Class.GeoloniaMap/ の core からパッケージ名を引く。
+// 同じ規則で OGP 画像の副題も作っている（src/pages/og/[...route].ts）。
+const pkg = packageLabel(Astro.url.pathname.split('/').filter(Boolean)[1] ?? '');
 ---
-<BaseLayout title={`${title} — Geolonia Docs`} page={page} description={description ?? `${title} の API リファレンス`}>
+<BaseLayout title={`${title} — Geolonia Docs`} page={page} description={description ?? `${pkg} の API リファレンス`}>
   <div class="api-shell">
     <ApiNav />
     <main class="content api-doc">

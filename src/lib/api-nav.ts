@@ -38,6 +38,15 @@ const PACKAGES: { dir: string; label: string }[] = [
   { dir: 'core', label: '@geolonia/maps-core' },
 ];
 
+/**
+ * `src/pages/reference/<dir>/` の `<dir>` に対応するパッケージ名を返す。
+ * 表に無いディレクトリはツリーと同じくディレクトリ名をそのまま使う。
+ * meta description と OGP 画像の副題が同じ文言になるように、両者からこれを使う。
+ */
+export function packageLabel(dir: string): string {
+  return PACKAGES.find((p) => p.dir === dir)?.label ?? dir;
+}
+
 export interface NavItem {
   name: string;
   href: string;

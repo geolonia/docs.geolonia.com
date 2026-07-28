@@ -6,6 +6,7 @@
 // iframe 用で単体では共有されないため、拡張子の時点で対象外になる。
 import { createRequire } from 'node:module';
 import { OGImageRoute } from 'astro-og-canvas';
+import { packageLabel } from '../../lib/api-nav';
 
 // CanvasKit は woff2 を読めないため TTF が要る。Noto Sans JP は DS の
 // --font-family-base の先頭でもある。@fontsource は woff/woff2 しか配らないので、
@@ -26,9 +27,14 @@ export const { getStaticPaths, GET } = await OGImageRoute({
   getImageOptions: (path, page: any) => {
     const fm = page.frontmatter ?? {};
     // TypeDoc 由来のリファレンスには kicker が無いので、ApiLayout が meta description に
-    // 使うのと同じ文言を当てて画像と HTML をそろえる。
-    const fallback = path.startsWith('/src/pages/reference/')
-      ? `${fm.title} の API リファレンス`
+    // 使うのと同じ文言（<パッケージ名> の API リファレンス）を当てて画像と HTML をそろえる。
+    // 手書きの索引 reference/index.md はパッケージ配下ではないので対象外にする。
+    const underReference = path.startsWith('/src/pages/reference/')
+      ? path.slice('/src/pages/reference/'.length)
+      : '';
+    const refDir = underReference.includes('/') ? underReference.split('/')[0] : undefined;
+    const fallback = refDir
+      ? `${packageLabel(refDir)} の API リファレンス`
       : 'Geolonia Maps 公式ドキュメント';
     return {
       title: fm.title ?? 'Geolonia Docs',
