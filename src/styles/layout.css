@@ -9,7 +9,8 @@
 }
 .brand { font-weight: 800; font-size: 16px; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
 .brand:hover { text-decoration: none; }
-.brand .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 4px var(--accent-soft); }
+/* ロゴ（Geolonia | Docs ロックアップ）。元SVGは 793.93x124.72 ≒ 6.37:1 */
+.brand .brand-logo { height: 26px; width: auto; display: block; }
 .brand .v2 { font-size: 11px; font-weight: 800; color: var(--color-accent-text); background: var(--color-accent-surface); border-radius: var(--radius-control); padding: 1px 6px; }
 
 .dtx-nav { display: flex; gap: 4px; flex-wrap: wrap; }
