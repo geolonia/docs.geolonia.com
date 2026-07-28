@@ -14,6 +14,7 @@ docs.geolonia.com（リニューアル版）にページを足したり直した
 - [3つのライブラリを並べる：Lens](#3つのライブラリを並べるlens)
 - [その他の部品](#その他の部品)
 - [スタイル](#スタイル)
+- [OGP 画像](#ogp-画像)
 - [デプロイと配信ヘッダ](#デプロイと配信ヘッダ)
 - [触ってはいけないもの](#触ってはいけないもの)
 - [API キーの扱い](#api-キーの扱い)
@@ -112,6 +113,7 @@ badge: howto
 | `kicker` | | H1 の上に出る小さな見出し |
 | `badge` | | H1 の頭に付く象限バッジ。`tutorial` `howto` `reference` `explanation` |
 | `embed` | | `true` にすると Geolonia embed の CDN スクリプトを読み込みます |
+| `description` | | `<meta name="description">` と OGP に使う一文。省略するとサイト共通の文言になります（[OGP 画像](#ogp-画像)） |
 
 `embed: true` は、そのページで `<GeoloniaMap />` を使うときだけ付けます。CDN スクリプトは
 ページ全体を走査して `.geolonia` を地図に変える副作用があるので、必要なページだけに
@@ -357,6 +359,28 @@ CSS は `src/styles/` にまとまっていて、`BaseLayout` がこの順で読
 する人が CSS だけを見れば済むようにするためです。
 
 色や余白は、できるだけデザインシステムの CSS 変数を使ってください。
+
+## OGP 画像
+
+SNS やチャットにページの URL を貼ったときに出るカード画像は、ビルド時に自動生成されます。ページを足すだけで付いてくるので、書き手が用意するものはありません。
+
+生成しているのは `src/pages/og/[...route].ts` です。`src/pages/**/*.{md,mdx}` を走査して、1 ページにつき 1 枚の PNG（1200×630）を `/og/<ページのパス>.png` に書き出します。画像に載るのは frontmatter の `title` と、`description`（無ければ `kicker`）です。描画は [astro-og-canvas](https://github.com/delucis/astro-og-canvas) が Skia の Canvas API で行います。
+
+| ページ | 画像 |
+|---|---|
+| `/` | `/og/index.png` |
+| `/howto/` | `/og/howto.png` |
+| `/howto/3d/` | `/og/howto/3d.png` |
+
+この規約は生成側と `BaseLayout` の `og:image` の両方が使うので、`src/lib/og.ts` に 1 か所だけ置いてあります。**片方だけ変えると `og:image` が 404 になります。**
+
+知っておくと踏み抜かないところが 3 つあります。
+
+- **日本語のフォントを明示的に読ませています。** CanvasKit は woff2 を読めず、既定のフォントに日本語の字も入っていないため、指定しないと本文が豆腐（□）になります。DS の `--font-family-base` に合わせて Noto Sans JP の TTF を使っていて、TTF の供給元が `@expo-google-fonts/noto-sans-jp` です（Expo 用のパッケージですが、中身は Google Fonts の TTF そのものです。`@fontsource` は woff/woff2 しか配っていないので使えません）。
+- **絶対 URL のために `astro.config.mjs` の `site` が要ります。** クローラは相対パスの `og:image` を解決できません。`site` を消すとカード画像が出なくなります。
+- **カード上のロゴは PNG です。** `src/assets/og-logo.png` に置いてあり、`public/logo-docs.svg` から `rsvg-convert -w 600` で書き出したものです。CanvasKit は SVG を読めないので、ロゴを差し替えるときは PNG も作り直してください。
+
+生成済みの画像は `node_modules/.astro-og-canvas/` にキャッシュされ、内容が変わったページだけ描き直されます。
 
 ## デプロイと配信ヘッダ
 

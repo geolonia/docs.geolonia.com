@@ -10,9 +10,9 @@ import BaseLayout from './BaseLayout.astro';
 import ApiNav from '../components/ApiNav.astro';
 
 const { frontmatter } = Astro.props;
-const { title, page = 'reference' } = frontmatter ?? {};
+const { title, page = 'reference', description } = frontmatter ?? {};
 ---
-<BaseLayout title={`${title} — Geolonia Docs`} page={page}>
+<BaseLayout title={`${title} — Geolonia Docs`} page={page} description={description ?? `${title} の API リファレンス`}>
   <div class="api-shell">
     <ApiNav />
     <main class="content api-doc">
