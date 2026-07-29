@@ -11,6 +11,9 @@ spec:
   type: website
   owner: group:geolonia/maps-team
   lifecycle: production
+  accessGrants:
+    - team: group:geolonia/designers
+      permission: maintain
   # accessGrants:
   #   - team: group:geolonia/team-name
   #     permission: write  # read | triage | write | maintain | admin
