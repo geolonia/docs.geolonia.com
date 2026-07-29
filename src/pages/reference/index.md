@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/DocLayout.astro
 title: リファレンス
-description: embed、maps-suite、maps-core の型定義から生成した API リファレンスです。
+description: Geolonia Maps SDK (embed, maps-suite, maps-core) の API リファレンスです。
 page: reference
 quadrant: Diátaxis / 仕事 × 認知
 sidebar: api
