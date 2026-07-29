@@ -1,6 +1,7 @@
 ---
 layout: ../../layouts/DocLayout.astro
 title: 解説
+description: Geolonia Maps の背景にある考え方や概念を解説します。
 page: explanation
 quadrant: Diátaxis / 学習 × 認知
 ---
