@@ -1,0 +1,213 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: Geolonia Maps のスタイル一覧
+description: Geolonia が公式に提供している9種類のスタイルを、実際の地図とあわせて並べます。
+page: explanation
+badge: explanation
+---
+import Callout from '../../components/Callout.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+Geolonia が公式に提供しているスタイルは9種類です。論理名を `data-style` や `style` に渡すだけで切り替えられます。スタイルそのものの考え方は[地図のスタイルとは](/explanation/map-style/)を参照してください。
+
+| 論理名 | 内容 |
+|---|---|
+| `geolonia/basic-v2` | 標準のスタイル。指定を省略したときはこれが使われます |
+| `geolonia/basic-v1` | 一世代前の標準スタイル |
+| `geolonia/basic` | 初期の標準スタイル。農地の区画（筆ポリゴン）を含みます |
+| `geolonia/gsi` | 国土地理院のベクトルタイルを使ったスタイル |
+| `geolonia/midnight` | 濃紺を基調とした暗色のスタイル |
+| `geolonia/red-planet` | 暗い赤を基調としたスタイル |
+| `geolonia/notebook` | 白を基調とした淡い色のスタイル |
+| `geolonia/homework` | Natural Earth による世界規模の簡素なスタイル |
+| `geoloniamaps/smartcity-base` | 国土地理院の最適化ベクトルタイルを使ったスタイル |
+
+以下、それぞれの見え方です。同じ場所と縮尺で並べています。
+
+## geolonia/basic-v2
+
+標準のスタイルです。`data-style` を書かなかったときはこれが使われます。OpenStreetMap のデータを元にしています。
+
+<LiveCode title="geolonia/basic-v2" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35.68" data-lng="139.76" data-zoom="12"
+         data-style="geolonia/basic-v2"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+## geolonia/basic-v1
+
+一世代前の標準スタイルです。配色は `basic-v2` に近いものの、参照しているベクトルタイルが異なります。
+
+<LiveCode title="geolonia/basic-v1" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35.68" data-lng="139.76" data-zoom="12"
+         data-style="geolonia/basic-v1"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+## geolonia/basic
+
+初期の標準スタイルです。農林水産省の筆ポリゴン（農地の区画）を含むため、農村部を拡大すると区画ごとの境界が出ます。
+
+<LiveCode title="geolonia/basic" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35.68" data-lng="139.76" data-zoom="12"
+         data-style="geolonia/basic"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+## geolonia/gsi
+
+国土地理院のベクトルタイルを使ったスタイルです。日本国内の表現が地理院地図に近くなります。
+
+<LiveCode title="geolonia/gsi" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35.68" data-lng="139.76" data-zoom="12"
+         data-style="geolonia/gsi"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+## geolonia/midnight
+
+濃紺を基調とした暗色のスタイルです。暗い画面に地図を置くときや、地図の上に色の濃いデータを重ねるときに使えます。
+
+<LiveCode title="geolonia/midnight" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35.68" data-lng="139.76" data-zoom="12"
+         data-style="geolonia/midnight"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+## geolonia/red-planet
+
+暗い赤を基調としたスタイルです。
+
+<LiveCode title="geolonia/red-planet" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35.68" data-lng="139.76" data-zoom="12"
+         data-style="geolonia/red-planet"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+## geolonia/notebook
+
+白を基調とした淡い色のスタイルです。地図そのものを目立たせず、重ねたデータを主役にしたいときに向きます。
+
+<LiveCode title="geolonia/notebook" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35.68" data-lng="139.76" data-zoom="12"
+         data-style="geolonia/notebook"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+## geolonia/homework
+
+Natural Earth を使った世界規模の簡素なスタイルです。国境と国名を中心に、9 layer だけで構成されています。街区や道路は入っていないので、日本国内を拡大する用途には向きません。次の例は縮尺を下げて世界全体を出しています。
+
+<LiveCode title="geolonia/homework" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35" data-lng="139" data-zoom="2"
+         data-style="geolonia/homework"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+## geoloniamaps/smartcity-base
+
+国土地理院の最適化ベクトルタイルを PMTiles 形式で読むスタイルです。他の8種類と違い `geoloniamaps/` から始まります。
+
+<LiveCode title="geoloniamaps/smartcity-base" height={340}>
+
+```html
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"><style>.geolonia{width:100%;height:340px}</style></head>
+  <body>
+    <div class="geolonia" data-lat="35.68" data-lng="139.76" data-zoom="12"
+         data-style="geoloniamaps/smartcity-base"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+<Callout kind="warning" title="geolonia/basic-world について">
+`geolonia/basic-world` という名前も配信され続けていますが、これは `geolonia/basic-v1` に置き換えられた旧名で、中身は `basic-v1` と同一です。すでに使っている場合はそのまま動きますが、新しく書くときは `geolonia/basic-v1` を指定してください。
+</Callout>
+
+## 言語
+
+各スタイルには日本語版と英語版があり、地名などのラベルの言語が変わります。`data-lang` や `lang` オプションで切り替えられます。詳しくは[地図の表示言語を切り替えるには](/howto/switch-language/)を参照してください。
