@@ -1,6 +1,6 @@
 ---
 layout: ../../../layouts/ApiLayout.astro
-title: 'Class: MVCArray<T>'
+title: 'Class: Rectangle'
 page: reference
 ---
 
@@ -8,48 +8,64 @@ page: reference
 
 ***
 
-[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / MVCArray
+[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / Rectangle
 
-# Class: MVCArray\<T\>
+# Class: Rectangle
 
-内容が変化したときにイベントを発火するミュータブルな配列です。
+地図上に描画される軸並行の矩形です。
 
-[MVCObject](/reference/suite/geolonia.maps.Class.MVCObject) を継承しているため、`addListener`/`bindTo`/`notify` を
-引き継ぎます。要素数は `length` MVC プロパティとして公開されます
-(`get("length")` を使用するか、`length_changed` をリッスンしてください)。
+一般的な地図 SDK の矩形（Rectangle）コンポーネントに相当します。バウンディングボックス
+表示、範囲選択 UI、地理的な範囲のハイライトなどに使用します。
 
-イベント:
-- `insert_at` `(index)` — `index` に要素が挿入されました。
-- `remove_at` `(index, removed)` — `removed` が `index` から削除されました。
-- `set_at` `(index, previous)` — `index` の要素が置き換えられました。
-  `previous` はそれ以前にあった値です。
-- `length_changed` — 配列の長さが変化しました。
+内部的には [Polygon](/reference/suite/geolonia.maps.Class.Polygon) と同様に MapLibre の GeoJSON fill/line
+ソース・レイヤーを利用し、`bounds` の 4 隅から矩形の頂点を導出します。
+
+## Example
+
+```typescript
+const rectangle = new geolonia.maps.Rectangle({
+  bounds: {
+    north: 35.7,
+    south: 35.6,
+    east: 139.8,
+    west: 139.7,
+  },
+  map,
+  strokeColor: "#ff0000",
+  strokeWeight: 2,
+  fillColor: "#ff0000",
+  fillOpacity: 0.35,
+});
+
+rectangle.setBounds({
+  north: 36.0, south: 35.0, east: 140.0, west: 139.0,
+});
+```
 
 ## Extends
 
 - [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject)
 
-## Type Parameters
-
-### T
-
-`T` = `any`
-
 ## Constructors
 
 ### Constructor
 
-> **new MVCArray**\<`T`\>(`array?`): `MVCArray`\<`T`\>
+> **new Rectangle**(`options?`): `Rectangle`
+
+矩形を作成します。
 
 #### Parameters
 
-##### array?
+##### options?
 
-`T`[]
+[`RectangleOptions`](/reference/suite/geolonia.maps.Interface.RectangleOptions)
+
+初期の範囲、地図、描画スタイルです。`bounds` と `map`
+  の両方が指定された場合、矩形はすぐに表示されます。
 
 #### Returns
 
-`MVCArray`\<`T`\>
+`Rectangle`
 
 #### Overrides
 
@@ -136,36 +152,6 @@ page: reference
 
 ***
 
-### clear()
-
-> **clear**(): `void`
-
-すべての要素を削除し、(末尾から) 各要素について `remove_at` を発火します。
-
-#### Returns
-
-`void`
-
-***
-
-### forEach()
-
-> **forEach**(`callback`): `void`
-
-各要素について、そのインデックスとともに `callback` を呼び出します。
-
-#### Parameters
-
-##### callback
-
-(`elem`, `i`) => `void`
-
-#### Returns
-
-`void`
-
-***
-
 ### get()
 
 > **get**(`key`): `any`
@@ -191,67 +177,39 @@ page: reference
 
 ***
 
-### getArray()
+### getBounds()
 
-> **getArray**(): `T`[]
+> **getBounds**(): [`LatLngBounds`](/reference/suite/geolonia.maps.Class.LatLngBounds) \| `null`
 
-内部の配列を返します。直接変更すると変更イベントを発生させずにバイパスします。
+矩形の地理的範囲を返します。範囲が設定されていない場合は `null` を返します。
 
 #### Returns
 
-`T`[]
+[`LatLngBounds`](/reference/suite/geolonia.maps.Class.LatLngBounds) \| `null`
 
 ***
 
-### getAt()
+### getMap()
 
-> **getAt**(`i`): `T`
+> **getMap**(): [`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
 
-指定したインデックスの要素を返します。
-
-#### Parameters
-
-##### i
-
-`number`
+この矩形が追加されている地図を返します。取り外された状態の場合は `null` を返します。
 
 #### Returns
 
-`T`
+[`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
 
 ***
 
-### getLength()
+### getVisible()
 
-> **getLength**(): `number`
+> **getVisible**(): `boolean`
 
-要素数を返します。
-
-#### Returns
-
-`number`
-
-***
-
-### insertAt()
-
-> **insertAt**(`i`, `elem`): `void`
-
-`i` に `elem` を挿入し、以降の要素をずらします。`insert_at` を発火します。
-
-#### Parameters
-
-##### i
-
-`number`
-
-##### elem
-
-`T`
+矩形の可視性を返します。
 
 #### Returns
 
-`void`
+`boolean`
 
 ***
 
@@ -278,56 +236,6 @@ page: reference
 #### Inherited from
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`notify`](/reference/suite/geolonia.maps.Class.MVCObject#notify)
-
-***
-
-### pop()
-
-> **pop**(): `T`
-
-最後の要素を削除して返します。要素が削除された場合、削除された値とともに
-`remove_at` を発火します。
-
-#### Returns
-
-`T`
-
-***
-
-### push()
-
-> **push**(`elem`): `number`
-
-`elem` を末尾に追加し、新しい長さを返します。`insert_at` を発火します。
-
-#### Parameters
-
-##### elem
-
-`T`
-
-#### Returns
-
-`number`
-
-***
-
-### removeAt()
-
-> **removeAt**(`i`): `T`
-
-`i` の要素を削除して返し、以降の要素をずらします。
-削除された値とともに `remove_at` を発火します。
-
-#### Parameters
-
-##### i
-
-`number`
-
-#### Returns
-
-`T`
 
 ***
 
@@ -363,22 +271,59 @@ page: reference
 
 ***
 
-### setAt()
+### setBounds()
 
-> **setAt**(`i`, `elem`): `void`
+> **setBounds**(`bounds`): `void`
 
-`i` の要素を置き換えます。以前の値とともに `set_at` を発火し、配列が
-大きくなった場合 (`i` が現在の末尾を超える場合) は `length_changed` を発火します。
+矩形の地理的範囲を設定します。
 
 #### Parameters
 
-##### i
+##### bounds
 
-`number`
+[`LatLngBoundsLiteralOrLatLngBounds`](/reference/suite/geolonia.maps.TypeAlias.LatLngBoundsLiteralOrLatLngBounds)
 
-##### elem
+新しい範囲です。[LatLngBounds](/reference/suite/geolonia.maps.Class.LatLngBounds) または [LatLngBoundsLiteral](/reference/suite/geolonia.maps.Interface.LatLngBoundsLiteral) を受け付けます。
 
-`T`
+#### Returns
+
+`void`
+
+***
+
+### setMap()
+
+> **setMap**(`map`): `void`
+
+矩形を地図に追加します。`null` を渡すと、現在の地図から取り外します。
+
+#### Parameters
+
+##### map
+
+[`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
+
+矩形を描画する地図、または取り外す場合は `null` です。
+
+#### Returns
+
+`void`
+
+***
+
+### setOptions()
+
+> **setOptions**(`options`): `void`
+
+複数のオプションをまとめて更新します。
+
+#### Parameters
+
+##### options
+
+[`RectangleOptions`](/reference/suite/geolonia.maps.Interface.RectangleOptions)
+
+更新するオプションです。指定されていないものは変更されません。
 
 #### Returns
 
@@ -408,6 +353,26 @@ page: reference
 #### Inherited from
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`setValues`](/reference/suite/geolonia.maps.Class.MVCObject#setvalues)
+
+***
+
+### setVisible()
+
+> **setVisible**(`visible`): `void`
+
+矩形の可視性を設定します。
+
+#### Parameters
+
+##### visible
+
+`boolean`
+
+`true` で表示、`false` で非表示になります。
+
+#### Returns
+
+`void`
 
 ***
 

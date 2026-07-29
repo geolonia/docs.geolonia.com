@@ -1,6 +1,6 @@
 ---
 layout: ../../../layouts/ApiLayout.astro
-title: 'Class: MVCArray<T>'
+title: 'Class: Circle'
 page: reference
 ---
 
@@ -8,48 +8,56 @@ page: reference
 
 ***
 
-[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / MVCArray
+[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / Circle
 
-# Class: MVCArray\<T\>
+# Class: Circle
 
-内容が変化したときにイベントを発火するミュータブルな配列です。
+地図上に描画される円です。
 
-[MVCObject](/reference/suite/geolonia.maps.Class.MVCObject) を継承しているため、`addListener`/`bindTo`/`notify` を
-引き継ぎます。要素数は `length` MVC プロパティとして公開されます
-(`get("length")` を使用するか、`length_changed` をリッスンしてください)。
+中心座標と半径（メートル）を指定して円を描画します。内部的には
+MapLibre の GeoJSON fill/line ソース・レイヤーを利用し、
+Haversine の逆計算で円周上の座標列を近似ポリゴンとして生成します。
 
-イベント:
-- `insert_at` `(index)` — `index` に要素が挿入されました。
-- `remove_at` `(index, removed)` — `removed` が `index` から削除されました。
-- `set_at` `(index, previous)` — `index` の要素が置き換えられました。
-  `previous` はそれ以前にあった値です。
-- `length_changed` — 配列の長さが変化しました。
+## Example
+
+```typescript
+const circle = new geolonia.maps.Circle({
+  center: { lat: 35.6812, lng: 139.7671 },
+  radius: 500,
+  map,
+  strokeColor: "#ff0000",
+  strokeWeight: 2,
+  fillColor: "#ff0000",
+  fillOpacity: 0.35,
+});
+
+circle.setRadius(1000);
+```
 
 ## Extends
 
 - [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject)
 
-## Type Parameters
-
-### T
-
-`T` = `any`
-
 ## Constructors
 
 ### Constructor
 
-> **new MVCArray**\<`T`\>(`array?`): `MVCArray`\<`T`\>
+> **new Circle**(`options?`): `Circle`
+
+円を作成します。
 
 #### Parameters
 
-##### array?
+##### options?
 
-`T`[]
+[`CircleOptions`](/reference/suite/geolonia.maps.Interface.CircleOptions)
+
+初期の中心、半径、地図、描画スタイルです。`center` と `map`
+  の両方が指定された場合、円はすぐに表示されます。
 
 #### Returns
 
-`MVCArray`\<`T`\>
+`Circle`
 
 #### Overrides
 
@@ -136,36 +144,6 @@ page: reference
 
 ***
 
-### clear()
-
-> **clear**(): `void`
-
-すべての要素を削除し、(末尾から) 各要素について `remove_at` を発火します。
-
-#### Returns
-
-`void`
-
-***
-
-### forEach()
-
-> **forEach**(`callback`): `void`
-
-各要素について、そのインデックスとともに `callback` を呼び出します。
-
-#### Parameters
-
-##### callback
-
-(`elem`, `i`) => `void`
-
-#### Returns
-
-`void`
-
-***
-
 ### get()
 
 > **get**(`key`): `any`
@@ -191,41 +169,48 @@ page: reference
 
 ***
 
-### getArray()
+### getBounds()
 
-> **getArray**(): `T`[]
+> **getBounds**(): [`LatLngBounds`](/reference/suite/geolonia.maps.Class.LatLngBounds) \| `null`
 
-内部の配列を返します。直接変更すると変更イベントを発生させずにバイパスします。
+円のバウンディングボックスを返します。
+中心または半径が未設定の場合は `null` を返します。
 
 #### Returns
 
-`T`[]
+[`LatLngBounds`](/reference/suite/geolonia.maps.Class.LatLngBounds) \| `null`
 
 ***
 
-### getAt()
+### getCenter()
 
-> **getAt**(`i`): `T`
+> **getCenter**(): [`LatLng`](/reference/suite/geolonia.maps.Class.LatLng) \| `null`
 
-指定したインデックスの要素を返します。
-
-#### Parameters
-
-##### i
-
-`number`
+円の中心座標を返します。設定されていない場合は `null` を返します。
 
 #### Returns
 
-`T`
+[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng) \| `null`
 
 ***
 
-### getLength()
+### getMap()
 
-> **getLength**(): `number`
+> **getMap**(): [`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
 
-要素数を返します。
+この円が追加されている地図を返します。取り外された状態の場合は `null` を返します。
+
+#### Returns
+
+[`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
+
+***
+
+### getRadius()
+
+> **getRadius**(): `number`
+
+円の半径（メートル）を返します。
 
 #### Returns
 
@@ -233,25 +218,15 @@ page: reference
 
 ***
 
-### insertAt()
+### getVisible()
 
-> **insertAt**(`i`, `elem`): `void`
+> **getVisible**(): `boolean`
 
-`i` に `elem` を挿入し、以降の要素をずらします。`insert_at` を発火します。
-
-#### Parameters
-
-##### i
-
-`number`
-
-##### elem
-
-`T`
+円の可視性を返します。
 
 #### Returns
 
-`void`
+`boolean`
 
 ***
 
@@ -278,56 +253,6 @@ page: reference
 #### Inherited from
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`notify`](/reference/suite/geolonia.maps.Class.MVCObject#notify)
-
-***
-
-### pop()
-
-> **pop**(): `T`
-
-最後の要素を削除して返します。要素が削除された場合、削除された値とともに
-`remove_at` を発火します。
-
-#### Returns
-
-`T`
-
-***
-
-### push()
-
-> **push**(`elem`): `number`
-
-`elem` を末尾に追加し、新しい長さを返します。`insert_at` を発火します。
-
-#### Parameters
-
-##### elem
-
-`T`
-
-#### Returns
-
-`number`
-
-***
-
-### removeAt()
-
-> **removeAt**(`i`): `T`
-
-`i` の要素を削除して返し、以降の要素をずらします。
-削除された値とともに `remove_at` を発火します。
-
-#### Parameters
-
-##### i
-
-`number`
-
-#### Returns
-
-`T`
 
 ***
 
@@ -363,22 +288,79 @@ page: reference
 
 ***
 
-### setAt()
+### setCenter()
 
-> **setAt**(`i`, `elem`): `void`
+> **setCenter**(`center`): `void`
 
-`i` の要素を置き換えます。以前の値とともに `set_at` を発火し、配列が
-大きくなった場合 (`i` が現在の末尾を超える場合) は `length_changed` を発火します。
+円の中心座標を設定します。
 
 #### Parameters
 
-##### i
+##### center
+
+[`LatLngLiteralOrLatLng`](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng)
+
+新しい中心座標です。
+
+#### Returns
+
+`void`
+
+***
+
+### setMap()
+
+> **setMap**(`map`): `void`
+
+円を地図に追加します。`null` を渡すと、現在の地図から取り外します。
+
+#### Parameters
+
+##### map
+
+[`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
+
+円を描画する地図、または取り外す場合は `null` です。
+
+#### Returns
+
+`void`
+
+***
+
+### setOptions()
+
+> **setOptions**(`options`): `void`
+
+複数のオプションをまとめて更新します。
+
+#### Parameters
+
+##### options
+
+[`CircleOptions`](/reference/suite/geolonia.maps.Interface.CircleOptions)
+
+更新するオプションです。指定されていないものは変更されません。
+
+#### Returns
+
+`void`
+
+***
+
+### setRadius()
+
+> **setRadius**(`radius`): `void`
+
+円の半径（メートル）を設定します。
+
+#### Parameters
+
+##### radius
 
 `number`
 
-##### elem
-
-`T`
+新しい半径です。
 
 #### Returns
 
@@ -408,6 +390,26 @@ page: reference
 #### Inherited from
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`setValues`](/reference/suite/geolonia.maps.Class.MVCObject#setvalues)
+
+***
+
+### setVisible()
+
+> **setVisible**(`visible`): `void`
+
+円の可視性を設定します。
+
+#### Parameters
+
+##### visible
+
+`boolean`
+
+`true` で表示、`false` で非表示になります。
+
+#### Returns
+
+`void`
 
 ***
 
