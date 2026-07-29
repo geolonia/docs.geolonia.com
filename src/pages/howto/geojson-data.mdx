@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面）を表示します。
@@ -14,7 +13,7 @@ GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> `data-geojson` 属性に GeoJSON ファイルの URL を書くだけです。
+`data-geojson` 属性に GeoJSON ファイルの URL を書くだけです。
 
 <LiveCode title="embed で GeoJSON を重ねる">
 
@@ -39,7 +38,7 @@ GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 地図の読み込みを待ってから、基盤の地図に `addSource`（データ）と `addLayer`（描き方）で重ねます。
+地図の読み込みを待ってから、基盤の地図に `addSource`（データ）と `addLayer`（描き方）で重ねます。
 
 <LiveCode title="maps-suite で GeoJSON を重ねる">
 
@@ -69,7 +68,7 @@ impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `Map` の子に `Source`（データ）と `Layer`（描き方）を置きます。
+`Map` の子に `Source`（データ）と `Layer`（描き方）を置きます。
 
 <LiveCode title="maps-react で GeoJSON を重ねる">
 

@@ -7,7 +7,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 GeoJSON では収まらない大きなデータや、他所が配信しているタイルを地図に重ねるには、**タイルソース**を追加します。`{z}/{x}/{y}` のテンプレート URL で配信されるラスタタイルやベクトルタイルが対象です。
@@ -15,12 +14,12 @@ GeoJSON では収まらない大きなデータや、他所が配信している
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
 
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 読み込みを待ってから、`addSource` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
+読み込みを待ってから、`addSource` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
 
 <LiveCode title="maps-suite で地理院タイルを重ねる">
 
@@ -60,7 +59,7 @@ impl.addLayer({ id: "mytiles-line", type: "line", source: "mytiles", "source-lay
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `Source` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
+`Source` に `tiles`（テンプレート URL の配列）を渡します。例は地理院タイル（ラスタ）を重ねる場合です。
 
 <LiveCode title="maps-react で地理院タイルを重ねる">
 

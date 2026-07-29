@@ -7,7 +7,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 視点を `pitch` で傾け、建物を **`fill-extrusion`**（高さを持つ塗り）で立ち上げると、都市が立体で見えます。建物の形と高さのデータはベーススタイルに含まれるベクトルタイルのものを使うので、自分でデータを用意する必要はありません。
@@ -15,7 +14,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> `data-3d="on"` を足すだけです。視点は `data-pitch`（傾き）と `data-bearing`（回転）で調整します。
+`data-3d="on"` を足すだけです。視点は `data-pitch`（傾き）と `data-bearing`（回転）で調整します。
 
 <LiveCode title="embed で3D建物を表示する">
 
@@ -40,7 +39,7 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 読み込みを待ってから、視点を傾けて `fill-extrusion` レイヤを追加します。
+読み込みを待ってから、視点を傾けて `fill-extrusion` レイヤを追加します。
 
 <LiveCode title="maps-suite で3D建物を表示する">
 
@@ -84,7 +83,7 @@ impl.addLayer({
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> 建物ソースは**ベーススタイル側の持ち物**なので、`<Source>`/`<Layer>` コンポーネントではなく、スタイル読み込み後の `onLoad` でレイヤを追加します。
+建物ソースは**ベーススタイル側の持ち物**なので、`<Source>`/`<Layer>` コンポーネントではなく、スタイル読み込み後の `onLoad` でレイヤを追加します。
 
 <LiveCode title="maps-react で3D建物を表示する">
 

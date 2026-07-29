@@ -7,7 +7,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 人口や売上のような数値を、エリア（ポリゴン）の色の濃淡で見せる地図を**コロプレス**と呼びます。ポリゴンの GeoJSON に数値プロパティを持たせ、値から色への対応を式で書きます。
@@ -27,12 +26,12 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
 
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 読み込みを待ってから、`fill` レイヤの `fill-color` に `interpolate` 式を書いて重ねます。
+読み込みを待ってから、`fill` レイヤの `fill-color` に `interpolate` 式を書いて重ねます。
 
 <LiveCode title="maps-suite でコロプレスを描く">
 
@@ -80,7 +79,7 @@ impl.addLayer({
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `fill` レイヤの `fill-color` に `interpolate` 式を書いて、値を色に対応させます。
+`fill` レイヤの `fill-color` に `interpolate` 式を書いて、値を色に対応させます。
 
 <LiveCode title="maps-react でコロプレスを描く">
 

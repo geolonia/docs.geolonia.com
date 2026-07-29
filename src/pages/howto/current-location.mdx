@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 地図上にボタンを出し、押すとブラウザの位置情報を取得して現在地に移動します。
@@ -14,7 +13,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> `data-geolocate-control="on"` を足すだけです。
+`data-geolocate-control="on"` を足すだけです。
 
 <LiveCode title="embed で現在地ボタンを出す">
 
@@ -37,7 +36,7 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> ブラウザの位置情報 API で現在地を取得し、`setCenter` で移動してマーカーを立てます。
+ブラウザの位置情報 API で現在地を取得し、`setCenter` で移動してマーカーを立てます。
 
 <LiveCode title="maps-suite で現在地に移動する">
 
@@ -70,7 +69,7 @@ navigator.geolocation.getCurrentPosition(
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `geolocateControl` プロパティを付けるだけです。
+`geolocateControl` プロパティを付けるだけです。
 
 <LiveCode title="maps-react で現在地ボタンを出す">
 
