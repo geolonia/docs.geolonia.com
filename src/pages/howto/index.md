@@ -1,6 +1,7 @@
 ---
 layout: ../../layouts/DocLayout.astro
 title: ハウツー
+description: 「〜するには」から引ける目的別のレシピ集です。マーカー、スタイル、外部データ、クラスタリングなどを扱います。
 page: howto
 quadrant: Diátaxis / 仕事 × 行動
 ---
