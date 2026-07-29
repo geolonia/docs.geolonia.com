@@ -18,6 +18,7 @@ docs.geolonia.com（リニューアル版）にページを足したり直した
 - [デプロイと配信ヘッダ](#デプロイと配信ヘッダ)
 - [触ってはいけないもの](#触ってはいけないもの)
 - [API キーの扱い](#api-キーの扱い)
+- [地図のスタイルの指定](#地図のスタイルの指定)
 - [文章の書き方](#文章の書き方)
 
 ## はじめに
@@ -490,6 +491,36 @@ Netlify、Vercel、Cloudflare Pages / Workers などです。
 
 読者向けの説明ページは [`/explanation/free-referers/`](src/pages/explanation/free-referers.mdx)
 にあるので、各ページからはそこへリンクしてください。
+
+## 地図のスタイルの指定
+
+サンプルコードでスタイルを明示的に指定するときは、**`geolonia/basic-v2` を使ってください**。
+これが標準のスタイルで、`data-style` や `style` を省略したときに使われるものでもあります。
+
+次の3つは**すべて非推奨**です。新しく書くページでは使わないでください。
+
+| 論理名 | 状況 |
+|---|---|
+| `geolonia/basic` | 初期の標準スタイル。`basic-v2` とは別のベクトルタイルを参照します |
+| `geolonia/basic-v1` | 一世代前の標準スタイル |
+| `geolonia/basic-world` | `basic-v1` の旧名。中身は `basic-v1` と同一です |
+
+配信は続いているので指定すれば動きますが、参照先のベクトルタイルが `basic-v2` と異なり、
+ここに起因する不具合が実際に起きています。`geolonia/basic` を使っていたハウツーのデモは、
+参照先の障害でしばらく真っ白なまま気付かれずにいました。
+
+**`geolonia/basic-world` はドキュメントのどこにも書かないでください。** 非推奨として
+注意書きを添えるのも避けてください。この名前は `styles.json` から外れた旧名なので、
+ドキュメントで案内しなければ読者がその存在を知る手段はありません。「使ってはいけないもの」
+として紹介すると、知らずに済んだ選択肢を増やして迷わせるだけになります。
+`basic` と `basic-v1` の2つは、既存のコードで見かけた読者が調べに来るので、
+[`/explanation/styles/`](src/pages/explanation/styles.mdx) の「非推奨のスタイル」の節に
+だけ置いてあります。
+
+提供しているスタイルの一覧は
+[`/explanation/styles/`](src/pages/explanation/styles.mdx) にあります。
+ここは `cdn.geolonia.com` の `styles.json`（[`geolonia/cdn.geolonia.com`](https://github.com/geolonia/cdn.geolonia.com)
+の `public/style`）が正で、記憶で書き足さずに必ずそちらを見てください。
 
 ## 文章の書き方
 
