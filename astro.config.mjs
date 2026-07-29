@@ -48,6 +48,8 @@ function remarkStripHtmlComments() {
 
 // https://astro.build/config
 export default defineConfig({
+  // og:image / canonical を絶対 URL で出すために必要（Astro.site の元になる）。
+  site: 'https://docs.geolonia.com',
   integrations: [mdx(), react(), livecode()],
   markdown: {
     remarkPlugins: [

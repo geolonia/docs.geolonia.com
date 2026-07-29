@@ -6,7 +6,19 @@ import '../styles/base.css';
 import '../styles/layout.css';
 import '../styles/components.css';
 
-const { title = 'Geolonia Docs', page = '', lens = 'embed' } = Astro.props;
+import { ogImagePath } from '../lib/og';
+
+const {
+  title = 'Geolonia Docs',
+  page = '',
+  lens = 'embed',
+  description = 'Geolonia Maps の公式ドキュメント。地図の埋め込み方から API リファレンスまでを扱う。',
+} = Astro.props;
+
+// OGP。画像は src/pages/og/[...route].ts がビルド時に生成する。
+// URL は絶対でなければクローラが解決できないため Astro.site（astro.config.mjs）を基準にする。
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImagePath(Astro.url.pathname), Astro.site);
 
 const nav = [
   { href: '/',             sec: 'home',        label: '入口' },
@@ -22,6 +34,18 @@ const nav = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Geolonia Docs" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body data-page={page}>
     <header class="site-top">
