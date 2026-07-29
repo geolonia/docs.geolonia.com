@@ -2,10 +2,11 @@
 layout: ../../../layouts/DocLayout.astro
 title: 段4：対話を足す
 page: tutorial
-kicker: チュートリアル ／ 段4
+kicker: maps-react
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段3で、データを属性に応じて色分けしました。この段では、**マーカーをクリックしたらポップアップが出る**対話を追加します。
@@ -16,6 +17,8 @@ import Callout from '../../../components/Callout.astro'
 maps-react には、地図上の1点に立てる `Marker` コンポーネントがあります。`Map` の子として置き、`lat` / `lng` で場所を指定します。
 
 そして、ここが maps-react らしいところです。**`Marker` の子要素が、そのままポップアップの内容になります**。
+
+<LiveCode title="maps-react でマーカーとポップアップを出す">
 
 ```jsx
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -37,6 +40,8 @@ createRoot(document.getElementById("root")).render(
   </Map>,
 );
 ```
+
+</LiveCode>
 
 - **`lat` / `lng`**：マーカーを立てる場所。`Map` の `center`（`[経度, 緯度]` の配列）と違い、こちらは**個別の props** で渡します。
 - **`color`**：マーカーの色。

@@ -2,12 +2,13 @@
 layout: ../../layouts/DocLayout.astro
 title: 値に応じてエリアを色分けするには（コロプレス）
 page: howto
-kicker: ハウツー ／ レシピ（応用）
+kicker: 応用
 badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 人口や売上のような数値を、エリア（ポリゴン）の色の濃淡で見せる地図を**コロプレス**と呼びます。ポリゴンの GeoJSON に数値プロパティを持たせ、値から色への対応を式で書きます。
 
@@ -33,7 +34,11 @@ import Tag from '../../components/Tag.astro'
 <Lens name="suite">
 <Tag k="suite" /> 読み込みを待ってから、`fill` レイヤの `fill-color` に `interpolate` 式を書いて重ねます。
 
+<LiveCode title="maps-suite でコロプレスを描く">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
@@ -62,6 +67,8 @@ impl.addLayer({
 });
 ```
 
+</LiveCode>
+
 `interpolate` 式の読み方は、
 
 1. `["linear"]`：値の間を直線的に補間する。
@@ -75,33 +82,42 @@ impl.addLayer({
 <Lens name="react">
 <Tag k="react" /> `fill` レイヤの `fill-color` に `interpolate` 式を書いて、値を色に対応させます。
 
+<LiveCode title="maps-react でコロプレスを描く">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map, Source, Layer } from "@geolonia/maps-react";
 
-<Map
-  apiKey="YOUR-API-KEY"
-  center={[139.725, 35.665]}
-  zoom={12}
-  containerStyle={{ width: "100%", height: "100vh" }}
->
-  <Source id="areas" type="geojson" data="/data/areas.geojson">
-    <Layer
-      id="areas-fill"
-      type="fill"
-      paint={{
-        "fill-color": [
-          "interpolate", ["linear"], ["get", "value"],
-          0, "#ffffcc",
-          50, "#fd8d3c",
-          100, "#bd0026",
-        ],
-        "fill-opacity": 0.75,
-        "fill-outline-color": "#ffffff",
-      }}
-    />
-  </Source>
-</Map>
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.725, 35.665]}
+    zoom={12}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="areas" type="geojson" data="/data/areas.geojson">
+      <Layer
+        id="areas-fill"
+        type="fill"
+        paint={{
+          "fill-color": [
+            "interpolate", ["linear"], ["get", "value"],
+            0, "#ffffcc",
+            50, "#fd8d3c",
+            100, "#bd0026",
+          ],
+          "fill-opacity": 0.75,
+          "fill-outline-color": "#ffffff",
+        }}
+      />
+    </Source>
+  </Map>,
+);
 ```
+
+</LiveCode>
 
 `interpolate` 式の読み方は、
 
@@ -115,7 +131,7 @@ import { Map, Source, Layer } from "@geolonia/maps-react";
 
 ## 結果
 
-値の小さいエリアは薄く、大きいエリアは濃く塗り分けられます。凡例を添える場合は、式に書いた「値, 色」のペアをそのまま使うと一致します。
+上のコードは、それぞれのタブの下でそのまま動いています（データはサンプルの `/data/areas.geojson`）。値の小さいエリアは薄く、大きいエリアは濃く塗り分けられます。凡例を添える場合は、式に書いた「値, 色」のペアをそのまま使うと一致します。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 全部同じ色になる → プロパティ名のつづり（`value`）と、値が**数値型**であることを確認。`"72"` のような文字列だと式が効きません。

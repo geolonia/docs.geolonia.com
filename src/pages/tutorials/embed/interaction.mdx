@@ -2,11 +2,11 @@
 layout: ../../../layouts/DocLayout.astro
 title: 段4：対話を足す
 page: tutorial
-kicker: チュートリアル ／ 段4
+kicker: embed
 badge: tutorial
-embed: true
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段3で、地図のスタイルを差し替えました。この段では、**マーカーをクリックしたらポップアップが出る**対話を追加します。
@@ -16,20 +16,28 @@ import Callout from '../../../components/Callout.astro'
 
 embed では、`.geolonia` の `div` の中に HTML を書くと、それが**マーカーのポップアップ**になります。中心にマーカーが立ち、クリックすると中身がポップアップで開きます。
 
+<LiveCode title="embed でポップアップを出す">
+
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia" data-lat="35.681236" data-lng="139.767125" data-zoom="15">
   <strong>東京駅</strong><br>JR・地下鉄各線
 </div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
+
+</LiveCode>
 
 ポイントは2つです。
 
 - **`div` の子要素**がそのままポップアップの内容になります。HTML なので、太字やリンクも使えます。
 - 子要素を書くと、中心にマーカーが自動で立ちます（`data-marker="off"` にしていない限り）。
 
-実際に描画される地図がこちらです。マーカーをクリックしてみてください。
-
-<div class="map-box"><div class="geolonia" data-lat="35.681236" data-lng="139.767125" data-zoom="15"><strong>東京駅</strong><br />JR・地下鉄各線</div></div>
+上のコードは、そのまま下で動いています。マーカーをクリックしてみてください。
 
 ## embed のポップアップの制約
 

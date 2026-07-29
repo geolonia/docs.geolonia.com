@@ -2,12 +2,12 @@
 layout: ../../layouts/DocLayout.astro
 title: 全地点が画面に収まるように表示するには
 page: howto
-kicker: ハウツー ／ レシピ
 badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 複数の地点を置いたとき、`center` と `zoom` を手で決めるのではなく、**全地点を囲む範囲を計算して地図を合わせます**。データが変わっても常に全部が見えます。
 
@@ -21,7 +21,11 @@ import Tag from '../../components/Tag.astro'
 <Lens name="suite">
 <Tag k="suite" /> 全点の最小と最大の座標から範囲を求めて、`fitBounds` を呼びます。
 
+<LiveCode title="maps-suite で全地点に画面を合わせる">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 
 const points = [
@@ -51,6 +55,8 @@ await map._whenReady();
 map.fitBounds({ north, south, east, west }, 40);
 ```
 
+</LiveCode>
+
 - **`fitBounds({ north, south, east, west }, padding)`**：指定した範囲に地図を合わせます。第2引数は画面の縁からの余白（ピクセル）で、これがないと端の点がぎりぎりに切れます。
 - 読み込み完了（`_whenReady()`）を待ってから呼びます。
 
@@ -59,7 +65,12 @@ map.fitBounds({ north, south, east, west }, 40);
 <Lens name="react">
 <Tag k="react" /> `onLoad` で地図インスタンスを受け取り、全点の最小と最大の座標から範囲を求めて `fitBounds` を呼びます。
 
+<LiveCode title="maps-react で全地点に画面を合わせる">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map, Marker } from "@geolonia/maps-react";
 
 const points = [
@@ -78,18 +89,22 @@ const handleLoad = (map) => {
   map.fitBounds([[west, south], [east, north]], { padding: 40 });
 };
 
-<Map
-  apiKey="YOUR-API-KEY"
-  center={[139.75, 35.68]}
-  zoom={9}
-  onLoad={handleLoad}
-  containerStyle={{ width: "100%", height: "100vh" }}
->
-  {points.map((p, i) => (
-    <Marker key={i} lat={p.lat} lng={p.lng} />
-  ))}
-</Map>
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={9}
+    onLoad={handleLoad}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    {points.map((p, i) => (
+      <Marker key={i} lat={p.lat} lng={p.lng} />
+    ))}
+  </Map>,
+);
 ```
+
+</LiveCode>
 
 - **`onLoad`**：地図の準備ができたときに、地図インスタンスを引数にして呼ばれます。
 - **`fitBounds`**：`[[西, 南], [東, 北]]` の範囲に地図を合わせます。`padding` は画面の縁からの余白（ピクセル）で、これがないと端の点がぎりぎりに切れます。
@@ -98,7 +113,7 @@ const handleLoad = (map) => {
 
 ## 結果
 
-初期表示の `center` / `zoom` がどうであれ、読み込み後に全地点がひと目で見える構図に移動します。
+上のコードは、それぞれのタブの下でそのまま動いています。初期表示の `center` / `zoom` がどうであれ、読み込み後に全地点がひと目で見える構図に移動します。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 端の点が切れる → `padding` を増やしてください。マーカーはピンの高さがあるので、上側は特に余白が要ります。

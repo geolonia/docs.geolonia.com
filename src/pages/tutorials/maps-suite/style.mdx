@@ -2,10 +2,11 @@
 layout: ../../../layouts/DocLayout.astro
 title: 段3：見た目を変える
 page: tutorial
-kicker: チュートリアル ／ 段3
+kicker: maps-suite
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段2で、5地点のデータを地図に載せました。でも全部同じ色。データには `category`（ターミナル／観光）が入っているので、この段では**属性に応じて点を色分け**します。
@@ -37,7 +38,19 @@ impl.addLayer({
 
 `circle-color` には、固定の色だけでなく**式**も書けます。`match` 式を使うと、「`category` の値がこれなら、この色」という対応表になります。
 
+<LiveCode title="maps-suite で属性に応じて色分けする">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
 await map._whenReady();
 const impl = map._getImpl();
 impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
@@ -59,6 +72,8 @@ impl.addLayer({
   },
 });
 ```
+
+</LiveCode>
 
 配列の読み方は上から順に、
 

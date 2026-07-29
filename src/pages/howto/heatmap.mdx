@@ -2,12 +2,13 @@
 layout: ../../layouts/DocLayout.astro
 title: ヒートマップで密度を可視化するには
 page: howto
-kicker: ハウツー ／ レシピ（応用）
+kicker: 応用
 badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 点が多すぎて1つ1つのマーカーに意味がないとき、**どこに集中しているか**を色の濃淡で見せるのがヒートマップです。個別の点を見せたいならマーカーやクラスタリング、分布の傾向を見せたいならヒートマップ、と使い分けます。
 
@@ -21,7 +22,11 @@ import Tag from '../../components/Tag.astro'
 <Lens name="suite">
 <Tag k="suite" /> 読み込みを待ってから、点の GeoJSON を `heatmap` レイヤで重ねます。
 
+<LiveCode title="maps-suite でヒートマップを描く">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
@@ -55,6 +60,8 @@ impl.addLayer({
 });
 ```
 
+</LiveCode>
+
 調整するのは主に4つです。
 
 - **`heatmap-weight`**：点1つの重み。上の例では各点の `weight` プロパティ（0〜6）を 0〜1 に換算しています。全点を同じ扱いにするなら `1` の固定値で構いません。
@@ -67,38 +74,47 @@ impl.addLayer({
 <Lens name="react">
 <Tag k="react" /> 点の GeoJSON を `Source` で読み込み、`type="heatmap"` のレイヤで描きます。
 
+<LiveCode title="maps-react でヒートマップを描く">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map, Source, Layer } from "@geolonia/maps-react";
 
-<Map
-  apiKey="YOUR-API-KEY"
-  center={[139.735, 35.668]}
-  zoom={11}
-  containerStyle={{ width: "100%", height: "100vh" }}
->
-  <Source id="pts" type="geojson" data="/data/dense-points.geojson">
-    <Layer
-      id="heat"
-      type="heatmap"
-      paint={{
-        "heatmap-weight": ["interpolate", ["linear"], ["get", "weight"], 0, 0, 6, 1],
-        "heatmap-intensity": 1,
-        "heatmap-radius": 20,
-        "heatmap-opacity": 0.8,
-        "heatmap-color": [
-          "interpolate", ["linear"], ["heatmap-density"],
-          0, "rgba(0,0,255,0)",
-          0.2, "royalblue",
-          0.4, "cyan",
-          0.6, "lime",
-          0.8, "yellow",
-          1, "red",
-        ],
-      }}
-    />
-  </Source>
-</Map>
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.735, 35.668]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="pts" type="geojson" data="/data/dense-points.geojson">
+      <Layer
+        id="heat"
+        type="heatmap"
+        paint={{
+          "heatmap-weight": ["interpolate", ["linear"], ["get", "weight"], 0, 0, 6, 1],
+          "heatmap-intensity": 1,
+          "heatmap-radius": 20,
+          "heatmap-opacity": 0.8,
+          "heatmap-color": [
+            "interpolate", ["linear"], ["heatmap-density"],
+            0, "rgba(0,0,255,0)",
+            0.2, "royalblue",
+            0.4, "cyan",
+            0.6, "lime",
+            0.8, "yellow",
+            1, "red",
+          ],
+        }}
+      />
+    </Source>
+  </Map>,
+);
 ```
+
+</LiveCode>
 
 調整するのは主に4つです。
 
@@ -111,7 +127,7 @@ import { Map, Source, Layer } from "@geolonia/maps-react";
 
 ## 結果
 
-点が密集している場所ほど赤く、まばらな場所は青く表示されます。
+上のコードは、それぞれのタブの下でそのまま動いています。点が密集している場所ほど赤く、まばらな場所は青く表示されます。
 
 <Callout kind="warning" title="うまくいかないとき">
 - ほとんど色が付かない → 点が少ないと密度が上がりません。`heatmap-radius` か `heatmap-intensity` を上げてみてください。

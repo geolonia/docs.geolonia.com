@@ -6,43 +6,32 @@ quadrant: Diátaxis / 仕事 × 認知
 sidebar: api
 ---
 
-<!-- OUTLINE（構成=Claude / 本文=人が執筆。書けたら該当行にチェック）
-- [ ] 何か：対象の1文定義
-- [ ] 構文／シグネチャ／属性一覧
-- [ ] パラメータ：型・既定値・必須か任意か
-- [ ] 戻り値・発火するイベント
-- [ ] 最小の使用例
-- [ ] 注意・制約（レンズ差・対応環境など）
-- [ ] 関連：API索引・関連ページへのリンク
--->
+各ライブラリの型定義から生成した API リファレンスです。
 
-正確で網羅的であることを旨とします。教えるためではなく、引くための場所です。**このセクションは将来 TypeScript の型や JSDoc から自動生成**する想定で、いまは雛形（手書き抜粋）です。
+## @geolonia/embed
 
-## embed: data-* 属性（抜粋）
+`<script>` タグと `<div>` タグだけで地図を表示するライブラリです。地図の設定は `data-*` 属性で与えます。
 
-| 属性 | 型 | 既定 | 説明 |
-|---|---|---|---|
-| `data-lat` / `data-lng` | 数値 | なし | 中心座標（緯度 / 経度） |
-| `data-zoom` | 数値 | `14` | 初期ズーム |
-| `data-style` | 論理名 / URL | `geolonia/basic-v2` | 地図スタイル |
-| `data-marker` | `on` / `off` | `on` | 中心マーカー |
-| `data-geojson` | URL | なし | 重ねる GeoJSON |
-| `data-cluster` | `on` / `off` | `on` | `data-geojson` の点をクラスタリング |
+- [embed のリファレンス](/reference/embed/)
 
-`@geolonia/embed` の型定義から生成した全属性のリファレンスも取り込み済みです。
+`EmbedAttributes` に `data-*` 属性の全一覧と既定値があります。プラグインを書く場合は `EmbedPlugin` を参照してください。
 
-- [embed API インデックス](/reference/embed/)：`EmbedAttributes`（`data-*` 属性の全一覧と既定値）/ `EmbedPlugin`
+## @geolonia/maps-suite
 
-## maps-suite API（自動生成）
+JavaScript から地図を命令的に操作するライブラリです。`geolonia.maps` 名前空間の下にクラスと型が並びます。
 
-`@geolonia/maps-suite` の型定義から生成した API リファレンスを取り込み済み（プロトタイプのためコピー）。
+- [maps-suite のリファレンス](/reference/suite/geolonia.Namespace.maps)
 
-- [maps-suite API インデックス](/reference/suite/geolonia.Namespace.maps)：Map / Marker / InfoWindow / MarkerClusterer など
+`Map` と `Marker` のほか、`InfoWindow` や `MarkerClusterer`、`Circle` や `Polygon` などの図形、`LatLng` や `LatLngBounds` といった値の型があります。
 
-## maps-core API（自動生成）
+## @geolonia/maps-core
 
-`@geolonia/maps-core` の型定義から生成した API リファレンスを取り込み済み（プロトタイプのためコピー）。
+上の2つと React 版の maps-react が、共通の土台として使っているライブラリです。直接使う場面は多くありませんが、地図インスタンスのオプションや、各ライブラリが内部で何をしているかを確かめたいときに参照してください。
 
-- [maps-core API インデックス](/reference/core/)：`GeoloniaMap` / `GeoloniaMarker` / `SimpleStyle` / `GeoloniaMapOptions` など
+- [maps-core のリファレンス](/reference/core/)
 
-> 自動生成の対象なので Markdown 固定。手順は[チュートリアル](/tutorials/)、目的別は[ハウツー](/howto/)へ。
+地図本体の `GeoloniaMap` とそのオプション `GeoloniaMapOptions`、`GeoloniaMarker`、GeoJSON にスタイルを当てる `SimpleStyle` などがあります。
+
+---
+
+手順を追って学ぶなら[チュートリアル](/tutorials/)、目的から探すなら[ハウツー](/howto/)を参照してください。

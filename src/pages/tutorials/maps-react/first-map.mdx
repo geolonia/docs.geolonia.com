@@ -2,7 +2,7 @@
 layout: ../../../layouts/DocLayout.astro
 title: 段0：地図を出す
 page: tutorial
-kicker: チュートリアル ／ 段0
+kicker: maps-react
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
@@ -52,7 +52,7 @@ createRoot(document.getElementById("root")).render(
 
 ## 動いたか確認する
 
-`npm run dev` で開発サーバーを起動してブラウザで開くと、地図が表示されます。場所を指定していないので**世界全体**が見える状態です。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
+`npm run dev` で開発サーバーを起動してブラウザで開くと、地図が表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。`center` を指定していないので、最初に見える場所は maps-react の既定にまかせています（下で動いているデモがその状態です）。
 
 <Callout kind="warning" title="うまく出ないとき">
 - 真っ白で何も出ない → `containerStyle` の**高さが 0** になっていないか確認。親要素が `height: 0` の場合も同じです。
@@ -62,4 +62,4 @@ createRoot(document.getElementById("root")).render(
 
 ## 次は
 
-地図は出ました。でも、見たいのは世界全体ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心、拡大率、傾きを props で指定します。
+地図は出ました。でも、見たいのは既定の場所ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心、拡大率、傾きを props で指定します。

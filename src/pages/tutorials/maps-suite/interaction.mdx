@@ -2,10 +2,11 @@
 layout: ../../../layouts/DocLayout.astro
 title: 段4：対話を足す
 page: tutorial
-kicker: チュートリアル ／ 段4
+kicker: maps-suite
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
 段3で、データを属性に応じて色分けしました。この段では、**マーカーをクリックしたら情報ウィンドウが出る**対話を追加します。
@@ -14,6 +15,8 @@ import Callout from '../../../components/Callout.astro'
 ## Marker と InfoWindow
 
 maps-suite には、地図上の1点に立てる `Marker` と、吹き出しを出す `InfoWindow` のクラスがあります。マーカーのクリックイベントで情報ウィンドウを開く、という組み立てです。
+
+<LiveCode title="maps-suite でマーカーと情報ウィンドウを出す">
 
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -40,6 +43,8 @@ marker.addListener("click", () => {
   infoWindow.open(map, marker);
 });
 ```
+
+</LiveCode>
 
 部品ごとに見ていきます。
 

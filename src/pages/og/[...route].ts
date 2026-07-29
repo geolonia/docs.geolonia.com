@@ -39,7 +39,8 @@ export const { getStaticPaths, GET } = await OGImageRoute({
     return {
       title: fm.title ?? 'Geolonia Docs',
       // 専用の description があればそれを、無ければ見出し上のアイキャッチ（kicker）を使う。
-      description: fm.description ?? fm.kicker ?? fm.quadrant ?? fallback,
+      // frontmatter の quadrant は読者に見せない管理用メタデータなので使わない（DocLayout と同じ扱い）。
+      description: fm.description ?? fm.kicker ?? fallback,
       logo: { path: './src/assets/og-logo.png', size: [300] },
       // 白地にオレンジの縁取り。DS のオレンジテーマは「白/グレーを基調にオレンジを効かせる」規則で、
       // オレンジ地に文字を乗せる使い方は禁止されている。

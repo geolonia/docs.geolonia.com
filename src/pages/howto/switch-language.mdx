@@ -2,13 +2,12 @@
 layout: ../../layouts/DocLayout.astro
 title: 地図の表示言語を切り替えるには
 page: howto
-kicker: ハウツー ／ レシピ
 badge: howto
-embed: true
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 地名などのラベルの言語を、`ja`（日本語）、`en`（英語）、`auto`（閲覧者のブラウザ設定に合わせる）から選べます。初期値は `auto` です。
 
@@ -17,11 +16,21 @@ import Tag from '../../components/Tag.astro'
 <Lens name="embed">
 <Tag k="embed" /> `data-lang` 属性で指定します。
 
+<LiveCode title="embed で表示言語を英語にする">
+
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.68" data-lng="139.75" data-zoom="11"
      data-lang="en"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
+
+</LiveCode>
 
 - **`data-lang`**：`ja`、`en`、`auto` のいずれか。省略すると `auto`（ブラウザの言語設定に従う）です。
 
@@ -35,17 +44,26 @@ import Tag from '../../components/Tag.astro'
 <Lens name="react">
 <Tag k="react" /> `Map` の `lang` プロパティで指定します。
 
+<LiveCode title="maps-react で表示言語を英語にする">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
 
-<Map
-  apiKey="YOUR-API-KEY"
-  center={[139.75, 35.68]}
-  zoom={11}
-  lang="en"
-  containerStyle={{ width: "100%", height: "100vh" }}
-/>
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    lang="en"
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
 ```
+
+</LiveCode>
 
 - **`lang`**：`"ja"`、`"en"`、`"auto"` のいずれか。省略すると `auto` です。
 
@@ -53,9 +71,7 @@ import { Map } from "@geolonia/maps-react";
 
 ## 結果
 
-`data-lang="en"` を指定した地図です。英語名を持つラベル（この範囲では鉄道路線名など）が英語で表示されます。市区町村名などの地名は、そのスタイルのデータが英語名を持つ範囲でだけ切り替わり、英語名がない部分は現地表記のまま残ります。`data-lang="ja"`（または `lang="ja"`）にすると日本語に固定できます。
-
-<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-lang="en"></div></div>
+上のコードは、それぞれのタブの下でそのまま動いています。英語名を持つラベル（この範囲では鉄道路線名など）が英語で表示されます。市区町村名などの地名は、そのスタイルのデータが英語名を持つ範囲でだけ切り替わり、英語名がない部分は現地表記のまま残ります。`data-lang="ja"`（または `lang="ja"`）にすると日本語に固定できます。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 言語が変わらない → ラベルの言語はスタイルが持つデータに依存します。英語の地名を持たない地域では、指定しても現地表記のままになることがあります。

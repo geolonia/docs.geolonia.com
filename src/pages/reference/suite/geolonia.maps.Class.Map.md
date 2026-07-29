@@ -239,6 +239,19 @@ map.fitBounds(
 
 ***
 
+### getHeading()
+
+> **getHeading**(): `number`
+
+現在の方位角（北からの時計回りの度数）を返します。
+`0` は北向きです。
+
+#### Returns
+
+`number`
+
+***
+
 ### getProjection()
 
 > **getProjection**(): [`MapCanvasProjection`](/reference/suite/geolonia.maps.Class.MapCanvasProjection) \| `null`
@@ -253,6 +266,19 @@ map.fitBounds(
 
 ***
 
+### getTilt()
+
+> **getTilt**(): `number`
+
+現在のチルト角度（度単位）を返します。
+`0` は真上から見下ろす状態です。
+
+#### Returns
+
+`number`
+
+***
+
 ### getZoom()
 
 > **getZoom**(): `number`
@@ -262,6 +288,41 @@ map.fitBounds(
 #### Returns
 
 `number`
+
+***
+
+### moveCamera()
+
+> **moveCamera**(`options`): `void`
+
+指定したカメラ設定を一括で即座に適用します。指定されたプロパティだけが
+反映され、省略されたものは現在の値のまま保持されます。
+
+内部的には MapLibre の `jumpTo` を用いた即時反映で、進行中のアニメーションが
+あれば中断されます。互換対象の地図 SDK の `moveCamera` に相当します。
+
+#### Parameters
+
+##### options
+
+[`CameraOptions`](/reference/suite/geolonia.maps.Interface.CameraOptions)
+
+適用するカメラのオプションです。
+
+#### Returns
+
+`void`
+
+#### Example
+
+```typescript
+map.moveCamera({
+  center: { lat: 35.6812, lng: 139.7671 },
+  zoom: 17,
+  tilt: 60,
+  heading: 90,
+});
+```
 
 ***
 
@@ -369,6 +430,53 @@ map.fitBounds(
 #### See
 
 アニメーション付きの移動については [Map.panTo](#panto) を参照してください。
+
+***
+
+### setHeading()
+
+> **setHeading**(`heading`): `void`
+
+地図の方位角（北からの時計回りの度数）を設定します。
+
+内部的には MapLibre の bearing にマッピングされます。
+
+#### Parameters
+
+##### heading
+
+`number`
+
+新しい方位角（度単位）です。
+
+#### Returns
+
+`void`
+
+***
+
+### setTilt()
+
+> **setTilt**(`tilt`): `void`
+
+地図のチルト角度（度単位）を設定します。
+
+#### Parameters
+
+##### tilt
+
+`number`
+
+新しいチルト角度（度単位）です。
+
+#### Returns
+
+`void`
+
+#### Remarks
+
+現状は任意の値を受け付けます。互換対象の地図 SDK ではラスタタイルの場合
+`0` または `45` に制限されますが、この互換性は未実装です。
 
 ***
 
