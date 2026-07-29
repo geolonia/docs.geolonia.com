@@ -4,11 +4,11 @@ title: 外部データ（GeoJSON）を地図に読み込むには
 page: howto
 kicker: ハウツー ／ レシピ
 badge: howto
-embed: true
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面）を表示します。
 
@@ -17,12 +17,22 @@ GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面
 <Lens name="embed">
 <Tag k="embed" /> `data-geojson` 属性に GeoJSON ファイルの URL を書くだけです。
 
+<LiveCode title="embed で GeoJSON を重ねる">
+
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.68" data-lng="139.75" data-zoom="11"
      data-marker="off"
      data-geojson="/data/sample-spots.geojson"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
+
+</LiveCode>
 
 - **`data-geojson`**：GeoJSON ファイルのパスまたは URL。同じサーバー上のパスか、CORS を許可した外部 URL を指定します。
 - **`data-marker="off"`**：中心のデフォルトマーカーを非表示にしています。データの点だけを見たいときに便利です。
@@ -32,7 +42,11 @@ GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面
 <Lens name="suite">
 <Tag k="suite" /> 地図の読み込みを待ってから、基盤の地図に `addSource`（データ）と `addLayer`（描き方）で重ねます。
 
+<LiveCode title="maps-suite で GeoJSON を重ねる">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
@@ -47,6 +61,8 @@ impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" })
 impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 ```
 
+</LiveCode>
+
 - **`_whenReady()` / `_getImpl()`**：ソースやレイヤの操作は高レベル API にないので、読み込み完了を待って基盤の地図（maplibre）に対して行います。
 - **`addSource` → `addLayer` の順**で呼びます。`type: "circle"` は各点を丸として描きます。
 - CSS のインポートなどセットアップは [maps-suite チュートリアル 段0](/tutorials/maps-suite/first-map/) を参照してください。
@@ -56,20 +72,29 @@ impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 <Lens name="react">
 <Tag k="react" /> `Map` の子に `Source`（データ）と `Layer`（描き方）を置きます。
 
+<LiveCode title="maps-react で GeoJSON を重ねる">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map, Source, Layer } from "@geolonia/maps-react";
 
-<Map
-  apiKey="YOUR-API-KEY"
-  center={[139.75, 35.68]}
-  zoom={11}
-  containerStyle={{ width: "100%", height: "100vh" }}
->
-  <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
-    <Layer id="spots" type="circle" />
-  </Source>
-</Map>
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+      <Layer id="spots" type="circle" />
+    </Source>
+  </Map>,
+);
 ```
+
+</LiveCode>
 
 - **`<Source>`**：`type="geojson"` で、`data` に GeoJSON の URL（またはオブジェクトそのもの）を渡します。
 - **`<Layer>`**：データの描き方。`type="circle"` は各点を丸として描きます。**`id` は必須**です。省略するとエラーも出ずにレイヤが追加されず、何も表示されません。
@@ -79,9 +104,7 @@ import { Map, Source, Layer } from "@geolonia/maps-react";
 
 ## 結果
 
-GeoJSON に含まれる地点がマーカーとして地図に表示されます。
-
-<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-marker="off" data-geojson="/data/sample-spots.geojson"></div></div>
+上のコードは、それぞれのタブの下でそのまま動いています。GeoJSON に含まれる地点が地図に表示されます（embed はマーカー、suite / react は `circle` レイヤの丸として描かれます）。
 
 ## GeoJSON の形式
 

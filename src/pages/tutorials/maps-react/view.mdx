@@ -6,9 +6,10 @@ kicker: チュートリアル ／ 段1
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
 
 <Callout kind="success" title="前の段でできたこと">
-段0で、React アプリに地図を出せるようになりました。ただし場所は既定の東京駅のまま。この段では、地図を**自分の見たい場所と見たい角度**にします。
+段0で、React アプリに地図を出せるようになりました。ただし場所は既定のまま。この段では、地図を**自分の見たい場所と見たい角度**にします。
 </Callout>
 
 ## 場所と拡大率を指定する
@@ -29,20 +30,31 @@ maps-react の設定は、すべて `Map` コンポーネントの **props** で
 
 ## 視点を傾けて回す
 
-平面図だけでなく、視点そのものも変えられます。`pitch`（傾き）と `bearing`（回転）です。中心にマーカーも立ててみます。
+平面図だけでなく、視点そのものも変えられます。`pitch`（傾き）と `bearing`（回転）です。中心にマーカーも立ててみます。ここまでを入れた全体が次のコードです。
+
+<LiveCode title="maps-react で東京タワーを傾けて見る">
 
 ```jsx
-<Map
-  apiKey="YOUR-API-KEY"
-  center={[139.745438, 35.658581]}
-  zoom={16}
-  pitch={45}
-  bearing={20}
-  marker
-  markerColor="#e4402f"
-  containerStyle={{ width: "100%", height: "100vh" }}
-/>
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.745438, 35.658581]}
+    zoom={16}
+    pitch={45}
+    bearing={20}
+    marker
+    markerColor="#e4402f"
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
 ```
+
+</LiveCode>
 
 - **`pitch`**：地図を手前に倒す角度（度）。`0` が真上からの平面図。
 - **`bearing`**：地図を回す角度（度）。`0` が北が上。

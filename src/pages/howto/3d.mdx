@@ -4,12 +4,11 @@ title: 建物や地形を3Dで表示するには
 page: howto
 kicker: ハウツー ／ レシピ（応用）
 badge: howto
-embed: true
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
-import GeoloniaMap from '../../components/GeoloniaMap.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 視点を `pitch` で傾け、建物を **`fill-extrusion`**（高さを持つ塗り）で立ち上げると、都市が立体で見えます。建物の形と高さのデータはベーススタイルに含まれるベクトルタイルのものを使うので、自分でデータを用意する必要はありません。
 
@@ -18,12 +17,22 @@ import GeoloniaMap from '../../components/GeoloniaMap.astro'
 <Lens name="embed">
 <Tag k="embed" /> `data-3d="on"` を足すだけです。視点は `data-pitch`（傾き）と `data-bearing`（回転）で調整します。
 
+<LiveCode title="embed で3D建物を表示する">
+
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.6812" data-lng="139.7671" data-zoom="15.5"
      data-pitch="60" data-bearing="-20"
      data-3d="on"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
+
+</LiveCode>
 
 - **`data-3d="on"`**：3D 建物を表示します。suite / react のように `fill-extrusion` レイヤを自分で足すのではなく、**Geolonia のベーススタイル（既定の `geolonia/basic-v2` など）に組み込まれた 3D 建物レイヤ（`building-3d`）を表示に切り替える**しくみです。そのため自前のスタイルやデータは不要な一方、この属性が効くのは 3D 建物を含む Geolonia スタイルを使っているときだけです（`data-style` で外部スタイルを指定した場合は効きません）。
 - **`data-pitch` / `data-bearing`**：視点の傾き（度）と回転（度）。**3D 建物の表示は `data-3d="on"` だけで有効になり、`data-pitch` は不要です**。真上から見たままだと高さが分かりにくいので、立体感を出したいときに傾けます。
@@ -33,7 +42,11 @@ import GeoloniaMap from '../../components/GeoloniaMap.astro'
 <Lens name="suite">
 <Tag k="suite" /> 読み込みを待ってから、視点を傾けて `fill-extrusion` レイヤを追加します。
 
+<LiveCode title="maps-suite で3D建物を表示する">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
@@ -61,6 +74,8 @@ impl.addLayer({
 });
 ```
 
+</LiveCode>
+
 - **`setPitch` / `setBearing`**：視点の傾きと回転。基盤の地図（`_getImpl()`）に対して呼びます。
 - **`source` / `source-layer`**：ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`、レイヤ `building`）。
 - **`fill-extrusion-height`**：立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
@@ -71,7 +86,12 @@ impl.addLayer({
 <Lens name="react">
 <Tag k="react" /> 建物ソースは**ベーススタイル側の持ち物**なので、`<Source>`/`<Layer>` コンポーネントではなく、スタイル読み込み後の `onLoad` でレイヤを追加します。
 
+<LiveCode title="maps-react で3D建物を表示する">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
 
 const add3dBuildings = (map) => {
@@ -90,16 +110,20 @@ const add3dBuildings = (map) => {
   });
 };
 
-<Map
-  style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"
-  center={[139.7671, 35.6812]}
-  zoom={15.5}
-  pitch={60}
-  bearing={-20}
-  onLoad={add3dBuildings}
-  containerStyle={{ width: "100%", height: "100vh" }}
-/>
+createRoot(document.getElementById("root")).render(
+  <Map
+    style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"
+    center={[139.7671, 35.6812]}
+    zoom={15.5}
+    pitch={60}
+    bearing={-20}
+    onLoad={add3dBuildings}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
 ```
+
+</LiveCode>
 
 - **`onLoad` で追加する理由**：`<Layer>` を単独で（`<Source>` の外に）置くと、スタイルの読み込みが終わる前にレイヤを追加しようとしてエラーになります。ベーススタイル内のソースを参照するレイヤは `onLoad` で足すのが確実です。
 - **`source` / `source-layer`**：ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`、レイヤ `building`）。
@@ -110,11 +134,7 @@ const add3dBuildings = (map) => {
 
 ## 結果
 
-斜めから見た構図で、建物が高さを持って立ち上がって見えます。`pitch` を 0 にすると真上から見た平面的な見え方に戻りますが、3D 建物レイヤ自体は表示されたままです（高さが知覚しにくくなるだけです）。
-
-下は embed（`data-3d="on"`）で東京駅周辺を表示した例です。ズームを上げると建物が立体で描画されます。
-
-<GeoloniaMap lat={35.6812} lng={139.7671} zoom={16} pitch={60} bearing={-20} threeD="on" marker="off" tall={true} caption="embed の data-3d='on' による 3D 建物表示（東京駅周辺、geolonia/basic-v2）。" />
+上のコードは、それぞれのタブの下でそのまま動いています。斜めから見た構図で、建物が高さを持って立ち上がって見えます。`pitch` を 0 にすると真上から見た平面的な見え方に戻りますが、3D 建物レイヤ自体は表示されたままです（高さが知覚しにくくなるだけです）。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 建物が出ない → `source` / `source-layer` の名前が使っているスタイルと合っているか確認。スタイル JSON の `sources` と、建物系レイヤの `source-layer` を見ると分かります。

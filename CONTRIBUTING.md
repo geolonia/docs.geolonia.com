@@ -191,6 +191,68 @@ import したりすると、その場でビルドが落ちます。読者に壊�
 
 `html` はビルド対象にならないので、構文の誤りは検出されません。プレビューで目視してください。
 
+### 「動く1本」の型
+
+`<LiveCode>` に入れるコードは、**それ単体で完結している**必要があります。ライブラリごとに、
+最低限これだけは要る、という形が決まっています。断片をそのまま入れても地図は出ません。
+
+embed（`html`）— 高さの CSS と CDN スクリプトまで含めます。
+
+````mdx
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+````
+
+maps-suite（`js`）— CSS を2つ import して、`#map` に描きます。
+
+````mdx
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+});
+```
+````
+
+maps-react（`jsx`）— 同じ CSS に加えて、`createRoot(...).render(...)` まで書きます。
+
+````mdx
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map apiKey="YOUR-API-KEY" containerStyle={{ width: "100%", height: "100vh" }} />,
+);
+```
+````
+
+デモ枠は既定 360px なので、`100vh` を指定すると枠にちょうど収まります。地図の上に
+ボタンなどを置くときは、外側を `display: flex; flex-direction: column; height: 100vh`
+にして地図側を `flex: 1` にすると、枠からはみ出しません。
+
+### 断片は素のコードブロックで
+
+チュートリアルのように段階を追って足していくページでは、途中のコードは前の段の続きです。
+そういう**断片は `<LiveCode>` にせず素のコードブロックで書き**、そのページの最終形だけを
+`<LiveCode>` にします。1ページに動く1本があれば、そのページの成果物は検証されています。
+
+逆に、**完全なプログラムに見えて動かないコード**は載せないでください。読者はそれを
+コピーします。動かないものを見せる必要があるとき（`YOUR-REAL-API-KEY` に差し替える例など）は、
+動かない理由を本文に必ず書いてください。
+
 ### ビルドが落ちるとき
 
 いずれもメッセージに原因と次の一手が書いてあります。

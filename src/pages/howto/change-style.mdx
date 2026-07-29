@@ -4,11 +4,11 @@ title: 地図の見た目（スタイル）を切り替えるには
 page: howto
 kicker: ハウツー ／ レシピ
 badge: howto
-embed: true
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 地図のベーススタイル（道路の色、文字の大きさ、建物の塗りなど）を差し替えます。
 
@@ -17,29 +17,53 @@ import Tag from '../../components/Tag.astro'
 <Lens name="embed">
 <Tag k="embed" /> `data-style` 属性にスタイル名または URL を書きます。
 
+<LiveCode title="embed で地理院スタイルに切り替える">
+
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.68" data-lng="139.75" data-zoom="11"
      data-style="geolonia/gsi"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
+
+</LiveCode>
 
 - **`data-style`**：Geolonia が用意するスタイル名（`geolonia/basic`、`geolonia/midnight`、`geolonia/gsi` など）か、外部スタイル JSON の URL を指定できます。
 - 省略すると Geolonia の標準スタイルが使われます。
 
 外部の URL を使う例:
 
+<LiveCode title="embed で外部スタイル（OSM bright）に切り替える">
+
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.68" data-lng="139.75" data-zoom="11"
      data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
+
+</LiveCode>
 
 </Lens>
 
 <Lens name="suite">
 <Tag k="suite" /> 初期スタイルは `Map` の `style` オプションで指定します。実行時に切り替えるには、基盤の地図の `setStyle` を使います。
 
+<LiveCode title="maps-suite で地理院スタイルに切り替える">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
@@ -48,41 +72,57 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   zoom: 11,
   style: "geolonia/gsi",
 });
-
-// 実行時の切り替えは基盤の地図の setStyle で（URL またはスタイル定義オブジェクト）
-document.getElementById("osm").onclick = () =>
-  map._getImpl().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.json");
 ```
 
+</LiveCode>
+
 - **`style` オプション**：スタイル名（例: `geolonia/gsi`）または URL。
-- **`map._getImpl().setStyle(...)`**：実行時の切り替え。スタイル JSON の URL か、インラインのスタイル定義オブジェクトを渡します。
+
+実行時に切り替えるときは、基盤の地図の `setStyle` を呼びます（`map` は上で作ったものです）。
+
+```js
+map._getImpl().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.json");
+```
+
+- **`map._getImpl().setStyle(...)`**：スタイル JSON の URL か、インラインのスタイル定義オブジェクトを渡します。
 
 </Lens>
 
 <Lens name="react">
 <Tag k="react" /> `Map` の `style` プロパティにスタイル名または URL を渡します。state と組み合わせると、**実行時にボタンで切り替える** UI も作れます。
 
+<LiveCode title="maps-react でボタンからスタイルを切り替える">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { useState } from "react";
+import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
 
 function App() {
   const [style, setStyle] = useState("geolonia/basic");
   return (
-    <>
-      <button onClick={() => setStyle("geolonia/basic")}>標準</button>
-      <button onClick={() => setStyle("geolonia/gsi")}>地理院</button>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <div>
+        <button onClick={() => setStyle("geolonia/basic")}>標準</button>
+        <button onClick={() => setStyle("geolonia/gsi")}>地理院</button>
+      </div>
       <Map
         apiKey="YOUR-API-KEY"
         style={style}
         center={[139.75, 35.68]}
         zoom={11}
-        containerStyle={{ width: "100%", height: "100vh" }}
+        containerStyle={{ flex: 1 }}
       />
-    </>
+    </div>
   );
 }
+
+createRoot(document.getElementById("root")).render(<App />);
 ```
+
+</LiveCode>
 
 - **`style`**：スタイル名か、スタイル JSON の URL。state を差し替えるとベース地図が丸ごと切り替わります。
 - スタイルを**オブジェクト**（インラインのスタイル定義）で渡す場合は、モジュール定数などにして参照を安定させてください。レンダーのたびに新しいオブジェクトを作ると、毎回スタイルが再読み込みされます。
@@ -91,9 +131,7 @@ function App() {
 
 ## 結果
 
-スタイルを `geolonia/gsi` に切り替えた地図です。道路や地名の描き方がデフォルトと変わっています。
-
-<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-style="geolonia/gsi"></div></div>
+上のコードは、それぞれのタブの下でそのまま動いています。`geolonia/gsi` に切り替えると、道路や地名の描き方がデフォルトと変わります。react の例ではボタンで実際に切り替えられます。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 地図が真っ白になった → スタイル名や URL のつづりを確認。存在しないスタイルを指定すると何も描画されません。

@@ -4,11 +4,11 @@ title: 地図のコントロールの表示を切り替えるには
 page: howto
 kicker: ハウツー ／ レシピ
 badge: howto
-embed: true
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import Tag from '../../components/Tag.astro'
+import LiveCode from '../../components/LiveCode.astro'
 
 地図の隅に出るボタン類（ズームや回転のナビゲーション、現在地、フルスクリーン、縮尺、Geolonia ロゴ）は、それぞれ表示するかどうかと位置を指定できます。位置は `top-right`、`bottom-right`、`bottom-left`、`top-left` のいずれかで指定します。
 
@@ -17,14 +17,24 @@ import Tag from '../../components/Tag.astro'
 <Lens name="embed">
 <Tag k="embed" /> それぞれ `data-*-control` 属性で指定します。`on` / `off` に加えて、位置を表す文字列を渡すと表示位置も変えられます。
 
+<LiveCode title="embed でコントロールを切り替える">
+
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.68" data-lng="139.75" data-zoom="11"
      data-navigation-control="on"
      data-geolocate-control="top-right"
      data-fullscreen-control="on"
      data-scale-control="bottom-left"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
+
+</LiveCode>
 
 - **`data-navigation-control`**：ズームと回転のボタン。初期値は `on`。
 - **`data-geolocate-control`**：現在地ボタン。初期値は `off`。
@@ -38,7 +48,11 @@ import Tag from '../../components/Tag.astro'
 <Lens name="suite">
 <Tag k="suite" /> maps-suite の初期化オプションにはコントロールの指定がありません。読み込みを待ってから、基盤の地図（maplibre）に `addControl` で足します。
 
+<LiveCode title="maps-suite でコントロールを足す">
+
 ```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 import maplibregl from "maplibre-gl";
 
@@ -56,6 +70,8 @@ impl.addControl(new maplibregl.FullscreenControl(), "top-right");
 impl.addControl(new maplibregl.ScaleControl(), "bottom-left");
 ```
 
+</LiveCode>
+
 - **`addControl(コントロール, 位置)`**：第2引数を省略すると `top-right` に付きます。
 - ナビゲーション（`NavigationControl`）は既定で付いているため、位置だけ変えたいなら一度 `removeControl` してから付け直します。
 
@@ -64,20 +80,29 @@ impl.addControl(new maplibregl.ScaleControl(), "bottom-left");
 <Lens name="react">
 <Tag k="react" /> `Map` のそれぞれの props で指定します。`true` / `false` に加えて、位置を表す文字列も渡せます。
 
+<LiveCode title="maps-react でコントロールを切り替える">
+
 ```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
 
-<Map
-  apiKey="YOUR-API-KEY"
-  center={[139.75, 35.68]}
-  zoom={11}
-  navigationControl
-  geolocateControl="top-right"
-  fullscreenControl
-  scaleControl="bottom-left"
-  containerStyle={{ width: "100%", height: "100vh" }}
-/>
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    navigationControl
+    geolocateControl="top-right"
+    fullscreenControl
+    scaleControl="bottom-left"
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
 ```
+
+</LiveCode>
 
 - **`navigationControl`**：ズームと回転のボタン。
 - **`geolocateControl`**：現在地ボタン。
@@ -90,9 +115,7 @@ import { Map } from "@geolonia/maps-react";
 
 ## 結果
 
-ナビゲーション、現在地、全画面のボタンが右上に、縮尺が左下に表示された地図です。
-
-<div class="map-box"><div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11" data-navigation-control="on" data-geolocate-control="top-right" data-fullscreen-control="on" data-scale-control="bottom-left"></div></div>
+上のコードは、それぞれのタブの下でそのまま動いています。ナビゲーション、現在地、全画面のボタンが右上に、縮尺が左下に表示されます。
 
 <Callout kind="warning" title="うまくいかないとき">
 - コントロールが出ない → 属性名や props 名のつづりを確認。間違った名前は黙って無視されます。
