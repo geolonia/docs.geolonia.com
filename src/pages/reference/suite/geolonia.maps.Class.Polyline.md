@@ -1,6 +1,6 @@
 ---
 layout: ../../../layouts/ApiLayout.astro
-title: 'Class: MVCArray<T>'
+title: 'Class: Polyline'
 page: reference
 ---
 
@@ -8,48 +8,61 @@ page: reference
 
 ***
 
-[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / MVCArray
+[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / Polyline
 
-# Class: MVCArray\<T\>
+# Class: Polyline
 
-内容が変化したときにイベントを発火するミュータブルな配列です。
+地図上に描画される連続した線分（折れ線）です。
 
-[MVCObject](/reference/suite/geolonia.maps.Class.MVCObject) を継承しているため、`addListener`/`bindTo`/`notify` を
-引き継ぎます。要素数は `length` MVC プロパティとして公開されます
-(`get("length")` を使用するか、`length_changed` をリッスンしてください)。
+一般的な地図 SDK の折れ線（Polyline）コンポーネントに相当します。ルート、経路、
+距離線などを表示するのに使用します。
 
-イベント:
-- `insert_at` `(index)` — `index` に要素が挿入されました。
-- `remove_at` `(index, removed)` — `removed` が `index` から削除されました。
-- `set_at` `(index, previous)` — `index` の要素が置き換えられました。
-  `previous` はそれ以前にあった値です。
-- `length_changed` — 配列の長さが変化しました。
+パスは [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray)`<`[LatLng](/reference/suite/geolonia.maps.Class.LatLng)`>` として管理されるため、
+`polyline.getPath().push(...)` や `setAt` などの変異操作を行うと
+折れ線は自動的に再描画されます。
+
+## Example
+
+```typescript
+const polyline = new geolonia.maps.Polyline({
+  path: [
+    { lat: 35.6812, lng: 139.7671 },
+    { lat: 35.6895, lng: 139.6917 },
+  ],
+  map,
+  strokeColor: "#ff0000",
+  strokeOpacity: 0.8,
+  strokeWeight: 4,
+});
+
+// パスを直接変異させると自動再描画される
+polyline.getPath().push(new geolonia.maps.LatLng(35.658, 139.7016));
+```
 
 ## Extends
 
 - [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject)
 
-## Type Parameters
-
-### T
-
-`T` = `any`
-
 ## Constructors
 
 ### Constructor
 
-> **new MVCArray**\<`T`\>(`array?`): `MVCArray`\<`T`\>
+> **new Polyline**(`options?`): `Polyline`
+
+折れ線を作成します。
 
 #### Parameters
 
-##### array?
+##### options?
 
-`T`[]
+[`PolylineOptions`](/reference/suite/geolonia.maps.Interface.PolylineOptions)
+
+初期のパス、地図、描画スタイルです。`path` と `map`
+  の両方が指定された場合、折れ線はすぐに表示されます。
 
 #### Returns
 
-`MVCArray`\<`T`\>
+`Polyline`
 
 #### Overrides
 
@@ -136,36 +149,6 @@ page: reference
 
 ***
 
-### clear()
-
-> **clear**(): `void`
-
-すべての要素を削除し、(末尾から) 各要素について `remove_at` を発火します。
-
-#### Returns
-
-`void`
-
-***
-
-### forEach()
-
-> **forEach**(`callback`): `void`
-
-各要素について、そのインデックスとともに `callback` を呼び出します。
-
-#### Parameters
-
-##### callback
-
-(`elem`, `i`) => `void`
-
-#### Returns
-
-`void`
-
-***
-
 ### get()
 
 > **get**(`key`): `any`
@@ -191,67 +174,42 @@ page: reference
 
 ***
 
-### getArray()
+### getMap()
 
-> **getArray**(): `T`[]
+> **getMap**(): [`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
 
-内部の配列を返します。直接変更すると変更イベントを発生させずにバイパスします。
+この折れ線が追加されている地図を返します。取り外された状態の場合は `null` を返します。
 
 #### Returns
 
-`T`[]
+[`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
 
 ***
 
-### getAt()
+### getPath()
 
-> **getAt**(`i`): `T`
+> **getPath**(): [`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\>
 
-指定したインデックスの要素を返します。
+折れ線を構成する頂点座標の [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray) を返します。
 
-#### Parameters
-
-##### i
-
-`number`
+返される [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray) を直接変異させる（`push` / `setAt` / `removeAt` など）と、
+折れ線は自動的に再描画されます。
 
 #### Returns
 
-`T`
+[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\>
 
 ***
 
-### getLength()
+### getVisible()
 
-> **getLength**(): `number`
+> **getVisible**(): `boolean`
 
-要素数を返します。
-
-#### Returns
-
-`number`
-
-***
-
-### insertAt()
-
-> **insertAt**(`i`, `elem`): `void`
-
-`i` に `elem` を挿入し、以降の要素をずらします。`insert_at` を発火します。
-
-#### Parameters
-
-##### i
-
-`number`
-
-##### elem
-
-`T`
+折れ線の可視性を返します。
 
 #### Returns
 
-`void`
+`boolean`
 
 ***
 
@@ -278,56 +236,6 @@ page: reference
 #### Inherited from
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`notify`](/reference/suite/geolonia.maps.Class.MVCObject#notify)
-
-***
-
-### pop()
-
-> **pop**(): `T`
-
-最後の要素を削除して返します。要素が削除された場合、削除された値とともに
-`remove_at` を発火します。
-
-#### Returns
-
-`T`
-
-***
-
-### push()
-
-> **push**(`elem`): `number`
-
-`elem` を末尾に追加し、新しい長さを返します。`insert_at` を発火します。
-
-#### Parameters
-
-##### elem
-
-`T`
-
-#### Returns
-
-`number`
-
-***
-
-### removeAt()
-
-> **removeAt**(`i`): `T`
-
-`i` の要素を削除して返し、以降の要素をずらします。
-削除された値とともに `remove_at` を発火します。
-
-#### Parameters
-
-##### i
-
-`number`
-
-#### Returns
-
-`T`
 
 ***
 
@@ -363,22 +271,60 @@ page: reference
 
 ***
 
-### setAt()
+### setMap()
 
-> **setAt**(`i`, `elem`): `void`
+> **setMap**(`map`): `void`
 
-`i` の要素を置き換えます。以前の値とともに `set_at` を発火し、配列が
-大きくなった場合 (`i` が現在の末尾を超える場合) は `length_changed` を発火します。
+折れ線を地図に追加します。`null` を渡すと、現在の地図から取り外します。
 
 #### Parameters
 
-##### i
+##### map
 
-`number`
+[`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
 
-##### elem
+折れ線を描画する地図、または取り外す場合は `null` です。
 
-`T`
+#### Returns
+
+`void`
+
+***
+
+### setOptions()
+
+> **setOptions**(`options`): `void`
+
+複数のオプションをまとめて更新します。
+
+#### Parameters
+
+##### options
+
+[`PolylineOptions`](/reference/suite/geolonia.maps.Interface.PolylineOptions)
+
+更新するオプションです。指定されていないものは変更されません。
+
+#### Returns
+
+`void`
+
+***
+
+### setPath()
+
+> **setPath**(`path`): `void`
+
+折れ線のパスを新しいものへ差し替えます。
+
+#### Parameters
+
+##### path
+
+[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\> \| [`LatLngLiteralOrLatLng`](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng)[]
+
+新しいパスです。[MVCArray](/reference/suite/geolonia.maps.Class.MVCArray) または配列を受け付けます。
+  配列を渡した場合は内部で [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray) に変換されます。
 
 #### Returns
 
@@ -408,6 +354,26 @@ page: reference
 #### Inherited from
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`setValues`](/reference/suite/geolonia.maps.Class.MVCObject#setvalues)
+
+***
+
+### setVisible()
+
+> **setVisible**(`visible`): `void`
+
+折れ線の可視性を設定します。
+
+#### Parameters
+
+##### visible
+
+`boolean`
+
+`true` で表示、`false` で非表示になります。
+
+#### Returns
+
+`void`
 
 ***
 

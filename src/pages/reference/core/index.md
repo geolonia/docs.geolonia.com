@@ -26,6 +26,7 @@ page: reference
 ## Variables
 
 - [coreVersion](/reference/core/Variable.coreVersion)
+- [DEFAULT\_STAGE](/reference/core/Variable.DEFAULT_STAGE)
 - [keyring](/reference/core/Variable.keyring)
 
 ## Functions

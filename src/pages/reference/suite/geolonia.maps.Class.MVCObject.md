@@ -38,12 +38,16 @@ marker.addListener("position_changed", () => {
 ## Extended by
 
 - [`AdvancedMarkerElement`](/reference/suite/geolonia.maps.Class.AdvancedMarkerElement)
+- [`Circle`](/reference/suite/geolonia.maps.Class.Circle)
 - [`InfoWindow`](/reference/suite/geolonia.maps.Class.InfoWindow)
 - [`Map`](/reference/suite/geolonia.maps.Class.Map)
 - [`Marker`](/reference/suite/geolonia.maps.Class.Marker)
 - [`MarkerClusterer`](/reference/suite/geolonia.maps.Class.MarkerClusterer)
 - [`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)
 - [`OverlayView`](/reference/suite/geolonia.maps.Class.OverlayView)
+- [`Polygon`](/reference/suite/geolonia.maps.Class.Polygon)
+- [`Polyline`](/reference/suite/geolonia.maps.Class.Polyline)
+- [`Rectangle`](/reference/suite/geolonia.maps.Class.Rectangle)
 
 ## Constructors
 

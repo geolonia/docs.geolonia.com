@@ -19,11 +19,11 @@ page: reference
 `geolonia.maps` 名前空間全体を参照せずに、必要なクラスを取得するために使用します。
 各名前は特定のエクスポートのセットを返します。
 
-| 名前       | 返すもの                                         |
-| ---------- | ------------------------------------------------ |
-| `"maps"`   | `Map`, `MapElement`, `OverlayView`               |
-| `"marker"` | `Marker`, `AdvancedMarkerElement`, `MarkerClusterer` |
-| `"core"`   | `LatLng`, `LatLngBounds`, `MVCObject`, `event`   |
+| 名前       | 返すもの                                                                               |
+| ---------- | -------------------------------------------------------------------------------------- |
+| `"maps"`   | `Map`, `MapElement`, `OverlayView`, `Polyline`, `Polygon`, `Rectangle`, `Circle`, `InfoWindow` |
+| `"marker"` | `Marker`, `AdvancedMarkerElement`, `MarkerClusterer`                                   |
+| `"core"`   | `LatLng`, `LatLngBounds`, `Point`, `Size`, `MVCObject`, `event`                        |
 
 `"places"`、`"geometry"`、`"drawing"`、`"visualization"` という名前は
 認識されますが、まだ実装されていません。これらは空のオブジェクトを返し、

@@ -1,6 +1,6 @@
 ---
 layout: ../../../layouts/ApiLayout.astro
-title: 'Class: Marker'
+title: 'Class: Polygon'
 page: reference
 ---
 
@@ -8,30 +8,45 @@ page: reference
 
 ***
 
-[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / Marker
+[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / Polygon
 
-# Class: Marker
+# Class: Polygon
 
-地図上に配置される点マーカーです。
+地図上に描画される閉じたポリゴンです。
 
-[position](/reference/suite/geolonia.maps.Interface.MarkerOptions#position) と [map](/reference/suite/geolonia.maps.Interface.MarkerOptions#map)
-を指定して作成するとすぐに表示します。または取り外した状態で作成し、後から
-[setMap](#setmap) で追加することもできます。マーカーは
-`"click"` イベントを発火します。
+一般的な地図 SDK のポリゴン（Polygon）コンポーネントに相当します。エリア表示、ジオフェンス、
+塗り潰し領域などを表現するのに使用します。最初のリングが外周、それ以降の
+リングは内側の穴 (holes) として描画されます。
 
-任意の HTML コンテンツを持つマーカーには、代わりに
-[AdvancedMarkerElement](/reference/suite/geolonia.maps.Class.AdvancedMarkerElement) を使用してください。
+パスは [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray)`<`[MVCArray](/reference/suite/geolonia.maps.Class.MVCArray)`<`[LatLng](/reference/suite/geolonia.maps.Class.LatLng)`>>` として
+管理されるため、`polygon.getPath().push(...)` や外側の MVCArray への
+`insertAt` などの変異操作を行うとポリゴンは自動的に再描画されます。
 
 ## Example
 
 ```typescript
-const marker = new geolonia.maps.Marker({
-  position: { lat: 35.6812, lng: 139.7671 },
+const polygon = new geolonia.maps.Polygon({
+  paths: [
+    { lat: 35.7, lng: 139.7 },
+    { lat: 35.7, lng: 139.8 },
+    { lat: 35.6, lng: 139.8 },
+    { lat: 35.6, lng: 139.7 },
+  ],
   map,
-  title: "Tokyo Station",
+  strokeColor: "#ff0000",
+  strokeWeight: 2,
+  fillColor: "#ff0000",
+  fillOpacity: 0.35,
 });
 
-marker.addListener("click", () => console.log("clicked!"));
+// 穴あきポリゴン
+const donut = new geolonia.maps.Polygon({
+  paths: [
+    [outerA, outerB, outerC, outerD],  // 外周
+    [innerA, innerB, innerC, innerD],  // 穴
+  ],
+  map,
+});
 ```
 
 ## Extends
@@ -42,22 +57,22 @@ marker.addListener("click", () => console.log("clicked!"));
 
 ### Constructor
 
-> **new Marker**(`options?`): `Marker`
+> **new Polygon**(`options?`): `Polygon`
 
-マーカーを作成します。
+ポリゴンを作成します。
 
 #### Parameters
 
 ##### options?
 
-[`MarkerOptions`](/reference/suite/geolonia.maps.Interface.MarkerOptions)
+[`PolygonOptions`](/reference/suite/geolonia.maps.Interface.PolygonOptions)
 
-初期の位置、地図、ツールチップ、アイコンです。`position` と
-  `map` の両方が指定された場合、マーカーはすぐに表示されます。
+初期のパス、地図、描画スタイルです。`paths` と `map`
+  の両方が指定された場合、ポリゴンはすぐに表示されます。
 
 #### Returns
 
-`Marker`
+`Polygon`
 
 #### Overrides
 
@@ -169,23 +184,11 @@ marker.addListener("click", () => console.log("clicked!"));
 
 ***
 
-### getIcon()
-
-> **getIcon**(): [`MarkerIcon`](/reference/suite/geolonia.maps.TypeAlias.MarkerIcon) \| `null`
-
-マーカーのカスタムアイコンを返します。デフォルトを使用している場合は `null` を返します。
-
-#### Returns
-
-[`MarkerIcon`](/reference/suite/geolonia.maps.TypeAlias.MarkerIcon) \| `null`
-
-***
-
 ### getMap()
 
 > **getMap**(): [`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
 
-このマーカーが追加されている地図を返します。取り外された状態の場合は `null` を返します。
+このポリゴンが追加されている地図を返します。取り外された状態の場合は `null` を返します。
 
 #### Returns
 
@@ -193,27 +196,45 @@ marker.addListener("click", () => console.log("clicked!"));
 
 ***
 
-### getPosition()
+### getPath()
 
-> **getPosition**(): [`LatLng`](/reference/suite/geolonia.maps.Class.LatLng) \| `null`
+> **getPath**(): [`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\>
 
-マーカーの位置を返します。位置がない場合は `null` を返します。
+ポリゴンの最初の輪郭 (外周) を返します。
+
+返される [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray) を直接変異させると、ポリゴンは自動的に再描画されます。
+リングが 1 つも無い場合は空の [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray) を返します。
 
 #### Returns
 
-[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng) \| `null`
+[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\>
 
 ***
 
-### getTitle()
+### getPaths()
 
-> **getTitle**(): `string`
+> **getPaths**(): [`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\>\>
 
-マーカーのツールチップのテキストを返します。
+すべての輪郭を [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray)`<`[MVCArray](/reference/suite/geolonia.maps.Class.MVCArray)`<`[LatLng](/reference/suite/geolonia.maps.Class.LatLng)`>>` として返します。
+
+返される MVCArray を直接変異させると、ポリゴンは自動的に再描画されます。
+最初のリングが外周、それ以降のリングは穴として扱われます。
 
 #### Returns
 
-`string`
+[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\>\>
+
+***
+
+### getVisible()
+
+> **getVisible**(): `boolean`
+
+ポリゴンの可視性を返します。
+
+#### Returns
+
+`boolean`
 
 ***
 
@@ -275,32 +296,11 @@ marker.addListener("click", () => console.log("clicked!"));
 
 ***
 
-### setIcon()
-
-> **setIcon**(`icon`): `void`
-
-カスタムアイコンを設定します。画像 URL (`{ url }`)、ベクター記号 ([Symbol](/reference/suite/geolonia.maps.Interface.Symbol))、
-または `null`（デフォルトに戻す）を渡します。
-
-#### Parameters
-
-##### icon
-
-[`MarkerIcon`](/reference/suite/geolonia.maps.TypeAlias.MarkerIcon) \| `null`
-
-アイコン定義、または `null` です。
-
-#### Returns
-
-`void`
-
-***
-
 ### setMap()
 
 > **setMap**(`map`): `void`
 
-マーカーを地図に追加します。`null` を渡すと、現在の地図から取り外します。
+ポリゴンを地図に追加します。`null` を渡すと、現在の地図から取り外します。
 
 #### Parameters
 
@@ -308,7 +308,7 @@ marker.addListener("click", () => console.log("clicked!"));
 
 [`Map`](/reference/suite/geolonia.maps.Class.Map) \| `null`
 
-マーカーを表示する地図、または取り外す場合は `null` です。
+ポリゴンを描画する地図、または取り外す場合は `null` です。
 
 #### Returns
 
@@ -316,19 +316,19 @@ marker.addListener("click", () => console.log("clicked!"));
 
 ***
 
-### setPosition()
+### setOptions()
 
-> **setPosition**(`latLng`): `void`
+> **setOptions**(`options`): `void`
 
-マーカーを新しい位置へ移動します。`null` を渡すと位置をクリアします。
+複数のオプションをまとめて更新します。
 
 #### Parameters
 
-##### latLng
+##### options
 
-[`LatLngLiteralOrLatLng`](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng) \| `null`
+[`PolygonOptions`](/reference/suite/geolonia.maps.Interface.PolygonOptions)
 
-新しい位置です。
+更新するオプションです。指定されていないものは変更されません。
 
 #### Returns
 
@@ -336,19 +336,39 @@ marker.addListener("click", () => console.log("clicked!"));
 
 ***
 
-### setTitle()
+### setPath()
 
-> **setTitle**(`title`): `void`
+> **setPath**(`path`): `void`
 
-マーカーのツールチップのテキストを設定します。ホバー時に表示されます。
+単一の輪郭でパスを差し替えます。
 
 #### Parameters
 
-##### title
+##### path
 
-`string`
+[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\> \| [`LatLngLiteralOrLatLng`](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng)[]
 
-ツールチップのテキストです。
+新しい輪郭です。[MVCArray](/reference/suite/geolonia.maps.Class.MVCArray) または配列を受け付けます。
+
+#### Returns
+
+`void`
+
+***
+
+### setPaths()
+
+> **setPaths**(`paths`): `void`
+
+複数の輪郭でパスを差し替えます。
+
+#### Parameters
+
+##### paths
+
+[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\> \| [`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`MVCArray`](/reference/suite/geolonia.maps.Class.MVCArray)\<[`LatLng`](/reference/suite/geolonia.maps.Class.LatLng)\>\> \| [`LatLngLiteralOrLatLng`](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng)[] \| [`LatLngLiteralOrLatLng`](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng)[][]
+
+新しいパスです。ネストした [MVCArray](/reference/suite/geolonia.maps.Class.MVCArray) や配列などを受け付けます。
 
 #### Returns
 
@@ -378,6 +398,26 @@ marker.addListener("click", () => console.log("clicked!"));
 #### Inherited from
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`setValues`](/reference/suite/geolonia.maps.Class.MVCObject#setvalues)
+
+***
+
+### setVisible()
+
+> **setVisible**(`visible`): `void`
+
+ポリゴンの可視性を設定します。
+
+#### Parameters
+
+##### visible
+
+`boolean`
+
+`true` で表示、`false` で非表示になります。
+
+#### Returns
+
+`void`
 
 ***
 

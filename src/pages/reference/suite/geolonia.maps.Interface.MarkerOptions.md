@@ -18,15 +18,9 @@ page: reference
 
 ### icon?
 
-> `optional` **icon?**: `object`
+> `optional` **icon?**: [`MarkerIcon`](/reference/suite/geolonia.maps.TypeAlias.MarkerIcon)
 
-カスタムアイコン画像です。省略した場合は、デフォルトのマーカーが表示されます。
-
-#### url
-
-> **url**: `string`
-
-マーカーとして使用する画像の URL です。
+カスタムアイコンです。画像 URL (`{ url }`) またはベクター記号 ([Symbol](/reference/suite/geolonia.maps.Interface.Symbol)) を指定します。
 
 ***
 
