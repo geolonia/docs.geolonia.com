@@ -17,7 +17,7 @@ import LiveCode from '../../../components/LiveCode.astro'
 
 embed で地図にデータを載せるには、**GeoJSON** という形式のファイルを使います。GeoJSON は地理データの標準フォーマットで、テキストエディタで読み書きできる JSON です。
 
-最小の GeoJSON は次のような形をしています。
+シンプルな GeoJSON は次のような形をしています。
 
 ```json
 {
@@ -72,13 +72,13 @@ GeoJSON ファイルを Web サーバーに置いたら、`div` に `data-geojso
 
 </LiveCode>
 
-拡大するとクラスターが分かれて個別の点になります。色を変えたい場合は `data-cluster-color="#ff0000"` のように指定できます。
+縮小すると個別の点がクラスターになります。色を変えたい場合は `data-cluster-color="#ff0000"` のように指定できます。
 
 
 ## 自分のデータに差し替える
 
 1. スプレッドシートや CSV で、1行 = 1地点のデータを用意する（経度と緯度の列が必要）。
-2. GeoJSON に変換する。手で書いてもよいですし、[geojson.io](https://geojson.io/) などのツールを使うと楽です。
+2. GeoJSON に変換する。手で書いてもよいですし、[geojson.io](https://geojson.io/) などのツールを使うと楽です。Geoloniaでも[GeoJSON Maker](https://geolonia.github.io/geojson-maker/)という使いやすいツールを提供しています。
 3. ファイルを Web サーバーに置いて、`data-geojson` のパスを差し替える。
 
 ## 動いたか確認する
