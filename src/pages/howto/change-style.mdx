@@ -100,11 +100,11 @@ import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
 
 function App() {
-  const [style, setStyle] = useState("geolonia/basic");
+  const [style, setStyle] = useState("geolonia/basic-v2");
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <div>
-        <button onClick={() => setStyle("geolonia/basic")}>標準</button>
+        <button onClick={() => setStyle("geolonia/basic-v2")}>標準</button>
         <button onClick={() => setStyle("geolonia/gsi")}>地理院</button>
       </div>
       <Map
