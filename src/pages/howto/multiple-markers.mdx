@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 複数の地点をまとめて地図に出します。1点だけなら中心マーカーで十分ですが、**2点以上は「一覧データ＋ループ」**で考えます。座標は `[経度, 緯度]` の順で持ちます。
@@ -14,7 +13,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed（HTML の属性だけ）では、複数のマーカーを宣言的に置く方法は**ありません**。埋め込めるマーカーは中心の1本だけです。
+embed（HTML の属性だけ）では、複数のマーカーを宣言的に置く方法は**ありません**。埋め込めるマーカーは中心の1本だけです。
 
 複数の点を出したい場合は、次のどちらかを選んでください。
 
@@ -24,7 +23,7 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 一覧をループして `Marker` を作るだけです。
+一覧をループして `Marker` を作るだけです。
 
 <LiveCode title="maps-suite でマーカーを複数置く">
 
@@ -64,7 +63,7 @@ for (const p of points) {
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `Marker` はただの React コンポーネントなので、一覧を `map()` で展開するだけです。
+`Marker` はただの React コンポーネントなので、一覧を `map()` で展開するだけです。
 
 <LiveCode title="maps-react でマーカーを複数置く">
 

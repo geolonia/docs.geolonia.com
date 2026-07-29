@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 マーカーをクリックしたときに情報をポップアップで表示します。
@@ -14,7 +13,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> `.geolonia` の `div` の中に HTML を書くと、それがマーカーのポップアップになります。
+`.geolonia` の `div` の中に HTML を書くと、それがマーカーのポップアップになります。
 
 <LiveCode title="embed でクリックポップアップを出す">
 
@@ -41,7 +40,7 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> `Marker` を置き、クリックイベントで `InfoWindow` を開きます。
+`Marker` を置き、クリックイベントで `InfoWindow` を開きます。
 
 <LiveCode title="maps-suite でクリックポップアップを出す">
 
@@ -77,7 +76,7 @@ marker.addListener("click", () => infoWindow.open(map, marker));
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `Marker` コンポーネントの**子要素**が、そのままポップアップの内容になります。
+`Marker` コンポーネントの**子要素**が、そのままポップアップの内容になります。
 
 <LiveCode title="maps-react でクリックポップアップを出す">
 

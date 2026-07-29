@@ -7,7 +7,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 数百〜数千の点を地図に載せると、点が重なって見づらくなります。クラスタリングを有効にすると、近い点を自動でまとめて件数ラベルを表示し、拡大すると個別の点に分かれます。
@@ -15,7 +14,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> `data-cluster="on"` を足すだけです。
+`data-cluster="on"` を足すだけです。
 
 <LiveCode title="embed で点をクラスタリングする">
 
@@ -41,7 +40,7 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> マーカーの配列を `MarkerClusterer` に渡すと、近い点を自動でまとめてくれます。
+マーカーの配列を `MarkerClusterer` に渡すと、近い点を自動でまとめてくれます。
 
 <LiveCode title="maps-suite でマーカーをクラスタリングする">
 

@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 複数の地点を置いたとき、`center` と `zoom` を手で決めるのではなく、**全地点を囲む範囲を計算して地図を合わせます**。データが変わっても常に全部が見えます。
@@ -14,12 +13,12 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
 
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 全点の最小と最大の座標から範囲を求めて、`fitBounds` を呼びます。
+全点の最小と最大の座標から範囲を求めて、`fitBounds` を呼びます。
 
 <LiveCode title="maps-suite で全地点に画面を合わせる">
 
@@ -63,7 +62,7 @@ map.fitBounds({ north, south, east, west }, 40);
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `onLoad` で地図インスタンスを受け取り、全点の最小と最大の座標から範囲を求めて `fitBounds` を呼びます。
+`onLoad` で地図インスタンスを受け取り、全点の最小と最大の座標から範囲を求めて `fitBounds` を呼びます。
 
 <LiveCode title="maps-react で全地点に画面を合わせる">
 

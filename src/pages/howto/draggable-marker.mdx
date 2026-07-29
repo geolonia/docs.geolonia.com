@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 マーカーをドラッグで動かし、離した位置の緯度と経度を受け取ります。地点を登録、編集する画面で、ユーザーにピンを置いてもらう用途に使えます。
@@ -14,12 +13,12 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed 単体ではドラッグできるマーカーは作れません。上のタブで suite / react のコードに切り替えてください。
+embed 単体ではドラッグできるマーカーは作れません。上のタブで suite / react のコードに切り替えてください。
 
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> maps-suite の `Marker` はドラッグに対応していないため、読み込みを待ってから基盤の地図（maplibre）のマーカーを使います。`dragend`（ドラッグ終了）で位置を取り出します。
+maps-suite の `Marker` はドラッグに対応していないため、読み込みを待ってから基盤の地図（maplibre）のマーカーを使います。`dragend`（ドラッグ終了）で位置を取り出します。
 
 <LiveCode title="maps-suite でドラッグできるマーカーを置く">
 
@@ -56,7 +55,7 @@ marker.on("dragend", () => {
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `Marker` に `draggable` を付け、`onDragEnd` で位置を受け取ります。
+`Marker` に `draggable` を付け、`onDragEnd` で位置を受け取ります。
 
 <LiveCode title="maps-react でドラッグできるマーカーを置く">
 

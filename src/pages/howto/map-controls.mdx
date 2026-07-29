@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 地図の隅に出るボタン類（ズームや回転のナビゲーション、現在地、フルスクリーン、縮尺、Geolonia ロゴ）は、それぞれ表示するかどうかと位置を指定できます。位置は `top-right`、`bottom-right`、`bottom-left`、`top-left` のいずれかで指定します。
@@ -14,7 +13,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> それぞれ `data-*-control` 属性で指定します。`on` / `off` に加えて、位置を表す文字列を渡すと表示位置も変えられます。
+それぞれ `data-*-control` 属性で指定します。`on` / `off` に加えて、位置を表す文字列を渡すと表示位置も変えられます。
 
 <LiveCode title="embed でコントロールを切り替える">
 
@@ -45,7 +44,7 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> maps-suite の初期化オプションにはコントロールの指定がありません。読み込みを待ってから、基盤の地図（maplibre）に `addControl` で足します。
+maps-suite の初期化オプションにはコントロールの指定がありません。読み込みを待ってから、基盤の地図（maplibre）に `addControl` で足します。
 
 <LiveCode title="maps-suite でコントロールを足す">
 
@@ -77,7 +76,7 @@ impl.addControl(new maplibregl.ScaleControl(), "bottom-left");
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `Map` のそれぞれの props で指定します。`true` / `false` に加えて、位置を表す文字列も渡せます。
+`Map` のそれぞれの props で指定します。`true` / `false` に加えて、位置を表す文字列も渡せます。
 
 <LiveCode title="maps-react でコントロールを切り替える">
 

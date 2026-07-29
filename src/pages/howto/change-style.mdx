@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 地図のベーススタイル（道路の色、文字の大きさ、建物の塗りなど）を差し替えます。
@@ -14,7 +13,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> `data-style` 属性にスタイル名または URL を書きます。
+`data-style` 属性にスタイル名または URL を書きます。
 
 <LiveCode title="embed で地理院スタイルに切り替える">
 
@@ -56,7 +55,7 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 初期スタイルは `Map` の `style` オプションで指定します。実行時に切り替えるには、基盤の地図の `setStyle` を使います。
+初期スタイルは `Map` の `style` オプションで指定します。実行時に切り替えるには、基盤の地図の `setStyle` を使います。
 
 <LiveCode title="maps-suite で地理院スタイルに切り替える">
 
@@ -88,7 +87,7 @@ map._getImpl().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.j
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `Map` の `style` プロパティにスタイル名または URL を渡します。state と組み合わせると、**実行時にボタンで切り替える** UI も作れます。
+`Map` の `style` プロパティにスタイル名または URL を渡します。state と組み合わせると、**実行時にボタンで切り替える** UI も作れます。
 
 <LiveCode title="maps-react でボタンからスタイルを切り替える">
 

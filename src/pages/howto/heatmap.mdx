@@ -7,7 +7,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 点が多すぎて1つ1つのマーカーに意味がないとき、**どこに集中しているか**を色の濃淡で見せるのがヒートマップです。個別の点を見せたいならマーカーやクラスタリング、分布の傾向を見せたいならヒートマップ、と使い分けます。
@@ -15,12 +14,12 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
 
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 読み込みを待ってから、点の GeoJSON を `heatmap` レイヤで重ねます。
+読み込みを待ってから、点の GeoJSON を `heatmap` レイヤで重ねます。
 
 <LiveCode title="maps-suite でヒートマップを描く">
 
@@ -72,7 +71,7 @@ impl.addLayer({
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> 点の GeoJSON を `Source` で読み込み、`type="heatmap"` のレイヤで描きます。
+点の GeoJSON を `Source` で読み込み、`type="heatmap"` のレイヤで描きます。
 
 <LiveCode title="maps-react でヒートマップを描く">
 

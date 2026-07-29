@@ -7,7 +7,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 地図の投影を **globe** に切り替えると、ズームアウトしたときに平面地図ではなく地球儀として表示されます。深くズームインすると自動的に通常の地図表示へなめらかに移行するので、普段の使い勝手は変わりません。
@@ -15,12 +14,12 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
 
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> 読み込みを待ってから、基盤の地図の `setProjection` で投影を切り替えます。
+読み込みを待ってから、基盤の地図の `setProjection` で投影を切り替えます。
 
 <LiveCode title="maps-suite で地球儀表示にする">
 
@@ -47,7 +46,7 @@ map._getImpl().setProjection({ type: "globe" });
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `onLoad` で地図インスタンスを受け取り、`setProjection` で投影を切り替えます。
+`onLoad` で地図インスタンスを受け取り、`setProjection` で投影を切り替えます。
 
 <LiveCode title="maps-react で地球儀表示にする">
 

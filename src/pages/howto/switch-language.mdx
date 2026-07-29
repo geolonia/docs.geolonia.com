@@ -6,7 +6,6 @@ badge: howto
 ---
 import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
-import Tag from '../../components/Tag.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
 地名などのラベルの言語を、`ja`（日本語）、`en`（英語）、`auto`（閲覧者のブラウザ設定に合わせる）から選べます。初期値は `auto` です。
@@ -14,7 +13,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-<Tag k="embed" /> `data-lang` 属性で指定します。
+`data-lang` 属性で指定します。
 
 <LiveCode title="embed で表示言語を英語にする">
 
@@ -37,12 +36,12 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-<Tag k="suite" /> maps-suite の初期化オプションには言語指定がなく、表示言語はブラウザの設定に従います（`auto` 相当）。言語を明示的に固定したい場合は、embed か maps-react を使ってください。
+maps-suite の初期化オプションには言語指定がなく、表示言語はブラウザの設定に従います（`auto` 相当）。言語を明示的に固定したい場合は、embed か maps-react を使ってください。
 
 </Lens>
 
 <Lens name="react">
-<Tag k="react" /> `Map` の `lang` プロパティで指定します。
+`Map` の `lang` プロパティで指定します。
 
 <LiveCode title="maps-react で表示言語を英語にする">
 
