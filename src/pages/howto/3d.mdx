@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/DocLayout.astro
 title: 建物や地形を3Dで表示するには
-description: pitch で視点を傾け、fill-extrusion で建物に高さを与えて立体表示します。
+description: 標準スタイルに含まれる3D建物を有効にし、視点を傾けて都市を立体で見せます。
 page: howto
 kicker: 応用
 badge: howto
@@ -10,7 +10,9 @@ import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
-視点を `pitch` で傾け、建物を **`fill-extrusion`**（高さを持つ塗り）で立ち上げると、都市が立体で見えます。建物の形と高さのデータはベーススタイルに含まれるベクトルタイルのものを使うので、自分でデータを用意する必要はありません。
+3D 建物は Geolonia の標準スタイルに**最初から含まれています**。ライブラリごとに用意された設定で表示に切り替え、視点を傾ければ都市が立体で見えます。建物の形と高さはベクトルタイルに入っているものを使うので、スタイルもデータも自分で用意する必要はありません。
+
+有効にする方法だけがライブラリごとに違います。embed は既定で無効なので明示的に有効にし、maps-suite は既定で有効、maps-react は既定で無効です。
 
 ## コード
 
@@ -34,13 +36,14 @@ import LiveCode from '../../components/LiveCode.astro'
 
 </LiveCode>
 
-- **`data-3d="on"`**：3D 建物を表示します。suite / react のように `fill-extrusion` レイヤを自分で足すのではなく、**Geolonia のベーススタイル（既定の `geolonia/basic-v2` など）に組み込まれた 3D 建物レイヤ（`building-3d`）を表示に切り替える**しくみです。そのため自前のスタイルやデータは不要な一方、この属性が効くのは 3D 建物を含む Geolonia スタイルを使っているときだけです（`data-style` で外部スタイルを指定した場合は効きません）。
-- **`data-pitch` / `data-bearing`**：視点の傾き（度）と回転（度）。**3D 建物の表示は `data-3d="on"` だけで有効になり、`data-pitch` は不要です**。真上から見たままだと高さが分かりにくいので、立体感を出したいときに傾けます。
+`data-3d="on"` は、標準スタイルに組み込まれた 3D 建物のレイヤを表示に切り替えます。この切り替えは 3D 建物を含む Geolonia のスタイルを使っているときだけ効くので、`data-style` で外部のスタイルを指定した場合は効きません。
+
+視点は `data-pitch`（傾き）と `data-bearing`（回転）で調整します。傾けなくても 3D 建物は表示されますが、真上から見たままでは高さが分かりません。
 
 </Lens>
 
 <Lens name="suite">
-読み込みを待ってから、視点を傾けて `fill-extrusion` レイヤを追加します。
+maps-suite では 3D 建物が**既定で有効**なので、視点を傾けるだけで立体になります。レイヤを自分で足す必要はありません。手前に倒す角度が `tilt`、回す角度が `heading` で、どちらも度で指定します（作った後から変えるなら `map.setTilt()` と `map.setHeading()` です）。
 
 <LiveCode title="maps-suite で3D建物を表示する">
 
@@ -50,41 +53,22 @@ import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
   center: { lat: 35.6812, lng: 139.7671 },
   zoom: 15.5,
-  style: "https://tile.openstreetmap.jp/styles/osm-bright/style.json",
-});
-
-await map._whenReady();
-const impl = map._getImpl();
-impl.setPitch(60);
-impl.setBearing(-20);
-impl.addLayer({
-  id: "buildings-3d",
-  source: "openmaptiles",
-  "source-layer": "building",
-  type: "fill-extrusion",
-  minzoom: 14,
-  paint: {
-    "fill-extrusion-color": "#aaa",
-    "fill-extrusion-height": ["get", "render_height"],
-    "fill-extrusion-base": ["get", "render_min_height"],
-    "fill-extrusion-opacity": 0.7,
-  },
+  tilt: 60,
+  heading: -20,
 });
 ```
 
 </LiveCode>
 
-- **`setPitch` / `setBearing`**：視点の傾きと回転。基盤の地図（`_getImpl()`）に対して呼びます。
-- **`source` / `source-layer`**：ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`、レイヤ `building`）。
-- **`fill-extrusion-height`**：立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
-- **`minzoom: 14`**：建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
+立体で見せたくないときは `threeDimensional: false` を渡すと、傾けても建物が平らなままになります。
 
 </Lens>
 
 <Lens name="react">
-建物ソースは**ベーススタイル側の持ち物**なので、`<Source>`/`<Layer>` コンポーネントではなく、スタイル読み込み後の `onLoad` でレイヤを追加します。
+maps-react では 3D 建物は既定で無効なので、`3d` を渡して有効にします。この名前は数字で始まるため、JSX の属性としては書けません。オブジェクトのスプレッドで渡してください。視点は `pitch`（傾き）と `bearing`（回転）で指定します。
 
 <LiveCode title="maps-react で3D建物を表示する">
 
@@ -94,30 +78,14 @@ import "@geolonia/maps-core/css";
 import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
 
-const add3dBuildings = (map) => {
-  map.addLayer({
-    id: "buildings-3d",
-    source: "openmaptiles",
-    "source-layer": "building",
-    type: "fill-extrusion",
-    minzoom: 14,
-    paint: {
-      "fill-extrusion-color": "#aaa",
-      "fill-extrusion-height": ["get", "render_height"],
-      "fill-extrusion-base": ["get", "render_min_height"],
-      "fill-extrusion-opacity": 0.7,
-    },
-  });
-};
-
 createRoot(document.getElementById("root")).render(
   <Map
-    style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"
+    apiKey="YOUR-API-KEY"
     center={[139.7671, 35.6812]}
     zoom={15.5}
     pitch={60}
     bearing={-20}
-    onLoad={add3dBuildings}
+    {...{ "3d": true }}
     containerStyle={{ width: "100%", height: "100vh" }}
   />,
 );
@@ -125,20 +93,15 @@ createRoot(document.getElementById("root")).render(
 
 </LiveCode>
 
-- **`onLoad` で追加する理由**：`<Layer>` を単独で（`<Source>` の外に）置くと、スタイルの読み込みが終わる前にレイヤを追加しようとしてエラーになります。ベーススタイル内のソースを参照するレイヤは `onLoad` で足すのが確実です。
-- **`source` / `source-layer`**：ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`、レイヤ `building`）。
-- **`fill-extrusion-height`**：立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
-- **`minzoom: 14`**：建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
-
 </Lens>
 
 ## 結果
 
-上のコードは、それぞれのタブの下でそのまま動いています。斜めから見た構図で、建物が高さを持って立ち上がって見えます。`pitch` を 0 にすると真上から見た平面的な見え方に戻りますが、3D 建物レイヤ自体は表示されたままです（高さが知覚しにくくなるだけです）。
+上のコードは、それぞれのタブの下でそのまま動いています。斜めから見た構図で、建物が高さを持って立ち上がって見えます。傾きを 0 に戻すと真上から見た平面的な見え方になりますが、3D 建物のレイヤ自体は表示されたままです（高さが知覚しにくくなるだけです）。
 
 <Callout kind="warning" title="うまくいかないとき">
-- 建物が出ない → `source` / `source-layer` の名前が使っているスタイルと合っているか確認。スタイル JSON の `sources` と、建物系レイヤの `source-layer` を見ると分かります。
-- ズームアウトすると消える → `minzoom` 未満では描画されません。仕様どおりの挙動です。
-- 「Style is not done loading」エラー → レイヤの追加が早すぎます。`onLoad` の中で `addLayer` してください。
-- 動作が重い → 3D 描画は負荷が高めです。`minzoom` を上げる、表示範囲を絞るなどで軽くなります。
+- 建物が出ない → 外部のスタイルを指定していないか確認。3D 建物は Geolonia のスタイルに含まれるものなので、他のスタイルに差し替えると出ません。
+- ズームアウトすると消える → 建物が意味を持つズームからだけ描画されます。仕様どおりの挙動です。
+- maps-react で有効にならない → `3d={true}` とは書けません。`{...{ "3d": true }}` の形で渡しているか確認してください。
+- 動作が重い → 3D 描画は負荷が高めです。表示範囲を絞るか、必要な場面だけ有効にしてください。
 </Callout>

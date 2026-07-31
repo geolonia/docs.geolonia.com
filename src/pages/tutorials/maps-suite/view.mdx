@@ -32,7 +32,7 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 ## 視点を傾けて回す
 
-視点の傾き（pitch）と回転（bearing）は、maps-suite の高レベル API にはありません。こういうときのために、**基盤の地図（maplibre）に直接触るためのエスケープハッチ**が用意されています。
+視点の傾きと回転も、`Map` のオプションで指定できます。maps-suite では傾きを `tilt`、回転を `heading` と呼びます。
 
 ここまでを入れた `main.js` の全体が次のコードです。
 
@@ -47,21 +47,18 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   apiKey: "YOUR-API-KEY",
   center: { lat: 35.658581, lng: 139.745438 },
   zoom: 16,
-});
-
-map._whenReady().then(() => {
-  const impl = map._getImpl();
-  impl.setPitch(45);    // 地図を手前に倒す角度（度）。0 が真上からの平面図
-  impl.setBearing(20);  // 地図を回す角度（度）。0 が北が上
+  tilt: 45,     // 地図を手前に倒す角度（度）。0 が真上からの平面図
+  heading: 20,  // 地図を回す角度（度）。0 が北が上
 });
 ```
 
 </LiveCode>
 
-- **`map._whenReady()`**：地図の読み込み完了を待つ Promise を返します。
-- **`map._getImpl()`**：基盤の maplibre の地図インスタンスを返します。maps-suite にない操作はすべてここから呼べます。
+`tilt` は地図を手前に倒す角度、`heading` は地図を回す角度で、どちらも度で指定します。既定はどちらも `0` で、真上から見下ろした、北が上の平面図です。
 
-この「読み込みを待ってから `_getImpl()` で触る」という形は、次の段のデータ追加でも使う maps-suite の基本パターンです。
+作った後から変えることもできます。傾きなら `map.setTilt(45)`、回転なら `map.setHeading(20)` で、中心や拡大率とまとめて動かすなら `map.moveCamera({ center, zoom, tilt, heading })` を使います。いずれも地図の読み込みを待つ必要はありません。
+
+maplibre にしかない操作が必要になったときは、`map._getImpl()` で基盤の地図インスタンスを取り出せます。次の段のデータ追加で使います。
 
 ## 動いたか確認する
 
@@ -69,8 +66,8 @@ map._whenReady().then(() => {
 
 <Callout kind="warning" title="うまくいかないとき">
 - 中心が海や別の国に飛ぶ → `lat` と `lng` の**取り違え**を確認。日本国内なら `lat` はおよそ 24〜46、`lng` はおよそ 123〜146 です。
-- `setPitch` などで「関数がない」エラー → `map` 本体ではなく `map._getImpl()` の戻り値に対して呼んでいるか確認。
-- 傾きが反映されない → `_whenReady()` を待ってから呼んでいるか確認。
+- `setPitch` / `setBearing` で「関数がない」エラー → maps-suite での名前は `setTilt` / `setHeading` です。`pitch` と `bearing` は基盤の maplibre 側の呼び方です。
+- 傾けたら建物が立体になった → maps-suite は 3D 建物が既定で有効です。平面のままにしたいときは `threeDimensional: false` を渡します。
 </Callout>
 
 ## 次は
