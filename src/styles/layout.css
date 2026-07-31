@@ -19,9 +19,9 @@
 
 .content { max-width: var(--maxw); margin: 0 auto; padding: 28px 22px 80px; }
 
-/* API リファレンスの2カラム骨格（左ツリー＋本文）。
+/* サイドバー付きページの2カラム骨格（左ツリー＋本文）。
    本文は .content をそのまま使うが、中央寄せではなく右カラムに収める。 */
-.api-shell {
+.doc-shell {
   max-width: calc(var(--maxw) + 260px);
   margin: 0 auto;
   display: grid;
@@ -29,20 +29,21 @@
   gap: 8px;
   align-items: start;
 }
-.api-shell > .content { margin: 0; max-width: none; }
-.api-nav {
+.doc-shell > .content { margin: 0; max-width: none; }
+.doc-nav {
   position: sticky; top: 57px; /* .site-top の高さぶん下げる */
   max-height: calc(100vh - 57px);
   overflow-y: auto;
   padding: 28px 8px 40px 22px;
 }
 
-/* narrow: 1カラムに畳み、ツリーを本文の上に置く */
+/* narrow: 1カラムに畳み、ツリーを本文の上に置く。
+   本文の前に積み上がりすぎないよう、畳んだときは高さを抑えて中でスクロールさせる。 */
 @media (max-width: 900px) {
-  .api-shell { grid-template-columns: minmax(0, 1fr); max-width: var(--maxw); }
-  .api-nav {
-    position: static; max-height: none; overflow: visible;
-    padding: 20px 22px 0;
+  .doc-shell { grid-template-columns: minmax(0, 1fr); max-width: var(--maxw); }
+  .doc-nav {
+    position: static; max-height: 40vh; overflow-y: auto;
+    padding: 20px 22px 12px;
     border-bottom: 1px solid var(--border);
   }
 }
