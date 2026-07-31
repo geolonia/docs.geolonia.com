@@ -40,7 +40,7 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-読み込みを待ってから、視点を傾けて `fill-extrusion` レイヤを追加します。
+視点は `Map` のオプションで傾けます。建物のレイヤは、読み込みを待ってから `fill-extrusion` で追加します。
 
 <LiveCode title="maps-suite で3D建物を表示する">
 
@@ -52,14 +52,13 @@ import { geolonia } from "@geolonia/maps-suite";
 const map = new geolonia.maps.Map(document.getElementById("map"), {
   center: { lat: 35.6812, lng: 139.7671 },
   zoom: 15.5,
+  tilt: 60,
+  heading: -20,
   style: "https://tile.openstreetmap.jp/styles/osm-bright/style.json",
 });
 
 await map._whenReady();
-const impl = map._getImpl();
-impl.setPitch(60);
-impl.setBearing(-20);
-impl.addLayer({
+map._getImpl().addLayer({
   id: "buildings-3d",
   source: "openmaptiles",
   "source-layer": "building",
@@ -76,7 +75,8 @@ impl.addLayer({
 
 </LiveCode>
 
-- **`setPitch` / `setBearing`**：視点の傾きと回転。基盤の地図（`_getImpl()`）に対して呼びます。
+- **`tilt` / `heading`**：視点の傾き（度）と回転（度）。`Map` のオプションで指定します。作った後から変えるなら `map.setTilt()` / `map.setHeading()` です。
+- **`_getImpl()`**：レイヤの追加は maps-suite の API にないので、基盤の地図（maplibre）のインスタンスを取り出して呼びます。
 - **`source` / `source-layer`**：ベーススタイルに含まれる建物データの指定です。名前は**スタイルによって異なります**（上の例は OSM bright の場合で、ソース `openmaptiles`、レイヤ `building`）。
 - **`fill-extrusion-height`**：立ち上げる高さ（メートル）。タイルに入っている建物の高さ属性（ここでは `render_height`）を使います。
 - **`minzoom: 14`**：建物が意味を持つズームからだけ描画し、描画負荷を抑えます。
