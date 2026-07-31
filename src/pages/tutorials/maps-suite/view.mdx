@@ -54,10 +54,9 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 </LiveCode>
 
-- **`tilt`**：手前に倒す角度（度）。`0` が真上から見た平面図です。
-- **`heading`**：北から時計回りの角度（度）。`0` で北が上です。
+`tilt` は地図を手前に倒す角度、`heading` は地図を回す角度で、どちらも度で指定します。既定はどちらも `0` で、真上から見下ろした、北が上の平面図です。
 
-作った後から変えることもできます。`map.setTilt(45)` で傾き、`map.setHeading(20)` で回転、`map.moveCamera({ center, zoom, tilt, heading })` でまとめて指定です。どれも読み込みの完了を待つ必要はありません。
+作った後から変えることもできます。傾きなら `map.setTilt(45)`、回転なら `map.setHeading(20)` で、中心や拡大率とまとめて動かすなら `map.moveCamera({ center, zoom, tilt, heading })` を使います。いずれも地図の読み込みを待つ必要はありません。
 
 maplibre にしかない操作が必要になったときは、`map._getImpl()` で基盤の地図インスタンスを取り出せます。次の段のデータ追加で使います。
 
