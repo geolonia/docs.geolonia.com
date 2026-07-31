@@ -7,7 +7,8 @@
 //   kicker: ハウツー / レシピ   # 見出し上のアイキャッチ
 //   quadrant: Diátaxis / ...   # 任意。分類の管理用メタデータ。表示しない
 //   badge: tutorial            # 任意。H1 の頭に象限バッジを付ける
-//   sidebar: api               # 任意。API リファレンスのツリーを左に出す
+//   sidebar: api               # 任意。左サイドバーの種類を明示する。
+//                              # 省略時は page から決まる（下記）ので、ふつうは要らない
 //   htmlTitle: ...             # 任意。<title> だけ上書きする（H1 は title のまま）
 //   description: ...           # 任意。meta description と OGP に使う一文
 //   ---
@@ -15,6 +16,8 @@ import BaseLayout from './BaseLayout.astro';
 import EmbedLayout from './EmbedLayout.astro';
 import QuadBadge from '../components/QuadBadge.astro';
 import ApiNav from '../components/ApiNav.astro';
+import DocNav from '../components/DocNav.astro';
+import type { SectionKind } from '../lib/doc-nav';
 const { frontmatter } = Astro.props;
 const { title, page = '', kicker, badge, embed, sidebar, htmlTitle, description } = frontmatter ?? {};
 // 見出し上に出すのは kicker だけ。frontmatter の quadrant（Diátaxis の象限）は
@@ -23,14 +26,20 @@ const eyebrow = kicker;
 // 地図を使うページは frontmatter に embed: true を付ける。その時だけ embed スクリプトを読み込む。
 const Shell = embed ? EmbedLayout : BaseLayout;
 const badgeLabels = { tutorial: 'チュートリアル', howto: 'ハウツー', reference: 'リファレンス', explanation: '解説' };
-// 手書きページでも API ツリーを出せるようにする（/reference/ の索引が使う）。
-// 自動生成ページ側は ApiLayout が同じ ApiNav を使う。
-const withApiNav = sidebar === 'api';
+// 左サイドバーの種類。ふつうは page から決まるので frontmatter に書く必要はない。
+// frontmatter の sidebar は明示したいときの上書き（/reference/ の索引が sidebar: api を使う）。
+// トップ（page: home）のようにここに無い page は、サイドバーなしで描画される。
+const NAV_BY_PAGE: Record<string, SectionKind> = {
+  tutorial: 'tutorial',
+  howto: 'howto',
+  explanation: 'explanation',
+};
+const navKind = sidebar ?? NAV_BY_PAGE[page] ?? null;
 ---
 <Shell title={htmlTitle ?? `${title} — Geolonia Docs`} page={page} description={description}>
-  {withApiNav ? (
-    <div class="api-shell">
-      <ApiNav />
+  {navKind ? (
+    <div class="doc-shell">
+      {navKind === 'api' ? <ApiNav /> : <DocNav section={navKind} />}
       <main class="content">
         {eyebrow && <p class="kicker">{eyebrow}</p>}
         <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>

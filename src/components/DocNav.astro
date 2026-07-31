@@ -1,0 +1,52 @@
+---
+/**
+ * チュートリアル / ハウツー / 解説の左サイドバー。
+ *
+ * リンク一覧は src/lib/doc-nav.ts の literal で、ここは描画するだけ。
+ * 開閉は details/summary だけで行い、JS を持たない（ApiNav と同じ）。
+ */
+import { buildDocNav, type SectionKind } from '../lib/doc-nav';
+
+interface Props {
+  section: SectionKind;
+}
+
+const { section } = Astro.props;
+const currentPath = Astro.url.pathname.replace(/\/$/, '');
+const nav = buildDocNav(section, currentPath);
+---
+<nav class="doc-nav" aria-label={nav.label}>
+  {nav.links.length > 0 && (
+    <ul class="doc-nav__list doc-nav__list--flat">
+      {nav.links.map((item) => (
+        <li>
+          <a
+            class:list={['doc-nav__link', { 'is-current': item.current }]}
+            href={item.href}
+            aria-current={item.current ? 'page' : undefined}
+          >{item.label}</a>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {nav.groups.map((group) => (
+    <details class="doc-nav__top" open={group.open}>
+      <summary class:list={['doc-nav__top-name', { 'doc-nav__top-name--mono': group.mono }]}>
+        {group.label}
+        {!group.open && <span class="doc-nav__count">{group.links.length}</span>}
+      </summary>
+      <ul class="doc-nav__list">
+        {group.links.map((item) => (
+          <li>
+            <a
+              class:list={['doc-nav__link', { 'is-current': item.current }]}
+              href={item.href}
+              aria-current={item.current ? 'page' : undefined}
+            >{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  ))}
+</nav>
