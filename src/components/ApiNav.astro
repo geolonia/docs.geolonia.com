@@ -14,33 +14,33 @@ const pages = import.meta.glob('../pages/reference/*/*.md', { eager: true });
 const currentPath = Astro.url.pathname.replace(/\/$/, '');
 const tree = buildApiTree(pages, currentPath);
 ---
-<nav class="api-nav" aria-label="API リファレンス">
+<nav class="doc-nav" aria-label="API リファレンス">
   {tree.map((pkg) => (
-    <details class="api-nav__pkg" open={pkg.expanded}>
-      <summary class="api-nav__pkg-name">
+    <details class="doc-nav__top" open={pkg.expanded}>
+      <summary class="doc-nav__top-name doc-nav__top-name--mono">
         {pkg.label}
-        {!pkg.expanded && <span class="api-nav__count">{pkg.count}</span>}
+        {!pkg.expanded && <span class="doc-nav__count">{pkg.count}</span>}
       </summary>
 
       {pkg.index && (
         <a
-          class:list={['api-nav__link', 'api-nav__link--index', { 'is-current': pkg.index.current }]}
+          class:list={['doc-nav__link', 'doc-nav__link--index', { 'is-current': pkg.index.current }]}
           href={pkg.index.href}
           aria-current={pkg.index.current ? 'page' : undefined}
         >概要</a>
       )}
 
       {pkg.groups.map((group) => (
-        <details class="api-nav__group" open={group.current}>
-          <summary class="api-nav__group-name">
+        <details class="doc-nav__group" open={group.current}>
+          <summary class="doc-nav__group-name">
             {group.label}
-            <span class="api-nav__count">{group.items.length}</span>
+            <span class="doc-nav__count">{group.items.length}</span>
           </summary>
-          <ul class="api-nav__list">
+          <ul class="doc-nav__list">
             {group.items.map((item) => (
               <li>
                 <a
-                  class:list={['api-nav__link', { 'is-current': item.current }]}
+                  class:list={['doc-nav__link', { 'is-current': item.current }]}
                   href={item.href}
                   aria-current={item.current ? 'page' : undefined}
                 >{item.name}</a>
