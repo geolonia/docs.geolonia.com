@@ -39,9 +39,34 @@ GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面
 </Lens>
 
 <Lens name="suite">
-地図の読み込みを待ってから、基盤の地図に `addSource`（データ）と `addLayer`（描き方）で重ねます。
+`map.data` に GeoJSON を渡すのがいちばん短い書き方です。読み込みの完了は内部で待つので、こちら側で待つ必要はありません。
 
 <LiveCode title="maps-suite で GeoJSON を重ねる">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+const res = await fetch("/data/sample-spots.geojson");
+map.data.addGeoJson(await res.json());
+```
+
+</LiveCode>
+
+`addGeoJson()` が受け取るのはオブジェクトなので、URL から読むときは `fetch` を挟みます。点・線・面が混ざっていてもそのまま渡せます。色や線の太さは `map.data.setStyle({ fillColor: "#f00", strokeWeight: 2 })` のように指定します。
+
+### 描き方を細かく決めたいとき
+
+`map.data` で指定できるのは塗りと線の色・不透明度・太さだけです。点の大きさを変えるといった細かい調整には、基盤の地図（maplibre）を直接触る `getGeoloniaMap()` を使います。**maps-suite に用意されていない機能が必要になったときの逃げ道**がこれです。
+
+<LiveCode title="maps-suite で GeoJSON を重ねて点の大きさを変える">
 
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -57,14 +82,19 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 await map.whenReady();
 const impl = map.getGeoloniaMap();
 impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
-impl.addLayer({ id: "spots", type: "circle", source: "spots" });
+impl.addLayer({
+  id: "spots",
+  type: "circle",
+  source: "spots",
+  paint: { "circle-radius": 8, "circle-color": "#e2543a" },
+});
 ```
 
 </LiveCode>
 
-- **`whenReady()` / `getGeoloniaMap()`**：ソースやレイヤの操作は高レベル API にないので、読み込み完了を待って基盤の地図（maplibre）に対して行います。
-- **`addSource` → `addLayer` の順**で呼びます。`type: "circle"` は各点を丸として描きます。
-- CSS のインポートなどセットアップは [maps-suite チュートリアル 段0](/tutorials/maps-suite/first-map/) を参照してください。
+こちらは `whenReady()` で読み込みの完了を待ってから、`addSource`（データ）→ `addLayer`（描き方）の順に呼びます。`addSource` に渡す `data` は URL のままで構いません。
+
+CSS のインポートなどセットアップは [maps-suite チュートリアル 段0](/tutorials/maps-suite/first-map/) を参照してください。
 
 </Lens>
 
