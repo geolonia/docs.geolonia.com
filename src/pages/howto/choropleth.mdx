@@ -47,8 +47,8 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   zoom: 12,
 });
 
-await map._whenReady();
-const impl = map._getImpl();
+await map.whenReady();
+const impl = map.getGeoloniaMap();
 impl.addSource("areas", { type: "geojson", data: "/data/areas.geojson" });
 impl.addLayer({
   id: "areas",

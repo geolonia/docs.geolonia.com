@@ -35,8 +35,8 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   zoom: 2,
 });
 
-await map._whenReady();
-map._getImpl().setProjection({ type: "globe" });
+await map.whenReady();
+map.getGeoloniaMap().setProjection({ type: "globe" });
 ```
 
 </LiveCode>

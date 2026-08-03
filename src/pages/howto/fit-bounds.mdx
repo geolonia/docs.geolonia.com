@@ -51,14 +51,14 @@ const south = Math.min(...points.map((p) => p.lat));
 const east = Math.max(...points.map((p) => p.lng));
 const west = Math.min(...points.map((p) => p.lng));
 
-await map._whenReady();
+await map.whenReady();
 map.fitBounds({ north, south, east, west }, 40);
 ```
 
 </LiveCode>
 
 - **`fitBounds({ north, south, east, west }, padding)`**：指定した範囲に地図を合わせます。第2引数は画面の縁からの余白（ピクセル）で、これがないと端の点がぎりぎりに切れます。
-- 読み込み完了（`_whenReady()`）を待ってから呼びます。
+- 読み込み完了（`whenReady()`）を待ってから呼びます。
 
 </Lens>
 

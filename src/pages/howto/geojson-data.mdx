@@ -54,15 +54,15 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   zoom: 11,
 });
 
-await map._whenReady();
-const impl = map._getImpl();
+await map.whenReady();
+const impl = map.getGeoloniaMap();
 impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
 impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 ```
 
 </LiveCode>
 
-- **`_whenReady()` / `_getImpl()`**：ソースやレイヤの操作は高レベル API にないので、読み込み完了を待って基盤の地図（maplibre）に対して行います。
+- **`whenReady()` / `getGeoloniaMap()`**：ソースやレイヤの操作は高レベル API にないので、読み込み完了を待って基盤の地図（maplibre）に対して行います。
 - **`addSource` → `addLayer` の順**で呼びます。`type: "circle"` は各点を丸として描きます。
 - CSS のインポートなどセットアップは [maps-suite チュートリアル 段0](/tutorials/maps-suite/first-map/) を参照してください。
 

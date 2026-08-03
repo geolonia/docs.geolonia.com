@@ -35,11 +35,11 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   zoom: 14,
 });
 
-await map._whenReady();
+await map.whenReady();
 
 const marker = new maplibregl.Marker({ draggable: true })
   .setLngLat([139.7671, 35.6812])
-  .addTo(map._getImpl());
+  .addTo(map.getGeoloniaMap());
 
 marker.on("dragend", () => {
   const { lng, lat } = marker.getLngLat();
