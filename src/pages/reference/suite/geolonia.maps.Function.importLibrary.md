@@ -21,7 +21,7 @@ page: reference
 
 | 名前       | 返すもの                                                                               |
 | ---------- | -------------------------------------------------------------------------------------- |
-| `"maps"`   | `Map`, `MapElement`, `OverlayView`, `Polyline`, `Polygon`, `Rectangle`, `Circle`, `InfoWindow` |
+| `"maps"`   | `Map`, `MapElement`, `OverlayView`, `Polyline`, `Polygon`, `Rectangle`, `Circle`, `InfoWindow`, `Data` |
 | `"marker"` | `Marker`, `AdvancedMarkerElement`, `MarkerClusterer`                                   |
 | `"core"`   | `LatLng`, `LatLngBounds`, `Point`, `Size`, `MVCObject`, `event`                        |
 

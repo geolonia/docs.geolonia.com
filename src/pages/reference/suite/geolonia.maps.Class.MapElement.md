@@ -123,7 +123,12 @@ Geolonia の API キーです。
 
 ###### value
 
-[`LatLngLiteralOrLatLng`](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng) \| `undefined`
+`string` \| [`LatLngLiteralOrLatLng`](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng) \| `undefined`
+
+`{ lat, lng }` / [LatLng](/reference/suite/geolonia.maps.Class.LatLng) のほか、属性と同じ
+  `"lat,lng"` 形式の文字列も受け付けます。React のようにカスタム要素へ
+  属性ではなくプロパティで値を渡すフレームワークからも同じ記述で動くように
+  するためです。解釈できない文字列は無視され、現在の値を保ちます。
 
 ##### Returns
 
@@ -279,7 +284,10 @@ Geolonia の API キーです。
 
 ###### value
 
-`number` \| `undefined`
+`string` \| `number` \| `undefined`
+
+数値のほか、属性と同じ数値形式の文字列も受け付けます。
+  数値として解釈できない文字列は無視され、現在の値を保ちます。
 
 ##### Returns
 

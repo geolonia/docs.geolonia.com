@@ -16,6 +16,8 @@ page: reference
 
 - [AdvancedMarkerElement](/reference/suite/geolonia.maps.Class.AdvancedMarkerElement)
 - [Circle](/reference/suite/geolonia.maps.Class.Circle)
+- [Data](/reference/suite/geolonia.maps.Class.Data)
+- [DataFeature](/reference/suite/geolonia.maps.Class.DataFeature)
 - [InfoWindow](/reference/suite/geolonia.maps.Class.InfoWindow)
 - [LatLng](/reference/suite/geolonia.maps.Class.LatLng)
 - [LatLngBounds](/reference/suite/geolonia.maps.Class.LatLngBounds)
@@ -38,6 +40,9 @@ page: reference
 - [AdvancedMarkerElementOptions](/reference/suite/geolonia.maps.Interface.AdvancedMarkerElementOptions)
 - [CameraOptions](/reference/suite/geolonia.maps.Interface.CameraOptions)
 - [CircleOptions](/reference/suite/geolonia.maps.Interface.CircleOptions)
+- [DataFeatureOptions](/reference/suite/geolonia.maps.Interface.DataFeatureOptions)
+- [DataOptions](/reference/suite/geolonia.maps.Interface.DataOptions)
+- [DataStyleOptions](/reference/suite/geolonia.maps.Interface.DataStyleOptions)
 - [InfoWindowOptions](/reference/suite/geolonia.maps.Interface.InfoWindowOptions)
 - [LatLngBoundsLiteral](/reference/suite/geolonia.maps.Interface.LatLngBoundsLiteral)
 - [LatLngLiteral](/reference/suite/geolonia.maps.Interface.LatLngLiteral)
@@ -54,6 +59,7 @@ page: reference
 
 ## Type Aliases
 
+- [DataStyleFunction](/reference/suite/geolonia.maps.TypeAlias.DataStyleFunction)
 - [EventHandler](/reference/suite/geolonia.maps.TypeAlias.EventHandler)
 - [LatLngBoundsLiteralOrLatLngBounds](/reference/suite/geolonia.maps.TypeAlias.LatLngBoundsLiteralOrLatLngBounds)
 - [LatLngLiteralOrLatLng](/reference/suite/geolonia.maps.TypeAlias.LatLngLiteralOrLatLng)

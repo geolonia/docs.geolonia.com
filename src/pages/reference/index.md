@@ -23,7 +23,7 @@ JavaScript から地図を命令的に操作するライブラリです。`geolo
 
 - [maps-suite のリファレンス](/reference/suite/geolonia.Namespace.maps)
 
-`Map` と `Marker` のほか、`InfoWindow` や `MarkerClusterer`、`Circle` や `Polygon` などの図形、`LatLng` や `LatLngBounds` といった値の型があります。
+`Map` と `Marker` のほか、`InfoWindow` や `MarkerClusterer`、`Circle` や `Polygon` などの図形、`LatLng` や `LatLngBounds` といった値の型があります。ジオメトリの型が混在した GeoJSON をまとめて描画したいときは、`Map.data` から使う `Data` レイヤーがあります。
 
 ## @geolonia/maps-core
 
