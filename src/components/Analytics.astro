@@ -1,0 +1,31 @@
+---
+// Google Analytics 4（gtag.js）。旧 docs.geolonia.com（Jekyll 版）の
+// doks-theme/_includes/google-analytics.html を移植したもの。
+// 測定 ID は旧サイトと同一にして、カットオーバー前後のデータを1つの
+// プロパティで連続して見られるようにしている。
+//
+// 計測するのは本番ホストで表示された時だけ。
+// 旧サイトは JEKYLL_ENV で本番と Netlify のデプロイプレビューを分けていたが、
+// こちらは wrangler で1つの Worker に手で deploy する運用なので、ビルド時の
+// 環境変数では本番と *.workers.dev を区別できない。そのためホスト名で判定する。
+// これで localhost・*.workers.dev・カットオーバー前の Worker からの
+// ヒットがプロパティに混ざらない。
+const MEASUREMENT_ID = 'G-0KXZR23EZL';
+const PRODUCTION_HOST = 'docs.geolonia.com';
+---
+
+<script is:inline define:vars={{ MEASUREMENT_ID, PRODUCTION_HOST }}>
+  if (location.hostname === PRODUCTION_HOST) {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag('js', new Date());
+    window.gtag('config', MEASUREMENT_ID);
+
+    const tag = document.createElement('script');
+    tag.async = true;
+    tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + MEASUREMENT_ID;
+    document.head.appendChild(tag);
+  }
+</script>
