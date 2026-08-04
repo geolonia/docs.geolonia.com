@@ -11,7 +11,6 @@
     "preview": "astro preview",
     "astro": "astro",
     "cf:dev": "wrangler dev",
-    "deploy": "astro build && wrangler deploy",
     "docs:build:suite": "sh scripts/vendor.sh maps-suite && cd vendor/maps-suite && npm ci && npm run docs",
     "docs:build:core": "sh scripts/vendor.sh maps-core && cd vendor/maps-core && npm ci && npm run docs:api",
     "docs:build:embed": "sh scripts/vendor.sh maps-embed && cd vendor/maps-embed && npm ci && npm run docs:api",

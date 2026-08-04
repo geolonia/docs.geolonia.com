@@ -41,9 +41,11 @@ npm install
 npm run dev       # 開発サーバー http://localhost:4321
 npm run build     # ./dist/ に静的サイトを書き出す
 npm run preview   # ビルド結果をローカルで確認する
-npm run cf:dev    # dist/ を wrangler で動かす（Cloudflare Workers の再現）
-npm run deploy    # ビルドして Cloudflare Workers にデプロイ
+npm run cf:dev    # dist/ を wrangler で動かす（配信環境の再現。_headers も効きます）
 ```
+
+**手でデプロイするコマンドはありません。** 配信は GitHub 連携で自動的に行われます
+（後述の[デプロイと配信ヘッダ](#デプロイと配信ヘッダ)）。
 
 テストはありません。**壊れていないことの確認は `npm run build` が通ることで代用**します。
 後述のとおり、載せたコードが壊れているとビルドが落ちるようになっています。
@@ -473,8 +475,29 @@ SNS やチャットにページの URL を貼ったときに出るカード画�
 
 ## デプロイと配信ヘッダ
 
+**本番の配信先は Cloudflare Pages です。** GitHub と連携してあるので、push すれば
+ビルドとデプロイが自動で走ります。手でデプロイするコマンドは置いていません。
+
+いまは移行期で、**旧 Cloudflare Workers（`docs-geolonia-com.geolonia.workers.dev`）も
+並行して動いています。** 動作確認の URL として使われているため、急に止めません。
+`docs.geolonia.com` を Pages に向けたあと（Route 53 の CNAME 差し替え）、Workers 側の
+Git 連携を切って Worker を削除します。**それまでは両方が同じコミットから配信されます。**
+
+Workers ではなく Pages を本番に選んだのは、独自ドメインの当て方が理由です。
+`docs.geolonia.com` の DNS は Route 53 にあり、`geolonia.com` は Cloudflare の
+ゾーンではありません。Workers の Custom Domain は対象が自アカウントの Cloudflare
+ゾーンであることを要求するので、この構成では当てられません。Pages は Cloudflare 外の
+DNS で管理されたサブドメインにカスタムドメインを当てられるため、Route 53 に CNAME を
+1本置くだけで済みます。ゾーンごと Cloudflare へ移す案は、`geolonia.com` に CloudFront や
+S3 を向いたレコードが同居していて影響範囲が docs に収まらないため採っていません。
+
 配信ヘッダは `public/_headers` にあります（`dist/` にそのままコピーされ、Cloudflare
-Workers が設定として読みます）。
+Pages と Workers のどちらも設定として読みます）。Pages でのヘッダルールの上限は 100 で、
+無料プランでも同じです。
+
+**GitHub Pages には移せません。** カスタムレスポンスヘッダを設定する仕組みがないため、
+次に書く `frame-ancestors` を配れなくなります。`<meta http-equiv>` での代替もできません
+（`frame-ancestors` は meta 経由では仕様上無視されます）。
 
 ここにひとつ、**踏み抜きやすい制約**があります。
 
