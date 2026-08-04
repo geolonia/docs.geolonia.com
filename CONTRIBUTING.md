@@ -17,6 +17,7 @@ docs.geolonia.com（リニューアル版）にページを足したり直した
 - [OGP 画像](#ogp-画像)
 - [デプロイと配信ヘッダ](#デプロイと配信ヘッダ)
 - [触ってはいけないもの](#触ってはいけないもの)
+- [API リファレンスの再生成](#api-リファレンスの再生成)
 - [API キーの扱い](#api-キーの扱い)
 - [地図のスタイルの指定](#地図のスタイルの指定)
 - [文章の書き方](#文章の書き方)
@@ -494,6 +495,31 @@ LiveCode の動くデモは、ページが同じオリジンの `/demos/inline/<
   `@geolonia/maps-suite`、`@geolonia/maps-core` の型定義から TypeDoc で生成した
   Markdown です。手で直しても次の生成で消えます。内容を直したいときは、
   各パッケージ側の JSDoc を直してください。`reference/index.md` は手書きなので編集できます。
+  再生成の手順は次の節にあります。
+
+## API リファレンスの再生成
+
+```bash
+npm run docs:sync:suite   # @geolonia/maps-suite
+npm run docs:sync:core    # @geolonia/maps-core
+npm run docs:sync:embed   # @geolonia/embed
+```
+
+生成元のリポジトリは `scripts/vendor.sh` が `vendor/` に `git clone --depth 1` します。
+`vendor/` は gitignore してあるので、コミットに含まれることはありません。
+
+バージョンを指定して生成したいときは ref を渡します。
+
+```bash
+sh scripts/vendor.sh maps-suite v1.2.0
+npm run docs:import:suite
+```
+
+**submodule にはしていません。** ビルド（`npm run build`）が読むのは生成済みで
+コミットされた `src/pages/reference/` なので、生成元はここを再生成するときしか要りません。
+一方 submodule はチェックアウトのたびに更新されるため、ビルドに要らないものが常に
+足を引っ張ります。実際に Cloudflare Pages のビルドは、private な `maps-suite` の
+submodule を clone できずに落ちていました（Pages は submodule に認証情報を渡しません）。
 - **`src/pages/demos/inline/[id].astro`** … LiveCode のデモページを生成する仕掛けです。
 
 ## API キーの扱い
