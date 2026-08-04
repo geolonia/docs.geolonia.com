@@ -209,6 +209,21 @@ const marker = new geolonia.maps.AdvancedMarkerElement({
 
 ***
 
+### getMapLibreMarker()
+
+> **getMapLibreMarker**(): `Marker` \| `null`
+
+基盤となる MapLibre GL JS の `Marker` インスタンスを返します。
+
+SDK がカバーしていないマーカーの機能に直接アクセスする場合に使用します。
+マーカーが地図に追加される前は `null` を返します。
+
+#### Returns
+
+`Marker` \| `null`
+
+***
+
 ### getPosition()
 
 > **getPosition**(): [`LatLng`](/reference/suite/geolonia.maps.Class.LatLng) \| `null`

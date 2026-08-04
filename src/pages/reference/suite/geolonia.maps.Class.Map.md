@@ -71,6 +71,30 @@ map.addListener("click", (e) => {
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`constructor`](/reference/suite/geolonia.maps.Class.MVCObject#constructor)
 
+## Accessors
+
+### data
+
+#### Get Signature
+
+> **get** **data**(): [`Data`](/reference/suite/geolonia.maps.Class.Data)
+
+この地図に紐づく [Data](/reference/suite/geolonia.maps.Class.Data) レイヤーです。
+
+GeoJSON の地物をまとめて描画するために使用します。初回アクセス時に生成され、
+以降は同じインスタンスを返します。生成された時点でこの地図に追加されます。
+
+##### Example
+
+```typescript
+map.data.addGeoJson(featureCollection);
+map.data.setStyle({ fillColor: "#ff0000", strokeWeight: 2 });
+```
+
+##### Returns
+
+[`Data`](/reference/suite/geolonia.maps.Class.Data)
+
 ## Methods
 
 ### addListener()
@@ -236,6 +260,22 @@ map.fitBounds(
 #### Returns
 
 [`LatLng`](/reference/suite/geolonia.maps.Class.LatLng) \| `null`
+
+***
+
+### getGeoloniaMap()
+
+> **getGeoloniaMap**(): `GeoloniaMap`
+
+基盤となる `GeoloniaMap`（`@geolonia/maps-core`）インスタンスを返します。
+
+SDK がカバーしていない機能に直接アクセスする場合に使用します。
+SDK が管理するプロパティ（center / zoom / tilt / heading 等）を
+このインスタンス経由で直接変更した場合の動作は保証しません。
+
+#### Returns
+
+`GeoloniaMap`
 
 ***
 
@@ -563,3 +603,18 @@ map.moveCamera({
 #### Inherited from
 
 [`MVCObject`](/reference/suite/geolonia.maps.Class.MVCObject).[`unbindAll`](/reference/suite/geolonia.maps.Class.MVCObject#unbindall)
+
+***
+
+### whenReady()
+
+> **whenReady**(): `Promise`\<`void`\>
+
+地図の初期化完了を待つ `Promise` を返します。
+
+地図のスタイル読み込みやレイヤー追加など、初期化完了後に行いたい処理を
+安全に実行するために使用します。
+
+#### Returns
+
+`Promise`\<`void`\>

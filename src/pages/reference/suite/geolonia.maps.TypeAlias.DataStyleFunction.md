@@ -1,0 +1,27 @@
+---
+layout: ../../../layouts/ApiLayout.astro
+title: 'Type Alias: DataStyleFunction'
+page: reference
+---
+
+[**@geolonia/maps-suite**](/reference/suite/)
+
+***
+
+[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / DataStyleFunction
+
+# Type Alias: DataStyleFunction
+
+> **DataStyleFunction** = (`feature`) => [`DataStyleOptions`](/reference/suite/geolonia.maps.Interface.DataStyleOptions)
+
+地物ごとにスタイルを返す関数です。
+
+## Parameters
+
+### feature
+
+[`DataFeature`](/reference/suite/geolonia.maps.Class.DataFeature)
+
+## Returns
+
+[`DataStyleOptions`](/reference/suite/geolonia.maps.Interface.DataStyleOptions)

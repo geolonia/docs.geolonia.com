@@ -39,6 +39,7 @@ marker.addListener("position_changed", () => {
 
 - [`AdvancedMarkerElement`](/reference/suite/geolonia.maps.Class.AdvancedMarkerElement)
 - [`Circle`](/reference/suite/geolonia.maps.Class.Circle)
+- [`Data`](/reference/suite/geolonia.maps.Class.Data)
 - [`InfoWindow`](/reference/suite/geolonia.maps.Class.InfoWindow)
 - [`Map`](/reference/suite/geolonia.maps.Class.Map)
 - [`Marker`](/reference/suite/geolonia.maps.Class.Marker)
