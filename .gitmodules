@@ -1,9 +1,0 @@
-[submodule "vendor/maps-suite"]
-	path = vendor/maps-suite
-	url = https://github.com/geolonia/maps-suite.git
-[submodule "vendor/maps-core"]
-	path = vendor/maps-core
-	url = https://github.com/geolonia/maps-core.git
-[submodule "vendor/maps-embed"]
-	path = vendor/maps-embed
-	url = https://github.com/geolonia/embed.git
