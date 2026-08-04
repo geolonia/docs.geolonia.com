@@ -52,8 +52,8 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   zoom: 11,
 });
 
-await map._whenReady();
-const impl = map._getImpl();
+await map.whenReady();
+const impl = map.getGeoloniaMap();
 impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
 impl.addLayer({
   id: "spots",

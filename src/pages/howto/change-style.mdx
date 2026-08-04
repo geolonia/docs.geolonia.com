@@ -80,10 +80,10 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 実行時に切り替えるときは、基盤の地図の `setStyle` を呼びます（`map` は上で作ったものです）。
 
 ```js
-map._getImpl().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.json");
+map.getGeoloniaMap().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.json");
 ```
 
-- **`map._getImpl().setStyle(...)`**：スタイル JSON の URL か、インラインのスタイル定義オブジェクトを渡します。
+- **`map.getGeoloniaMap().setStyle(...)`**：スタイル JSON の URL か、インラインのスタイル定義オブジェクトを渡します。
 
 </Lens>
 

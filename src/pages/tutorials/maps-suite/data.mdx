@@ -37,7 +37,9 @@ import LiveCode from '../../../components/LiveCode.astro'
 
 ## データを地図に重ねる
 
-データの追加は、段1で覚えたエスケープハッチのパターン（**読み込みを待って `_getImpl()` で基盤の地図に触る**）を使います。ソース（データ）を登録し、レイヤ（描き方）を重ねます。
+データの追加には、段1で名前だけ出た `getGeoloniaMap()` を使います。**基盤の地図（maplibre）を直接触るための公開 API**で、maps-suite が用意していない機能はここから呼びます。ソース（データ）を登録し、レイヤ（描き方）を重ねます。
+
+GeoJSON を載せるだけなら `map.data` という短い書き方もありますが、この段では描き方まで自分で決めたいので、ソースとレイヤを分けて扱います。
 
 <LiveCode title="maps-suite で GeoJSON を重ねる">
 
@@ -52,8 +54,8 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   zoom: 11,
 });
 
-await map._whenReady();
-const impl = map._getImpl();
+await map.whenReady();
+const impl = map.getGeoloniaMap();
 impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
 impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 ```
@@ -62,14 +64,14 @@ impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 
 - **`addSource`**：データの供給元を登録します。`type: "geojson"` で、`data` に URL（またはオブジェクトそのもの）を渡します。
 - **`addLayer`**：データの描き方を重ねます。`type: "circle"` は各点を丸として描きます。`source` に、登録したソースの名前を指定します。
-- **順番が大事**：`addLayer` が参照するソースは先に `addSource` してある必要があります。そして両方とも、地図の読み込み完了（`_whenReady()`）より後に呼びます。
+- **順番が大事**：`addLayer` が参照するソースは先に `addSource` してある必要があります。そして両方とも、地図の読み込み完了（`whenReady()`）より後に呼びます。
 
 ## 動いたか確認する
 
 地図上に5つの丸（東京駅、新宿駅、渋谷駅、浅草寺、東京タワー）が出ていれば成功です。GeoJSON の中身を自分のデータに差し替えて、自分の点が出ることも確かめてください。
 
 <Callout kind="warning" title="うまくいかないとき">
-- 「Style is not done loading」のようなエラー → `_whenReady()` を**待たずに** `addSource`/`addLayer` を呼んでいます。`await` を確認してください。
+- 「Style is not done loading」のようなエラー → `whenReady()` を**待たずに** `addSource`/`addLayer` を呼んでいます。`await` を確認してください。
 - 点が海や別の大陸に出る → GeoJSON の `coordinates` の**経度と緯度が逆**。`[経度, 緯度]` の順に直します。
 - 何も出ないがエラーもない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。404 や JSON の文法エラーが多い原因です。
 </Callout>

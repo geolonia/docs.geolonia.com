@@ -61,8 +61,8 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
   zoom: 11,
 });
 
-await map._whenReady();
-const impl = map._getImpl();
+await map.whenReady();
+const impl = map.getGeoloniaMap();
 impl.addControl(new maplibregl.NavigationControl(), "top-right");
 impl.addControl(new maplibregl.GeolocateControl({ trackUserLocation: true }), "top-right");
 impl.addControl(new maplibregl.FullscreenControl(), "top-right");

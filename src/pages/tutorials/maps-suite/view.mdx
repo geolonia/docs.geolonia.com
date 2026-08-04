@@ -58,7 +58,7 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 作った後から変えることもできます。傾きなら `map.setTilt(45)`、回転なら `map.setHeading(20)` で、中心や拡大率とまとめて動かすなら `map.moveCamera({ center, zoom, tilt, heading })` を使います。いずれも地図の読み込みを待つ必要はありません。
 
-maplibre にしかない操作が必要になったときは、`map._getImpl()` で基盤の地図インスタンスを取り出せます。次の段のデータ追加で使います。
+maplibre にしかない操作が必要になったときは、`map.getGeoloniaMap()` で基盤の地図インスタンスを取り出せます。次の段のデータ追加で使います。
 
 ## 動いたか確認する
 
