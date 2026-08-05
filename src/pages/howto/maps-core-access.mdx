@@ -1,0 +1,227 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 地図インスタンス（maps-core）に直接アクセスするには
+description: 各ライブラリから土台の GeoloniaMap を取り出し、MapLibre GL JS の API をそのまま呼びます。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+embed / maps-suite / maps-react はどれも、土台に **maps-core の `GeoloniaMap`** を持っています。`GeoloniaMap` は MapLibre GL JS の `Map` を継承したクラスなので、これを取り出せば `on()`、`flyTo()`、`queryRenderedFeatures()` といった MapLibre の API がそのまま使えます。
+
+各ライブラリが用意している機能で足りないときの逃げ道がこれです。取り出し方だけがライブラリごとに違います。
+
+## コード
+
+下のデモはどれも同じことをしています。地図を動かすと、左上の枠に**現在のズームと中心座標**が出ます。ズームや中心を読む API は各ライブラリの表側にはないので、土台のインスタンスから取っています。
+
+<Lens name="embed">
+`geolonia.Map` に対象の要素を渡して、**自分で地図を作ります**。返ってくるのが `GeoloniaMap` です。以前から案内してきた書き方で、いまもこれが基本です。
+
+<LiveCode title="embed で地図インスタンスを手元に持つ">
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      #map { width: 100%; height: 100vh; }
+      #readout2 {
+        position: absolute; top: 8px; left: 8px; z-index: 1;
+        background: #fff; padding: 6px 10px; border-radius: 4px;
+        font: 13px/1.5 system-ui, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="readout2">読み込み中</div>
+    <div id="map" data-lat="35.68" data-lng="139.75" data-zoom="11"></div>
+
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script>
+      const map = new geolonia.Map("#map");
+      const readout = document.getElementById("readout2");
+
+      map.on("load", () => {
+        const show = () => {
+          const c = map.getCenter();
+          readout.textContent =
+            `zoom ${map.getZoom().toFixed(2)} / ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
+        };
+        map.on("move", show);
+        show();
+      });
+    </script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+- `class="geolonia"` を付けていません。embed が自動で地図を作るのは `.geolonia` を持つ要素だけなので、クラスを外して `id` で渡します。
+- `data-lat` などの属性は、自分で作った場合も読まれます。属性で書ける設定はそのまま使えるので、JavaScript で書き直す必要はありません。
+- `map.on("load", ...)` を待つのは、スタイルの読み込みが終わってから触るためです。
+
+**すでに地図がある要素に対して呼んだ場合は、新しく作らずに既存のインスタンスが返ります。** `class="geolonia"` を付けたまま `new geolonia.Map(".geolonia")` を呼んでも、地図が2つになることはありません。自動で作られた地図に後から触りたいときも、この書き方で取れます。
+
+要素の `geoloniaMap` プロパティからも取れますが、こちらは**まだ地図が作られていないと `undefined`** です。embed は要素が画面に入ったときに作るので、画面外にある地図はスクロールされるまで存在しません。`new geolonia.Map()` なら、その場で作るか既存を返すかのどちらかになるので、タイミングを気にせず書けます。
+
+なお、embed を読み込むと `window.geolonia` に MapLibre GL JS の中身がそのまま入ります。`new geolonia.Popup()` のように、MapLibre のクラスを直接使えます。
+
+</Lens>
+
+<Lens name="suite">
+`map.getGeoloniaMap()` が土台の `GeoloniaMap` を返します。読み込みの完了を待ってから呼びます。
+
+<LiveCode title="maps-suite で地図インスタンスを取り出す">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const container = document.getElementById("map");
+container.style.height = "100vh";
+
+const readout = document.createElement("div");
+readout.style.cssText =
+  "position:absolute;top:8px;left:8px;z-index:1;background:#fff;padding:6px 10px;border-radius:4px;font:13px/1.5 system-ui,sans-serif";
+readout.textContent = "読み込み中";
+document.body.appendChild(readout);
+
+const map = new geolonia.maps.Map(container, {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+
+const show = () => {
+  const c = impl.getCenter();
+  readout.textContent =
+    `zoom ${impl.getZoom().toFixed(2)} / ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
+};
+impl.on("move", show);
+show();
+```
+
+</LiveCode>
+
+maps-suite の `Map` には `getZoom()` や `getCenter()` もあるので、この例に限れば土台に降りる必要はありません。ソースやレイヤの追加、投影法の変更、コントロールの付け外しのように、**maps-suite の側に用意がないもの**が本来の用途です。
+
+`whenReady()` を待つのは、スタイルの読み込みが終わる前にレイヤを触るとエラーになるためです。`getCenter()` のように読むだけなら待たなくても動きますが、揃えておくと安全です。
+
+<Callout kind="warning" title="`getMap()` は別のものです">
+`Marker` や `Polyline`、`Circle` などのオーバーレイには `getMap()` がありますが、これが返すのは**そのオーバーレイが載っている maps-suite の `Map`** で、土台の `GeoloniaMap` ではありません。土台まで降りるには、返ってきた `Map` に対してもう一度 `getGeoloniaMap()` を呼びます。
+
+```js
+marker.getMap().getGeoloniaMap();
+```
+</Callout>
+
+</Lens>
+
+<Lens name="react">
+`Map` の `onLoad` に関数を渡すと、引数で `GeoloniaMap` が渡ってきます。
+
+<LiveCode title="maps-react で地図インスタンスを受け取る">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+function App() {
+  const [text, setText] = useState("読み込み中");
+
+  const handleLoad = (map) => {
+    const show = () => {
+      const c = map.getCenter();
+      setText(
+        `zoom ${map.getZoom().toFixed(2)} / ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`,
+      );
+    };
+    map.on("move", show);
+    show();
+  };
+
+  return (
+    <div style={{ position: "relative", height: "100vh" }}>
+      <div
+        style={{
+          position: "absolute", top: 8, left: 8, zIndex: 1,
+          background: "#fff", padding: "6px 10px", borderRadius: 4,
+          font: "13px/1.5 system-ui, sans-serif",
+        }}
+      >
+        {text}
+      </div>
+      <Map
+        apiKey="YOUR-API-KEY"
+        center={[139.75, 35.68]}
+        zoom={11}
+        onLoad={handleLoad}
+        containerStyle={{ width: "100%", height: "100%" }}
+      />
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+```
+
+</LiveCode>
+
+`onLoad` はスタイルの読み込みが終わってから呼ばれるので、この中でレイヤを足しても「Style is not done loading」になりません。
+
+### ref からも取れます
+
+`Map` の `ref` は `GeoloniaMap` そのものです。イベントを待たずに、あとから任意のタイミングで触りたいときはこちらが書きやすいです。
+
+```jsx
+import { useRef } from "react";
+
+function App() {
+  const mapRef = useRef(null);
+
+  const handleClick = () => {
+    mapRef.current?.flyTo({ center: [135.5, 34.7], zoom: 12 });
+  };
+
+  return (
+    <>
+      <button onClick={handleClick}>大阪へ</button>
+      <Map ref={mapRef} apiKey="YOUR-API-KEY" center={[139.75, 35.68]} zoom={11} />
+    </>
+  );
+}
+```
+
+`ref` が入るのは地図を作った直後で、**スタイルの読み込み完了は待ちません**。レイヤを足すような操作は `onLoad` の中で行ってください。上の例のように、ボタンを押した時点ではもう読み込みが終わっている、という使い方なら `ref` で問題ありません。
+
+React らしく書けるものは props で済みます。地図の移動を拾うだけなら `onMove` プロパティがありますし、データの描画は `<Source>` と `<Layer>` で書けます。土台のインスタンスを触るのは、**props に用意がない操作をするとき**です。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。地図をドラッグしたりズームすると、左上の数値が追従します。値を出しているのは土台の `GeoloniaMap` で、MapLibre の `getZoom()` と `getCenter()`、それに `move` イベントを使っています。
+
+<Callout kind="info" title="どこまでできるか">
+取り出したインスタンスでできることは、MapLibre GL JS の `Map` にできること全部です。書ける API の一覧は [MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/)にあります。Geolonia が足した部分は [maps-core のリファレンス](/reference/core/)を参照してください。
+</Callout>
+
+<Callout kind="warning" title="うまくいかないとき">
+- embed で `geoloniaMap` が `undefined` → 地図がまだ作られていません。embed は要素が画面に入ったときに作ります。`new geolonia.Map()` で取り直してください。
+- embed で「No HTML elements found matching」→ 渡したセレクタに合う要素がありません。スクリプトを要素より前に置いている場合も起きます。
+- 「Style is not done loading」→ スタイルの読み込み前にレイヤを触っています。maps-suite なら `whenReady()`、maps-react なら `onLoad` の中で行ってください。
+- インスタンスを取ったのに操作が反映されない → maps-suite が管理している値（中心・ズーム・傾き・向き）を土台側から直接変えた場合、動作は保証されません。これらは maps-suite のメソッドで変えてください。
+</Callout>
