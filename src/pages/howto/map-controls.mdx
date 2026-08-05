@@ -45,7 +45,18 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-maps-suite の初期化オプションにはコントロールの指定がありません。読み込みを待ってから、基盤の地図（maplibre）に `addControl` で足します。
+maps-suite の初期化オプションで指定できるのは、既定のコントロールをまとめて消す `disableDefaultUI` だけです。個別に足したり位置を変えたりするときは、読み込みを待ってから基盤の地図（maplibre）に `addControl` します。
+
+何も指定しないときは、**ナビゲーションと Geolonia のロゴが表示され、現在地・全画面・スケールは非表示**です。全部消したいなら次のように書きます。
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  disableDefaultUI: true,
+});
+```
+
+`disableDefaultUI` は一括なので、「ナビゲーションだけ残す」のような指定はできません。その場合は一度すべて消してから、必要なものを `addControl` で足し直します。
 
 <LiveCode title="maps-suite でコントロールを足す">
 
