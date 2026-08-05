@@ -27,9 +27,9 @@ JavaScript から地図を命令的に操作するライブラリです。`geolo
 
 ## @geolonia/maps-react
 
-React 用のライブラリです。**このライブラリだけ、型定義から生成したリファレンスがありません。** props の大半が maps-core のものをそのまま受け取る形なので、下の [maps-core のリファレンス](/reference/core/)にある `GeoloniaMapOptions` が `Map` のオプションの一覧にあたります（`container` を除いたもの）。
+React 用のライブラリです。**このライブラリだけ、型定義から生成したリファレンスがありません。** props の大半が maps-core のものをそのまま受け取る形なので、下の [maps-core のリファレンス](/reference/core/)にある `GeoloniaMapOptions` が `Map` のオプションの一覧にあたります（`container` を除いたもの）。また、`GeoloniaMapOptions`はMapLibre GL JSを継承しているため、[MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)も参考になります。
 
-`Map` はこれに加えて、`containerStyle` や `className` で入れ物の見た目を決めるプロパティ、`onClick` や `onMoveEnd` などの地図イベントを受け取るプロパティ、クリック対象のレイヤを絞る `interactiveLayerIds`、地図インスタンスを取り出す `onLoad` を持ちます。
+`Map` はこれに加えて、`containerStyle` や `className` で入れ物の見た目を決めるプロパティ、`onClick` や `onMoveEnd` などの地図イベントを受け取るプロパティ、クリック対象のレイヤを絞る `interactiveLayerIds`、地図インスタンスを取り出す `onLoad` を持ちます。詳細は[MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)をご覧ください。
 
 用意されているコンポーネントは、地図本体の `Map`、データと描き方の `Source` と `Layer`、`Marker` と `Popup`、コントロール類（`NavigationControl`、`GeolocateControl`、`FullscreenControl`、`ScaleControl`、`AttributionControl`、および自作用の `Control`）です。複数の地図をまとめて扱う `MapProvider` と、`useMap` などのフックもあります。
 
@@ -39,13 +39,13 @@ React 用のライブラリです。**このライブラリだけ、型定義か
 
 ## @geolonia/maps-core
 
-上の3つが、共通の土台として使っているライブラリです。直接使う場面は多くありませんが、地図インスタンスのオプションや、各ライブラリが内部で何をしているかを確かめたいときに参照してください。
+上の3つが、共通の土台として使っているライブラリです。基本的にはMapLibre GL JSをベースにGeolonia独自の地図へのアクセスや便利機能を追加したものになります。直接使う場面は多くありませんが、地図インスタンスのオプションや、各ライブラリが内部で何をしているかを確かめたいときに参照してください。
 
 - [maps-core のリファレンス](/reference/core/)
 
-地図本体の `GeoloniaMap` とそのオプション `GeoloniaMapOptions`、`GeoloniaMarker`、GeoJSON にスタイルを当てる `SimpleStyle` などがあります。
+maps-coreの中核である `GeoloniaMap` は **MapLibre GL JS の `Map` クラスを継承して、Geolonia の地図（API キーの扱い、スタイル名の解決、既定のコントロールなど）に対応させたもの**です。そのため、`flyTo()` や `addLayer()`、`on()` といった MapLibre の機能はそのまま使えます。Geolonia 側で足したものだけが上のリファレンスに載っているので、**継承した側の API は [MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)、とりわけ [`Map` クラスのリファレンス](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/)を参照してください**。対応しているのは MapLibre GL JS v5 系です。
 
-`GeoloniaMap` は **MapLibre GL JS の `Map` クラスを継承して、Geolonia の地図（API キーの扱い、スタイル名の解決、既定のコントロールなど）に対応させたもの**です。そのため、`flyTo()` や `addLayer()`、`on()` といった MapLibre の機能はそのまま使えます。Geolonia 側で足したものだけが上のリファレンスに載っているので、**継承した側の API は [MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)、とりわけ [`Map` クラスのリファレンス](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/)を参照してください**。対応しているのは MapLibre GL JS v5 系です。
+地図本体の `GeoloniaMap` とそのオプション `GeoloniaMapOptions`、`GeoloniaMarker`、GeoJSON にスタイルを当てる `SimpleStyle` などがあります。
 
 ## GeoJSON のアイコン
 
