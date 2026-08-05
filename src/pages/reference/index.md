@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/DocLayout.astro
 title: リファレンス
-description: Geolonia Maps SDK (embed, maps-suite, maps-core) の API リファレンスです。
+description: Geolonia Maps SDK (embed, maps-suite, maps-react, maps-core) の API リファレンスです。
 page: reference
 quadrant: Diátaxis / 仕事 × 認知
 sidebar: api
@@ -24,6 +24,16 @@ JavaScript から地図を命令的に操作するライブラリです。`geolo
 - [maps-suite のリファレンス](/reference/suite/geolonia.Namespace.maps)
 
 `Map` と `Marker` のほか、`InfoWindow` や `MarkerClusterer`、`Circle` や `Polygon` などの図形、`LatLng` や `LatLngBounds` といった値の型があります。ジオメトリの型が混在した GeoJSON をまとめて描画したいときは、`Map.data` から使う `Data` レイヤーがあります。
+
+## @geolonia/maps-react
+
+React 用のライブラリです。**このライブラリだけ、型定義から生成したリファレンスがありません。** props の大半が maps-core のものをそのまま受け取る形なので、下の [maps-core のリファレンス](/reference/core/)にある `GeoloniaMapOptions` が `Map` のオプションの一覧にあたります（`container` を除いたもの）。
+
+`Map` はこれに加えて、`containerStyle` や `className` で入れ物の見た目を決めるプロパティ、`onClick` や `onMoveEnd` などの地図イベントを受け取るプロパティ、クリック対象のレイヤを絞る `interactiveLayerIds`、地図インスタンスを取り出す `onLoad` を持ちます。
+
+用意されているコンポーネントは、地図本体の `Map`、データと描き方の `Source` と `Layer`、`Marker` と `Popup`、コントロール類（`NavigationControl`、`GeolocateControl`、`FullscreenControl`、`ScaleControl`、`AttributionControl`、および自作用の `Control`）です。複数の地図をまとめて扱う `MapProvider` と、`useMap` などのフックもあります。
+
+実際の使い方は[maps-react チュートリアル](/tutorials/maps-react/)と、各ハウツーの react タブを参照してください。
 
 ## @geolonia/maps-core
 

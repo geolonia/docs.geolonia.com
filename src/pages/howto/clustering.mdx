@@ -77,6 +77,77 @@ new geolonia.maps.MarkerClusterer({ map, markers });
 
 </Lens>
 
+<Lens name="react">
+`Source` に `cluster` を付けると、maplibre がクラスターを作ります。描き方は自分で決めるので、**クラスターの丸・件数のラベル・まとまらなかった点**の3つのレイヤを置きます。
+
+<LiveCode title="maps-react で点をクラスタリングする">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Layer, Map, Source } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.74, 35.67]}
+    zoom={10}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source
+      id="spots"
+      type="geojson"
+      data="/data/dense-points.geojson"
+      cluster
+      clusterRadius={50}
+    >
+      <Layer
+        id="clusters"
+        type="circle"
+        filter={["has", "point_count"]}
+        paint={{
+          "circle-color": "#e2543a",
+          "circle-radius": ["step", ["get", "point_count"], 16, 10, 22, 50, 30],
+          "circle-opacity": 0.85,
+        }}
+      />
+      <Layer
+        id="cluster-count"
+        type="symbol"
+        filter={["has", "point_count"]}
+        layout={{
+          "text-field": ["get", "point_count_abbreviated"],
+          "text-font": ["Noto Sans Regular"],
+          "text-size": 12,
+        }}
+        paint={{ "text-color": "#ffffff" }}
+      />
+      <Layer
+        id="unclustered"
+        type="circle"
+        filter={["!", ["has", "point_count"]]}
+        paint={{
+          "circle-color": "#e2543a",
+          "circle-radius": 6,
+          "circle-stroke-width": 1.5,
+          "circle-stroke-color": "#ffffff",
+        }}
+      />
+    </Source>
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **`cluster`**：`Source` が受け取るのは maplibre のソース定義そのままなので、`cluster` と `clusterRadius`（まとめる距離、ピクセル）がそのまま使えます。
+- **`filter`**：`point_count` を持つ地物がクラスター、持たない地物が単独の点です。この2つを別のレイヤで描き分けます。
+- **`point_count_abbreviated`**：件数を短く整えた値です。`1200` が `1.2k` のようになります。
+- **`text-font`**：Geolonia のスタイルに含まれるフォントを指定します。maplibre の既定のフォント名は含まれていないため、省略すると件数が出ません。
+
+</Lens>
+
 ## 結果
 
 上のコードは、それぞれのタブの下でそのまま動いています。300点のデータがクラスタリングされて表示され、拡大するとクラスターが分かれて個別の点になります。
