@@ -128,30 +128,37 @@ marker.getMap().getGeoloniaMap();
 </Lens>
 
 <Lens name="react">
-`Map` の `onLoad` に関数を渡すと、引数で `GeoloniaMap` が渡ってきます。
+`Map` の `ref` が `GeoloniaMap` そのものです。ただし**地図はマウント後に作られる**ので、`useRef` で受けて `useEffect` で読むと、まだ `null` です。インスタンスが入った瞬間に動きたいので、**関数を `ref` に渡します**（コールバック ref）。React が要素を繋いだときに引数で呼んでくれます。
 
 <LiveCode title="maps-react で地図インスタンスを受け取る">
 
 ```jsx
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
 
 function App() {
   const [text, setText] = useState("読み込み中");
 
-  const handleLoad = (map) => {
+  const mapRef = useCallback((map) => {
+    if (!map) return;
+
     const show = () => {
       const c = map.getCenter();
       setText(
         `zoom ${map.getZoom().toFixed(2)} / ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`,
       );
     };
+
     map.on("move", show);
     show();
-  };
+
+    return () => {
+      map.off("move", show);
+    };
+  }, []);
 
   return (
     <div style={{ position: "relative", height: "100vh" }}>
@@ -165,10 +172,10 @@ function App() {
         {text}
       </div>
       <Map
+        ref={mapRef}
         apiKey="YOUR-API-KEY"
         center={[139.75, 35.68]}
         zoom={11}
-        onLoad={handleLoad}
         containerStyle={{ width: "100%", height: "100%" }}
       />
     </div>
@@ -180,32 +187,48 @@ createRoot(document.getElementById("root")).render(<App />);
 
 </LiveCode>
 
-`onLoad` はスタイルの読み込みが終わってから呼ばれるので、この中でレイヤを足しても「Style is not done loading」になりません。
+インスタンスが手に入った瞬間に呼ばれるので、待つ仕組みが要りません。**後片付けも戻り値で書けます**。上の例では、返した関数の中で `off("move", show)` してリスナを外しています。
 
-### ref からも取れます
+<Callout kind="warning" title="後片付けの戻り値は React 19 以降です">
+コールバック ref から後片付けの関数を返せるのは **React 19 以降**です。18 以前では戻り値が無視され、代わりに要素が外れるときに `null` を引数にもう一度呼ばれます。18 で書くなら、`map` が渡されたときに購読して、`null` で呼ばれたときに解除する形にしてください。
+</Callout>
 
-`Map` の `ref` は `GeoloniaMap` そのものです。イベントを待たずに、あとから任意のタイミングで触りたいときはこちらが書きやすいです。
+あとから任意のタイミングで触りたいだけなら、受け取ったインスタンスを自分で持っておきます。
 
 ```jsx
-import { useRef } from "react";
+const mapRef = useRef(null);
 
-function App() {
-  const mapRef = useRef(null);
+<Map
+  ref={(map) => { mapRef.current = map; }}
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+/>
 
-  const handleClick = () => {
-    mapRef.current?.flyTo({ center: [135.5, 34.7], zoom: 12 });
-  };
-
-  return (
-    <>
-      <button onClick={handleClick}>大阪へ</button>
-      <Map ref={mapRef} apiKey="YOUR-API-KEY" center={[139.75, 35.68]} zoom={11} />
-    </>
-  );
-}
+<button onClick={() => mapRef.current?.flyTo({ center: [135.5, 34.7], zoom: 12 })}>
+  大阪へ
+</button>
 ```
 
-`ref` が入るのは地図を作った直後で、**スタイルの読み込み完了は待ちません**。レイヤを足すような操作は `onLoad` の中で行ってください。上の例のように、ボタンを押した時点ではもう読み込みが終わっている、という使い方なら `ref` で問題ありません。
+### スタイルの読み込みを待つ必要があるとき
+
+`ref` が呼ばれるのは地図を作った直後で、**スタイルの読み込み完了は待ちません**。レイヤやソースを足す操作は読み込み後でないとエラーになるので、`isStyleLoaded()` で見て、まだなら `once("load")` で待ちます。
+
+```jsx
+const mapRef = useCallback((map) => {
+  if (!map) return;
+
+  const addLayer = () => {
+    map.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+    map.addLayer({ id: "spots", type: "circle", source: "spots" });
+  };
+
+  if (map.isStyleLoaded()) addLayer();
+  else map.once("load", addLayer);
+}, []);
+```
+
+`Map` には `onLoad` プロパティもあり、こちらは読み込み完了後に `GeoloniaMap` を引数で渡してきます。一度だけの初期化なら短く書けますが、**リスナを外す先がない**ので、`on()` で購読するなら `ref` と `useEffect` の組み合わせにしてください。
 
 React らしく書けるものは props で済みます。地図の移動を拾うだけなら `onMove` プロパティがありますし、データの描画は `<Source>` と `<Layer>` で書けます。土台のインスタンスを触るのは、**props に用意がない操作をするとき**です。
 
@@ -222,6 +245,7 @@ React らしく書けるものは props で済みます。地図の移動を拾�
 <Callout kind="warning" title="うまくいかないとき">
 - embed で `geoloniaMap` が `undefined` → 地図がまだ作られていません。embed は要素が画面に入ったときに作ります。`new geolonia.Map()` で取り直してください。
 - embed で「No HTML elements found matching」→ 渡したセレクタに合う要素がありません。スクリプトを要素より前に置いている場合も起きます。
-- 「Style is not done loading」→ スタイルの読み込み前にレイヤを触っています。maps-suite なら `whenReady()`、maps-react なら `onLoad` の中で行ってください。
+- 「Style is not done loading」→ スタイルの読み込み前にレイヤを触っています。maps-suite なら `whenReady()` を待ち、maps-react なら `isStyleLoaded()` を見て `once("load")` で待ってください。
+- maps-react で `useRef` + `useEffect` にしたら `null` だった → 地図はマウント後に作られるので、最初の `useEffect` の時点ではまだ入っていません。関数を `ref` に渡して、呼ばれたときに動く形にしてください。
 - インスタンスを取ったのに操作が反映されない → maps-suite が管理している値（中心・ズーム・傾き・向き）を土台側から直接変えた場合、動作は保証されません。これらは maps-suite のメソッドで変えてください。
 </Callout>
