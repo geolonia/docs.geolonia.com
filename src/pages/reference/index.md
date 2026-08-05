@@ -35,7 +35,7 @@ JavaScript から地図を命令的に操作するライブラリです。`geolo
 
 ## GeoJSON のアイコン
 
-GeoJSON の `marker-symbol` に書ける名前は、型定義ではなく地図スタイルに含まれるアイコンで決まります。一覧は [marker-symbol で使えるアイコン](/reference/marker-symbol/) にあります。
+GeoJSON の `marker-symbol` に書ける名前は、**型定義ではなく地図スタイルに含まれるアイコンで決まります**。そのためこのセクションではなく解説側にあります。一覧は [marker-symbol で使えるアイコン](/explanation/marker-symbol/) を参照してください。
 
 ---
 
