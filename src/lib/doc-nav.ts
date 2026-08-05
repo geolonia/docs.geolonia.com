@@ -83,13 +83,20 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
       ['web-component', 'HTML のタグだけで地図を置くには（maps-suite）'],
     ],
   },
+  {
+    label: 'CLI（コマンドライン）',
+    slugs: [
+      ['cli-map-keys', 'API キーを YAML でまとめて管理するには'],
+    ],
+  },
 ];
 
-/** 解説。4ページなのでグループを作らずフラットに並べる。 */
+/** 解説。ページ数が少ないのでグループを作らずフラットに並べる。 */
 const EXPLANATION_PAGES: [string, string][] = [
   ['map-style', '地図のスタイルとは'],
   ['styles', 'Geolonia Maps のスタイル一覧'],
   ['free-referers', 'デモキーで無料で試せる環境'],
+  ['cli', 'Geolonia CLI とは'],
 ];
 
 /** 末尾スラッシュを落として比較する。 */

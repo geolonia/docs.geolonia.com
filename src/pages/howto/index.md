@@ -35,3 +35,9 @@ quadrant: Diátaxis / 仕事 × 行動
 - [独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
 - [地図を地球儀（グローブ）で表示するには](/howto/globe/)
 - [HTML のタグだけで地図を置くには（maps-suite）](/howto/web-component/)
+
+## CLI（コマンドライン）
+
+地図を描くコードではなく、その手前の準備をコマンドラインから行うレシピです。詳しくは [Geolonia CLI とは](/explanation/cli/) を参照してください。
+
+- [API キーを YAML でまとめて管理するには](/howto/cli-map-keys/)
