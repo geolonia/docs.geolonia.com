@@ -27,9 +27,9 @@ JavaScript から地図を命令的に操作するライブラリです。`geolo
 
 ## @geolonia/maps-react
 
-React 用のライブラリです。**このライブラリだけ、型定義から生成したリファレンスがありません。** props の大半が maps-core のものをそのまま受け取る形なので、下の [maps-core のリファレンス](/reference/core/)にある `GeoloniaMapOptions` が `Map` のオプションの一覧にあたります（`container` を除いたもの）。また、`GeoloniaMapOptions`はMapLibre GL JSを継承しているため、[MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)も参考になります。
+React 用のライブラリです。**このライブラリだけ、型定義から生成したリファレンスがありません。** props の大半が maps-core のものをそのまま受け取る形なので、下の [maps-core のリファレンス](/reference/core/)にある `GeoloniaMapOptions` が `Map` のオプションの一覧にあたります（`container` を除いたもの）。`GeoloniaMapOptions` は MapLibre GL JS の `MapOptions` に Geolonia 独自の項目を足した型なので、地図の初期化オプションの多くは MapLibre 側の説明がそのまま当てはまります。
 
-`Map` はこれに加えて、`containerStyle` や `className` で入れ物の見た目を決めるプロパティ、`onClick` や `onMoveEnd` などの地図イベントを受け取るプロパティ、クリック対象のレイヤを絞る `interactiveLayerIds`、地図インスタンスを取り出す `onLoad` を持ちます。詳細は[MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)をご覧ください。
+`Map` はこれに加えて、`containerStyle` や `className` で入れ物の見た目を決めるプロパティ、`onClick` や `onMoveEnd` などの地図イベントを受け取るプロパティ、クリック対象のレイヤを絞る `interactiveLayerIds`、地図インスタンスを取り出す `onLoad` を持ちます。こちらは maps-react が用意しているもので、MapLibre 側には出てきません。
 
 用意されているコンポーネントは、地図本体の `Map`、データと描き方の `Source` と `Layer`、`Marker` と `Popup`、コントロール類（`NavigationControl`、`GeolocateControl`、`FullscreenControl`、`ScaleControl`、`AttributionControl`、および自作用の `Control`）です。複数の地図をまとめて扱う `MapProvider` と、`useMap` などのフックもあります。
 
