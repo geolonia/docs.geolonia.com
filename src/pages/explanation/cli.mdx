@@ -9,7 +9,10 @@ import Callout from '../../components/Callout.astro'
 
 **Geolonia CLI** は、コマンドラインから Geolonia のアカウント上のものを操作する公式ツールです。地図を描くためのライブラリ（embed / maps-suite / maps-react）とは役割が別で、こちらは**地図を描く前の準備と運用**を担います。
 
-いま CLI で行えるのは **API キーの管理**です。キーを作り、許可するオリジンを足したり外したりできます。
+いま CLI で行えるのは次の 2 つです。
+
+- **API キーの管理** … キーを作る、許可するオリジンを足す・外す、構成を YAML に書き出して差分を見てから反映する
+- **プランと利用量の確認** … いまのプラン、当月の地図表示回数、quota を見る
 
 管理画面でも同じことができますが、CLI が向いているのは**手順を再現したいとき**です。キーの構成をファイルに書いて差分を見てから適用する、といった運用ができます。
 
@@ -74,9 +77,29 @@ geolonia whoami
 | `geolonia map-keys pull` | 現在のキー構成を YAML に書き出す |
 | `geolonia map-keys plan -f <file>` | YAML と現状の差分を表示する |
 | `geolonia map-keys apply -f <file>` | YAML の内容を反映する |
+| `geolonia plan show` | いまのプラン、当月の地図表示回数、quota を表示する |
+| `geolonia plan list` | 利用できるプランの一覧を表示する |
 | `geolonia generate-access-token` | チームのアクセストークンを発行する |
 
-`geolonia map-keys delete <keyId>` は用意されていますが、**安全のため無効化されています**。キーを消すと、そのキーを使っている地図が一斉に止まるためです。
+`geolonia map-keys delete <keyId>` は用意されていますが、実行すると**ダッシュボードで消すよう案内して終わります**。キーを消すと、そのキーを使っている地図が一斉に止まるためです。
+
+<Callout kind="info" title="plan 系はまだ公開版に入っていません">
+`geolonia plan show` と `geolonia plan list` は、npm で配布されている 0.3.0 には含まれていません。実行すると `unknown command 'plan'` になります。次のリリース以降に使えるようになります。
+</Callout>
+
+## プランと利用量を見る
+
+```bash
+geolonia plan show
+```
+
+選択中のチームについて、いまのプラン、当月の地図表示回数、quota を表示します。ダッシュボードを開かずに使用量を確認できます。
+
+```bash
+geolonia plan list
+```
+
+利用できるプランの一覧（プラン名、料金、含まれる地図表示回数、メンバー上限）を表示します。**このコマンドだけはログイン不要**です。契約前に比較できます。
 
 ## CI から使う
 
