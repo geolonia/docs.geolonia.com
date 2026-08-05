@@ -1,0 +1,74 @@
+# 旧 docs.geolonia.com（Jekyll 版）の URL を、リニューアル後の URL へ送る。
+#
+# 旧サイトの正規 URL は末尾スラッシュ付きのディレクトリ形式である（`/tutorial/001/`）。
+# `_config.yml` の `permalink: /:title/` によるもので、`.html` 形式は旧サイト側で
+# 301 されていた。したがってここでは正規形だけを対象にする。
+#
+# 対応先の決め方は次のとおり。内容が同じページがあればそこへ送る。無ければ同じ
+# 象限の索引へ送る。**近いだけで内容が違うページへは送らない。** 無関係な移送は
+# 読者を迷わせるうえ、検索エンジンからは soft 404 として扱われるので、リンクを
+# 保った見返りがない。対応先が無いものは 404 のままにし、末尾に理由を書いてある。
+#
+# Cloudflare Pages の `_redirects` はホスト名を含む from を書けない（相対パスのみ）。
+# 旧サイトにあった `docs.tilecloud.io` と `geolonia-docs.netlify.com` 向けの規則は
+# 引き継いでいない。前者は DNS レコード自体が既に存在せず、後者は Netlify 固有である。
+
+# ── チュートリアル ────────────────────────────────────────────
+/tutorial/                        /tutorials/                   301
+/tutorial/001/                    /tutorials/                   301
+/tutorial/002/                    /tutorials/embed/publish/     301
+/tutorial/003/                    /tutorials/embed/first-map/   301
+/tutorial/004/                    /tutorials/embed/first-map/   301
+
+# 旧サイトの _redirects は /tutorial/005/ 〜 /010/ を /cookbook/001/ 〜 /006/ へ
+# 送っていた。その移送先が今回また変わるため、二段の転送にせず直接の対応先へ送る。
+/tutorial/005/                    /howto/change-style/          301
+/tutorial/006/                    /howto/map-controls/          301
+/tutorial/007/                    /howto/multiple-markers/      301
+/tutorial/008/                    /howto/geojson-data/          301
+/tutorial/009/                    /howto/switch-language/       301
+/tutorial/010/                    /tutorials/maps-suite/        301
+
+# ── クックブック → ハウツー ──────────────────────────────────
+/cookbook/                        /howto/                       301
+/cookbook/001/                    /howto/change-style/          301
+/cookbook/002/                    /howto/map-controls/          301
+/cookbook/003/                    /howto/multiple-markers/      301
+/cookbook/004/                    /howto/geojson-data/          301
+/cookbook/005/                    /howto/switch-language/       301
+/cookbook/006/                    /tutorials/maps-suite/        301
+/cookbook/custom_markers/         /howto/multiple-markers/      301
+/cookbook/draggable_marker/       /howto/draggable-marker/      301
+/cookbook/track_user_location/    /howto/current-location/      301
+/cookbook/geojson-api/            /howto/geojson-data/          301
+/cookbook/highlight_prefectures/  /howto/choropleth/            301
+
+# ── 仕様・スタイル ──────────────────────────────────────────
+/embed-api/                       /reference/embed/             301
+
+# 旧「JavaScript API」は embed の `new geolonia.Map()` を説明したページで、
+# maps-suite ではなく embed の API である。移送先を間違えやすい。
+/embed-api/javascript/            /reference/embed/             301
+/javascript-api/                  /reference/embed/             301
+
+# 旧「GeoJSON 仕様」は GeoJSON にスタイルを与える仕様（Simple Style）の説明。
+/geojson/                         /reference/core/Class.SimpleStyle/  301
+
+/custom-style/                    /explanation/map-style/       301
+
+# ── 対応先が無い URL（意図して 404 のままにしている） ────────────
+#
+# /cli/ , /cli/custom-sprites/
+#   Geolonia CLI の説明。新サイトには CLI に触れたページが1つも無い。
+#   CLI を今後も案内するなら書き起こす必要がある。近いページへ送って
+#   ごまかすと、読者は CLI の情報を探し続けることになる。
+#
+# /geojson/marker-symbol/
+#   `marker-symbol` で使えるアイコンの一覧。スプライトから JavaScript で
+#   描画していたギャラリーで、新サイトに相当物が無い。リファレンスの
+#   `MarkerIcon` は型の定義であって一覧ではないため代替にならない。
+#
+# /examples/*.html（13本）
+#   旧チュートリアルが iframe で読み込んでいたデモ資産で、読者向けの入口では
+#   ない。新サイトでは LiveCode が /demos/inline/<ID>/ を生成して同じ役割を
+#   果たすため、移送先を作らない。
