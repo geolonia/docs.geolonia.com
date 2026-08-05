@@ -80,6 +80,7 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
       ['3d', '建物や地形を3Dで表示するには'],
       ['custom-source', '独自のデータソース（ベクトルタイル等）を追加するには'],
       ['globe', '地図を地球儀（グローブ）で表示するには'],
+      ['web-component', 'HTML のタグだけで地図を置くには（maps-suite）'],
     ],
   },
   {

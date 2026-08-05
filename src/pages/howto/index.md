@@ -34,6 +34,7 @@ quadrant: Diátaxis / 仕事 × 行動
 - [建物や地形を3Dで表示するには](/howto/3d/)
 - [独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
 - [地図を地球儀（グローブ）で表示するには](/howto/globe/)
+- [HTML のタグだけで地図を置くには（maps-suite）](/howto/web-component/)
 
 ## CLI（コマンドライン）
 
