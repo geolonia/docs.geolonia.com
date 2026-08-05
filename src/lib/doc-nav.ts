@@ -74,6 +74,7 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
   {
     label: '応用（難しめ）',
     slugs: [
+      ['maps-core-access', '地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには'],
       ['clustering', '大量の点をクラスタリングするには'],
       ['choropleth', '値に応じてエリアを色分けするには（コロプレス）'],
       ['heatmap', 'ヒートマップで密度を可視化するには'],
