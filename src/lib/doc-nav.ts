@@ -95,6 +95,7 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
 const EXPLANATION_PAGES: [string, string][] = [
   ['map-style', '地図のスタイルとは'],
   ['styles', 'Geolonia Maps のスタイル一覧'],
+  ['marker-symbol', 'marker-symbol で使えるアイコン'],
   ['free-referers', 'デモキーで無料で試せる環境'],
   ['cli', 'Geolonia CLI とは'],
 ];

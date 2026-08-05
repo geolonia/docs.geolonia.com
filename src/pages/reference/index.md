@@ -33,10 +33,6 @@ JavaScript から地図を命令的に操作するライブラリです。`geolo
 
 地図本体の `GeoloniaMap` とそのオプション `GeoloniaMapOptions`、`GeoloniaMarker`、GeoJSON にスタイルを当てる `SimpleStyle` などがあります。
 
-## GeoJSON のアイコン
-
-GeoJSON の `marker-symbol` に書ける名前は、型定義ではなく地図スタイルに含まれるアイコンで決まります。一覧は [marker-symbol で使えるアイコン](/reference/marker-symbol/) にあります。
-
 ---
 
 手順を追って学ぶなら[チュートリアル](/tutorials/)、目的から探すなら[ハウツー](/howto/)を参照してください。
