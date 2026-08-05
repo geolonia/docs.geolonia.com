@@ -1,6 +1,6 @@
 ---
 layout: ../../layouts/DocLayout.astro
-title: 地図インスタンス（maps-core）に直接アクセスするには
+title: 地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには
 description: 各ライブラリから土台の GeoloniaMap を取り出し、MapLibre GL JS の API をそのまま呼びます。
 page: howto
 kicker: 応用
@@ -10,7 +10,7 @@ import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
-embed / maps-suite / maps-react はどれも、土台に **maps-core の `GeoloniaMap`** を持っています。`GeoloniaMap` は MapLibre GL JS の `Map` を継承したクラスなので、これを取り出せば `on()`、`flyTo()`、`queryRenderedFeatures()` といった MapLibre の API がそのまま使えます。
+embed / maps-suite / maps-react はどれも、土台に **maps-core の `GeoloniaMap`** を持っています。`GeoloniaMap` は MapLibre GL JS の `Map` を継承したクラスなので、これを取り出せば `on()`、`flyTo()`、`queryRenderedFeatures()` といった MapLibre GL JS の API がそのまま使えます。
 
 各ライブラリが用意している機能で足りないときの逃げ道がこれです。取り出し方だけがライブラリごとに違います。
 
@@ -228,7 +228,7 @@ const mapRef = useCallback((map) => {
 }, []);
 ```
 
-`Map` には `onLoad` プロパティもあり、こちらは読み込み完了後に `GeoloniaMap` を引数で渡してきます。一度だけの初期化なら短く書けますが、**リスナを外す先がない**ので、`on()` で購読するなら `ref` と `useEffect` の組み合わせにしてください。
+`Map` には `onLoad` プロパティもあり、こちらは読み込み完了後に `GeoloniaMap` を引数で渡してきます。一度だけの初期化なら短く書けますが、**リスナを外す先がない**ので、`on()` で購読するならコールバック ref にしてください。
 
 React らしく書けるものは props で済みます。地図の移動を拾うだけなら `onMove` プロパティがありますし、データの描画は `<Source>` と `<Layer>` で書けます。土台のインスタンスを触るのは、**props に用意がない操作をするとき**です。
 

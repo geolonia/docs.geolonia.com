@@ -74,13 +74,13 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
   {
     label: '応用（難しめ）',
     slugs: [
+      ['maps-core-access', '地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには'],
       ['clustering', '大量の点をクラスタリングするには'],
       ['choropleth', '値に応じてエリアを色分けするには（コロプレス）'],
       ['heatmap', 'ヒートマップで密度を可視化するには'],
       ['3d', '建物や地形を3Dで表示するには'],
       ['custom-source', '独自のデータソース（ベクトルタイル等）を追加するには'],
       ['globe', '地図を地球儀（グローブ）で表示するには'],
-      ['maps-core-access', '地図インスタンス（maps-core）に直接アクセスするには'],
       ['web-component', 'HTML のタグだけで地図を置くには（maps-suite）'],
     ],
   },
