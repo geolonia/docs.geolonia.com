@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/DocLayout.astro
 title: Geolonia CLI とは
-description: コマンドラインから API キーやカスタムスプライトを操作するための公式 CLI です。
+description: コマンドラインから API キーを操作するための公式 CLI です。
 page: explanation
 badge: explanation
 ---
@@ -9,10 +9,7 @@ import Callout from '../../components/Callout.astro'
 
 **Geolonia CLI** は、コマンドラインから Geolonia のアカウント上のものを操作する公式ツールです。地図を描くためのライブラリ（embed / maps-suite / maps-react）とは役割が別で、こちらは**地図を描く前の準備と運用**を担います。
 
-具体的には次の 2 つです。
-
-- **API キーの管理** … キーを作る、許可するオリジンを足す・外す、一覧を YAML に書き出す
-- **カスタムスプライトの管理** … 地図のマーカーに使うアイコンをアップロードする
+いま CLI で行えるのは **API キーの管理**です。キーを作り、許可するオリジンを足したり外したりできます。
 
 管理画面でも同じことができますが、CLI が向いているのは**手順を再現したいとき**です。キーの構成をファイルに書いて差分を見てから適用する、といった運用ができます。
 
@@ -77,9 +74,6 @@ geolonia whoami
 | `geolonia map-keys pull` | 現在のキー構成を YAML に書き出す |
 | `geolonia map-keys plan -f <file>` | YAML と現状の差分を表示する |
 | `geolonia map-keys apply -f <file>` | YAML の内容を反映する |
-| `geolonia sprites upload <path>` | アイコンをアップロードする |
-| `geolonia sprites list` | アップロード済みのアイコンを一覧する |
-| `geolonia sprites delete` | アイコンを削除する |
 | `geolonia generate-access-token` | チームのアクセストークンを発行する |
 
 `geolonia map-keys delete <keyId>` は用意されていますが、**安全のため無効化されています**。キーを消すと、そのキーを使っている地図が一斉に止まるためです。
@@ -90,6 +84,5 @@ geolonia whoami
 
 ## 関連
 
-- [カスタムスプライトをアップロードするには](/howto/cli-custom-sprites/)
 - [API キーを YAML でまとめて管理するには](/howto/cli-map-keys/)
 - [デモキーで無料で試せる環境](/explanation/free-referers/) … キーを発行せずに試せる範囲

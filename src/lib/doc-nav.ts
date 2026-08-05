@@ -86,7 +86,6 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
     label: 'CLI（コマンドライン）',
     slugs: [
       ['cli-map-keys', 'API キーを YAML でまとめて管理するには'],
-      ['cli-custom-sprites', 'カスタムスプライトをアップロードするには'],
     ],
   },
 ];

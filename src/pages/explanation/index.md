@@ -35,4 +35,4 @@ quadrant: Diátaxis / 学習 × 認知
 
 ## Geolonia CLI とは
 
-API キーやカスタムスプライトを、管理画面ではなくコマンドラインから操作するための公式ツールです。何ができて何に向いているかは [Geolonia CLI とは](/explanation/cli/) を参照してください。
+API キーを、管理画面ではなくコマンドラインから操作するための公式ツールです。何ができて何に向いているかは [Geolonia CLI とは](/explanation/cli/) を参照してください。

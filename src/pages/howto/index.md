@@ -40,4 +40,3 @@ quadrant: Diátaxis / 仕事 × 行動
 地図を描くコードではなく、その手前の準備をコマンドラインから行うレシピです。詳しくは [Geolonia CLI とは](/explanation/cli/) を参照してください。
 
 - [API キーを YAML でまとめて管理するには](/howto/cli-map-keys/)
-- [カスタムスプライトをアップロードするには](/howto/cli-custom-sprites/)
