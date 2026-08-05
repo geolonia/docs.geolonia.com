@@ -54,6 +54,10 @@
 # 旧「GeoJSON 仕様」は GeoJSON にスタイルを与える仕様（Simple Style）の説明。
 /geojson/                         /reference/core/Class.SimpleStyle/  301
 
+# アイコン一覧はリファレンスではなく解説にある。marker-symbol に書ける名前は
+# 型定義ではなく地図スタイルに含まれるアイコンで決まるため。
+/geojson/marker-symbol/           /explanation/marker-symbol/   301
+
 /custom-style/                    /explanation/map-style/       301
 
 # ── CLI ────────────────────────────────────────────────────
@@ -67,11 +71,6 @@
 #   Geolonia CLI のカスタムスプライト。機能自体を廃止する方針のため、
 #   ドキュメントにも載せていない。代替も用意しないので、送り先が無い。
 #   近いページへ送ってごまかすと、読者は使えない機能の手順を探し続ける。
-#
-# /geojson/marker-symbol/
-#   `marker-symbol` で使えるアイコンの一覧。スプライトから JavaScript で
-#   描画していたギャラリーで、新サイトに相当物が無い。リファレンスの
-#   `MarkerIcon` は型の定義であって一覧ではないため代替にならない。
 #
 # /examples/*.html（13本）
 #   旧チュートリアルが iframe で読み込んでいたデモ資産で、読者向けの入口では
