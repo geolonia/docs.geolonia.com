@@ -1,0 +1,95 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: Geolonia CLI とは
+description: コマンドラインから API キーやカスタムスプライトを操作するための公式 CLI です。
+page: explanation
+badge: explanation
+---
+import Callout from '../../components/Callout.astro'
+
+**Geolonia CLI** は、コマンドラインから Geolonia のアカウント上のものを操作する公式ツールです。地図を描くためのライブラリ（embed / maps-suite / maps-react）とは役割が別で、こちらは**地図を描く前の準備と運用**を担います。
+
+具体的には次の 2 つです。
+
+- **API キーの管理** … キーを作る、許可するオリジンを足す・外す、一覧を YAML に書き出す
+- **カスタムスプライトの管理** … 地図のマーカーに使うアイコンをアップロードする
+
+管理画面でも同じことができますが、CLI が向いているのは**手順を再現したいとき**です。キーの構成をファイルに書いて差分を見てから適用する、といった運用ができます。
+
+## インストール
+
+Node.js が必要です。**22.0.0 以上**を使ってください。
+
+```bash
+npm install --global @geolonia/cli
+```
+
+`geolonia` コマンドが入ったか確認します。
+
+```bash
+geolonia --version
+```
+
+## ログインとチームの選択
+
+CLI の各コマンドは、ログイン済みであることと、対象のチームが選ばれていることを前提にしています。
+
+```bash
+geolonia login
+geolonia teams select
+```
+
+`geolonia teams select` は所属チームの一覧を出して番号で選ばせます。チーム ID が分かっているなら `geolonia teams select <teamId>` と直接渡せます。
+
+いま誰としてログインしているかは次で確認できます。
+
+```bash
+geolonia whoami
+```
+
+## 設定と資格情報の置き場所
+
+| ファイル | 内容 |
+| --- | --- |
+| `~/.config/geolonia/credential.yml` | ユーザー名とリフレッシュトークン |
+| `~/.config/geolonia/config.yml` | 選択中のチーム |
+
+どちらも `--credential-file` と `--config-file` で別のパスを指定できます。1 台のマシンで複数のチームやアカウントを切り替える場合に使います。
+
+<Callout kind="warning" title="資格情報の扱い">
+`credential.yml` にはリフレッシュトークンが入ります。リポジトリに含めたり、共有マシンに置いたままにしたりしないでください。
+</Callout>
+
+## コマンド一覧
+
+| コマンド | 何をするか |
+| --- | --- |
+| `geolonia login` | ログインしてトークンを保存する |
+| `geolonia teams list` | 所属チームを一覧する |
+| `geolonia teams select [teamId]` | 操作対象のチームを選ぶ |
+| `geolonia user show` / `whoami` / `me` | いまのユーザー情報を表示する |
+| `geolonia map-keys list` | API キーを一覧する |
+| `geolonia map-keys show <keyId>` | API キーの詳細を表示する |
+| `geolonia map-keys search <query>` | 名前や許可オリジンでキーを検索する |
+| `geolonia map-keys new` | API キーを新しく作る |
+| `geolonia map-keys add-origin <keyId> <origin>` | 許可するオリジンを足す |
+| `geolonia map-keys remove-origin <keyId> <origin>` | 許可するオリジンを外す |
+| `geolonia map-keys pull` | 現在のキー構成を YAML に書き出す |
+| `geolonia map-keys plan -f <file>` | YAML と現状の差分を表示する |
+| `geolonia map-keys apply -f <file>` | YAML の内容を反映する |
+| `geolonia sprites upload <path>` | アイコンをアップロードする |
+| `geolonia sprites list` | アップロード済みのアイコンを一覧する |
+| `geolonia sprites delete` | アイコンを削除する |
+| `geolonia generate-access-token` | チームのアクセストークンを発行する |
+
+`geolonia map-keys delete <keyId>` は用意されていますが、**安全のため無効化されています**。キーを消すと、そのキーを使っている地図が一斉に止まるためです。
+
+## CI から使う
+
+`geolonia generate-access-token` は、保存済みのリフレッシュトークンからチームのアクセストークンを発行します。対話的なログインを挟めない環境（CI など）で、トークンを環境変数に渡して使うことを想定したコマンドです。
+
+## 関連
+
+- [カスタムスプライトをアップロードするには](/howto/cli-custom-sprites/)
+- [API キーを YAML でまとめて管理するには](/howto/cli-map-keys/)
+- [デモキーで無料で試せる環境](/explanation/free-referers/) … キーを発行せずに試せる範囲

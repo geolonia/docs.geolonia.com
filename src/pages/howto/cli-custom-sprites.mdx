@@ -1,0 +1,82 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: カスタムスプライトをアップロードするには
+description: GeoJSON の marker-symbol で使える独自アイコンを Geolonia CLI で追加します。
+page: howto
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+
+GeoJSON の `marker-symbol` に指定できるアイコンは、地図スタイルごとに用意されたスプライトシートに含まれるものです。ここに自分のアイコンを足したいときに、Geolonia CLI のカスタムスプライトを使います。
+
+<Callout kind="info" title="マーカーが1つなら CLI は要りません">
+1つのマーカーの絵柄を変えるだけなら、embed の属性や `Marker` のオプションで画像 URL を渡せます。CLI が必要になるのは、GeoJSON のように**データ側から `marker-symbol` で名前指定したい**場合です。名前で引ける場所にアイコンを置く、というのがカスタムスプライトの役割です。
+</Callout>
+
+## 準備
+
+[Geolonia CLI](/explanation/cli/) をインストールし、ログインとチーム選択を済ませておきます。
+
+```bash
+npm install --global @geolonia/cli
+geolonia login
+geolonia teams select
+```
+
+## 1ファイルをアップロードする
+
+```bash
+geolonia sprites upload ./custom-icon.svg
+```
+
+対話的に 2 つ聞かれます。
+
+1. **どの API キーに紐づけるか** … カスタムスプライトは API キーごとに配信されます
+2. **アイコン名** … `marker-symbol` に書く名前です。既定は拡張子を除いたファイル名
+
+完了すると、そのキーで表示している地図に、このアイコンを含むスプライトシートが配信されます。
+
+## ディレクトリをまとめてアップロードする
+
+`<path>` にディレクトリを渡すと、中の SVG と PNG をまとめて上げられます。名前はそれぞれのファイル名から決まるので、アイコン名を1つずつ聞かれることはありません。
+
+```bash
+geolonia sprites upload ./icons/
+```
+
+## 形式は SVG を推奨します
+
+対応形式は **SVG（推奨）と PNG** です。
+
+スプライトシートは等倍と 2 倍の 2 枚が作られます。SVG なら 1 つのファイルから両方を綺麗に生成できるため推奨しています。PNG を使う場合は、2 倍用を `[アイコン名]@2x.png` という名前で一緒にアップロードすると、2 倍のシートに使われます。
+
+## 確認と削除
+
+```bash
+geolonia sprites list
+geolonia sprites delete
+```
+
+## 使う
+
+アップロードしたアイコン名を、GeoJSON の `marker-symbol` に書きます。
+
+```json
+{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [139.7449, 35.6759] },
+  "properties": {
+    "marker-symbol": "custom-icon"
+  }
+}
+```
+
+<Callout kind="warning" title="キーを変えたら上げ直しが必要です">
+カスタムスプライトは API キーに紐づきます。複数のキーで同じアイコンを使うなら、キーごとにアップロードしてください。
+</Callout>
+
+## 関連
+
+- [Geolonia CLI とは](/explanation/cli/)
+- [外部データ（GeoJSON）を地図に読み込むには](/howto/geojson-data/)
+- [`SimpleStyle`](/reference/core/Class.SimpleStyle/) … GeoJSON に指定できるスタイルの一覧

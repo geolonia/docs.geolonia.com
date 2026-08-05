@@ -32,3 +32,7 @@ quadrant: Diátaxis / 学習 × 認知
 ## デモキーで無料で試せる環境
 
 サンプルに出てくる `YOUR-API-KEY` が何で、どんな環境ならキーを発行せずに地図が動くのかは [デモキーで無料で試せる環境](/explanation/free-referers/) を参照してください。
+
+## Geolonia CLI とは
+
+API キーやカスタムスプライトを、管理画面ではなくコマンドラインから操作するための公式ツールです。何ができて何に向いているかは [Geolonia CLI とは](/explanation/cli/) を参照してください。
