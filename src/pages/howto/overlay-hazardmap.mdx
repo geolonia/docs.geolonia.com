@@ -226,7 +226,7 @@ Geolonia Maps はどの入り口でも、地図を作るときに出典表示の
 
 そのため maps-suite と maps-react では、MapLibre GL JS の `AttributionControl` を自分で足して出しています。embed で同じことをすると、もともと出ているものと合わせて**出典が二重に出る**ので、足していません。
 
-この差は maps-suite と maps-react の側が直れば消えます。直ったあとに `AttributionControl` を残しておくと二重表示になるので、そのときはこのページも合わせて直します。
+この差は maps-suite と maps-react の側が直れば消えます（[maps-core#101](https://github.com/geolonia/maps-core/issues/101)）。直ったあとに `AttributionControl` を残しておくと二重表示になるので、そのときはこのページも合わせて直します。
 
 ## 出典の書き方
 
