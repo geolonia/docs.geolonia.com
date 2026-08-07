@@ -1,0 +1,299 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 住所で検索してその場所の地図を表示するには
+description: 入力された日本語の住所を正規化して緯度経度を取り出し、その場所へ地図を移動します。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+「東京都千代田区大手町1-1-1」のような住所文字列から緯度経度を求めることを**ジオコーディング**といいます。Geolonia Maps 自体はジオコーダを持っていないので、住所を扱うライブラリと組み合わせます。ここでは [`@geolonia/normalize-japanese-addresses`](https://github.com/geolonia/normalize-japanese-addresses)（以下 NJA）を使います。
+
+NJA はもともと**住所の正規化**をするライブラリです。表記のゆれを吸収して住所を整えたうえで、その地点の緯度経度も返してくれるので、そのまま地図に使えます。動きを確かめるだけなら[公式のデモ](https://geolonia.github.io/normalize-japanese-addresses/)が手軽です。
+
+## 返ってくるもの
+
+`normalize()` は住所文字列を受け取り、分解した住所と位置情報を返します。
+
+```js
+await normalize("東京都台東区上野公園7-7");
+// {
+//   pref: "東京都",
+//   city: "台東区",
+//   town: "上野公園",
+//   addr: "7-7",
+//   level: 8,
+//   point: { lat: 35.714952981, lng: 139.775372778, level: 8 },
+//   other: "",
+//   metadata: { ... }
+// }
+```
+
+**`level` と `point.level` は別物です。** `level` は入力文字列をどこまで読み取れたか、`point.level` は返した座標がどれだけ細かい地点かを表します。
+
+| level | 読み取れた範囲 | point.level | 座標が指す場所 |
+|---|---|---|---|
+| `0` | 都道府県も分からない | | （`point` がありません） |
+| `1` | 都道府県まで | `1` | 都道府県庁の所在地 |
+| `2` | 市区町村まで | `2` | 市区町村役場の所在地 |
+| `3` | 大字・丁目まで | `3` | 大字・丁目の代表点 |
+| `8` | 街区符号・住居符号または地番まで | `8` | 住居表示の位置、または地番の中央点 |
+
+この2つは一致しないことがあります。番地まで読み取れても（`level: 8`）、その番地の位置情報が無ければ大字・丁目の代表点（`point.level: 3`）が返ります。
+
+<Callout kind="warning" title="ズームは point.level に合わせてください">
+市区町村役場の座標にズーム 18 で寄ると、読み手には「その建物がその住所だ」と見えてしまいます。座標の細かさに応じてズームを変えるのが安全です。下のコードはどれもそうしています。
+</Callout>
+
+## コード
+
+住所を入力して検索すると、その場所へ地図が移動してマーカーが立ちます。
+
+<Lens name="embed">
+NJA は npm のパッケージですが、CDN から ES モジュールとして読み込めます。embed の CDN スクリプトは普通の `<script>`、NJA 側は `<script type="module">` です。モジュールは後から実行されるので、`geolonia` は読み込み済みになっています。
+
+<LiveCode title="embed で住所を検索する" height={420}>
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body { margin: 0; font: 14px/1.6 system-ui, sans-serif; }
+      #wrap { display: flex; flex-direction: column; height: 100vh; }
+      #search { display: flex; gap: 6px; padding: 8px; }
+      #q { flex: 1; padding: 6px 8px; }
+      #note { padding: 0 8px 8px; color: #555; }
+      #map { flex: 1; }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <form id="search">
+        <input id="q" aria-label="住所" value="東京都千代田区大手町1-1-1">
+        <button type="submit">検索</button>
+      </form>
+      <div id="note">住所を入力して検索してください。</div>
+      <div id="map" data-lat="35.68" data-lng="139.76" data-zoom="8" data-marker="off"></div>
+    </div>
+
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script type="module">
+      import { normalize } from "https://cdn.jsdelivr.net/npm/@geolonia/normalize-japanese-addresses@3.1.3/+esm";
+
+      const ZOOM = { 1: 9, 2: 12, 3: 15, 8: 18 };
+
+      const map = new geolonia.Map("#map");
+      const marker = new geolonia.Marker();
+      const note = document.getElementById("note");
+
+      document.getElementById("search").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        note.textContent = "検索中…";
+
+        const result = await normalize(document.getElementById("q").value);
+        if (!result.point) {
+          marker.remove();
+          note.textContent = "住所を特定できませんでした。";
+          return;
+        }
+
+        const { lat, lng, level } = result.point;
+        marker.setLngLat([lng, lat]).addTo(map);
+        map.flyTo({ center: [lng, lat], zoom: ZOOM[level] });
+        note.textContent =
+          `${result.pref}${result.city}${result.town || ""}${result.addr || ""}` +
+          `（位置情報レベル ${level}）`;
+      });
+    </script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+- **`type="module"`**：NJA を CDN から読むために必要です。バージョンは固定しておくと、更新で挙動が変わる事故を避けられます。
+- **`geolonia.Marker`**：embed を読み込むと `window.geolonia` に MapLibre GL JS の中身が入るので、マーカーやポップアップのクラスがそのまま使えます。
+- **`result.point` の有無**：住所を特定できなかったとき（`level: 0`）は `point` がありません。読む前に必ず確かめてください。
+
+</Lens>
+
+<Lens name="suite">
+`normalize()` で座標を求め、`panTo()` と `setZoom()` で移動します。マーカーは `setPosition()` で使い回します。
+
+<LiveCode title="maps-suite で住所を検索する" height={420}>
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { normalize } from "@geolonia/normalize-japanese-addresses";
+import { geolonia } from "@geolonia/maps-suite";
+
+const ZOOM = { 1: 9, 2: 12, 3: 15, 8: 18 };
+
+const container = document.getElementById("map");
+
+// 検索欄を地図の上に積むため、body を縦並びにして地図に残りを与える
+document.body.style.cssText =
+  "margin:0;display:flex;flex-direction:column;height:100vh;font:14px/1.6 system-ui,sans-serif";
+container.style.flex = "1";
+container.style.height = "auto";
+
+const form = document.createElement("form");
+form.style.cssText = "display:flex;gap:6px;padding:8px";
+form.innerHTML =
+  '<input id="q" aria-label="住所" value="東京都千代田区大手町1-1-1" style="flex:1;padding:6px 8px">' +
+  "<button type=\"submit\">検索</button>";
+
+const note = document.createElement("div");
+note.style.cssText = "padding:0 8px 8px;color:#555";
+note.textContent = "住所を入力して検索してください。";
+
+document.body.insertBefore(form, container);
+document.body.insertBefore(note, container);
+
+const map = new geolonia.maps.Map(container, {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.76 },
+  zoom: 8,
+});
+
+const marker = new geolonia.maps.Marker();
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  note.textContent = "検索中…";
+
+  const result = await normalize(form.querySelector("#q").value);
+  if (!result.point) {
+    marker.setMap(null);
+    note.textContent = "住所を特定できませんでした。";
+    return;
+  }
+
+  const { lat, lng, level } = result.point;
+  marker.setPosition({ lat, lng });
+  marker.setMap(map);
+  map.panTo({ lat, lng });
+  map.setZoom(ZOOM[level]);
+  note.textContent =
+    `${result.pref}${result.city}${result.town || ""}${result.addr || ""}` +
+    `（位置情報レベル ${level}）`;
+});
+```
+
+</LiveCode>
+
+- **`setPosition()` と `setMap()`**：マーカーは1つ作って位置を付け替えます。検索のたびに `new` すると、前のマーカーが残ります。
+- **`panTo()` と `setZoom()`**：緯度経度は `{ lat, lng }` のオブジェクトで渡します。
+- **`result.point` の有無**：住所を特定できなかったとき（`level: 0`）は `point` がありません。読む前に必ず確かめてください。
+
+</Lens>
+
+<Lens name="react">
+検索結果を state に入れ、`Map` の `center` と `zoom` に渡します。値が変わると地図がそこへ飛びます。
+
+<LiveCode title="maps-react で住所を検索する" height={420}>
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { normalize } from "@geolonia/normalize-japanese-addresses";
+import { Map, Marker } from "@geolonia/maps-react";
+
+const ZOOM = { 1: 9, 2: 12, 3: 15, 8: 18 };
+
+function App() {
+  const [query, setQuery] = useState("東京都千代田区大手町1-1-1");
+  const [found, setFound] = useState(null);
+  const [note, setNote] = useState("住所を入力して検索してください。");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setNote("検索中…");
+
+    const result = await normalize(query);
+    if (!result.point) {
+      setFound(null);
+      setNote("住所を特定できませんでした。");
+      return;
+    }
+
+    const { lat, lng, level } = result.point;
+    setFound({ lat, lng, zoom: ZOOM[level] });
+    setNote(
+      `${result.pref}${result.city}${result.town || ""}${result.addr || ""}` +
+        `（位置情報レベル ${level}）`,
+    );
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh",
+                  font: "14px/1.6 system-ui, sans-serif" }}>
+      <form onSubmit={handleSubmit} style={{ display: "flex", gap: 6, padding: 8 }}>
+        <input
+          aria-label="住所"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{ flex: 1, padding: "6px 8px" }}
+        />
+        <button type="submit">検索</button>
+      </form>
+      <div style={{ padding: "0 8px 8px", color: "#555" }}>{note}</div>
+      <Map
+        apiKey="YOUR-API-KEY"
+        center={found ? [found.lng, found.lat] : [139.76, 35.68]}
+        zoom={found ? found.zoom : 8}
+        containerStyle={{ flex: 1 }}
+      >
+        {found && <Marker lat={found.lat} lng={found.lng} />}
+      </Map>
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+```
+
+</LiveCode>
+
+- **`center` と `zoom`**：`Map` はこの2つの変化を見て地図を動かします。命令的に呼ぶ API は要りません。`center` は **`[経度, 緯度]` の順**です。
+- **`Marker`**：`lat` と `lng` を個別の props で渡します（`center` と順序の書き方が違うので注意）。
+- **`result.point` の有無**：住所を特定できなかったとき（`level: 0`）は `point` がありません。読む前に必ず確かめてください。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。初期値のまま検索すると大手町へ、`東京都台東区上野公園7-7` に書き換えると番地の位置まで寄ります。
+
+前者は `位置情報レベル 3`、後者は `位置情報レベル 8` と出ます。同じ「番地まで書いた住所」でも、返る座標の細かさが違うことが確かめられます。
+
+## 住所データの取得について
+
+NJA は住所データを持ち歩かず、必要な範囲だけを Web API から都度取得します。既定の取得先は `https://japanese-addresses-v2.geoloniamaps.com/api/ja` です。
+
+- **最初の1回は少し待ちます。** 都道府県、市区町村、大字・丁目と順にたどるので、ネットワーク越しの往復が複数回あります。2回目以降はブラウザのキャッシュが効きます。
+- **オフラインでは動きません。** 通信できない環境で使うなら、`config.japaneseAddressesApi` で自前の配信先を指定します。
+- **失敗すると例外を投げます。** 一過性の失敗（5xx、429、ネットワークエラーなど）は自動で最大2回まで再試行しますが、それでも駄目なら例外です。まとめて処理するときは、1件の失敗で全体が止まらないように `try` で囲んでください。
+
+## 逆はできますか
+
+緯度経度から住所を求める（逆ジオコーディング）ことは、NJA ではできません。NJA は住所文字列を入力に取るライブラリです。
+
+## うまくいかないとき
+
+<Callout kind="warning" title="うまくいかないとき">
+- 何も起きない → `result.point` が無い場合を処理しているか確認してください。住所を特定できなかったときは `level: 0` で `point` が付きません。
+- 建物名を入れると精度が落ちる → 末尾の建物名は `other` に残るだけで座標には効きませんが、住所の読み取り自体を邪魔することがあります。あらかじめ分けておくのが確実です。
+- 番地まで入れたのに大まかな場所しか出ない → その番地の位置情報が無く、大字・丁目の代表点が返っています。`point.level` を見れば区別できます。
+- 検索のたびにマーカーが増える → マーカーを毎回作っています。1つ作って位置を付け替えてください。
+</Callout>
+
+関連：[全地点が画面に収まるように表示するには](/howto/fit-bounds/) ／ [クリックでポップアップを出すには](/howto/popup-on-click/)
