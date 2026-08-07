@@ -13,7 +13,9 @@ import LiveCode from '../../components/LiveCode.astro'
 国土交通省の[ハザードマップポータルサイト](https://disaportal.gsi.go.jp/)は、洪水浸水想定区域や津波浸水想定などを `{z}/{x}/{y}` のラスタタイルとして配信しています。これをタイルソースとして追加すれば、自分の地図に重ねられます。
 
 <Callout kind="warning" title="出典表示が必須です">
-このデータには出典の記載が求められています。しかも **Geolonia Maps は出典表示のコントロールを既定では出しません**（内部で `attributionControl: false` を指定しています）。タイルソースに `attribution` を書くだけでは画面に出ないので、コントロールもあわせて追加してください。下のコードはどれもそこまで含んでいます。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
+このデータには出典の記載が求められています。タイルソースの **`attribution`** に出典を書いてください。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
+
+出典が画面に出るまでの扱いは、いま3つのライブラリで揃っていません。**embed は書くだけで右下に出ます**が、**maps-suite と maps-react では出典表示のコントロールを自分で追加する必要があります**。下のコードはそれぞれ必要なぶんだけ含んでいるので、タブを切り替えてそのまま使ってください。理由は[出典が出るまで](#出典が出るまで)に書きました。
 </Callout>
 
 ## コード
@@ -21,7 +23,7 @@ import LiveCode from '../../components/LiveCode.astro'
 どのライブラリでも、やることは土台の `GeoloniaMap` に対して `addSource` と `addLayer` を呼ぶことです。取り出し方だけが違います（[地図インスタンスに直接アクセスするには](/howto/maps-core-access/)）。例はどれも、洪水浸水想定区域（想定最大規模）を東京の下町に重ねる場合です。
 
 <Lens name="embed">
-`new geolonia.Map()` で地図を作ると、その戻り値がそのまま `GeoloniaMap` です。`window.geolonia` には MapLibre GL JS の中身も入っているので、`geolonia.AttributionControl` がそのまま使えます。
+`new geolonia.Map()` で地図を作ると、その戻り値がそのまま `GeoloniaMap` です。あとは `load` を待って `addSource` と `addLayer` を呼びます。
 
 <LiveCode title="embed で洪水浸水想定区域を重ねる">
 
@@ -31,6 +33,7 @@ import LiveCode from '../../components/LiveCode.astro'
   <head>
     <meta charset="UTF-8">
     <style>
+      body { margin: 0; }
       #map { width: 100%; height: 100vh; }
     </style>
   </head>
@@ -40,7 +43,6 @@ import LiveCode from '../../components/LiveCode.astro'
     <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
     <script>
       const map = new geolonia.Map("#map");
-      map.addControl(new geolonia.AttributionControl(), "bottom-right");
 
       map.on("load", () => {
         map.addSource("flood", {
@@ -70,14 +72,14 @@ import LiveCode from '../../components/LiveCode.astro'
 </LiveCode>
 
 - **`class="geolonia"` を付けていません。** 付けると embed が自分で地図を作ってしまうので、`id` だけにして `new geolonia.Map("#map")` で作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
-- **`AttributionControl`**：出典を画面に出すコントロール。これを足さないと `attribution` を書いても表示されません。
+- **`attribution`**：出典表示の文字列。必須です。右下の出典表示に追加されます。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
 
 </Lens>
 
 <Lens name="suite">
-`whenReady()` を待ってから、`getGeoloniaMap()` で土台を取り出します。`AttributionControl` は maps-suite にはないので、`maplibre-gl` から読み込みます。
+`whenReady()` を待ってから、`getGeoloniaMap()` で土台を取り出します。`addSource` と `addLayer` は maps-suite の側には無いので、土台に降りて呼びます。出典表示の `AttributionControl` も、ここで一緒に追加します。
 
 <LiveCode title="maps-suite で洪水浸水想定区域を重ねる">
 
@@ -120,7 +122,8 @@ impl.addLayer({
 
 </LiveCode>
 
-- **`AttributionControl`**：出典を画面に出すコントロール。これを足さないと `attribution` を書いても表示されません。
+- **`AttributionControl`**：出典を画面に出すコントロール。maps-suite 自身は持っていないので、`maplibre-gl` から読み込みます。これがないと出典が何も出ません。
+- **`attribution`**：出典表示の文字列。必須です。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
 
@@ -164,7 +167,8 @@ createRoot(document.getElementById("root")).render(
 
 </LiveCode>
 
-- **`AttributionControl`**：出典を画面に出すコントロール。これを置かないと `attribution` を書いても表示されません。
+- **`AttributionControl`**：出典を画面に出すコントロール。これがないと出典が何も出ません。
+- **`attribution`**：出典表示の文字列。必須です。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
 
@@ -214,6 +218,16 @@ maps-react では `Layer` の `beforeId` に id を書きます。`geolonia/basi
 <Layer id="flood" type="raster" beforeId="waterway-name" />
 ```
 
+## 出典が出るまで
+
+3つのライブラリで書き方が違うのは、いまの実装の都合です。
+
+Geolonia Maps はどの入り口でも、地図を作るときに出典表示のコントロールを1つ足しています。ソースに `attribution` を書けば、そこに文字列が並ぶ、という設計です。ところが npm の `@geolonia/maps-suite` と `@geolonia/maps-react` からこれを使うと、このコントロールが空のまま何も表示しません。重ねたデータの出典どころか、ベース地図の © Geolonia や © OpenStreetMap も出ない状態です。embed（CDN）では正しく出ます。
+
+そのため maps-suite と maps-react では、MapLibre GL JS の `AttributionControl` を自分で足して出しています。embed で同じことをすると、もともと出ているものと合わせて**出典が二重に出る**ので、足していません。
+
+この差は maps-suite と maps-react の側が直れば消えます。直ったあとに `AttributionControl` を残しておくと二重表示になるので、そのときはこのページも合わせて直します。
+
 ## 出典の書き方
 
 記載方法は[ハザードマップポータルサイトの利用規約](https://disaportal.gsi.go.jp/hazardmapportal/hazardmap/copyright/copyright.html)に定められています。示されている表記例は次のとおりです。
@@ -232,7 +246,8 @@ maps-react では `Layer` の `beforeId` に id を書きます。`geolonia/basi
 - 何も出ない → その場所に、指定した災害のデータが無いだけかもしれません。タイルは対象区域のあるところにしか無く、無いところは 404 を返します。同じ場所をハザードマップポータルサイトで開いて、データがあるかどうか先に確かめてください。
 - ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと、それ以上は引き伸ばして表示されます。
 - ベース地図が見えない → `raster-opacity` を下げてください。
-- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません。それに加えて `AttributionControl` の追加が要ります。
+- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません。maps-suite と maps-react では、加えて `AttributionControl` の追加が要ります（[出典が出るまで](#出典が出るまで)）。
+- 出典が二重に出る → embed で `AttributionControl` を足しています。embed は最初から出典を出すので、追加は要りません。
 </Callout>
 
 関連：[独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
