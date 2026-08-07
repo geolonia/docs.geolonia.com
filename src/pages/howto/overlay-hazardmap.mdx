@@ -1,0 +1,238 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: ハザードマップを地図に重ねるには
+description: ハザードマップポータルサイトが配信する浸水想定区域などのタイルを、出典表示つきで地図に重ねます。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+国土交通省の[ハザードマップポータルサイト](https://disaportal.gsi.go.jp/)は、洪水浸水想定区域や津波浸水想定などを `{z}/{x}/{y}` のラスタタイルとして配信しています。これをタイルソースとして追加すれば、自分の地図に重ねられます。
+
+<Callout kind="warning" title="出典表示が必須です">
+このデータには出典の記載が求められています。しかも **Geolonia Maps は出典表示のコントロールを既定では出しません**（内部で `attributionControl: false` を指定しています）。タイルソースに `attribution` を書くだけでは画面に出ないので、コントロールもあわせて追加してください。下のコードはどれもそこまで含んでいます。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
+</Callout>
+
+## コード
+
+どのライブラリでも、やることは土台の `GeoloniaMap` に対して `addSource` と `addLayer` を呼ぶことです。取り出し方だけが違います（[地図インスタンスに直接アクセスするには](/howto/maps-core-access/)）。例はどれも、洪水浸水想定区域（想定最大規模）を東京の下町に重ねる場合です。
+
+<Lens name="embed">
+`new geolonia.Map()` で地図を作ると、その戻り値がそのまま `GeoloniaMap` です。`window.geolonia` には MapLibre GL JS の中身も入っているので、`geolonia.AttributionControl` がそのまま使えます。
+
+<LiveCode title="embed で洪水浸水想定区域を重ねる">
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      #map { width: 100%; height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="map" data-lat="35.7" data-lng="139.82" data-zoom="12" data-marker="off"></div>
+
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script>
+      const map = new geolonia.Map("#map");
+      map.addControl(new geolonia.AttributionControl(), "bottom-right");
+
+      map.on("load", () => {
+        map.addSource("flood", {
+          type: "raster",
+          tiles: [
+            "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png"
+          ],
+          tileSize: 256,
+          minzoom: 2,
+          maxzoom: 17,
+          attribution:
+            '出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>'
+        });
+
+        map.addLayer({
+          id: "flood",
+          type: "raster",
+          source: "flood",
+          paint: { "raster-opacity": 0.7 }
+        });
+      });
+    </script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+- **`class="geolonia"` を付けていません。** 付けると embed が自分で地図を作ってしまうので、`id` だけにして `new geolonia.Map("#map")` で作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
+- **`AttributionControl`**：出典を画面に出すコントロール。これを足さないと `attribution` を書いても表示されません。
+- **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
+- **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+</Lens>
+
+<Lens name="suite">
+`whenReady()` を待ってから、`getGeoloniaMap()` で土台を取り出します。`AttributionControl` は maps-suite にはないので、`maplibre-gl` から読み込みます。
+
+<LiveCode title="maps-suite で洪水浸水想定区域を重ねる">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { AttributionControl } from "maplibre-gl";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.7, lng: 139.82 },
+  zoom: 12,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+
+impl.addControl(new AttributionControl(), "bottom-right");
+
+impl.addSource("flood", {
+  type: "raster",
+  tiles: [
+    "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png",
+  ],
+  tileSize: 256,
+  minzoom: 2,
+  maxzoom: 17,
+  attribution:
+    '出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>',
+});
+
+impl.addLayer({
+  id: "flood",
+  type: "raster",
+  source: "flood",
+  paint: { "raster-opacity": 0.7 },
+});
+```
+
+</LiveCode>
+
+- **`AttributionControl`**：出典を画面に出すコントロール。これを足さないと `attribution` を書いても表示されません。
+- **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
+- **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+</Lens>
+
+<Lens name="react">
+`Source` と `Layer` を置くだけで、土台に降りずに書けます。出典表示の `AttributionControl` も部品として用意されています。
+
+<LiveCode title="maps-react で洪水浸水想定区域を重ねる">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Source, Layer, AttributionControl } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.82, 35.7]}
+    zoom={12}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <AttributionControl position="bottom-right" />
+    <Source
+      id="flood"
+      type="raster"
+      tiles={[
+        "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png",
+      ]}
+      tileSize={256}
+      minzoom={2}
+      maxzoom={17}
+      attribution='出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>'
+    >
+      <Layer id="flood" type="raster" paint={{ "raster-opacity": 0.7 }} />
+    </Source>
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **`AttributionControl`**：出典を画面に出すコントロール。これを置かないと `attribution` を書いても表示されません。
+- **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
+- **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。荒川と隅田川にはさまれた低地が、浸水の深さに応じて塗り分けられ、右下に出典が出ます。
+
+塗りの色が何メートルを指すかは、ハザードマップポータルサイトの凡例に従います。凡例そのものは配信されないので、必要なら自分で用意してください。
+
+## 重ねられるおもなデータ
+
+いずれも `https://disaportaldata.gsi.go.jp/raster/` に続けて次のパスを書きます。
+
+| データ | パス | ズーム |
+|---|---|---|
+| 洪水浸水想定区域（想定最大規模） | `01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png` | 2〜17 |
+| 洪水浸水想定区域（計画規模） | `01_flood_l1_shinsuishin_newlegend_data/{z}/{x}/{y}.png` | 2〜17 |
+| 浸水継続時間（想定最大規模） | `01_flood_l2_keizoku_data/{z}/{x}/{y}.png` | 2〜17 |
+| 家屋倒壊等氾濫想定区域（氾濫流） | `01_flood_l2_kaokutoukai_hanran_data/{z}/{x}/{y}.png` | 4〜17 |
+| 家屋倒壊等氾濫想定区域（河岸侵食） | `01_flood_l2_kaokutoukai_kagan_data/{z}/{x}/{y}.png` | 4〜17 |
+| 内水（雨水出水）浸水想定区域 | `02_naisui_data/{z}/{x}/{y}.png` | 2〜17 |
+| 高潮浸水想定区域 | `03_hightide_l2_shinsuishin_data/{z}/{x}/{y}.png` | 2〜17 |
+| 津波浸水想定 | `04_tsunami_newlegend_data/{z}/{x}/{y}.png` | 2〜17 |
+| 土砂災害警戒区域（土石流） | `05_dosekiryukeikaikuiki/{z}/{x}/{y}.png` | 2〜17 |
+| 土砂災害警戒区域（急傾斜地の崩壊） | `05_kyukeishakeikaikuiki/{z}/{x}/{y}.png` | 2〜17 |
+| 土砂災害警戒区域（地すべり） | `05_jisuberikeikaikuiki/{z}/{x}/{y}.png` | 2〜17 |
+| 雪崩危険箇所 | `05_nadarekikenkasyo/{z}/{x}/{y}.png` | 2〜17 |
+
+洪水・内水・高潮・津波には、国管理河川ぶんだけ、都道府県管理河川ぶんだけ、といった分割配信もあります。全国分をまとめたものと分割ぶんのどちらを使うかで URL が変わるので、[配信データの一覧](https://disaportal.gsi.go.jp/hazardmapportal/hazardmap/copyright/opendata.html)で確認してください。この一覧は更新されます。記憶や推測で URL を書かず、そのつど見に行くのが確実です。
+
+## 地名が読めなくなるとき
+
+重ねたタイルはいちばん上に乗るので、ベース地図の地名や駅名が下に隠れます。ラベルの下に潜り込ませたいときは、レイヤを追加する位置を指定します。
+
+embed と maps-suite では、`addLayer` の第2引数に「その手前に入れたいレイヤの id」を渡します。id はスタイルごとに違うので、最初の symbol レイヤを探して渡すのが確実です。
+
+```js
+const firstSymbol = map.getStyle().layers.find((l) => l.type === "symbol")?.id;
+map.addLayer({ id: "flood", type: "raster", source: "flood" }, firstSymbol);
+```
+
+maps-react では `Layer` の `beforeId` に id を書きます。`geolonia/basic-v2` の場合、最初の symbol レイヤは `waterway-name` です。
+
+```jsx
+<Layer id="flood" type="raster" beforeId="waterway-name" />
+```
+
+## 出典の書き方
+
+記載方法は[ハザードマップポータルサイトの利用規約](https://disaportal.gsi.go.jp/hazardmapportal/hazardmap/copyright/copyright.html)に定められています。示されている表記例は次のとおりです。
+
+- 出典：『ハザードマップポータルサイト』
+- 出典：『ハザードマップポータルサイト』（当該ページの URL）（〇年〇月〇日に利用）
+
+データを編集・加工して使うときは、加工したことが分かるように書きます。
+
+- 『ハザードマップポータルサイト』を加工して作成
+- 『ハザードマップポータルサイト』（当該ページの URL）をもとに作成
+
+**編集・加工した情報を、あたかも国が作成したかのような態様で公表・利用してはいけません。** また、コンテンツには特段の記載がない限り公共データ利用規約（第1.0版）（PDL1.0）が適用されますが、一部には測量法による制約や別のルールがかかるものもあります。実際に使う前に、利用規約そのものを読んでください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 何も出ない → その場所に、指定した災害のデータが無いだけかもしれません。タイルは対象区域のあるところにしか無く、無いところは 404 を返します。同じ場所をハザードマップポータルサイトで開いて、データがあるかどうか先に確かめてください。
+- ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと、それ以上は引き伸ばして表示されます。
+- ベース地図が見えない → `raster-opacity` を下げてください。
+- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません。それに加えて `AttributionControl` の追加が要ります。
+</Callout>
+
+関連：[独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
