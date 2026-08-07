@@ -25,7 +25,6 @@ quadrant: Diátaxis / 仕事 × 行動
 - [地図のコントロールの表示を切り替えるには](/howto/map-controls/)
 - [地図の表示言語を切り替えるには](/howto/switch-language/)
 - [ドラッグできるマーカーで座標を取得するには](/howto/draggable-marker/)
-- [住所で検索してその場所の地図を表示するには](/howto/address-search/)
 
 ## 応用（難しめ）
 
@@ -35,6 +34,7 @@ quadrant: Diátaxis / 仕事 × 行動
 - [ヒートマップで密度を可視化するには](/howto/heatmap/)
 - [建物や地形を3Dで表示するには](/howto/3d/)
 - [独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
+- [住所で検索してその場所の地図を表示するには](/howto/address-search/)
 - [地図を地球儀（グローブ）で表示するには](/howto/globe/)
 - [HTML のタグだけで地図を置くには（maps-suite）](/howto/web-component/)
 
