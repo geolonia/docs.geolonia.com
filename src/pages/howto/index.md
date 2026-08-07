@@ -25,6 +25,7 @@ quadrant: Diátaxis / 仕事 × 行動
 - [地図のコントロールの表示を切り替えるには](/howto/map-controls/)
 - [地図の表示言語を切り替えるには](/howto/switch-language/)
 - [ドラッグできるマーカーで座標を取得するには](/howto/draggable-marker/)
+- [住所で検索してその場所の地図を表示するには](/howto/address-search/)
 
 ## 応用（難しめ）
 
