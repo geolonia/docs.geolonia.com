@@ -40,3 +40,7 @@ GeoJSON の `marker-symbol` に書ける名前は、型定義ではなく地図�
 ## Geolonia CLI とは
 
 API キーを、管理画面ではなくコマンドラインから操作するための公式ツールです。何ができて何に向いているかは [Geolonia CLI とは](/explanation/cli/) を参照してください。
+
+## Geolonia Agent Skills とは
+
+Geolonia Maps を使った開発を AI コーディングエージェントに手伝わせるための Claude Code 用プラグインです。何が入っていて、どう入れて使うのかは [Geolonia Agent Skills とは](/explanation/agent-skills/) を参照してください。
