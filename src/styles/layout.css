@@ -17,6 +17,29 @@
 .dtx-nav a:hover { background: var(--bg-soft); text-decoration: none; }
 .dtx-nav a.active { background: var(--accent-soft); color: var(--color-accent-text); }
 
+/* ダッシュボードへの導線。margin-left:auto でセクションのナビから引き離して右端に置く。
+   色は DS の規定どおり、塗りは「オレンジ地＋白文字（ボタンなので可）」、
+   枠線のほうは「白地＋濃オレンジ文字」にしている。 */
+.site-cta { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.site-cta__link {
+  font-size: 13px; font-weight: 700; line-height: 1.4;
+  padding: 6px 14px; border-radius: 7px; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.site-cta__link:hover { text-decoration: none; }
+.site-cta__signin { color: var(--link); border-color: var(--border); }
+.site-cta__signin:hover { background: var(--accent-soft); border-color: var(--brand); }
+.site-cta__signup { color: var(--color-background); background: var(--brand); border-color: var(--brand); }
+.site-cta__signup:hover { background: var(--brand-dark); border-color: var(--brand-dark); }
+
+/* narrow: ロゴとボタンを1行目に残し、セクションのナビを2行目へ送る。
+   ボタンは「使ってみる」への出口なので、畳んでも隠さない。 */
+@media (max-width: 700px) {
+  .dtx-nav { order: 3; width: 100%; }
+  .site-cta { margin-left: auto; }
+  .site-cta__link { padding: 6px 11px; }
+}
+
 .content { max-width: var(--maxw); margin: 0 auto; padding: 28px 22px 80px; }
 
 /* サイドバー付きページの2カラム骨格（左ツリー＋本文）。

@@ -63,6 +63,12 @@ const nav = [
           <a href={n.href} data-sec={n.sec} class={page === n.sec ? 'active' : ''}>{n.label}</a>
         ))}
       </nav>
+      {/* ダッシュボードへの導線。ドキュメントを読んで「使ってみる」に進む出口なので、
+          セクションのナビとは離して右端に置く。signup の ref は流入元の計測に使われる。 */}
+      <div class="site-cta">
+        <a class="site-cta__link site-cta__signin" href="https://app.geolonia.com/#/signin">サインイン</a>
+        <a class="site-cta__link site-cta__signup" href="https://app.geolonia.com/?lang=ja&amp;ref=docs.geolonia.com#/signup">ユーザー登録</a>
+      </div>
     </header>
 
     <slot />
