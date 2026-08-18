@@ -1,0 +1,84 @@
+# Geolonia Maps Documentation
+
+> Official documentation for Geolonia Maps, a family of libraries for putting maps into websites and applications. All of them are built on MapLibre GL JS.
+
+Geolonia Maps offers three libraries on top of a shared core. `embed` needs only a `<script>` tag and a `<div>` with `data-*` attributes. `maps-suite` drives the map imperatively from JavaScript with `Map`, `Marker` and `InfoWindow` classes, which makes it a good fit when migrating from another map service. `maps-react` exposes the map as React components. All three sit on `@geolonia/maps-core`, whose `GeoloniaMap` class extends the MapLibre GL JS `Map`, so any MapLibre GL JS API is available from every library once you reach the underlying instance.
+
+The site is organised in the four Diátaxis quadrants: Tutorials for learning by doing, How-to Guides for task recipes, Explanation for concepts, and Reference for API documentation generated from the type definitions. The site content itself is written in Japanese; this file and llms-full.txt are English renderings.
+
+Code samples use the demo key `YOUR-API-KEY`, which renders maps only on approved hosts such as `localhost`, GitHub Pages, CodePen, Netlify, Vercel and Cloudflare Pages. Publishing on your own domain requires a real key from the dashboard at https://app.geolonia.com/.
+
+For full documentation content, see: https://docs.geolonia.com/llms-full.txt
+
+## Tutorials
+
+- [Geolonia Maps Tutorials](https://docs.geolonia.com/tutorials/): Entry point for the three tracks, with guidance on which library to pick
+- [embed Tutorial](https://docs.geolonia.com/tutorials/embed/): Six-rung ladder from a single HTML file to a published map
+- [embed Rung 0: Show a Map](https://docs.geolonia.com/tutorials/embed/first-map/): One HTML file, the `.geolonia` div and the CDN script tag, plus how to serve it over localhost
+- [embed Rung 1: Place and Viewpoint](https://docs.geolonia.com/tutorials/embed/view/): `data-lat`, `data-lng`, `data-zoom`, `data-pitch` and `data-bearing`
+- [embed Rung 2: Add Data](https://docs.geolonia.com/tutorials/embed/data/): GeoJSON structure and loading it with `data-geojson`, plus `data-cluster`
+- [embed Rung 3: Change the Look](https://docs.geolonia.com/tutorials/embed/style/): Replacing the base map with `data-style`
+- [embed Rung 4: Add Interaction](https://docs.geolonia.com/tutorials/embed/interaction/): Child elements of the div become the marker popup
+- [embed Rung 5: Publish](https://docs.geolonia.com/tutorials/embed/publish/): Issuing a production API key, registering domains and deploying
+- [maps-suite Tutorial](https://docs.geolonia.com/tutorials/maps-suite/): Six-rung ladder for the imperative JavaScript library
+- [maps-suite Rung 0: Show a Map](https://docs.geolonia.com/tutorials/maps-suite/first-map/): npm install, the two required CSS imports and `new geolonia.maps.Map()`
+- [maps-suite Rung 1: Place and Viewpoint](https://docs.geolonia.com/tutorials/maps-suite/view/): `center`, `zoom`, `tilt` and `heading`, and the corresponding setters
+- [maps-suite Rung 2: Add Data](https://docs.geolonia.com/tutorials/maps-suite/data/): `whenReady()`, `getGeoloniaMap()`, `addSource` and `addLayer`
+- [maps-suite Rung 3: Change the Look](https://docs.geolonia.com/tutorials/maps-suite/style/): Data-driven styling with the `match` expression in `paint`
+- [maps-suite Rung 4: Add Interaction](https://docs.geolonia.com/tutorials/maps-suite/interaction/): `Marker`, `InfoWindow` and `addListener`
+- [maps-suite Rung 5: Publish](https://docs.geolonia.com/tutorials/maps-suite/publish/): Production key, build and static hosting
+- [maps-react Tutorial](https://docs.geolonia.com/tutorials/maps-react/): Six-rung ladder for the React library
+- [maps-react Rung 0: Show a Map](https://docs.geolonia.com/tutorials/maps-react/first-map/): npm install, CSS imports, the `Map` component and `containerStyle`
+- [maps-react Rung 1: Place and Viewpoint](https://docs.geolonia.com/tutorials/maps-react/view/): `center` as `[lng, lat]`, plus `zoom`, `pitch`, `bearing` and `marker`
+- [maps-react Rung 2: Add Data](https://docs.geolonia.com/tutorials/maps-react/data/): Declaring `Source` and `Layer` as children of `Map`
+- [maps-react Rung 3: Change the Look](https://docs.geolonia.com/tutorials/maps-react/style/): Data-driven styling with the `match` expression in `paint`
+- [maps-react Rung 4: Add Interaction](https://docs.geolonia.com/tutorials/maps-react/interaction/): `Marker` children become the popup, and building markers from an array
+- [maps-react Rung 5: Publish](https://docs.geolonia.com/tutorials/maps-react/publish/): Production key, build and static hosting
+
+## How-to Guides
+
+- [How-to Guides](https://docs.geolonia.com/howto/): Index of task recipes, each with embed, maps-suite and maps-react tabs
+- [Place Multiple Markers](https://docs.geolonia.com/howto/multiple-markers/): Loop over a list of points; embed cannot do this and needs GeoJSON instead
+- [Switch the Map Style](https://docs.geolonia.com/howto/change-style/): `data-style`, the `style` option, `setStyle`, and switching at runtime from React state
+- [Show a Popup on Click](https://docs.geolonia.com/howto/popup-on-click/): Child elements in embed and maps-react, `InfoWindow` in maps-suite
+- [Load External GeoJSON Data](https://docs.geolonia.com/howto/geojson-data/): `data-geojson`, `map.data.addGeoJson()`, and the Source plus Layer pair
+- [Show the Current Location](https://docs.geolonia.com/howto/current-location/): The geolocate control, and calling `navigator.geolocation` directly
+- [Fit All Points on Screen](https://docs.geolonia.com/howto/fit-bounds/): Computing a bounding box and calling `fitBounds` with padding
+- [Toggle Map Controls](https://docs.geolonia.com/howto/map-controls/): Navigation, geolocate, fullscreen, scale and logo controls, their defaults and positions
+- [Switch the Map Language](https://docs.geolonia.com/howto/switch-language/): `ja`, `en` and `auto`; maps-suite has no language option
+- [Get Coordinates from a Draggable Marker](https://docs.geolonia.com/howto/draggable-marker/): `draggable` and `dragend`, reading `getLngLat()`
+- [Access the Map Instance Directly (maps-core)](https://docs.geolonia.com/howto/maps-core-access/): Reaching `GeoloniaMap` from each library to call any MapLibre GL JS API
+- [Cluster a Large Number of Points](https://docs.geolonia.com/howto/clustering/): `data-cluster`, `MarkerClusterer`, and the three-layer cluster pattern in React
+- [Colour Areas by Value (Choropleth)](https://docs.geolonia.com/howto/choropleth/): Polygon fill colour from an `interpolate` expression
+- [Visualise Density with a Heatmap](https://docs.geolonia.com/howto/heatmap/): The `heatmap` layer and its weight, radius, intensity and colour ramp
+- [Show Buildings and Terrain in 3D](https://docs.geolonia.com/howto/3d/): `data-3d`, the maps-suite default, and the JSX spread needed in maps-react
+- [Add a Custom Data Source (Vector Tiles and More)](https://docs.geolonia.com/howto/custom-source/): Template `{z}/{x}/{y}` URLs, attribution and `source-layer`
+- [Search by Address and Show That Place](https://docs.geolonia.com/howto/address-search/): Geocoding with `@geolonia/normalize-japanese-addresses`, and reading `point.level`
+- [Show the Map as a Globe](https://docs.geolonia.com/howto/globe/): `setProjection({ type: "globe" })`, which needs MapLibre GL JS v5
+- [Place a Map with HTML Tags Only (maps-suite)](https://docs.geolonia.com/howto/web-component/): The `<geolonia-map>` custom element, its attributes and `innerMap`
+- [Manage API Keys in YAML](https://docs.geolonia.com/howto/cli-map-keys/): `geolonia map-keys pull`, `plan` and `apply`
+
+## Explanation
+
+- [Explanation](https://docs.geolonia.com/explanation/): Why the API is MapLibre GL JS compatible, and what vector tiles are
+- [What a Map Style Is](https://docs.geolonia.com/explanation/map-style/): Why data and appearance are separate, what sources, layers, glyphs and sprites are, and how to name or link a style
+- [Geolonia Maps Style List](https://docs.geolonia.com/explanation/styles/): The official styles with live previews, including the two deprecated ones
+- [Icons Available for marker-symbol](https://docs.geolonia.com/explanation/marker-symbol/): The icon list, generated at build time from the sprite of `geolonia/basic-v2`
+- [Environments Where the Demo Key Works](https://docs.geolonia.com/explanation/free-referers/): Which hosts render maps without issuing a key
+- [What the Geolonia CLI Is](https://docs.geolonia.com/explanation/cli/): Installing, logging in, the full command list and where credentials live
+- [What Geolonia Agent Skills Is](https://docs.geolonia.com/explanation/agent-skills/): The Claude Code plugin that teaches coding agents how to write Geolonia Maps code
+
+## API Reference
+
+- [Reference](https://docs.geolonia.com/reference/): How the four packages relate, and which parts are documented where
+- [@geolonia/embed](https://docs.geolonia.com/reference/embed/): `EmbedAttributes` holds every `data-*` attribute and its default; `EmbedPlugin` is for plugin authors
+- [@geolonia/maps-suite](https://docs.geolonia.com/reference/suite/geolonia.Namespace.maps/): The `geolonia.maps` namespace, with `Map`, `Marker`, `InfoWindow`, `MarkerClusterer`, shapes and value types
+- [@geolonia/maps-core](https://docs.geolonia.com/reference/core/): `GeoloniaMap`, `GeoloniaMapOptions`, `GeoloniaMarker` and `SimpleStyle`
+
+`@geolonia/maps-react` has no generated reference. Most of its props come straight from `GeoloniaMapOptions` in maps-core, minus `container`.
+
+## Optional
+
+- [MapLibre GL JS documentation](https://maplibre.org/maplibre-gl-js/docs/): The inherited API surface of `GeoloniaMap`, including everything not listed in the Geolonia reference
+- [Geolonia dashboard](https://app.geolonia.com/): Where production API keys are issued and domains are registered
+- [geolonia/free-referers](https://github.com/geolonia/free-referers/blob/master/referers.json): The complete list of hosts on which the demo key renders
