@@ -80,6 +80,7 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
       ['heatmap', 'ヒートマップで密度を可視化するには'],
       ['3d', '建物や地形を3Dで表示するには'],
       ['custom-source', '独自のデータソース（ベクトルタイル等）を追加するには'],
+      ['overlay-hazardmap', 'ハザードマップを地図に重ねるには'],
       ['address-search', '住所で検索してその場所の地図を表示するには'],
       ['globe', '地図を地球儀（グローブ）で表示するには'],
       ['web-component', 'HTML のタグだけで地図を置くには（maps-suite）'],
