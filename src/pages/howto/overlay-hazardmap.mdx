@@ -1,0 +1,590 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: ハザードマップを地図に重ねるには
+description: ハザードマップポータルサイトが配信する浸水想定区域などのタイルを、出典表示つきで地図に重ねます。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+国土交通省の[ハザードマップポータルサイト](https://disaportal.gsi.go.jp/)は、洪水浸水想定区域や津波浸水想定などを `{z}/{x}/{y}` のラスタタイルとして配信しています。これをタイルソースとして追加すれば、自分の地図に重ねられます。
+
+<Callout kind="warning" title="出典表示が必須です">
+このデータには出典の記載が求められています。タイルソースの **`attribution`** に出典を書いてください。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
+
+書く場所は**ソース**で、レイヤではありません。3つのライブラリはどれも同じで、書けば地図の右下に出ます。出典表示のコントロールを自分で足す必要はありません（[出典はどこに出るか](#出典はどこに出るか)）。
+</Callout>
+
+## コード
+
+どのライブラリでも、やることは土台の `GeoloniaMap` に対して `addSource` と `addLayer` を呼ぶことです。取り出し方だけが違います（[地図インスタンスに直接アクセスするには](/howto/maps-core-access/)）。例はどれも、洪水浸水想定区域（想定最大規模）を東京の下町に重ねる場合です。
+
+<Lens name="embed">
+`new geolonia.Map()` で地図を作ると、その戻り値がそのまま `GeoloniaMap` です。あとは `load` を待って `addSource` と `addLayer` を呼びます。
+
+<LiveCode title="embed で洪水浸水想定区域を重ねる">
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body { margin: 0; }
+      #map { width: 100%; height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="map" data-lat="35.7" data-lng="139.82" data-zoom="12" data-marker="off"></div>
+
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script>
+      const map = new geolonia.Map("#map");
+
+      map.on("load", () => {
+        map.addSource("flood", {
+          type: "raster",
+          tiles: [
+            "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png"
+          ],
+          tileSize: 256,
+          minzoom: 2,
+          maxzoom: 17,
+          attribution:
+            '出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>'
+        });
+
+        map.addLayer({
+          id: "flood",
+          type: "raster",
+          source: "flood",
+          paint: { "raster-opacity": 0.7 }
+        });
+      });
+    </script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+- **`class="geolonia"` を付けていません。** 付けると embed が自分で地図を作ってしまうので、`id` だけにして `new geolonia.Map("#map")` で作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
+- **`attribution`**：出典表示の文字列。必須です。右下の出典表示に追加されます。
+- **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
+- **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+</Lens>
+
+<Lens name="suite">
+`whenReady()` を待ってから、`getGeoloniaMap()` で土台を取り出します。`addSource` と `addLayer` は maps-suite の側には無いので、土台に降りて呼びます。
+
+<LiveCode title="maps-suite で洪水浸水想定区域を重ねる">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.7, lng: 139.82 },
+  zoom: 12,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+
+impl.addSource("flood", {
+  type: "raster",
+  tiles: [
+    "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png",
+  ],
+  tileSize: 256,
+  minzoom: 2,
+  maxzoom: 17,
+  attribution:
+    '出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>',
+});
+
+impl.addLayer({
+  id: "flood",
+  type: "raster",
+  source: "flood",
+  paint: { "raster-opacity": 0.7 },
+});
+```
+
+</LiveCode>
+
+- **`attribution`**：出典表示の文字列。必須です。土台が持っている出典表示に追加されます。
+- **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
+- **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+</Lens>
+
+<Lens name="react">
+`Source` と `Layer` を置くだけで、土台に降りずに書けます。
+
+<LiveCode title="maps-react で洪水浸水想定区域を重ねる">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Source, Layer } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.82, 35.7]}
+    zoom={12}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source
+      id="flood"
+      type="raster"
+      tiles={[
+        "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png",
+      ]}
+      tileSize={256}
+      minzoom={2}
+      maxzoom={17}
+      attribution='出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>'
+    >
+      <Layer id="flood" type="raster" paint={{ "raster-opacity": 0.7 }} />
+    </Source>
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **`attribution`**：出典表示の文字列。必須です。`Source` に書きます（`Layer` ではありません）。
+- **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
+- **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。荒川と隅田川にはさまれた低地が、浸水の深さに応じて塗り分けられ、右下に出典が出ます。
+
+塗りの色が何メートルを指すかは、ハザードマップポータルサイトの凡例に従います。凡例そのものは配信されないので、必要なら自分で用意してください。
+
+## 重ねられるおもなデータ
+
+いずれも `https://disaportaldata.gsi.go.jp/raster/` に続けて次のパスを書きます。
+
+| データ | パス | ズーム |
+|---|---|---|
+| 洪水浸水想定区域（想定最大規模） | `01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png` | 2〜17 |
+| 洪水浸水想定区域（計画規模） | `01_flood_l1_shinsuishin_newlegend_data/{z}/{x}/{y}.png` | 2〜17 |
+| 浸水継続時間（想定最大規模） | `01_flood_l2_keizoku_data/{z}/{x}/{y}.png` | 2〜17 |
+| 家屋倒壊等氾濫想定区域（氾濫流） | `01_flood_l2_kaokutoukai_hanran_data/{z}/{x}/{y}.png` | 4〜17 |
+| 家屋倒壊等氾濫想定区域（河岸侵食） | `01_flood_l2_kaokutoukai_kagan_data/{z}/{x}/{y}.png` | 4〜17 |
+| 内水（雨水出水）浸水想定区域 | `02_naisui_data/{z}/{x}/{y}.png` | 2〜17 |
+| 高潮浸水想定区域 | `03_hightide_l2_shinsuishin_data/{z}/{x}/{y}.png` | 2〜17 |
+| 津波浸水想定 | `04_tsunami_newlegend_data/{z}/{x}/{y}.png` | 2〜17 |
+| 土砂災害警戒区域（土石流） | `05_dosekiryukeikaikuiki/{z}/{x}/{y}.png` | 2〜17 |
+| 土砂災害警戒区域（急傾斜地の崩壊） | `05_kyukeishakeikaikuiki/{z}/{x}/{y}.png` | 2〜17 |
+| 土砂災害警戒区域（地すべり） | `05_jisuberikeikaikuiki/{z}/{x}/{y}.png` | 2〜17 |
+| 雪崩危険箇所 | `05_nadarekikenkasyo/{z}/{x}/{y}.png` | 2〜17 |
+
+洪水・内水・高潮・津波には、国管理河川ぶんだけ、都道府県管理河川ぶんだけ、といった分割配信もあります。全国分をまとめたものと分割ぶんのどちらを使うかで URL が変わるので、[配信データの一覧](https://disaportal.gsi.go.jp/hazardmapportal/hazardmap/copyright/opendata.html)で確認してください。この一覧は更新されます。記憶や推測で URL を書かず、そのつど見に行くのが確実です。
+
+## クリックした地点の浸水深を出すには
+
+重ねたタイルは**ラスタ**なので、`queryRenderedFeatures` では属性を引けません。持っている情報は色だけです。そこで、クリックした地点のタイル画像を1枚取ってきて、その1ピクセルの色を読み、凡例と突き合わせます。
+
+配信元は `Access-Control-Allow-Origin: *` を返すので、ブラウザから直接 `fetch` して canvas に描き、`getImageData` で色を読めます。
+
+<Callout kind="info" title="返せるのは深さの「区分」です">
+色から分かるのは凡例の区分（例: 3m 以上 5m 未満）までで、その地点の想定浸水深そのものではありません。判断の材料にするときは、区分であることが読み手に伝わる書き方にしてください。
+</Callout>
+
+凡例と色の対応は次のとおりです。全国版のタイルには**区分の切り方が違う2系統が混在**します。`0.5m 以上 3m 未満` を使う地域と、`0.5m 以上 1m 未満` を使う地域があり、どちらもそのまま同じタイルに入っています。
+
+| 色 | 区分 |
+|---|---|
+| `#dc7adc` | 20m 以上 |
+| `#f285c9` | 10m 以上 20m 未満 |
+| `#ff9191` | 5m 以上 10m 未満 |
+| `#ffb7b7` | 3m 以上 5m 未満 |
+| `#ffd8c0` | 0.5m 以上 3m 未満 |
+| `#f8e1a6` | 0.5m 以上 1m 未満 |
+| `#f7f5a9` | 0.5m 未満 |
+| `#ffffb3` | 0.3m 未満 |
+
+読み取りの手順は3つのライブラリで共通です。
+
+1. クリック地点の緯度経度から、ズーム 17 のタイル座標（`x` / `y`）と、そのタイル内のピクセル座標を求める。
+2. タイルを `fetch` する。**404 なら対象区域外**で、「浸水しない」とは意味が違います。
+3. canvas に描いて1ピクセル読む。**アルファが 0 なら浸水想定なし**。そうでなければ凡例の色に最も近いものを選ぶ。
+
+ズームを 17 に固定しているのは、地図の表示倍率にかかわらず最も細かいタイルを見るためです。
+
+<Lens name="embed">
+`window.geolonia` に MapLibre GL JS の中身が入っているので、`geolonia.Popup` がそのまま使えます。
+
+<LiveCode title="embed でクリック地点の浸水深を出す">
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body { margin: 0; }
+      #map { width: 100%; height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="map" data-lat="35.7" data-lng="139.82" data-zoom="12" data-marker="off"></div>
+
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script>
+      const TILE_URL =
+        "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png";
+
+      const LEGEND = [
+        ["#dc7adc", "20m 以上"],
+        ["#f285c9", "10m 以上 20m 未満"],
+        ["#ff9191", "5m 以上 10m 未満"],
+        ["#ffb7b7", "3m 以上 5m 未満"],
+        ["#ffd8c0", "0.5m 以上 3m 未満"],
+        ["#f8e1a6", "0.5m 以上 1m 未満"],
+        ["#f7f5a9", "0.5m 未満"],
+        ["#ffffb3", "0.3m 未満"]
+      ];
+
+      async function probeDepth(lng, lat) {
+        const z = 17;
+        const n = 2 ** z;
+        const rad = lat * Math.PI / 180;
+        const fx = (lng + 180) / 360 * n;
+        const fy = (1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2 * n;
+        const x = Math.floor(fx);
+        const y = Math.floor(fy);
+
+        const res = await fetch(
+          TILE_URL.replace("{z}", z).replace("{x}", x).replace("{y}", y)
+        );
+        if (!res.ok) return "対象区域外";
+
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = 256;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.drawImage(await createImageBitmap(await res.blob()), 0, 0);
+
+        const [r, g, b, a] = ctx.getImageData(
+          Math.floor((fx - x) * 256), Math.floor((fy - y) * 256), 1, 1
+        ).data;
+        if (a === 0) return "浸水想定なし";
+
+        let best = "";
+        let min = Infinity;
+        for (const [hex, label] of LEGEND) {
+          const d =
+            (parseInt(hex.slice(1, 3), 16) - r) ** 2 +
+            (parseInt(hex.slice(3, 5), 16) - g) ** 2 +
+            (parseInt(hex.slice(5, 7), 16) - b) ** 2;
+          if (d < min) { min = d; best = label; }
+        }
+        return best;
+      }
+
+      const map = new geolonia.Map("#map");
+
+      map.on("load", () => {
+        map.addSource("flood", {
+          type: "raster",
+          tiles: [TILE_URL],
+          tileSize: 256,
+          minzoom: 2,
+          maxzoom: 17,
+          attribution:
+            '出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>'
+        });
+        map.addLayer({
+          id: "flood",
+          type: "raster",
+          source: "flood",
+          paint: { "raster-opacity": 0.7 }
+        });
+      });
+
+      const popup = new geolonia.Popup({ closeOnClick: false });
+
+      map.on("click", async (e) => {
+        popup.setLngLat(e.lngLat).setText("読み取り中…").addTo(map);
+        popup.setText(await probeDepth(e.lngLat.lng, e.lngLat.lat));
+      });
+    </script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+</Lens>
+
+<Lens name="suite">
+土台の `GeoloniaMap` に降りて、`click` を受けます。`Popup` は `maplibre-gl` から読み込みます。
+
+<LiveCode title="maps-suite でクリック地点の浸水深を出す">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { Popup } from "maplibre-gl";
+import { geolonia } from "@geolonia/maps-suite";
+
+const TILE_URL =
+  "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png";
+
+const LEGEND = [
+  ["#dc7adc", "20m 以上"],
+  ["#f285c9", "10m 以上 20m 未満"],
+  ["#ff9191", "5m 以上 10m 未満"],
+  ["#ffb7b7", "3m 以上 5m 未満"],
+  ["#ffd8c0", "0.5m 以上 3m 未満"],
+  ["#f8e1a6", "0.5m 以上 1m 未満"],
+  ["#f7f5a9", "0.5m 未満"],
+  ["#ffffb3", "0.3m 未満"],
+];
+
+async function probeDepth(lng, lat) {
+  const z = 17;
+  const n = 2 ** z;
+  const rad = (lat * Math.PI) / 180;
+  const fx = ((lng + 180) / 360) * n;
+  const fy = ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n;
+  const x = Math.floor(fx);
+  const y = Math.floor(fy);
+
+  const res = await fetch(
+    TILE_URL.replace("{z}", z).replace("{x}", x).replace("{y}", y),
+  );
+  if (!res.ok) return "対象区域外";
+
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 256;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(await createImageBitmap(await res.blob()), 0, 0);
+
+  const [r, g, b, a] = ctx.getImageData(
+    Math.floor((fx - x) * 256), Math.floor((fy - y) * 256), 1, 1,
+  ).data;
+  if (a === 0) return "浸水想定なし";
+
+  let best = "";
+  let min = Infinity;
+  for (const [hex, label] of LEGEND) {
+    const d =
+      (parseInt(hex.slice(1, 3), 16) - r) ** 2 +
+      (parseInt(hex.slice(3, 5), 16) - g) ** 2 +
+      (parseInt(hex.slice(5, 7), 16) - b) ** 2;
+    if (d < min) { min = d; best = label; }
+  }
+  return best;
+}
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.7, lng: 139.82 },
+  zoom: 12,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+
+impl.addSource("flood", {
+  type: "raster",
+  tiles: [TILE_URL],
+  tileSize: 256,
+  minzoom: 2,
+  maxzoom: 17,
+  attribution:
+    '出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>',
+});
+
+impl.addLayer({
+  id: "flood",
+  type: "raster",
+  source: "flood",
+  paint: { "raster-opacity": 0.7 },
+});
+
+const popup = new Popup({ closeOnClick: false });
+
+impl.on("click", async (e) => {
+  popup.setLngLat(e.lngLat).setText("読み取り中…").addTo(impl);
+  popup.setText(await probeDepth(e.lngLat.lng, e.lngLat.lat));
+});
+```
+
+</LiveCode>
+
+</Lens>
+
+<Lens name="react">
+`Map` の `onClick` で座標を受け、読み取った結果を state に入れて `Popup` を出します。
+
+<LiveCode title="maps-react でクリック地点の浸水深を出す">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { Map, Source, Layer, Popup } from "@geolonia/maps-react";
+
+const TILE_URL =
+  "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png";
+
+const LEGEND = [
+  ["#dc7adc", "20m 以上"],
+  ["#f285c9", "10m 以上 20m 未満"],
+  ["#ff9191", "5m 以上 10m 未満"],
+  ["#ffb7b7", "3m 以上 5m 未満"],
+  ["#ffd8c0", "0.5m 以上 3m 未満"],
+  ["#f8e1a6", "0.5m 以上 1m 未満"],
+  ["#f7f5a9", "0.5m 未満"],
+  ["#ffffb3", "0.3m 未満"],
+];
+
+async function probeDepth(lng, lat) {
+  const z = 17;
+  const n = 2 ** z;
+  const rad = (lat * Math.PI) / 180;
+  const fx = ((lng + 180) / 360) * n;
+  const fy = ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n;
+  const x = Math.floor(fx);
+  const y = Math.floor(fy);
+
+  const res = await fetch(
+    TILE_URL.replace("{z}", z).replace("{x}", x).replace("{y}", y),
+  );
+  if (!res.ok) return "対象区域外";
+
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 256;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(await createImageBitmap(await res.blob()), 0, 0);
+
+  const [r, g, b, a] = ctx.getImageData(
+    Math.floor((fx - x) * 256), Math.floor((fy - y) * 256), 1, 1,
+  ).data;
+  if (a === 0) return "浸水想定なし";
+
+  let best = "";
+  let min = Infinity;
+  for (const [hex, label] of LEGEND) {
+    const d =
+      (parseInt(hex.slice(1, 3), 16) - r) ** 2 +
+      (parseInt(hex.slice(3, 5), 16) - g) ** 2 +
+      (parseInt(hex.slice(5, 7), 16) - b) ** 2;
+    if (d < min) { min = d; best = label; }
+  }
+  return best;
+}
+
+function App() {
+  const [info, setInfo] = useState(null);
+
+  const handleClick = async (e) => {
+    const { lng, lat } = e.lngLat;
+    setInfo({ lng, lat, label: "読み取り中…" });
+    setInfo({ lng, lat, label: await probeDepth(lng, lat) });
+  };
+
+  return (
+    <Map
+      apiKey="YOUR-API-KEY"
+      center={[139.82, 35.7]}
+      zoom={12}
+      containerStyle={{ width: "100%", height: "100vh" }}
+      onClick={handleClick}
+    >
+      <Source
+        id="flood"
+        type="raster"
+        tiles={[TILE_URL]}
+        tileSize={256}
+        minzoom={2}
+        maxzoom={17}
+        attribution='出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>'
+      >
+        <Layer id="flood" type="raster" paint={{ "raster-opacity": 0.7 }} />
+      </Source>
+      {info && (
+        <Popup lat={info.lat} lng={info.lng} onClose={() => setInfo(null)}>
+          {info.label}
+        </Popup>
+      )}
+    </Map>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+```
+
+</LiveCode>
+
+</Lens>
+
+地図をクリックすると、その地点の区分がポップアップに出ます。荒川沿いの低地なら `3m 以上 5m 未満`、新宿あたりなら `浸水想定なし`、海の上なら `対象区域外` になります。
+
+他の災害に応用するときは、`TILE_URL` と `LEGEND` を差し替えてください。**凡例は災害ごとに違います。** 津波や土砂災害の色をこの表のまま使うと、間違った値を表示します。
+
+## 地名が読めなくなるとき
+
+重ねたタイルはいちばん上に乗るので、ベース地図の地名や駅名が下に隠れます。ラベルの下に潜り込ませたいときは、レイヤを追加する位置を指定します。
+
+embed と maps-suite では、`addLayer` の第2引数に「その手前に入れたいレイヤの id」を渡します。id はスタイルごとに違うので、最初の symbol レイヤを探して渡すのが確実です。
+
+```js
+const firstSymbol = map.getStyle().layers.find((l) => l.type === "symbol")?.id;
+map.addLayer({ id: "flood", type: "raster", source: "flood" }, firstSymbol);
+```
+
+maps-react では `Layer` の `beforeId` に id を書きます。`geolonia/basic-v2` の場合、最初の symbol レイヤは `waterway-name` です。
+
+```jsx
+<Layer id="flood" type="raster" beforeId="waterway-name" />
+```
+
+## 出典はどこに出るか
+
+Geolonia Maps は、embed / maps-suite / maps-react のどれでも、地図を作るときに**出典表示のコントロールを1つ足します**。ベース地図の © Geolonia や © OpenStreetMap が右下に出ているのがそれです。
+
+ソースに `attribution` を書くと、その文字列がここに並びます。重ねたデータの出典は、こうしてベース地図の出典と同じ場所に出ます。書く場所はソースで、レイヤに書いても出ません。
+
+**自分で `AttributionControl` を足す必要はありません。** 足すとコントロールが2つになり、出典が二重に出ます。
+
+## 出典の書き方
+
+記載方法は[ハザードマップポータルサイトの利用規約](https://disaportal.gsi.go.jp/hazardmapportal/hazardmap/copyright/copyright.html)に定められています。示されている表記例は次のとおりです。
+
+- 出典：『ハザードマップポータルサイト』
+- 出典：『ハザードマップポータルサイト』（当該ページの URL）（〇年〇月〇日に利用）
+
+データを編集・加工して使うときは、加工したことが分かるように書きます。
+
+- 『ハザードマップポータルサイト』を加工して作成
+- 『ハザードマップポータルサイト』（当該ページの URL）をもとに作成
+
+**編集・加工した情報を、あたかも国が作成したかのような態様で公表・利用してはいけません。** また、コンテンツには特段の記載がない限り公共データ利用規約（第1.0版）（PDL1.0）が適用されますが、一部には測量法による制約や別のルールがかかるものもあります。実際に使う前に、利用規約そのものを読んでください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 何も出ない → その場所に、指定した災害のデータが無いだけかもしれません。タイルは対象区域のあるところにしか無く、無いところは 404 を返します。同じ場所をハザードマップポータルサイトで開いて、データがあるかどうか先に確かめてください。
+- ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと、それ以上は引き伸ばして表示されます。
+- ベース地図が見えない → `raster-opacity` を下げてください。
+- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません（[出典はどこに出るか](#出典はどこに出るか)）。
+- 出典が二重に出る → `AttributionControl` を自分で足しています。地図を作った時点で1つ足されているので、追加は要りません。
+</Callout>
+
+関連：[独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
