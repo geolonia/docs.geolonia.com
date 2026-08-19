@@ -19,3 +19,16 @@
 
 /*
   Content-Security-Policy: frame-ancestors 'self'
+
+# /demos/inline/<ID>/ は LiveCode が iframe で読み込むスニペットの実体である。
+# ページ単体では文脈が無く、本文に載っているコードの断片が重複して見えるだけなので、
+# 検索結果に出す価値がない。
+#
+# meta タグではなくヘッダで書いているのは、デモページの出力経路が3通りあるためである。
+# スニペットが <!doctype> 始まりの完全な HTML の場合は本文がそのまま出るので、
+# レイアウトに meta を足しても届かない。ヘッダなら出力経路によらず必ず付く。
+#
+# sitemap からの除外（astro.config.mjs）と役割が違う。除外は「載せない」であって
+# 「出すな」ではないため、他所からリンクされた場合に備えて noindex も要る。
+/demos/*
+  X-Robots-Tag: noindex

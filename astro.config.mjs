@@ -14,6 +14,10 @@ import react from '@astrojs/react';
 // ドキュメントに直接書いた <LiveCode> のコードを、動くデモページに書き出す。
 import livecode from './integrations/livecode.mjs';
 
+// /sitemap-index.xml と /sitemap-0.xml を出す。旧サイト（Jekyll）は
+// jekyll-sitemap が /sitemap.xml を配信していたので、切替で失われた分を戻す。
+import sitemap from '@astrojs/sitemap';
+
 // TypeDoc が本文の冒頭に出すパンくず（パッケージ名 → 名前空間 → 現在地）を落とす。
 // ナビゲーションは ApiLayout の左サイドバーが担うので、本文側には要らない。
 //
@@ -50,7 +54,26 @@ function remarkStripHtmlComments() {
 export default defineConfig({
   // og:image / canonical を絶対 URL で出すために必要（Astro.site の元になる）。
   site: 'https://docs.geolonia.com',
-  integrations: [mdx(), react(), livecode()],
+  integrations: [
+    mdx(),
+    react(),
+    livecode(),
+    sitemap({
+      // 読者向けの入口だけを載せる。除外するのは次の2種類。
+      //
+      //   /demos/inline/<ID>/ … LiveCode が iframe で読み込むスニペットの実体。
+      //     ページ単体では文脈が無く、本文の断片が重複して見えるだけなので、
+      //     検索結果に出す価値がない。同じ理由で public/_headers が
+      //     X-Robots-Tag: noindex も付けている。sitemap から外すだけでは
+      //     「載せない」であって「出すな」にはならないため、両方が要る。
+      //
+      //   /og/… … OGP 画像を生やすエンドポイント。ページではない。
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        return !path.startsWith('/demos/') && !path.startsWith('/og/');
+      },
+    }),
+  ],
   markdown: {
     remarkPlugins: [
       remarkCjkFriendly,
