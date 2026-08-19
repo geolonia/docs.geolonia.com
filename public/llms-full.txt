@@ -1445,11 +1445,84 @@ The **children** of the `Marker` component are the popup content.
 - **`lat` and `lng`**: separate props, unlike the `[longitude, latitude]` array of `center`.
 - Unlike embed, several `Marker` elements can each carry **their own popup**.
 
+### Images inside popups, on several markers
+
+The body of a popup is HTML, so an `<img>` puts a picture in it. The maximum width of a popup is **240px** by default, so the image has to carry its own width; otherwise it overflows the frame.
+
+**embed** cannot attach a declarative popup to anything but the centre marker, but its JavaScript API attaches one popup per marker.
+
+```html
+<style>
+  .spot-popup img { width: 100%; display: block; margin-top: 6px; }
+</style>
+```
+
+```js
+const map = new geolonia.Map("#map");
+
+for (const spot of spots) {
+  const popup = new geolonia.Popup({ className: "spot-popup" }).setHTML(`
+    <strong>${spot.name}</strong><br>${spot.note}
+    <img src="/geolonia-icon.png" alt="${spot.name}">
+  `);
+
+  new geolonia.Marker().setLngLat([spot.lng, spot.lat]).setPopup(popup).addTo(map);
+}
+```
+
+- **`className`**: the class added to the popup frame, which lets `<style>` reach the image inside it.
+- **`setPopup()`**: binds the popup to the marker. MapLibre opens it on click, so no listener is needed.
+
+**maps-suite** builds a `Marker` and an `InfoWindow` per spot in a loop. `InfoWindow` has no width option, so the width goes into the `style` attribute of the image.
+
+```js
+const IMG_STYLE = "width: 100%; display: block; margin-top: 6px";
+
+for (const spot of spots) {
+  const marker = new geolonia.maps.Marker({
+    position: { lat: spot.lat, lng: spot.lng },
+    map,
+    title: spot.name,
+  });
+
+  const infoWindow = new geolonia.maps.InfoWindow({
+    content: `
+      <strong>${spot.name}</strong><br>${spot.note}
+      <img src="/geolonia-icon.png" alt="${spot.name}" style="${IMG_STYLE}">
+    `,
+  });
+
+  marker.addListener("click", () => infoWindow.open(map, marker));
+}
+```
+
+- One `InfoWindow` per spot means several popups can be open at the same time. To keep exactly one open, create a single `InfoWindow` and swap its body with `setContent()`: `open()` closes itself before opening.
+
+**maps-react** puts the `<img>` among the children of each `Marker`.
+
+```jsx
+{spots.map((spot) => (
+  <Marker key={spot.name} lat={spot.lat} lng={spot.lng} color="#e4402f">
+    <strong>{spot.name}</strong>
+    <p style={{ margin: "2px 0 0" }}>{spot.note}</p>
+    <img
+      src="/geolonia-icon.png"
+      alt={spot.name}
+      style={{ width: "100%", display: "block", marginTop: 6 }}
+    />
+  </Marker>
+))}
+```
+
+The `src` of these samples points at an image hosted on this site. Replace it with **a path from the root** (`/img/tokyo-station.jpg`) or **an absolute URL** (`https://example.com/tokyo-station.jpg`). A relative path resolves differently depending on the page the popup HTML is used from.
+
 **When it does not work**
 
 - No marker appears: check that `data-marker="off"` is not present. Popups need a marker.
 - The popup is empty: check that the children are not empty. Whitespace alone will not open one.
 - Nothing happens on click: watch for an unclosed `div` tag.
+- The image overflows or is cut off: the maximum width of a popup is 240px by default. Let `width: 100%` apply to the image.
+- The image does not appear: check the `src`. A relative path resolves against the page, so use a path from the root or an absolute URL.
 
 ---
 

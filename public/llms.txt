@@ -40,7 +40,7 @@ For full documentation content, see: https://docs.geolonia.com/llms-full.txt
 - [How-to Guides](https://docs.geolonia.com/howto/): Index of task recipes, each with embed, maps-suite and maps-react tabs
 - [Place Multiple Markers](https://docs.geolonia.com/howto/multiple-markers/): Loop over a list of points; embed cannot do this and needs GeoJSON instead
 - [Switch the Map Style](https://docs.geolonia.com/howto/change-style/): `data-style`, the `style` option, `setStyle`, and switching at runtime from React state
-- [Show a Popup on Click](https://docs.geolonia.com/howto/popup-on-click/): Child elements in embed and maps-react, `InfoWindow` in maps-suite
+- [Show a Popup on Click](https://docs.geolonia.com/howto/popup-on-click/): Child elements in embed and maps-react, `InfoWindow` in maps-suite, plus images inside popups on several markers
 - [Load External GeoJSON Data](https://docs.geolonia.com/howto/geojson-data/): `data-geojson`, `map.data.addGeoJson()`, and the Source plus Layer pair
 - [Show the Current Location](https://docs.geolonia.com/howto/current-location/): The geolocate control, and calling `navigator.geolocation` directly
 - [Fit All Points on Screen](https://docs.geolonia.com/howto/fit-bounds/): Computing a bounding box and calling `fitBounds` with padding
