@@ -15,7 +15,7 @@ import LiveCode from '../../components/LiveCode.astro'
 <Callout kind="warning" title="出典表示が必須です">
 このデータには出典の記載が求められています。タイルソースの **`attribution`** に出典を書いてください。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
 
-出典が画面に出るまでの扱いは、いま3つのライブラリで揃っていません。**embed は書くだけで右下に出ます**が、**maps-suite と maps-react では出典表示のコントロールを自分で追加する必要があります**。下のコードはそれぞれ必要なぶんだけ含んでいるので、タブを切り替えてそのまま使ってください。理由は[出典が出るまで](#出典が出るまで)に書きました。
+書く場所は**ソース**で、レイヤではありません。3つのライブラリはどれも同じで、書けば地図の右下に出ます。出典表示のコントロールを自分で足す必要はありません（[出典はどこに出るか](#出典はどこに出るか)）。
 </Callout>
 
 ## コード
@@ -79,14 +79,13 @@ import LiveCode from '../../components/LiveCode.astro'
 </Lens>
 
 <Lens name="suite">
-`whenReady()` を待ってから、`getGeoloniaMap()` で土台を取り出します。`addSource` と `addLayer` は maps-suite の側には無いので、土台に降りて呼びます。出典表示の `AttributionControl` も、ここで一緒に追加します。
+`whenReady()` を待ってから、`getGeoloniaMap()` で土台を取り出します。`addSource` と `addLayer` は maps-suite の側には無いので、土台に降りて呼びます。
 
 <LiveCode title="maps-suite で洪水浸水想定区域を重ねる">
 
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
-import { AttributionControl } from "maplibre-gl";
 import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
@@ -97,8 +96,6 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 await map.whenReady();
 const impl = map.getGeoloniaMap();
-
-impl.addControl(new AttributionControl(), "bottom-right");
 
 impl.addSource("flood", {
   type: "raster",
@@ -122,15 +119,14 @@ impl.addLayer({
 
 </LiveCode>
 
-- **`AttributionControl`**：出典を画面に出すコントロール。maps-suite 自身は持っていないので、`maplibre-gl` から読み込みます。これがないと出典が何も出ません。
-- **`attribution`**：出典表示の文字列。必須です。
+- **`attribution`**：出典表示の文字列。必須です。土台が持っている出典表示に追加されます。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
 
 </Lens>
 
 <Lens name="react">
-`Source` と `Layer` を置くだけで、土台に降りずに書けます。出典表示の `AttributionControl` も部品として用意されています。
+`Source` と `Layer` を置くだけで、土台に降りずに書けます。
 
 <LiveCode title="maps-react で洪水浸水想定区域を重ねる">
 
@@ -138,7 +134,7 @@ impl.addLayer({
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { createRoot } from "react-dom/client";
-import { Map, Source, Layer, AttributionControl } from "@geolonia/maps-react";
+import { Map, Source, Layer } from "@geolonia/maps-react";
 
 createRoot(document.getElementById("root")).render(
   <Map
@@ -147,7 +143,6 @@ createRoot(document.getElementById("root")).render(
     zoom={12}
     containerStyle={{ width: "100%", height: "100vh" }}
   >
-    <AttributionControl position="bottom-right" />
     <Source
       id="flood"
       type="raster"
@@ -167,8 +162,7 @@ createRoot(document.getElementById("root")).render(
 
 </LiveCode>
 
-- **`AttributionControl`**：出典を画面に出すコントロール。これがないと出典が何も出ません。
-- **`attribution`**：出典表示の文字列。必須です。
+- **`attribution`**：出典表示の文字列。必須です。`Source` に書きます（`Layer` ではありません）。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
 
@@ -345,7 +339,7 @@ createRoot(document.getElementById("root")).render(
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
-import { AttributionControl, Popup } from "maplibre-gl";
+import { Popup } from "maplibre-gl";
 import { geolonia } from "@geolonia/maps-suite";
 
 const TILE_URL =
@@ -407,8 +401,6 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 await map.whenReady();
 const impl = map.getGeoloniaMap();
 
-impl.addControl(new AttributionControl(), "bottom-right");
-
 impl.addSource("flood", {
   type: "raster",
   tiles: [TILE_URL],
@@ -448,9 +440,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  Map, Source, Layer, Popup, AttributionControl,
-} from "@geolonia/maps-react";
+import { Map, Source, Layer, Popup } from "@geolonia/maps-react";
 
 const TILE_URL =
   "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png";
@@ -519,7 +509,6 @@ function App() {
       containerStyle={{ width: "100%", height: "100vh" }}
       onClick={handleClick}
     >
-      <AttributionControl position="bottom-right" />
       <Source
         id="flood"
         type="raster"
@@ -568,15 +557,13 @@ maps-react では `Layer` の `beforeId` に id を書きます。`geolonia/basi
 <Layer id="flood" type="raster" beforeId="waterway-name" />
 ```
 
-## 出典が出るまで
+## 出典はどこに出るか
 
-3つのライブラリで書き方が違うのは、いまの実装の都合です。
+Geolonia Maps は、embed / maps-suite / maps-react のどれでも、地図を作るときに**出典表示のコントロールを1つ足します**。ベース地図の © Geolonia や © OpenStreetMap が右下に出ているのがそれです。
 
-Geolonia Maps はどの入り口でも、地図を作るときに出典表示のコントロールを1つ足しています。ソースに `attribution` を書けば、そこに文字列が並ぶ、という設計です。ところが npm の `@geolonia/maps-suite` と `@geolonia/maps-react` からこれを使うと、このコントロールが空のまま何も表示しません。重ねたデータの出典どころか、ベース地図の © Geolonia や © OpenStreetMap も出ない状態です。embed（CDN）では正しく出ます。
+ソースに `attribution` を書くと、その文字列がここに並びます。重ねたデータの出典は、こうしてベース地図の出典と同じ場所に出ます。書く場所はソースで、レイヤに書いても出ません。
 
-そのため maps-suite と maps-react では、MapLibre GL JS の `AttributionControl` を自分で足して出しています。embed で同じことをすると、もともと出ているものと合わせて**出典が二重に出る**ので、足していません。
-
-この差は maps-suite と maps-react の側が直れば消えます（[maps-core#101](https://github.com/geolonia/maps-core/issues/101)）。直ったあとに `AttributionControl` を残しておくと二重表示になるので、そのときはこのページも合わせて直します。
+**自分で `AttributionControl` を足す必要はありません。** 足すとコントロールが2つになり、出典が二重に出ます。
 
 ## 出典の書き方
 
@@ -596,8 +583,8 @@ Geolonia Maps はどの入り口でも、地図を作るときに出典表示の
 - 何も出ない → その場所に、指定した災害のデータが無いだけかもしれません。タイルは対象区域のあるところにしか無く、無いところは 404 を返します。同じ場所をハザードマップポータルサイトで開いて、データがあるかどうか先に確かめてください。
 - ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと、それ以上は引き伸ばして表示されます。
 - ベース地図が見えない → `raster-opacity` を下げてください。
-- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません。maps-suite と maps-react では、加えて `AttributionControl` の追加が要ります（[出典が出るまで](#出典が出るまで)）。
-- 出典が二重に出る → embed で `AttributionControl` を足しています。embed は最初から出典を出すので、追加は要りません。
+- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません（[出典はどこに出るか](#出典はどこに出るか)）。
+- 出典が二重に出る → `AttributionControl` を自分で足しています。地図を作った時点で1つ足されているので、追加は要りません。
 </Callout>
 
 関連：[独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
