@@ -1,0 +1,138 @@
+---
+/**
+ * 全文検索。ヘッダのボタンから <dialog> を開き、その中に Pagefind の UI を出す。
+ *
+ * インデックスは `npm run build` の後半（`pagefind --site dist`）が dist を
+ * 読んで `dist/pagefind/` に書き出す。つまり **ビルド成果物を対象にした検索**で、
+ * 検索そのものはブラウザだけで完結する（サーバーもサービスも要らない）。
+ *
+ * 何が索かれるかは `data-pagefind-body` が決める。この属性を持つ要素が
+ * サイト内に1つでもあると、Pagefind は**それを持たないページを索かない**。
+ * 本文（DocLayout / ApiLayout の <main class="content">）にだけ付けてあるので、
+ * ヘッダ・サイドバー・フッタと、LiveCode のデモページ（DemoLayout）は
+ * 自動的に外れる。索かせたくないものを増やすときは、この規則を使う。
+ *
+ * UI は初めて開いた時に読み込む（`import()`）。検索しない読者に
+ * 100KB 超の JS と wasm を配らないため。
+ *
+ * `npm run dev`（astro dev）には `dist/pagefind/` が無いので検索できない。
+ * その場合はボタンを押した時に理由を出す。確認は `npm run build` →
+ * `npm run preview` で行う。
+ */
+---
+<button class="site-search__button" type="button" data-search-open aria-label="ドキュメントを検索">
+  <svg class="site-search__icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="7" cy="7" r="4.5"></circle>
+    <path d="M10.5 10.5 L14 14"></path>
+  </svg>
+  <span class="site-search__label">検索</span>
+  <kbd class="site-search__kbd">⌘K</kbd>
+</button>
+
+<dialog class="site-search" data-search-dialog aria-label="ドキュメントを検索">
+  <div class="site-search__panel">
+    <div class="site-search__head">
+      <p class="site-search__title">ドキュメントを検索</p>
+      <button class="site-search__close" type="button" data-search-close aria-label="検索を閉じる">閉じる</button>
+    </div>
+    <div class="site-search__ui" data-search-ui></div>
+    <p class="site-search__note" data-search-note hidden>
+      検索インデックスが見つかりません。開発サーバー（<code>npm run dev</code>）では検索できないので、
+      <code>npm run build</code> の後に <code>npm run preview</code> で開いてください。
+    </p>
+  </div>
+</dialog>
+
+<script>
+  (function initSearch() {
+    const button = document.querySelector('[data-search-open]');
+    const dialog = document.querySelector('[data-search-dialog]');
+    if (!button || !dialog) return;
+
+    const host = dialog.querySelector('[data-search-ui]');
+    const note = dialog.querySelector('[data-search-note]');
+    let loading = null;
+
+    // Pagefind の UI は npm から import しているので、実行時のスクリプト URL から
+    // インデックスの場所を推測できない（default-ui はそれを既定の手段にしている）。
+    // 明示的に渡さないと存在しない URL を取りに行くので、必ず指定する。
+    const BUNDLE_PATH = '/pagefind/';
+
+    function loadUI() {
+      if (loading) return loading;
+      loading = (async () => {
+        const res = await fetch(`${BUNDLE_PATH}pagefind-entry.json`, { method: 'HEAD' }).catch(() => null);
+        if (!res || !res.ok) {
+          note.hidden = false;
+          return false;
+        }
+        const { PagefindUI } = await import('@pagefind/default-ui');
+        new PagefindUI({
+          element: host,
+          bundlePath: BUNDLE_PATH,
+          showSubResults: true, // 長いページは見出し単位でも出す（リファレンスに効く）
+          showImages: false,    // 記事に代表画像を持たせていないので出さない
+          // 文言は明示的に渡す。default-ui は日本語訳を同梱しているが、それを選ぶのは
+          // html の lang を見る自動判定で、npm から import した UI では効かない。
+          // 渡さないと英語（"2 results for …" / "Clear"）のままになる。
+          translations: {
+            placeholder: '検索',
+            clear_search: 'クリア',
+            load_more: '次を読み込む',
+            search_label: 'このサイトを検索',
+            filters_label: 'フィルタ',
+            zero_results: '[SEARCH_TERM]の検索に一致する情報はありませんでした',
+            many_results: '[SEARCH_TERM]の[COUNT]件の検索結果',
+            one_result: '[SEARCH_TERM]の[COUNT]件の検索結果',
+            total_zero_results: '結果なし',
+            total_one_result: '[COUNT]件の結果',
+            total_many_results: '[COUNT]件の結果',
+            alt_search: '[SEARCH_TERM]の検索に一致する情報はありませんでした。[DIFFERENT_TERM]の検索結果を表示しています',
+            search_suggestion: '[SEARCH_TERM]の検索に一致する情報はありませんでした。次のいずれかの検索を試してください',
+            searching: '[SEARCH_TERM]を検索しています',
+            results_label: '検索結果',
+            keyboard_navigate: '移動',
+            keyboard_select: '選択',
+            keyboard_clear: 'クリア',
+            keyboard_close: '閉じる',
+            keyboard_search: '検索',
+            error_search: '検索に失敗しました',
+            filter_selected_one: '[COUNT]件選択中',
+            filter_selected_many: '[COUNT]件選択中',
+            input_hint: '入力中に検索結果が表示されます',
+            loading: '読み込み中',
+          },
+        });
+        return true;
+      })();
+      return loading;
+    }
+
+    async function open() {
+      dialog.showModal();
+      const ready = await loadUI();
+      if (ready) host.querySelector('input')?.focus();
+    }
+
+    // ⌘ は Mac だけの表記。他のプラットフォームでは Ctrl と出す。
+    const kbd = button.querySelector('.site-search__kbd');
+    const isApple = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
+    if (kbd && !isApple) kbd.textContent = 'Ctrl K';
+
+    button.addEventListener('click', open);
+    dialog.querySelector('[data-search-close]')?.addEventListener('click', () => dialog.close());
+
+    // 背景（dialog の余白）のクリックで閉じる。パネル自身のクリックは通す。
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    // ⌘K / Ctrl+K で開く。入力欄にいる時は邪魔しない。Esc は dialog の既定で閉じる。
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'k' || !(event.metaKey || event.ctrlKey)) return;
+      event.preventDefault();
+      if (dialog.open) dialog.close();
+      else open();
+    });
+  })();
+</script>

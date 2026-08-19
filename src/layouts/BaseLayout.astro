@@ -8,6 +8,7 @@ import '../styles/components.css';
 
 import { ogImagePath } from '../lib/og';
 import Analytics from '../components/Analytics.astro';
+import Search from '../components/Search.astro';
 
 const {
   title = 'Geolonia Docs',
@@ -63,6 +64,9 @@ const nav = [
           <a href={n.href} data-sec={n.sec} class={page === n.sec ? 'active' : ''}>{n.label}</a>
         ))}
       </nav>
+      {/* 全文検索。ビルド時に作る Pagefind のインデックスを、ヘッダのボタンから開く
+          モーダルで引く。セクションのナビの隣に置き、どのページからでも同じ位置にある。 */}
+      <Search />
       {/* ダッシュボードへの導線。ドキュメントを読んで「使ってみる」に進む出口なので、
           セクションのナビとは離して右端に置く。signup の ref は流入元の計測に使われる。 */}
       <div class="site-cta">

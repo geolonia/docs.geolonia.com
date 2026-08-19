@@ -15,6 +15,7 @@ docs.geolonia.com（リニューアル版）にページを足したり直した
 - [その他の部品](#その他の部品)
 - [スタイル](#スタイル)
 - [OGP 画像](#ogp-画像)
+- [全文検索：Pagefind](#全文検索pagefind)
 - [デプロイと配信ヘッダ](#デプロイと配信ヘッダ)
 - [触ってはいけないもの](#触ってはいけないもの)
 - [API リファレンスの再生成](#api-リファレンスの再生成)
@@ -39,7 +40,7 @@ Node.js は **22.12.0 以上**が必要です。
 ```bash
 npm install
 npm run dev       # 開発サーバー http://localhost:4321
-npm run build     # ./dist/ に静的サイトを書き出す
+npm run build     # ./dist/ に静的サイトを書き出し、検索インデックスも作る
 npm run preview   # ビルド結果をローカルで確認する
 npm run cf:dev    # dist/ を wrangler で動かす（配信環境の再現。_headers も効きます）
 ```
@@ -52,6 +53,9 @@ npm run cf:dev    # dist/ を wrangler で動かす（配信環境の再現。_h
 
 地図が実際に描画されるかは、ビルドだけでは分かりません。地図を含むページを足したときは
 `npm run preview` でブラウザまで確認してください。
+
+全文検索も同じです。インデックスは `dev` では作られないので、検索の確認は
+`npm run build` → `npm run preview` で行います（[全文検索](#全文検索pagefind)）。
 
 ## ブランチ運用
 
@@ -118,6 +122,7 @@ badge: howto
 | `badge` | | H1 の頭に付く象限バッジ。`tutorial` `howto` `reference` `explanation` |
 | `embed` | | `true` にすると Geolonia embed の CDN スクリプトを読み込みます |
 | `description` | | `<meta name="description">` と OGP に使う一文。省略するとサイト共通の文言になります（[OGP 画像](#ogp-画像)） |
+| `search` | | `false` にするとそのページを全文検索の対象から外します（[全文検索](#全文検索pagefind)） |
 
 `embed: true` は、そのページで `<GeoloniaMap />` を使うときだけ付けます。CDN スクリプトは
 ページ全体を走査して `.geolonia` を地図に変える副作用があるので、必要なページだけに
@@ -472,6 +477,53 @@ SNS やチャットにページの URL を貼ったときに出るカード画�
 - **カード上のロゴは PNG です。** `src/assets/og-logo.png` に置いてあり、`public/logo-docs.svg` から `rsvg-convert -w 600` で書き出したものです。CanvasKit は SVG を読めないので、ロゴを差し替えるときは PNG も作り直してください。
 
 生成済みの画像は `node_modules/.astro-og-canvas/` にキャッシュされ、内容が変わったページだけ描き直されます。
+
+## 全文検索：Pagefind
+
+ヘッダの検索ボタン（⌘K / Ctrl+K でも開きます）から、サイト内の全文検索ができます。
+検索は [Pagefind](https://pagefind.app/) で、**サーバーもサービスも使いません**。
+ビルドが作った静的ファイルをブラウザが読んで検索します。
+
+```bash
+npm run build   # astro build && pagefind --site dist
+```
+
+`pagefind` は **`astro build` が書き出した `dist/` の HTML を読んで** `dist/pagefind/` に
+インデックスを作ります。ソースではなく成果物を見るので、ページを増やしても設定は要りません。
+
+日本語は分割（形態素解析）されます。`npx pagefind` が既定で使う extended リリースに
+日本語が入っているためで、`html` の `lang="ja"` から言語が決まります。
+そのため「住所検索」で `/howto/address-search/` が、「マーカーを複数」で
+`/howto/multiple-markers/` が引けます。
+
+### 何が索かれるか
+
+`data-pagefind-body` を持つ要素だけです。**この属性がサイト内に1つでもあると、
+Pagefind は持たないページを索きません。** 付けてあるのは本文（`DocLayout` と
+`ApiLayout` の `<main class="content">`）だけなので、次のものは自動的に外れます。
+
+- ヘッダ・左サイドバー・フッタ … 全ページに同じ文字列が入るので、索くと結果が濁ります
+- `/demos/inline/<ID>/`（`DemoLayout`）… LiveCode のデモ。本文のコードと重複します
+
+個別のページを外したいときは frontmatter に `search: false` と書きます（`404.md` がこれです）。
+本文の一部だけ外したいときは、その要素に `data-pagefind-ignore` を付けます
+（`QuadBadge` に付けてあります。h1 の中にあるため、付けないと検索結果の見出しが
+「ハウツー クリックで…」のように象限名込みになります）。
+
+### 開発サーバーでは検索できません
+
+`npm run dev` は `dist/` を作らないので、インデックスがありません。検索ボタンを押すと
+その理由が出ます。**確認は `npm run build` → `npm run preview`** で行ってください。
+
+### UI
+
+`@pagefind/default-ui` をそのまま使い、色とフォントだけ `--pagefind-ui-*` 変数で
+サイトに寄せています（`components.css` の「全文検索」の節）。UI は**初めて開いた時に
+読み込みます**（`import()`）。検索しない読者に JS と wasm を配らないためです。
+
+文言は日本語を明示的に渡しています。default-ui は日本語訳を同梱していますが、それを
+選ぶのは `html` の `lang` を見る自動判定で、npm から import した UI では効きません。
+インデックスの位置（`bundlePath`）も同じ理由で明示が必要です。
 
 ## デプロイと配信ヘッダ
 
