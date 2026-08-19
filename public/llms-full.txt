@@ -134,6 +134,10 @@ Since no place is specified, the map shows the whole world. If you can drag with
 - A message like "the map cannot be displayed": you are on an environment where the demo key does not apply. Check whether you opened the file directly (`file://`) and reopen it by the method above.
 - Nothing happens at all: check the spelling of the `<script>` URL. It also fails offline.
 
+**The attributes you can write**
+
+Place and appearance come from `data-*` attributes on the `div`, introduced one at a time over the following rungs. The full list with defaults is the `EmbedAttributes` type in the reference: https://docs.geolonia.com/reference/embed/TypeAlias.EmbedAttributes/
+
 ---
 
 ## embed Rung 1: Place and Viewpoint
