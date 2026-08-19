@@ -19,7 +19,7 @@ import ApiNav from '../components/ApiNav.astro';
 import DocNav from '../components/DocNav.astro';
 import type { SectionKind } from '../lib/doc-nav';
 const { frontmatter } = Astro.props;
-const { title, page = '', kicker, badge, embed, sidebar, htmlTitle, description } = frontmatter ?? {};
+const { title, page = '', kicker, badge, embed, sidebar, htmlTitle, description, search } = frontmatter ?? {};
 // 見出し上に出すのは kicker だけ。frontmatter の quadrant（Diátaxis の象限）は
 // ページを分類するための管理用メタデータで、読者には意味が伝わらないので表示しない。
 const eyebrow = kicker;
@@ -35,19 +35,26 @@ const NAV_BY_PAGE: Record<string, SectionKind> = {
   explanation: 'explanation',
 };
 const navKind = sidebar ?? NAV_BY_PAGE[page] ?? null;
+// 本文に data-pagefind-body を付けて、全文検索が索く範囲を本文だけに絞る。
+// この属性がサイト内に1つでもあると、Pagefind は持たないページを索かない。
+// つまりヘッダ・サイドバー・フッタと、デモページ（DemoLayout）は自動的に外れる。
+// 検索結果から入っても意味がないページ（404 など）は frontmatter に search: false を
+// 書いて外す。false のときは属性そのものを出さない（値が "false" でも属性が
+// 在れば索かれてしまうため）。
+const pagefindBody = search === false ? undefined : '';
 ---
 <Shell title={htmlTitle ?? `${title} — Geolonia Docs`} page={page} description={description}>
   {navKind ? (
     <div class="doc-shell">
       {navKind === 'api' ? <ApiNav /> : <DocNav section={navKind} />}
-      <main class="content">
+      <main class="content" data-pagefind-body={pagefindBody}>
         {eyebrow && <p class="kicker">{eyebrow}</p>}
         <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
         <slot />
       </main>
     </div>
   ) : (
-    <main class="content">
+    <main class="content" data-pagefind-body={pagefindBody}>
       {eyebrow && <p class="kicker">{eyebrow}</p>}
       <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
       <slot />

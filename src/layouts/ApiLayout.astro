@@ -20,7 +20,7 @@ const pkg = packageLabel(Astro.url.pathname.split('/').filter(Boolean)[1] ?? '')
 <BaseLayout title={`${title} — Geolonia Docs`} page={page} description={description ?? `${pkg} の API リファレンス`}>
   <div class="doc-shell">
     <ApiNav />
-    <main class="content api-doc">
+    <main class="content api-doc" data-pagefind-body>
       <slot />
     </main>
   </div>
