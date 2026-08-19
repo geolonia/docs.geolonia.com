@@ -13,6 +13,12 @@
 # 旧サイトにあった `docs.tilecloud.io` と `geolonia-docs.netlify.com` 向けの規則は
 # 引き継いでいない。前者は DNS レコード自体が既に存在せず、後者は Netlify 固有である。
 
+# ── サイトマップ ──────────────────────────────────────────────
+# 旧サイトは jekyll-sitemap が /sitemap.xml を配信していた。@astrojs/sitemap の
+# 出力名は sitemap-index.xml で固定なので、旧 URL からそこへ送る。Google も Bing も
+# サイトマップの 301 を追う（Search Console に旧 URL のまま登録されていても届く）。
+/sitemap.xml                      /sitemap-index.xml            301
+
 # ── チュートリアル ────────────────────────────────────────────
 /tutorial/                        /tutorials/                   301
 /tutorial/001/                    /tutorials/                   301
