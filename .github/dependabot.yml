@@ -1,0 +1,36 @@
+# Dependabot の設定。
+#
+# このファイルの目的は astro の更新を一時的に止めることだけである。
+# 定期的なバージョン更新は行わない (open-pull-requests-limit: 0)。
+# セキュリティ更新はこの上限の対象外なので従来どおり届き、そこに
+# ignore が効く。
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    # 定期的なバージョン更新は出さない。セキュリティ更新は対象外なので届く。
+    open-pull-requests-limit: 0
+    ignore:
+      # astro 7.1.0 以降を保留する。
+      #
+      # 理由: astro.config.mjs の markdown.remarkPlugins は
+      # @astrojs/markdown-remark の unified プロセッサ上で動くが、
+      # このパッケージは astro の peer 依存としてバージョンが固定されて
+      # おり、astro のバージョンごとに要求が食い違う。
+      #
+      #   astro 7.0.6 -> @astrojs/markdown-remark 7.2.1 (完全固定)
+      #   astro 7.3.1 -> @astrojs/markdown-remark ^7.3.0
+      #
+      # さらに astro 7.3.1 では Markdown プロセッサの既定が Sätteri に
+      # 変わり、@astrojs/markdown-remark が astro の依存から外れた。
+      # 明示的に宣言して追従しようとすると、@astrojs/markdown-satteri の
+      # 0.3.8 と 0.4.0 が衝突し、npm install が書いたロックを npm ci が
+      # 拒否する。
+      #
+      # 解除の条件: astro.config.mjs を非推奨の markdown.remarkPlugins から
+      # 移行し、上流のバージョン整合が取れること。
+      # 7.0.x 系のパッチは通すので、その範囲のセキュリティ修正は届く。
+      - dependency-name: "astro"
+        versions: [">=7.1.0"]
