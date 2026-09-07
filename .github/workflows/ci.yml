@@ -35,6 +35,11 @@ jobs:
 
       - run: npm ci
 
+      # 文章の検査はビルドより速いので先に回す。
+      # 対象は手書きページのみ。生成物の除外は .textlintignore にある。
+      - name: 文章の検査
+        run: npm run lint:text
+
       - name: ビルド
         run: npm run build
 

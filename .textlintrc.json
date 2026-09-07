@@ -1,0 +1,21 @@
+{
+  "plugins": {
+    "mdx": true
+  },
+  "rules": {
+    "preset-japanese": {
+      "sentence-length": {
+        "max": 200
+      },
+      "no-doubled-joshi": {
+        "severity": "warning"
+      }
+    },
+    "prh": {
+      "rulePaths": [".textlint.prh.yml"]
+    }
+  },
+  "filters": {
+    "comments": true
+  }
+}

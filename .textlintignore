@@ -1,0 +1,11 @@
+# src/pages/reference/ は TypeDoc 出力を取り込んだ生成物である。
+# 直しても次の `npm run docs:import:*` で戻るうえ、上流との差分を取りやすく
+# するため忠実なミラーにしておく方針なので、対象から外す。
+src/pages/reference/**
+
+# ビルド成果物と依存
+dist/**
+node_modules/**
+vendor/**
+.astro/**
+.wrangler/**
