@@ -1,0 +1,168 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: HTML のタグだけで地図を置くには（maps-suite）
+description: カスタム要素 geolonia-map を使い、JavaScript を書かずに HTML のタグとして地図を配置します。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+maps-suite には `<geolonia-map>` というカスタム要素（Web Components）が入っています。CDN のスクリプトを読み込むと、あとは HTML のタグを書くだけで地図が出ます。`new geolonia.maps.Map()` を呼ぶ JavaScript は要りません。
+
+<Callout kind="info" title="このページは maps-suite だけの話です">
+embed と maps-react には対応するものがありません。静的な HTML に地図を1枚置くだけなら [embed](/tutorials/embed/first-map/) で足ります。React なら `<Map>` コンポーネントを使ってください。使い分けはこのページの最後で説明します。
+</Callout>
+
+## コード
+
+`center` は `"緯度,経度"` の順で、カンマ区切りの1つの属性です。要素そのものに高さがないと地図がつぶれるので、CSS で高さを与えます。
+
+<LiveCode title="geolonia-map タグで地図を出す">
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      geolonia-map { width: 100%; height: 100vh; }
+    </style>
+    <script src="https://cdn.geolonia.com/maps-suite/v1/maps-suite.js"></script>
+  </head>
+  <body>
+    <geolonia-map
+      api-key="YOUR-API-KEY"
+      center="35.681236,139.767125"
+      zoom="14"></geolonia-map>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+スクリプトは読み込まれた時点で自分を `geolonia-map` として登録します。そのため、タグを書く場所がスクリプトより前でも後でも動きます。
+
+指定できる属性は次のとおりです。
+
+| 属性 | 内容 |
+|---|---|
+| `api-key` | Geolonia の API キー |
+| `center` | 初期の中心。`"緯度,経度"` |
+| `zoom` | 初期のズームレベル |
+| `map-style` | スタイルの識別子または URL |
+| `map-id` | 地図インスタンスの識別子 |
+| `tilt-interaction-disabled` | 付けると傾ける操作を無効にします |
+| `heading-interaction-disabled` | 付けると回す操作を無効にします |
+
+## 属性をあとから変える
+
+`center` と `zoom` は、置いたあとに書き換えると地図が追従します。標準のカスタム要素なので、属性を変えるだけで反映されます。
+
+<LiveCode title="ボタンで center を書き換える">
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      geolonia-map { width: 100%; height: 90vh; }
+      button { font-size: 1rem; padding: 0.4rem 0.8rem; }
+    </style>
+    <script src="https://cdn.geolonia.com/maps-suite/v1/maps-suite.js"></script>
+  </head>
+  <body>
+    <button id="tokyo">東京駅</button>
+    <button id="osaka">大阪駅</button>
+    <geolonia-map
+      id="map"
+      api-key="YOUR-API-KEY"
+      center="35.681236,139.767125"
+      zoom="13"></geolonia-map>
+
+    <script>
+      const el = document.getElementById("map");
+      document.getElementById("tokyo").onclick = () => {
+        el.setAttribute("center", "35.681236,139.767125");
+      };
+      document.getElementById("osaka").onclick = () => {
+        el.setAttribute("center", "34.702485,135.495951");
+      };
+    </script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+embed の `data-lat` / `data-lng` は初期値として一度だけ読まれるので、この書き換えはできません。ここが両者のいちばん大きな違いです。
+
+## 中の地図を触る
+
+要素の `innerMap` プロパティに maps-suite の `Map` インスタンスが入っています。属性で足りない操作は、ここから普通に呼べます。
+
+```js
+const el = document.querySelector("geolonia-map");
+el.innerMap.setTilt(45);
+el.innerMap.fitBounds({ north: 35.7, south: 35.6, east: 139.8, west: 139.7 }, 40);
+```
+
+さらに maplibre の機能が必要なら、[`getGeoloniaMap()`](/howto/geojson-data/) で基盤の地図を取り出せます。
+
+ズームが変わったときは `geolonia-zoomchange` イベントが要素から発行されます。
+
+```js
+el.addEventListener("geolonia-zoomchange", () => {
+  console.log("zoom:", el.innerMap.getZoom());
+});
+```
+
+## サーバで HTML を組む構成に置く
+
+このやり方が効くのは、**サーバ側で HTML を組み立てていて、クライアントにバンドラを置いていない**構成です。たとえば [Hono](https://hono.dev/) は HTML を返すので、テンプレートに `<geolonia-map>` を1行書けばそれで終わります。ビルド設定にも npm の依存にも手を入れません。
+
+```jsx
+import { Hono } from "hono";
+
+const app = new Hono();
+
+app.get("/", (c) =>
+  c.html(
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <style>{"geolonia-map { width: 100%; height: 100vh; }"}</style>
+        <script src="https://cdn.geolonia.com/maps-suite/v1/maps-suite.js"></script>
+      </head>
+      <body>
+        <geolonia-map api-key="YOUR-API-KEY" center="35.681236,139.767125" zoom="14" />
+      </body>
+    </html>,
+  ),
+);
+
+export default app;
+```
+
+Hono を Cloudflare Workers で動かす場合、デモキーの `YOUR-API-KEY` はそのまま使えます（[デモキーで無料で試せる環境](/explanation/free-referers/)）。
+
+<Callout kind="info" title="Vue や Svelte でも同じです">
+カスタム要素は標準の仕組みなので、Vue や Svelte のテンプレートにもそのまま書けます。要素が画面に現れた時点で初期化され、外れた時点で後片付けされるので、条件付きで表示する UI の中に置いても大丈夫です。
+</Callout>
+
+## embed との使い分け
+
+どちらも「CDN のスクリプト1本と HTML のタグ」で地図が出ます。選ぶ基準は、**そのページが動くかどうか**です。
+
+静的な HTML に地図を1枚置くだけなら embed を使ってください。`data-geojson` でデータを読む、`data-3d` で3D建物を出すといった属性が揃っていて、書く量がいちばん少なくて済みます。
+
+一方、地図の位置をあとから変える、タブの切り替えで地図を出したり消したりする、といった動きがあるなら `<geolonia-map>` が向きます。属性の変更に追従し、要素の出入りに合わせて初期化と後片付けが走ります。embed は読み込み時に走査する方式なので、あとから現れる地図を拾えません。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 地図の高さがゼロになる → `geolonia-map` 自体に高さを与えてください。要素の既定の高さはありません。
+- `center` が効かない → `"緯度,経度"` の順で、1つの属性にカンマ区切りで書きます。`lat` と `lng` を別の属性に分ける書き方ではありません。
+- `innerMap` が `null` になる → 要素が DOM に入る前に読んでいます。地図は DOM に挿入された時点で作られます。
+- タグが素通しで表示される → スクリプトが読み込めていません。ネットワークタブで `maps-suite.js` が 200 で返っているか確認してください。
+</Callout>

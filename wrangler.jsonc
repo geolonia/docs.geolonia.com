@@ -1,0 +1,8 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "docs-geolonia-com",
+  "compatibility_date": "2026-07-03",
+  "assets": {
+    "directory": "./dist"
+  }
+}

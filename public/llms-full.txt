@@ -1,0 +1,3431 @@
+# Geolonia Maps Documentation
+
+> Official documentation for Geolonia Maps, a family of libraries for putting maps into websites and applications. All of them are built on MapLibre GL JS.
+
+Geolonia Maps offers three libraries on top of a shared core. `embed` needs only a `<script>` tag and a `<div>` with `data-*` attributes. `maps-suite` drives the map imperatively from JavaScript. `maps-react` exposes the map as React components. All three sit on `@geolonia/maps-core`, whose `GeoloniaMap` class extends the MapLibre GL JS `Map`.
+
+The site content is written in Japanese. This file is an English rendering of it. Code samples are reproduced verbatim, so string literals that are part of the sample data remain in Japanese.
+
+Code samples use the demo key `YOUR-API-KEY`, which renders maps only on approved hosts such as `localhost`, GitHub Pages, CodePen, Netlify, Vercel and Cloudflare Pages. Publishing on your own domain requires a real key from https://app.geolonia.com/.
+
+The generated API reference is not reproduced here. See https://docs.geolonia.com/reference/ for it.
+
+---
+
+## Introduction
+
+URL: https://docs.geolonia.com/
+
+Geolonia Maps is a library set that gives you access to the maps Geolonia provides.
+
+### Start from one of three libraries
+
+Geolonia Maps offers three libraries on top of the core technology, so that people arriving from very different backgrounds can all use it. The tutorials provide three separate routes, one per library, so you can pick the one that matches your environment or the framework you already use.
+
+Every page that shows code has tabs above the sample, letting you read the same map through the embed, maps-suite and maps-react lenses.
+
+---
+
+## Geolonia Maps Tutorials
+
+URL: https://docs.geolonia.com/tutorials/
+
+Let us build a practical map application with Geolonia Maps. By the end of the tutorials you will be able to display a map, change how it looks, put markers on it, and show your own data on it.
+
+### Choosing the library that fits you
+
+Geolonia Maps provides three libraries. They deliver the same capabilities in the way that suits each environment.
+
+- **embed**: displays a map with nothing but a `<script>` tag and a `<div>` tag. This is the beginner-oriented library for "I just want a map".
+- **maps-suite**: suited to migrating from another map service. Its API is designed so that existing users of such services find it easy to adopt.
+- **maps-react**: the React-ready library. It handles dynamic switching of markers and data well.
+
+All three are built on maps-core, which adapts MapLibre GL JS to Geolonia maps. That means that if you write TypeScript, every MapLibre GL JS feature remains available.
+
+### Tutorial entry points
+
+- embed: https://docs.geolonia.com/tutorials/embed/
+- maps-react: https://docs.geolonia.com/tutorials/maps-react/
+- maps-suite: https://docs.geolonia.com/tutorials/maps-suite/
+
+---
+
+## embed Tutorial
+
+URL: https://docs.geolonia.com/tutorials/embed/
+
+embed is the easiest way to display a map in Geolonia Maps. It works by writing a `<div>` tag and a `<script>` tag into your HTML. No build tool and no npm required.
+
+This tutorial climbs a ladder of capability from the bottom. Each rung is short and always produces something that works. By the top of rung 5 you will be able to publish a map carrying your own data at your own URL.
+
+1. Rung 0, Show a Map: a map appears from a single HTML file
+2. Rung 1, Place and Viewpoint: specify the place, the zoom level and the tilt
+3. Rung 2, Add Data: overlay your own point data as GeoJSON
+4. Rung 3, Change the Look: replace the base map style
+5. Rung 4, Add Interaction: show a popup on click
+6. Rung 5, Publish: obtain an API key and go to production
+
+Every rung includes a "when it does not work" checklist.
+
+---
+
+## embed Rung 0: Show a Map
+
+URL: https://docs.geolonia.com/tutorials/embed/first-map/
+
+embed aims at the simplest possible map display. In this rung you create one HTML file and get a map into the browser.
+
+### Displaying a map
+
+Save the following as `index.html`.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>embed</title>
+    <style>
+      .geolonia { width: 100%; height: 400px; }
+    </style>
+  </head>
+  <body>
+    <div class="geolonia"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+There are only two mechanisms at work.
+
+- **A `div` carrying `class="geolonia"`**: this becomes the map. The `div` has no size of its own, so CSS gives it a height. A height of 0 means an invisible map.
+- **The CDN `<script>`**: once loaded it looks for `.geolonia` elements on the page and turns them into maps. The `YOUR-API-KEY` in the URL is the trial demo key, which renders on development and preview environments such as `localhost`, GitHub Pages and CodePen. Issuing your own key happens at rung 5.
+
+### Opening it in a browser
+
+**Double-clicking the saved `index.html` will not show a map.** The demo key only renders for approved environments, and opening the file directly (`file://`) is not one of them.
+
+The easy route is to start a simple local server in the folder holding `index.html` and open it as `localhost`.
+
+```
+# Node.js があるなら
+npx serve
+
+# Python があるなら
+python3 -m http.server
+
+# Windows で Python があるなら
+py -m http.server
+```
+
+`npx serve` prints a URL on start. For `http.server`, open `http://localhost:8000/`.
+
+If you already have a web server publishing HTML, uploading `index.html` there also works. Since the demo key only renders on approved environments, in that case go to rung 5 first, issue your own key and swap it in.
+
+To try it without setting up a server at all, pasting into an online editor such as CodePen or JSFiddle also shows a map.
+
+### Checking that it works
+
+Since no place is specified, the map shows the whole world. If you can drag with the mouse and zoom with the wheel, it works.
+
+**When it does not work**
+
+- Blank white, nothing shown: check whether `.geolonia` has a **height of 0**.
+- A message like "the map cannot be displayed": you are on an environment where the demo key does not apply. Check whether you opened the file directly (`file://`) and reopen it by the method above.
+- Nothing happens at all: check the spelling of the `<script>` URL. It also fails offline.
+
+**The attributes you can write**
+
+Place and appearance come from `data-*` attributes on the `div`, introduced one at a time over the following rungs. The full list with defaults is the `EmbedAttributes` type in the reference: https://docs.geolonia.com/reference/embed/TypeAlias.EmbedAttributes/
+
+---
+
+## embed Rung 1: Place and Viewpoint
+
+URL: https://docs.geolonia.com/tutorials/embed/view/
+
+### Specifying place and zoom
+
+Every embed setting is written as a **`data-*` attribute** on the `div`. Place is `data-lat` (latitude) and `data-lng` (longitude); zoom is `data-zoom`.
+
+```html
+<div class="geolonia"
+     data-lat="35.658581" data-lng="139.745438" data-zoom="16"></div>
+```
+
+- **`data-lat` / `data-lng`**: latitude and longitude of the map centre. The values above are Tokyo Tower. You can get coordinates for your own place by right-clicking in Google Maps.
+- **`data-zoom`**: zoom level. Larger numbers mean closer. As a rule of thumb, **11** shows a whole city, **14** a district, and **16** individual buildings.
+
+### Tilting and rotating the viewpoint
+
+`data-pitch` (tilt) and `data-bearing` (rotation) change the viewpoint itself.
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.658581" data-lng="139.745438" data-zoom="16"
+     data-pitch="45" data-bearing="20"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+- **`data-pitch`**: degrees by which the map tips towards the viewer. `0` is a flat top-down view.
+- **`data-bearing`**: degrees by which the map rotates. `0` puts north at the top.
+
+**When it does not work**
+
+- The centre jumps to the sea or another country: you have **swapped latitude and longitude**. Within Japan, `data-lat` runs roughly 24 to 46 and `data-lng` roughly 123 to 146.
+- An attribute has no effect: check its spelling. Unknown attributes are silently ignored. Write bare numbers only, with no unit or degree sign.
+
+---
+
+## embed Rung 2: Add Data
+
+URL: https://docs.geolonia.com/tutorials/embed/data/
+
+### Getting to know GeoJSON
+
+To put data on the map with embed you use a file in the **GeoJSON** format, the standard format for geographic data. It is JSON, so a text editor is enough to read and write it.
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] },
+      "properties": { "name": "東京駅" }
+    }
+  ]
+}
+```
+
+- **`FeatureCollection`**: the container for features.
+- **`geometry`**: the shape, such as point, line or polygon. `coordinates` is in **`[longitude, latitude]`** order, the reverse of `data-lat` and `data-lng`.
+- **`properties`**: any attributes you want to attach, such as a name or a category.
+
+### Overlaying data on the map
+
+Put the GeoJSON file on a web server and add a `data-geojson` attribute to the `div`.
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/sample-spots.geojson"></div>
+```
+
+- **`data-geojson`**: the URL of the GeoJSON file. Either a path on the same server or an external URL that allows CORS.
+- **`data-marker="off"`**: hides the centre marker. Turning it off is the usual move when you want to look at your data points.
+
+### Making it readable with clustering
+
+Once you have tens or hundreds of points they overlap and become unreadable. Adding `data-cluster="on"` groups nearby points automatically.
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/sample-spots.geojson"
+     data-cluster="on"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+Zooming out turns individual points into clusters. To change the colour, specify something like `data-cluster-color="#ff0000"`.
+
+### Swapping in your own data
+
+1. Prepare one row per point in a spreadsheet or CSV, with longitude and latitude columns.
+2. Convert it to GeoJSON. Writing it by hand works, and tools such as geojson.io make it easier. Geolonia also offers GeoJSON Maker at https://geolonia.github.io/geojson-maker/.
+3. Put the file on a web server and change the `data-geojson` path.
+
+**When it does not work**
+
+- Points land in the sea or on another continent: check the **coordinate order**. GeoJSON `coordinates` is `[longitude, latitude]`, the reverse of the HTML `data-lat` and `data-lng`.
+- Nothing appears: check the GeoJSON response in the network tab of the browser developer tools. A 404 or a JSON syntax error is the usual cause.
+- GeoJSON at an external URL will not load: that is a CORS restriction. Try putting the file on the same server first.
+
+---
+
+## embed Rung 3: Change the Look
+
+URL: https://docs.geolonia.com/tutorials/embed/style/
+
+### What a style is
+
+Everything about how a map looks, such as road colours, text size and building fills, is decided by a **style**. Styles are defined as JSON files and specified by URL.
+
+In embed, writing a URL in the `data-style` attribute replaces the whole base map.
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/sample-spots.geojson"
+     data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+- **`data-style`**: the URL of a style JSON. The example above is a style published by OpenStreetMap Japan.
+- Omitting `data-style` uses the Geolonia standard style.
+
+### Styles Geolonia provides
+
+Geolonia Maps ships several styles. Writing the name in `data-style` is enough to switch.
+
+```html
+<div class="geolonia" data-style="geolonia/basic-v2"></div>
+<div class="geolonia" data-style="geolonia/midnight"></div>
+<div class="geolonia" data-style="geolonia/notebook"></div>
+```
+
+The list of usable style names is at https://docs.geolonia.com/explanation/styles/.
+
+**When it does not work**
+
+- The map turns blank white: check the spelling of the style URL. A URL that does not exist renders nothing.
+- The GeoJSON data disappeared: check that you did not delete the `data-geojson` attribute. Style and data are independent settings and can both be specified at once.
+
+---
+
+## embed Rung 4: Add Interaction
+
+URL: https://docs.geolonia.com/tutorials/embed/interaction/
+
+### How popups work
+
+In embed, HTML written inside the `.geolonia` div becomes **the popup of the marker**. A marker stands at the centre, and clicking it opens the content as a popup.
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia" data-lat="35.681236" data-lng="139.767125" data-zoom="15">
+  <strong>東京駅</strong><br>JR・地下鉄各線
+</div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+There are two points to note.
+
+- **The child elements of the `div`** become the popup content as they are. Being HTML, bold text and links work.
+- Writing child elements automatically raises a marker at the centre, unless `data-marker="off"` is set.
+
+### The limits of embed popups
+
+An embed popup can only be attached to **the single centre marker**. Attaching a popup to each of several markers requires a JavaScript implementation, which means the maps-suite or maps-react tutorials.
+
+One popup is still enough to answer "what is this place?". For a map embedded on a shop page, putting the address and opening hours in the popup makes it clear.
+
+### Combining with GeoJSON
+
+`data-geojson` from rung 2 and a popup (child elements) can be used together. Several data points appear, and a marker with a popup stands at the centre as well.
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-geojson="/data/sample-spots.geojson">
+  <strong>東京の主要スポット</strong><br>5地点を表示しています
+</div>
+```
+
+**When it does not work**
+
+- No marker appears: check that `data-marker="off"` is not still present. Popups need a marker.
+- The popup is empty: check that the child elements of the `div` are not empty. Whitespace alone will not open a popup.
+- Child elements have no effect: watch for an unclosed `div` tag. Close it properly, as in `<div class="geolonia" ...>content</div>`.
+
+---
+
+## embed Rung 5: Publish
+
+URL: https://docs.geolonia.com/tutorials/embed/publish/
+
+### Demo key versus production key
+
+Every code sample so far wrote `YOUR-API-KEY` in the CDN URL. That is a **demo key** prepared by Geolonia, and it works on development and preview environments such as `localhost`, GitHub Pages, CodePen, Netlify and Vercel.
+
+Publishing on your own domain requires issuing a **production API key**.
+
+### Obtaining an API key
+
+1. Log in to the Geolonia dashboard at https://app.geolonia.com/.
+2. Create a new key in the API key management screen.
+3. Register **the domain you will use**, for example `example.com`. The map renders only on registered domains.
+
+### Rewriting the code
+
+Replace `YOUR-API-KEY` with the key you obtained. Nothing else changes.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>My Map</title>
+    <style>
+      .geolonia { width: 100%; height: 400px; }
+    </style>
+  </head>
+  <body>
+    <div class="geolonia"
+         data-lat="35.68" data-lng="139.75" data-zoom="11"
+         data-marker="off"
+         data-geojson="/data/sample-spots.geojson"
+         data-cluster="on">
+    </div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-REAL-API-KEY"></script>
+  </body>
+</html>
+```
+
+### Publishing
+
+embed runs from an HTML file alone, so there is no build step. Upload the file to static hosting as it is.
+
+- **GitHub Pages**: put `index.html` in the repository and enable Pages.
+- **Netlify or Vercel**: connect the repository, and that is all.
+- **Shared hosting**: upload the file over FTP or similar.
+
+Do not forget to put the GeoJSON file on the same server, somewhere the `data-geojson` path resolves.
+
+**When it does not work**
+
+- "The map cannot be displayed" appears: check that the domain registered on the API key matches the actual domain. `www.example.com` and `example.com` count as different domains.
+- It worked locally but not on the server: check that the demo key (`YOUR-API-KEY`) has not been left in place.
+- Only the GeoJSON fails: check that the file is deployed on the server and that the path is correct.
+
+---
+
+## maps-suite Tutorial
+
+URL: https://docs.geolonia.com/tutorials/maps-suite/
+
+maps-suite is the library for driving Geolonia Maps **imperatively from JavaScript**. Its class structure of `Map`, `Marker` and `InfoWindow` will look familiar to anyone who has used another map service, and it supports the straightforward "create a map, then call methods on it" style. It works in any web page regardless of framework.
+
+By the top of rung 5 you will be able to publish, at your own URL, a map carrying your own data with colours driven by its attributes.
+
+1. Rung 0, Show a Map: a map appears from `new geolonia.maps.Map()`
+2. Rung 1, Place and Viewpoint: specify the place, the zoom level and the tilt
+3. Rung 2, Add Data: overlay your own point data as GeoJSON
+4. Rung 3, Change the Look: colour points by a data attribute
+5. Rung 4, Add Interaction: open an info window on marker click
+6. Rung 5, Publish: build and go to production
+
+---
+
+## maps-suite Rung 0: Show a Map
+
+URL: https://docs.geolonia.com/tutorials/maps-suite/first-map/
+
+Any build environment works. If you do not have one yet, the vanilla JavaScript template of Vite is the easy option.
+
+### Installing
+
+Install maps-suite together with maplibre-gl, the rendering engine.
+
+```
+npm install @geolonia/maps-suite maplibre-gl
+```
+
+### Displaying a map
+
+First prepare an element in the HTML to hold the map. The element has no size of its own, so give it a height in CSS.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>suite</title>
+    <style>
+      #map { width: 100%; height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
+```
+
+Then import the CSS and create a `Map` in `main.js`.
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+});
+```
+
+There are three points to note.
+
+- **The CSS imports**: both `maplibre-gl/dist/maplibre-gl.css` and `@geolonia/maps-core/css` are required. Forgetting them breaks the layout of controls and popups.
+- **`new geolonia.maps.Map(element, options)`**: the first argument is **the HTML element itself**. Passing an id string such as `"map"` raises an exception.
+- **`apiKey`**: `YOUR-API-KEY` is the trial demo key.
+
+### Checking that it works
+
+Start the dev server with `npm run dev` and open it in a browser. Without a centre, maps-suite shows **the whole world**, at latitude and longitude `0, 0` and zoom `0`.
+
+**When it does not work**
+
+- Blank white, nothing shown: check whether `#map` has a **height of 0**.
+- An exception reading "The first argument must be an HTMLElement": you are passing an id **string** to `Map`. Retrieve the element with `document.getElementById("map")` and pass that.
+- The layout breaks, for example control icons appear in odd places: **a missing CSS import**. Check that both are loaded.
+
+---
+
+## maps-suite Rung 1: Place and Viewpoint
+
+URL: https://docs.geolonia.com/tutorials/maps-suite/view/
+
+### Specifying place and zoom
+
+Place and zoom are given as **options** when creating the `Map`. Place is `center` and zoom is `zoom`.
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.658581, lng: 139.745438 },
+  zoom: 16,
+});
+```
+
+- **`center`**: the map centre, passed as a `{ lat, lng }` object. The values above are Tokyo Tower.
+- **`zoom`**: zoom level. As a rule of thumb, **11** shows a whole city, **14** a district, and **16** individual buildings.
+
+You can also move the map after creating it: `map.setCenter({ lat, lng })` to move, `map.panTo({ lat, lng })` for an animated move, and `map.setZoom(14)` to change the zoom.
+
+### Tilting and rotating the viewpoint
+
+Tilt and rotation are also `Map` options. maps-suite calls tilt `tilt` and rotation `heading`.
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.658581, lng: 139.745438 },
+  zoom: 16,
+  tilt: 45,     // 地図を手前に倒す角度（度）。0 が真上からの平面図
+  heading: 20,  // 地図を回す角度（度）。0 が北が上
+});
+```
+
+`tilt` is the angle by which the map tips towards the viewer and `heading` the angle by which it rotates, both in degrees. Both default to `0`, giving a flat top-down view with north at the top.
+
+They can be changed afterwards too: `map.setTilt(45)` for tilt, `map.setHeading(20)` for rotation, and `map.moveCamera({ center, zoom, tilt, heading })` to move them together with centre and zoom. None of these require waiting for the map to load.
+
+When you need an operation that only exists in maplibre, `map.getGeoloniaMap()` retrieves the underlying map instance. The next rung uses it for adding data.
+
+**When it does not work**
+
+- The centre jumps to the sea or another country: check for **swapped** `lat` and `lng`. Within Japan, `lat` runs roughly 24 to 46 and `lng` roughly 123 to 146.
+- A "function does not exist" error from `setPitch` or `setBearing`: in maps-suite the names are `setTilt` and `setHeading`. `pitch` and `bearing` are the underlying maplibre names.
+- Buildings became three-dimensional when you tilted: maps-suite enables 3D buildings by default. Pass `threeDimensional: false` to keep it flat.
+
+---
+
+## maps-suite Rung 2: Add Data
+
+URL: https://docs.geolonia.com/tutorials/maps-suite/data/
+
+### Getting to know GeoJSON
+
+This tutorial uses a sample of five places in Tokyo. Save the following as `public/data/sample-spots.geojson`. With Vite, files under `public/` are served at URLs like `/data/...`.
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] }, "properties": { "name": "東京駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.700258, 35.690921] }, "properties": { "name": "新宿駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.701636, 35.658034] }, "properties": { "name": "渋谷駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.796747, 35.714765] }, "properties": { "name": "浅草寺", "category": "観光" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.745438, 35.658581] }, "properties": { "name": "東京タワー", "category": "観光" } }
+  ]
+}
+```
+
+The `category` values are `ターミナル` (terminal station) and `観光` (sightseeing); the next rung uses them.
+
+- **`geometry`**: `coordinates` is in **`[longitude, latitude]`** order, the reverse of the `{ lat, lng }` used by `center`.
+- **`properties`**: attributes attached to the feature. Here `name` and `category`.
+
+### Overlaying data on the map
+
+Adding data uses `getGeoloniaMap()`, mentioned by name in rung 1. It is **the public API for touching the underlying maplibre map directly**, and it is where you go for anything maps-suite does not provide. You register a source (the data) and stack a layer (how to draw it) on top.
+
+There is also a shorter form, `map.data`, for simply loading GeoJSON, but this rung wants control over the drawing, so source and layer are handled separately.
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+impl.addLayer({ id: "spots", type: "circle", source: "spots" });
+```
+
+- **`addSource`**: registers the data supply. With `type: "geojson"`, `data` takes a URL or the object itself.
+- **`addLayer`**: stacks a way of drawing the data. `type: "circle"` draws each point as a circle. `source` names the registered source.
+- **Order matters**: the source referenced by `addLayer` must be added first, and both must be called after the map has finished loading, which `whenReady()` waits for.
+
+**When it does not work**
+
+- An error such as "Style is not done loading": you called `addSource` or `addLayer` **without waiting** for `whenReady()`. Check the `await`.
+- Points land in the sea or on another continent: **longitude and latitude are reversed** in the GeoJSON `coordinates`. Put them in `[longitude, latitude]` order.
+- Nothing appears but there is no error: check the GeoJSON response in the network tab. A 404 or a JSON syntax error is the usual cause.
+
+---
+
+## maps-suite Rung 3: Change the Look
+
+URL: https://docs.geolonia.com/tutorials/maps-suite/style/
+
+### Deciding how to draw with paint properties
+
+The **`paint`** entry of the layer definition passed to `addLayer` controls the drawing in detail.
+
+```js
+impl.addLayer({
+  id: "spots",
+  type: "circle",
+  source: "spots",
+  paint: {
+    "circle-radius": 8,
+    "circle-stroke-width": 2,
+    "circle-stroke-color": "#fff",
+    "circle-color": "#e4402f",
+  },
+});
+```
+
+- **`circle-radius`**: circle radius in pixels.
+- **`circle-stroke-width` and `circle-stroke-color`**: outline width and colour. A white outline makes points readable over the map.
+- **`circle-color`**: fill colour.
+
+### Varying colour by data attribute
+
+`circle-color` accepts not only a fixed colour but also an **expression**. A `match` expression builds a lookup table saying "if `category` has this value, use this colour".
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+impl.addLayer({
+  id: "spots",
+  type: "circle",
+  source: "spots",
+  paint: {
+    "circle-radius": 8,
+    "circle-stroke-width": 2,
+    "circle-stroke-color": "#fff",
+    "circle-color": [
+      "match",
+      ["get", "category"],
+      "ターミナル", "#e4402f",
+      "観光", "#2b6cb0",
+      "#888888",
+    ],
+  },
+});
+```
+
+Reading the array from the top:
+
+1. `"match"`: the expression that looks up a table.
+2. `["get", "category"]`: takes the `properties.category` value of each point.
+3. `"ターミナル", "#e4402f"`: red if the value is "terminal".
+4. `"観光", "#2b6cb0"`: blue if the value is "sightseeing".
+5. `"#888888"`: the colour when nothing matches. This fallback is **required**.
+
+Deciding appearance from data attributes like this is called **data-driven styling**. Beyond colour, you can vary `circle-radius` by value, drawing larger circles for larger numbers.
+
+### Changing the base map itself
+
+To change the appearance of the background map rather than the point colours, pass a style name or URL in the `style` option when creating the `Map`.
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  style: "geolonia/midnight",
+});
+```
+
+**When it does not work**
+
+- Everything takes the fallback colour: check that the values written in `match` **match exactly** the values in the GeoJSON `properties`. Watch for full-width versus half-width characters and stray whitespace.
+- Nothing renders any more: **forgetting the fallback**, the last entry, makes the `match` expression invalid. Always put a default colour at the end.
+- A misspelled property name produces no error and no effect. Watch for spellings such as `circle-colour`.
+
+---
+
+## maps-suite Rung 4: Add Interaction
+
+URL: https://docs.geolonia.com/tutorials/maps-suite/interaction/
+
+### Marker and InfoWindow
+
+maps-suite has a `Marker` class for standing a pin at one point on the map and an `InfoWindow` class for showing a balloon. The assembly is to open the info window from the marker click event.
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.681236, lng: 139.767125 },
+  zoom: 15,
+});
+
+const marker = new geolonia.maps.Marker({
+  position: { lat: 35.681236, lng: 139.767125 },
+  map,
+  title: "東京駅",
+});
+
+const infoWindow = new geolonia.maps.InfoWindow({
+  content: "<strong>東京駅</strong><br>JR・地下鉄各線",
+});
+
+marker.addListener("click", () => {
+  infoWindow.open(map, marker);
+});
+```
+
+- **`Marker`**: passing `position` (`{ lat, lng }`) and `map` raises a marker at that place. `title` is the hover tooltip. You can later remove it with `marker.setMap(null)` or move it with `setPosition`.
+- **`InfoWindow`**: created with `content`, an HTML string or an HTML element. Nothing is shown at this point.
+- **`marker.addListener("click", ...)`**: receives clicks on the marker.
+- **`infoWindow.open(map, marker)`**: opens the info window at the position of the given marker. The arguments are **these two in this order**: map, then anchor.
+
+### Receiving map clicks
+
+Clicks on the map itself can also be received. The coordinates of the click are in `e.latLng`.
+
+```js
+map.addListener("click", (e) => {
+  console.log("クリック位置:", e.latLng.lat(), e.latLng.lng());
+});
+```
+
+To "put a marker where the user clicked", just call `new geolonia.maps.Marker({ position: e.latLng.toJSON(), map })` inside that handler. `toJSON()` converts to a plain `{ lat, lng }` object.
+
+**When it does not work**
+
+- No marker appears: check that you passed `map` in the `Marker` options. Without it the marker is created but never attached to a map.
+- Clicking does not open it: check **the argument order** of `open(map, marker)`. The first argument is the map, the second the marker.
+- The balloon is empty: check that `content` is not an empty string.
+
+---
+
+## maps-suite Rung 5: Publish
+
+URL: https://docs.geolonia.com/tutorials/maps-suite/publish/
+
+### Demo key versus production key
+
+Every code sample so far wrote `apiKey: "YOUR-API-KEY"`, the demo key, which works on development and preview environments. Publishing on your own domain requires issuing a production API key.
+
+### Obtaining an API key
+
+1. Log in to the Geolonia dashboard at https://app.geolonia.com/.
+2. Create a new key in the API key management screen.
+3. Register the domain you will use. The map renders only on registered domains.
+
+### Rewriting the code
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-REAL-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+```
+
+The API key is a publishable key used for rendering maps, but setting a domain restriction prevents unauthorised use from other sites.
+
+### Building and publishing
+
+Building produces static files. With Vite:
+
+```
+npm run build
+```
+
+HTML, JS and CSS are emitted into `dist/`, and putting that on static hosting publishes it.
+
+- **GitHub Pages**: deploy the contents of `dist/`, usually via Actions.
+- **Netlify or Vercel**: connecting the repository detects the build command and deploys automatically.
+- **Shared hosting**: upload the contents of `dist/` over FTP or similar.
+
+GeoJSON placed in `public/data/` is copied to `dist/data/` by the build and published along with everything else.
+
+**When it does not work**
+
+- "The map cannot be displayed" appears: check that the domain registered on the API key matches the actual domain. `www.example.com` and `example.com` count as different domains.
+- It worked locally but not in production: check that the demo key has not been left in place.
+- Only the data fails: check that the GeoJSON URL resolves in production. Publishing under a subdirectory can break absolute paths such as `/data/...`; check the Vite `base` setting.
+
+---
+
+## maps-react Tutorial
+
+URL: https://docs.geolonia.com/tutorials/maps-react/
+
+maps-react is the library for using Geolonia Maps **as React components**. Putting `<Map>` in your JSX produces a map, and markers and data are declared through props and children. In a React site or application it works as it is under almost any build environment, including Vite, Next.js and webpack.
+
+1. Rung 0, Show a Map: a map appears from a single `<Map>` component
+2. Rung 1, Place and Viewpoint: specify place, zoom and tilt through props
+3. Rung 2, Add Data: overlay your own point data as GeoJSON
+4. Rung 3, Change the Look: colour points by a data attribute
+5. Rung 4, Add Interaction: show a popup on click
+6. Rung 5, Publish: build and go to production
+
+---
+
+## maps-react Rung 0: Show a Map
+
+URL: https://docs.geolonia.com/tutorials/maps-react/first-map/
+
+### Installing
+
+Install maps-react together with maplibre-gl, the rendering engine. maplibre-gl is the same engine that underlies other React map libraries such as react-map-gl, and it is installed as a separate package.
+
+```
+npm install @geolonia/maps-react maplibre-gl
+```
+
+### Displaying a map
+
+Import the `Map` component and the CSS the map needs, then put it in the JSX.
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
+```
+
+There are three points to note.
+
+- **The CSS imports**: both `maplibre-gl/dist/maplibre-gl.css` and `@geolonia/maps-core/css` are required.
+- **`containerStyle`**: the size of the element holding the map. A size of 0 means an invisible map, so always give it a height.
+- **`apiKey`**: `YOUR-API-KEY` is the trial demo key.
+
+### Checking that it works
+
+Start the dev server with `npm run dev`. Since `center` is not specified, the first view is the maps-react default, a world map.
+
+**When it does not work**
+
+- Blank white, nothing shown: check whether `containerStyle` has a **height of 0**. The same applies if the parent element has `height: 0`.
+- The layout breaks: **a missing CSS import**.
+- The console shows `The requested module '.../maplibre-gl.js' does not provide an export named 'default'`: maplibre-gl is distributed in CJS form and some build environments do not pre-bundle it. In Vite-based environments such as Astro, adding `vite: { optimizeDeps: { include: ['maplibre-gl', '@geolonia/maps-core'] } }` to the config resolves it. A plain Vite SPA usually does not need this.
+
+---
+
+## maps-react Rung 1: Place and Viewpoint
+
+URL: https://docs.geolonia.com/tutorials/maps-react/view/
+
+### Specifying place and zoom
+
+Every maps-react setting is written as a **prop** on the `Map` component. Place is `center` and zoom is `zoom`.
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.745438, 35.658581]}
+  zoom={16}
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+- **`center`**: the coordinates of the map centre, in **`[longitude, latitude]` order**. The values above are Tokyo Tower. Google Maps shows coordinates as "latitude, longitude", so swap them before use.
+- **`zoom`**: zoom level. **11** shows a whole city, **14** a district, **16** individual buildings.
+
+### Tilting and rotating the viewpoint
+
+`pitch` (tilt) and `bearing` (rotation) change the viewpoint. The sample also raises a marker at the centre.
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.745438, 35.658581]}
+    zoom={16}
+    pitch={45}
+    bearing={20}
+    marker
+    markerColor="#e4402f"
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
+```
+
+- **`pitch`**: degrees by which the map tips towards the viewer. `0` is a flat top-down view.
+- **`bearing`**: degrees by which the map rotates. `0` puts north at the top.
+- **`marker` and `markerColor`**: whether to raise a marker at the centre, and its colour.
+
+**When it does not work**
+
+- The centre jumps to the sea or another country: you have **swapped longitude and latitude**. `center` is in `[longitude, latitude]` order. Within Japan, longitude runs roughly 123 to 146 and latitude roughly 24 to 46.
+- A prop has no effect: check that you are not passing the value as a string. Write `zoom={16}` rather than `zoom="16"`; numbers and arrays go through the JSX braces.
+
+---
+
+## maps-react Rung 2: Add Data
+
+URL: https://docs.geolonia.com/tutorials/maps-react/data/
+
+### Getting to know GeoJSON
+
+This tutorial uses the same five-place sample as the maps-suite track. Save it as `public/data/sample-spots.geojson`.
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] }, "properties": { "name": "東京駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.700258, 35.690921] }, "properties": { "name": "新宿駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.701636, 35.658034] }, "properties": { "name": "渋谷駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.796747, 35.714765] }, "properties": { "name": "浅草寺", "category": "観光" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.745438, 35.658581] }, "properties": { "name": "東京タワー", "category": "観光" } }
+  ]
+}
+```
+
+- **`geometry`**: `coordinates` is in **`[longitude, latitude]`** order, the same order as `center`.
+- **`properties`**: here `name` and `category`.
+
+### Overlaying data on the map
+
+In maps-react, data is declared in JSX too. Put `Source` (the data) as a child of `Map`, and `Layer` (how to draw it) inside that.
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Layer, Map, Source } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+      <Layer id="spots" type="circle" />
+    </Source>
+  </Map>,
+);
+```
+
+- **`<Source>`**: the data supply. With `type="geojson"`, `data` takes the GeoJSON URL or the object itself.
+- **`<Layer>`**: how to draw the data. `type="circle"` draws each point as a circle. **`id` is required.** Omitting it adds no layer and raises no error, so nothing appears.
+
+**When it does not work**
+
+- Nothing appears and there is no error: **a missing `id` on `<Layer>`** is the most common cause.
+- Points land in the sea or on another continent: **longitude and latitude are reversed** in `coordinates`.
+- Still nothing: check the GeoJSON response in the network tab.
+
+---
+
+## maps-react Rung 3: Change the Look
+
+URL: https://docs.geolonia.com/tutorials/maps-react/style/
+
+### Deciding how to draw with paint properties
+
+The **`paint`** prop of `<Layer>` controls the drawing in detail.
+
+```jsx
+<Layer
+  id="spots"
+  type="circle"
+  paint={{
+    "circle-radius": 8,
+    "circle-stroke-width": 2,
+    "circle-stroke-color": "#fff",
+    "circle-color": "#e4402f",
+  }}
+/>
+```
+
+### Varying colour by data attribute
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Layer, Map, Source } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+      <Layer
+        id="spots"
+        type="circle"
+        paint={{
+          "circle-radius": 8,
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#fff",
+          "circle-color": [
+            "match",
+            ["get", "category"],
+            "ターミナル", "#e4402f",
+            "観光", "#2b6cb0",
+            "#888888",
+          ],
+        }}
+      />
+    </Source>
+  </Map>,
+);
+```
+
+Reading the array from the top:
+
+1. `"match"`: the expression that looks up a table.
+2. `["get", "category"]`: takes the `properties.category` value of each point.
+3. `"ターミナル", "#e4402f"`: red if the value is "terminal".
+4. `"観光", "#2b6cb0"`: blue if the value is "sightseeing".
+5. `"#888888"`: the fallback colour, which is **required**.
+
+### Changing the base map itself
+
+Pass a style name or URL in the `style` prop of `Map`.
+
+```jsx
+<Map apiKey="YOUR-API-KEY" style="geolonia/midnight" ...>
+```
+
+**When it does not work**
+
+- Everything takes the fallback colour: check that the values written in `match` **match exactly** the values in the GeoJSON `properties`.
+- Nothing renders any more: **forgetting the fallback** makes the `match` expression invalid.
+- A misspelled property name produces no error and no effect.
+
+---
+
+## maps-react Rung 4: Add Interaction
+
+URL: https://docs.geolonia.com/tutorials/maps-react/interaction/
+
+### The Marker component
+
+maps-react has a `Marker` component for standing a pin at one point. Put it as a child of `Map` and give the place with `lat` and `lng`. What makes it feel like React is that **the children of `Marker` become the popup content**.
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Marker } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.767125, 35.681236]}
+    zoom={15}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Marker lat={35.681236} lng={139.767125} color="#e4402f">
+      <strong>東京駅</strong>
+      <p style={{ margin: 0 }}>JR・地下鉄各線</p>
+    </Marker>
+  </Map>,
+);
+```
+
+- **`lat` and `lng`**: where the marker stands. Unlike `center`, which is a `[longitude, latitude]` array, these are **separate props**.
+- **`color`**: the marker colour.
+- **Children**: the popup content opened on click. Being JSX, React components can go in it too.
+
+### Building several markers from data
+
+`Marker` is an ordinary React component, so mapping over an array produces data-driven markers.
+
+```jsx
+const spots = [
+  { name: "東京駅", lat: 35.681236, lng: 139.767125 },
+  { name: "新宿駅", lat: 35.690921, lng: 139.700258 },
+  { name: "渋谷駅", lat: 35.658034, lng: 139.701636 },
+];
+
+<Map apiKey="YOUR-API-KEY" center={[139.73, 35.68]} zoom={12}
+     containerStyle={{ width: "100%", height: "100vh" }}>
+  {spots.map((s) => (
+    <Marker key={s.name} lat={s.lat} lng={s.lng}>
+      <strong>{s.name}</strong>
+    </Marker>
+  ))}
+</Map>
+```
+
+Combined with state, a UI where "clicking a list entry adds a marker to the map" needs nothing beyond ordinary React.
+
+**When it does not work**
+
+- A marker appears in an odd place: check for **swapped** `lat` and `lng`. `center` is a `[longitude, latitude]` array, but `Marker` takes named `lat=` and `lng=` props.
+- The popup does not open: check that the children are not empty. A `Marker` with no children is a marker with no popup.
+- A warning about multiple markers: remember `key` when building from an array, as in ordinary React.
+
+---
+
+## maps-react Rung 5: Publish
+
+URL: https://docs.geolonia.com/tutorials/maps-react/publish/
+
+### Demo key versus production key
+
+Every code sample so far wrote `apiKey="YOUR-API-KEY"`, the demo key. Publishing on your own domain requires issuing a production API key from https://app.geolonia.com/ and registering the domain.
+
+```jsx
+<Map
+  apiKey="YOUR-REAL-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+  containerStyle={{ width: "100%", height: "100vh" }}
+>
+  ...
+</Map>
+```
+
+### Building and publishing
+
+A React application becomes static files when built. With Vite:
+
+```
+npm run build
+```
+
+HTML, JS and CSS are emitted into `dist/`, and putting that on static hosting publishes it. GeoJSON placed in `public/data/` is copied to `dist/data/` by the build.
+
+**When it does not work**
+
+- "The map cannot be displayed" appears: check that the registered domain matches the actual domain.
+- It worked locally but not in production: check that the demo key has not been left in place.
+- Only the data fails: check that the GeoJSON URL resolves in production, and check the Vite `base` setting if you published under a subdirectory.
+
+---
+
+## How-to Guides
+
+URL: https://docs.geolonia.com/howto/
+
+A collection of recipes that answer "how do I ..." as directly as possible, organised by goal. Note that some recipes are not supported by every library.
+
+### Recipes
+
+- Place Multiple Markers: https://docs.geolonia.com/howto/multiple-markers/
+- Switch the Map Style: https://docs.geolonia.com/howto/change-style/
+- Show a Popup on Click: https://docs.geolonia.com/howto/popup-on-click/
+- Load External GeoJSON Data: https://docs.geolonia.com/howto/geojson-data/
+- Show the Current Location: https://docs.geolonia.com/howto/current-location/
+- Fit All Points on Screen: https://docs.geolonia.com/howto/fit-bounds/
+- Toggle Map Controls: https://docs.geolonia.com/howto/map-controls/
+- Switch the Map Language: https://docs.geolonia.com/howto/switch-language/
+- Get Coordinates from a Draggable Marker: https://docs.geolonia.com/howto/draggable-marker/
+
+### Advanced
+
+- Access the Map Instance Directly (maps-core): https://docs.geolonia.com/howto/maps-core-access/
+- Cluster a Large Number of Points: https://docs.geolonia.com/howto/clustering/
+- Colour Areas by Value (Choropleth): https://docs.geolonia.com/howto/choropleth/
+- Visualise Density with a Heatmap: https://docs.geolonia.com/howto/heatmap/
+- Show Buildings and Terrain in 3D: https://docs.geolonia.com/howto/3d/
+- Add a Custom Data Source (Vector Tiles and More): https://docs.geolonia.com/howto/custom-source/
+- Search by Address and Show That Place: https://docs.geolonia.com/howto/address-search/
+- Show the Map as a Globe: https://docs.geolonia.com/howto/globe/
+- Place a Map with HTML Tags Only (maps-suite): https://docs.geolonia.com/howto/web-component/
+
+### CLI
+
+Recipes for the preparation that happens before the map-drawing code, run from the command line.
+
+- Manage API Keys in YAML: https://docs.geolonia.com/howto/cli-map-keys/
+
+---
+
+## Place Multiple Markers
+
+URL: https://docs.geolonia.com/howto/multiple-markers/
+
+Put several places on the map at once. One point is served well enough by the centre marker, but **two or more calls for a list plus a loop**. Hold coordinates in `[longitude, latitude]` order.
+
+### embed
+
+embed, using HTML attributes alone, has **no** declarative way to place multiple markers. The only marker it can embed is the single centre one. To show several points, either turn the points into GeoJSON and load them with `data-geojson`, or switch to the maps-suite or maps-react code.
+
+### maps-suite
+
+Loop over the list and create a `Marker` for each.
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const points = [
+  { name: "東京駅", lng: 139.767125, lat: 35.681236 },
+  { name: "新宿駅", lng: 139.700258, lat: 35.690921 },
+  { name: "渋谷駅", lng: 139.701636, lat: 35.658034 },
+  { name: "浅草寺", lng: 139.796747, lat: 35.714765 },
+  { name: "東京タワー", lng: 139.745438, lat: 35.658581 },
+];
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+for (const p of points) {
+  new geolonia.maps.Marker({
+    position: { lat: p.lat, lng: p.lng },
+    map,
+    title: p.name,
+  });
+}
+```
+
+- **`Marker({ position, map, title })`**: passing `map` attaches the marker to the map on the spot.
+- To show a popup on click, combine `InfoWindow` and a click listener inside the loop.
+
+### maps-react
+
+`Marker` is an ordinary React component, so expanding the list with `map()` is all it takes.
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Marker } from "@geolonia/maps-react";
+
+const points = [
+  { name: "東京駅", lng: 139.767125, lat: 35.681236 },
+  { name: "新宿駅", lng: 139.700258, lat: 35.690921 },
+  { name: "渋谷駅", lng: 139.701636, lat: 35.658034 },
+  { name: "浅草寺", lng: 139.796747, lat: 35.714765 },
+  { name: "東京タワー", lng: 139.745438, lat: 35.658581 },
+];
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    {points.map((p) => (
+      <Marker key={p.name} lat={p.lat} lng={p.lng}>
+        {p.name}
+      </Marker>
+    ))}
+  </Map>,
+);
+```
+
+**When it does not work**
+
+- Pins land in the sea: longitude and latitude are swapped. Check `lng` and `lat` in the list.
+- Hundreds of points are slow or clump together: use clustering rather than markers.
+
+---
+
+## Switch the Map Style
+
+URL: https://docs.geolonia.com/howto/change-style/
+
+Replace the base style of the map, meaning road colours, text sizes, building fills and so on.
+
+### embed
+
+Write a style name or a URL in the `data-style` attribute.
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-style="geolonia/gsi"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+- **`data-style`**: either a style name Geolonia provides, such as `geolonia/basic-v2`, `geolonia/midnight` or `geolonia/gsi`, or the URL of an external style JSON.
+- Omitting it uses the Geolonia standard style.
+
+Using an external URL:
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-style="https://tile.openstreetmap.jp/styles/osm-bright/style.json"></div>
+```
+
+### maps-suite
+
+The initial style is given by the `style` option of `Map`. To switch at runtime, use `setStyle` on the underlying map.
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+  style: "geolonia/gsi",
+});
+```
+
+```js
+map.getGeoloniaMap().setStyle("https://tile.openstreetmap.jp/styles/osm-bright/style.json");
+```
+
+`setStyle` accepts either a style JSON URL or an inline style definition object.
+
+### maps-react
+
+Pass a style name or URL to the `style` prop of `Map`. Combined with state this builds a UI that **switches at runtime from a button**.
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+function App() {
+  const [style, setStyle] = useState("geolonia/basic-v2");
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <div>
+        <button onClick={() => setStyle("geolonia/basic-v2")}>標準</button>
+        <button onClick={() => setStyle("geolonia/gsi")}>地理院</button>
+      </div>
+      <Map
+        apiKey="YOUR-API-KEY"
+        style={style}
+        center={[139.75, 35.68]}
+        zoom={11}
+        containerStyle={{ flex: 1 }}
+      />
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+```
+
+- Passing the style as an **object**, an inline style definition, requires a stable reference such as a module constant. Creating a new object on every render reloads the style every time.
+
+**When it does not work**
+
+- The map turns blank white: check the spelling of the style name or URL. A style that does not exist renders nothing.
+- An attribute has no effect: check the hyphens and spelling of `data-style`. Unknown attribute names are silently ignored.
+
+---
+
+## Show a Popup on Click
+
+URL: https://docs.geolonia.com/howto/popup-on-click/
+
+### embed
+
+HTML written inside the `.geolonia` div becomes the popup of the marker.
+
+```html
+<div class="geolonia"
+     data-lat="35.681236" data-lng="139.767125"
+     data-zoom="15">
+  <strong>東京駅</strong><br>JR・地下鉄各線
+</div>
+```
+
+- The child elements are the popup content. Being HTML, bold text, links and images all work.
+- Writing children raises a marker at the centre, and clicking it opens the popup.
+- An embed popup can be attached to **the single centre marker only**.
+
+### maps-suite
+
+Place a `Marker` and open an `InfoWindow` from the click event.
+
+```js
+const marker = new geolonia.maps.Marker({
+  position: { lat: 35.681236, lng: 139.767125 },
+  map,
+  title: "東京駅",
+});
+
+const infoWindow = new geolonia.maps.InfoWindow({
+  content: "<strong>東京駅</strong><br>JR・地下鉄各線",
+});
+
+marker.addListener("click", () => infoWindow.open(map, marker));
+```
+
+- **`InfoWindow`**: created with `content` as HTML, opened at the marker position by `open(map, marker)`. The arguments are **these two in this order**: map, then anchor.
+- Creating several markers and attaching a listener to each gives individual popups on multiple points.
+
+### maps-react
+
+The **children** of the `Marker` component are the popup content.
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.767125, 35.681236]}
+  zoom={15}
+  containerStyle={{ width: "100%", height: "100vh" }}
+>
+  <Marker lat={35.681236} lng={139.767125} color="#e4402f">
+    <strong>東京駅</strong>
+    <p style={{ margin: 0 }}>JR・地下鉄各線</p>
+  </Marker>
+</Map>
+```
+
+- **`lat` and `lng`**: separate props, unlike the `[longitude, latitude]` array of `center`.
+- Unlike embed, several `Marker` elements can each carry **their own popup**.
+
+### Images inside popups, on several markers
+
+The body of a popup is HTML, so an `<img>` puts a picture in it. The maximum width of a popup is **240px** by default, so the image has to carry its own width; otherwise it overflows the frame.
+
+**embed** cannot attach a declarative popup to anything but the centre marker, but its JavaScript API attaches one popup per marker.
+
+```html
+<style>
+  .spot-popup img { width: 100%; display: block; margin-top: 6px; }
+</style>
+```
+
+```js
+const map = new geolonia.Map("#map");
+
+for (const spot of spots) {
+  const popup = new geolonia.Popup({ className: "spot-popup" }).setHTML(`
+    <strong>${spot.name}</strong><br>${spot.note}
+    <img src="/geolonia-icon.png" alt="${spot.name}">
+  `);
+
+  new geolonia.Marker().setLngLat([spot.lng, spot.lat]).setPopup(popup).addTo(map);
+}
+```
+
+- **`className`**: the class added to the popup frame, which lets `<style>` reach the image inside it.
+- **`setPopup()`**: binds the popup to the marker. MapLibre opens it on click, so no listener is needed.
+
+**maps-suite** builds a `Marker` and an `InfoWindow` per spot in a loop. `InfoWindow` has no width option, so the width goes into the `style` attribute of the image.
+
+```js
+const IMG_STYLE = "width: 100%; display: block; margin-top: 6px";
+
+for (const spot of spots) {
+  const marker = new geolonia.maps.Marker({
+    position: { lat: spot.lat, lng: spot.lng },
+    map,
+    title: spot.name,
+  });
+
+  const infoWindow = new geolonia.maps.InfoWindow({
+    content: `
+      <strong>${spot.name}</strong><br>${spot.note}
+      <img src="/geolonia-icon.png" alt="${spot.name}" style="${IMG_STYLE}">
+    `,
+  });
+
+  marker.addListener("click", () => infoWindow.open(map, marker));
+}
+```
+
+- One `InfoWindow` per spot means several popups can be open at the same time. To keep exactly one open, create a single `InfoWindow` and swap its body with `setContent()`: `open()` closes itself before opening.
+
+**maps-react** puts the `<img>` among the children of each `Marker`.
+
+```jsx
+{spots.map((spot) => (
+  <Marker key={spot.name} lat={spot.lat} lng={spot.lng} color="#e4402f">
+    <strong>{spot.name}</strong>
+    <p style={{ margin: "2px 0 0" }}>{spot.note}</p>
+    <img
+      src="/geolonia-icon.png"
+      alt={spot.name}
+      style={{ width: "100%", display: "block", marginTop: 6 }}
+    />
+  </Marker>
+))}
+```
+
+The `src` of these samples points at an image hosted on this site. Replace it with **a path from the root** (`/img/tokyo-station.jpg`) or **an absolute URL** (`https://example.com/tokyo-station.jpg`). A relative path resolves differently depending on the page the popup HTML is used from.
+
+**When it does not work**
+
+- No marker appears: check that `data-marker="off"` is not present. Popups need a marker.
+- The popup is empty: check that the children are not empty. Whitespace alone will not open one.
+- Nothing happens on click: watch for an unclosed `div` tag.
+- The image overflows or is cut off: the maximum width of a popup is 240px by default. Let `width: 100%` apply to the image.
+- The image does not appear: check the `src`. A relative path resolves against the page, so use a path from the root or an absolute URL.
+
+---
+
+## Load External GeoJSON Data
+
+URL: https://docs.geolonia.com/howto/geojson-data/
+
+Overlay a GeoJSON file on the map to show your own points, lines and polygons.
+
+### embed
+
+Write the URL of the GeoJSON file in the `data-geojson` attribute.
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/sample-spots.geojson"></div>
+```
+
+- **`data-geojson`**: a path or URL. Either a path on the same server or an external URL that allows CORS.
+- **`data-marker="off"`**: hides the default centre marker.
+
+### maps-suite
+
+Passing GeoJSON to `map.data` is the shortest form. Loading is awaited internally, so you do not have to wait yourself.
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+const res = await fetch("/data/sample-spots.geojson");
+map.data.addGeoJson(await res.json());
+```
+
+`addGeoJson()` takes an object, so reading from a URL means going through `fetch`. Mixed points, lines and polygons can be passed as they are. Colours and line widths are set with something like `map.data.setStyle({ fillColor: "#f00", strokeWeight: 2 })`.
+
+To control the drawing in detail, `map.data` only offers fill and stroke colour, opacity and width. Adjustments such as changing point size need `getGeoloniaMap()`, which touches the underlying maplibre map directly. **This is the escape hatch when you need something maps-suite does not provide.**
+
+```js
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+impl.addLayer({
+  id: "spots",
+  type: "circle",
+  source: "spots",
+  paint: { "circle-radius": 8, "circle-color": "#e2543a" },
+});
+```
+
+Here `whenReady()` waits for loading to complete, then `addSource` (data) is called before `addLayer` (drawing). The `data` passed to `addSource` may stay a URL.
+
+### maps-react
+
+Put `Source` (data) and `Layer` (drawing) as children of `Map`.
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+  containerStyle={{ width: "100%", height: "100vh" }}
+>
+  <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+    <Layer id="spots" type="circle" />
+  </Source>
+</Map>
+```
+
+- **`<Layer>`**: **`id` is required.** Omitting it adds no layer and raises no error.
+
+### The GeoJSON format
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] },
+      "properties": { "name": "東京駅" }
+    }
+  ]
+}
+```
+
+`coordinates` is in **`[longitude, latitude]`** order, the reverse of `data-lat` and `data-lng`.
+
+**When it does not work**
+
+- Points land in the sea: longitude and latitude are reversed in `coordinates`.
+- Nothing appears: check the HTTP status of the file in the network tab. A 404 or a JSON syntax error is the usual cause.
+- GeoJSON at an external URL will not load: a CORS restriction. Put the file on the same server or set CORS headers.
+
+---
+
+## Show the Current Location
+
+URL: https://docs.geolonia.com/howto/current-location/
+
+Put a button on the map that, when pressed, takes the browser location and moves the map there.
+
+### embed
+
+Add `data-geolocate-control="on"`.
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-geolocate-control="on"></div>
+```
+
+A current-location button is added at the top right. Pressing it makes the browser ask for permission, and allowing it moves the map to that point.
+
+### maps-suite
+
+Take the location with the browser geolocation API, move with `setCenter` and raise a marker.
+
+```js
+navigator.geolocation.getCurrentPosition(
+  (pos) => {
+    const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    map.setCenter(c);
+    new geolonia.maps.Marker({ position: c, map, title: "現在地" });
+  },
+  (err) => console.warn("位置情報を取得できません", err),
+);
+```
+
+- Use the second argument, the error callback, to prepare a fallback for refusal or failure, such as staying at the default place.
+
+### maps-react
+
+Add the `geolocateControl` prop.
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+  geolocateControl
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+**When it does not work**
+
+- Pressing the button does nothing: check the browser location permission. If it is blocked, change it from the lock icon in the address bar.
+- "Cannot get location": the geolocation API only works over HTTPS or on `localhost`. It is unavailable on `http://` sites.
+- The location is off: GPS and network conditions introduce error. On desktop in particular the estimate is IP-based and can be far off.
+
+---
+
+## Fit All Points on Screen
+
+URL: https://docs.geolonia.com/howto/fit-bounds/
+
+Rather than choosing `center` and `zoom` by hand, **compute the box enclosing every point and fit the map to it**. Everything stays visible even when the data changes.
+
+### embed
+
+Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+
+### maps-suite
+
+```js
+const points = [
+  { lng: 139.767125, lat: 35.681236 },
+  { lng: 139.700258, lat: 35.690921 },
+  { lng: 139.701636, lat: 35.658034 },
+  { lng: 139.796747, lat: 35.714765 },
+  { lng: 139.745438, lat: 35.658581 },
+];
+
+for (const p of points) {
+  new geolonia.maps.Marker({ position: p, map });
+}
+
+const north = Math.max(...points.map((p) => p.lat));
+const south = Math.min(...points.map((p) => p.lat));
+const east = Math.max(...points.map((p) => p.lng));
+const west = Math.min(...points.map((p) => p.lng));
+
+map.fitBounds({ north, south, east, west }, 40);
+```
+
+- **`fitBounds({ north, south, east, west }, padding)`**: fits the map to the given box. The second argument is the margin from the screen edge in pixels; without it the outermost points are cut off at the edge.
+- `fitBounds()` waits for map load internally, so no wait is needed before calling it.
+
+### maps-react
+
+Receive the map instance in `onLoad` and call `fitBounds`.
+
+```jsx
+const handleLoad = (map) => {
+  const north = Math.max(...points.map((p) => p.lat));
+  const south = Math.min(...points.map((p) => p.lat));
+  const east = Math.max(...points.map((p) => p.lng));
+  const west = Math.min(...points.map((p) => p.lng));
+  map.fitBounds([[west, south], [east, north]], { padding: 40 });
+};
+
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={9}
+  onLoad={handleLoad}
+  containerStyle={{ width: "100%", height: "100vh" }}
+>
+  {points.map((p, i) => (
+    <Marker key={i} lat={p.lat} lng={p.lng} />
+  ))}
+</Map>
+```
+
+- **`fitBounds`**: takes the box as `[[west, south], [east, north]]` here.
+
+**When it does not work**
+
+- Outer points are cut off: increase `padding`. Markers have pin height, so the top side needs particular margin.
+- Only one point, or all points identical: the box has zero area and the map zooms in extremely far. With a single point, specifying `center` and `zoom` directly is simpler.
+
+---
+
+## Toggle Map Controls
+
+URL: https://docs.geolonia.com/howto/map-controls/
+
+The buttons in the corners of the map, meaning zoom and rotation navigation, current location, fullscreen, scale and the Geolonia logo, can each be shown or hidden and positioned. Positions are one of `top-right`, `bottom-right`, `bottom-left` and `top-left`.
+
+### embed
+
+Each is set through a `data-*-control` attribute. Besides `on` and `off`, passing a position string also moves it.
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-navigation-control="on"
+     data-geolocate-control="top-right"
+     data-fullscreen-control="on"
+     data-scale-control="bottom-left"></div>
+```
+
+- **`data-navigation-control`**: zoom and rotation buttons. Default `on`.
+- **`data-geolocate-control`**: current-location button. Default `off`.
+- **`data-fullscreen-control`**: fullscreen button. Default `off`.
+- **`data-scale-control`**: scale bar. Default `off`.
+- **`data-geolonia-control`**: position of the Geolonia logo. Default `bottom-left`.
+- **`data-gesture-handling`**: default `on`. To avoid blocking page scrolling, it requires the `Ctrl` (or `alt`) key or two fingers to operate the map. Set it to `off` on pages where the map fills the view.
+
+### maps-suite
+
+The only control-related initialisation option is `disableDefaultUI`, which removes the default controls all at once. Adding controls individually or moving them means waiting for load and calling `addControl` on the underlying maplibre map.
+
+With nothing specified, **navigation and the Geolonia logo are shown, while current location, fullscreen and scale are hidden**.
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  disableDefaultUI: true,
+});
+```
+
+`disableDefaultUI` is all-or-nothing, so "keep only navigation" is not expressible. In that case remove everything and add back what you need.
+
+```js
+import maplibregl from "maplibre-gl";
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addControl(new maplibregl.NavigationControl(), "top-right");
+impl.addControl(new maplibregl.GeolocateControl({ trackUserLocation: true }), "top-right");
+impl.addControl(new maplibregl.FullscreenControl(), "top-right");
+impl.addControl(new maplibregl.ScaleControl(), "bottom-left");
+```
+
+- **`addControl(control, position)`**: omitting the second argument attaches at `top-right`.
+- `NavigationControl` is present by default, so moving it means calling `removeControl` first and attaching it again.
+
+### maps-react
+
+Each is set through its own prop on `Map`. Besides `true` and `false`, a position string can be passed.
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+  navigationControl
+  geolocateControl="top-right"
+  fullscreenControl
+  scaleControl="bottom-left"
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+The props are `navigationControl`, `geolocateControl`, `fullscreenControl`, `scaleControl` and `geoloniaControl`. Each takes `true` for the default position or a position string such as `"top-left"`.
+
+**When it does not work**
+
+- A control does not appear: check the spelling of the attribute or prop name. Wrong names are silently ignored.
+- The current-location button does nothing: location works only over HTTPS or on `localhost`. Check the browser permission too.
+- Scrolling over the map does not move it: `data-gesture-handling` is `on`. Set it to `off` on pages where the map fills the view.
+
+---
+
+## Switch the Map Language
+
+URL: https://docs.geolonia.com/howto/switch-language/
+
+Labels such as place names can be shown in `ja` (Japanese), `en` (English) or `auto` (following the browser setting of the reader). The default is `auto`.
+
+### embed
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="13"
+     data-lang="en"></div>
+```
+
+- **`data-lang`**: one of `ja`, `en` and `auto`. Omitting it means `auto`.
+
+### maps-suite
+
+maps-suite has no language option in its initialisation, and the display language follows the browser setting, equivalent to `auto`. To pin the language explicitly, use embed or maps-react.
+
+### maps-react
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={13}
+  lang="en"
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+- **`lang`**: one of `"ja"`, `"en"` and `"auto"`. Omitting it means `auto`.
+
+Labels that have an English name are shown in English. Place names such as municipalities switch only where the style data carries an English name, and anything without one stays in the local script.
+
+**When it does not work**
+
+- The language does not change: label language depends on the data the style carries. In regions with no English place names the local script remains even when specified.
+- Languages are mixed: the label for that feature is missing in the requested language. This is the intended behaviour, and the gaps are filled with the local script.
+
+---
+
+## Get Coordinates from a Draggable Marker
+
+URL: https://docs.geolonia.com/howto/draggable-marker/
+
+Drag a marker and receive the latitude and longitude where it is released. Useful on screens for registering or editing a place, where the user drops the pin.
+
+### embed
+
+embed alone cannot make a draggable marker. Switch to the maps-suite or maps-react code.
+
+### maps-suite
+
+The maps-suite `Marker` does not support dragging, so wait for load and use the marker of the underlying maplibre map. `dragend` gives the position.
+
+```js
+import maplibregl from "maplibre-gl";
+
+await map.whenReady();
+
+const marker = new maplibregl.Marker({ draggable: true })
+  .setLngLat([139.7671, 35.6812])
+  .addTo(map.getGeoloniaMap());
+
+marker.on("dragend", () => {
+  const { lng, lat } = marker.getLngLat();
+  console.log("緯度:", lat, "経度:", lng);
+});
+```
+
+- **`new maplibregl.Marker({ draggable: true })`**: creates a marker with dragging enabled. `setLngLat` is in `[longitude, latitude]` order.
+- **`marker.on("dragend", ...)`**: called once at the moment of release. Use `drag` to follow the movement itself.
+- **`marker.getLngLat()`**: returns the current position, for writing back into latitude and longitude form fields.
+
+### maps-react
+
+Add `draggable` to `Marker` and receive the position in `onDragEnd`.
+
+```jsx
+function App() {
+  const [pos, setPos] = useState({ lat: 35.6812, lng: 139.7671 });
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <p>緯度: {pos.lat.toFixed(6)} / 経度: {pos.lng.toFixed(6)}</p>
+      <Map
+        apiKey="YOUR-API-KEY"
+        center={[139.7671, 35.6812]}
+        zoom={14}
+        containerStyle={{ flex: 1 }}
+      >
+        <Marker
+          lat={pos.lat}
+          lng={pos.lng}
+          draggable
+          onDragEnd={(e) => {
+            const { lng, lat } = e.target.getLngLat();
+            setPos({ lat, lng });
+          }}
+        />
+      </Map>
+    </div>
+  );
+}
+```
+
+- **`onDragEnd`**: called when the drag is released. `e.target.getLngLat()` gives the release position.
+- Keeping the coordinates in state makes them directly usable as form submission values.
+
+**When it does not work**
+
+- It will not drag: check that `draggable` is present, or `new maplibregl.Marker({ draggable: true })` in maps-suite.
+- Confusion over `[longitude, latitude]`: `getLngLat()` returns a `{ lng, lat }` object. Converting to an array means `[longitude, latitude]` order.
+- Coordinates do not update during the drag: `dragend` and `onDragEnd` fire on release only. Use `drag` or `onDrag` to follow the movement.
+
+---
+
+## Access the Map Instance Directly (maps-core)
+
+URL: https://docs.geolonia.com/howto/maps-core-access/
+
+embed, maps-suite and maps-react all carry **the maps-core `GeoloniaMap`** underneath. `GeoloniaMap` extends the MapLibre GL JS `Map`, so once you have it, MapLibre GL JS APIs such as `on()`, `flyTo()` and `queryRenderedFeatures()` are available as they are. This is the escape hatch when what a library offers is not enough. Only the way you retrieve the instance differs per library.
+
+### embed
+
+Pass the target element to `geolonia.Map` and **create the map yourself**. What comes back is a `GeoloniaMap`.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      #map { width: 100%; height: 100vh; }
+      #readout2 {
+        position: absolute; top: 8px; left: 8px; z-index: 1;
+        background: #fff; padding: 6px 10px; border-radius: 4px;
+        font: 13px/1.5 system-ui, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="readout2">読み込み中</div>
+    <div id="map" data-lat="35.68" data-lng="139.75" data-zoom="11"></div>
+
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script>
+      const map = new geolonia.Map("#map");
+      const readout = document.getElementById("readout2");
+
+      map.on("load", () => {
+        const show = () => {
+          const c = map.getCenter();
+          readout.textContent =
+            `zoom ${map.getZoom().toFixed(2)} / ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
+        };
+        map.on("move", show);
+        show();
+      });
+    </script>
+  </body>
+</html>
+```
+
+- There is no `class="geolonia"` here. embed only creates maps automatically on elements carrying `.geolonia`, so the class is removed and the element is passed by `id`.
+- Attributes such as `data-lat` are still read when you create the map yourself. Anything expressible as an attribute stays usable, with no need to rewrite it in JavaScript.
+- Waiting for `map.on("load", ...)` means touching the map only after the style has loaded.
+
+**Calling it on an element that already has a map returns the existing instance rather than creating a new one.** Calling `new geolonia.Map(".geolonia")` while `class="geolonia"` is still present will not produce two maps. This is also how you reach a map that embed created automatically.
+
+The `geoloniaMap` property of the element also gives it, but that one is **`undefined` until the map has been created**. embed creates the map when the element enters the viewport, so a map off screen does not exist until it is scrolled into view. `new geolonia.Map()` either creates it there and then or returns the existing one, so timing does not matter.
+
+Loading embed also puts the contents of MapLibre GL JS on `window.geolonia`, so MapLibre classes such as `new geolonia.Popup()` are usable directly.
+
+### maps-suite
+
+`map.getGeoloniaMap()` returns the underlying `GeoloniaMap`. Call it after waiting for load.
+
+```js
+const map = new geolonia.maps.Map(container, {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+
+const show = () => {
+  const c = impl.getCenter();
+  readout.textContent =
+    `zoom ${impl.getZoom().toFixed(2)} / ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
+};
+impl.on("move", show);
+show();
+```
+
+The maps-suite `Map` has `getZoom()` and `getCenter()` of its own, so this particular example does not need to descend to the underlying map. The real use is for **things maps-suite does not offer**, such as adding sources and layers, changing the projection, or attaching and detaching controls.
+
+`whenReady()` is awaited because touching layers before the style has loaded raises an error. Read-only calls such as `getCenter()` work without waiting, but keeping it uniform is safer.
+
+Note that `getMap()` is a different thing. Overlays such as `Marker`, `Polyline` and `Circle` have `getMap()`, but it returns **the maps-suite `Map` the overlay sits on**, not the underlying `GeoloniaMap`. To descend all the way, call `getGeoloniaMap()` on the returned `Map`.
+
+```js
+marker.getMap().getGeoloniaMap();
+```
+
+### maps-react
+
+The `ref` of `Map` is the `GeoloniaMap` itself. However, **the map is created after mount**, so receiving it with `useRef` and reading it in `useEffect` finds `null`. To act the moment the instance exists, **pass a function as `ref`**, a callback ref, which React calls with the instance when it connects the element.
+
+```jsx
+function App() {
+  const [text, setText] = useState("読み込み中");
+
+  const mapRef = useCallback((map) => {
+    if (!map) return;
+
+    const show = () => {
+      const c = map.getCenter();
+      setText(
+        `zoom ${map.getZoom().toFixed(2)} / ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`,
+      );
+    };
+
+    map.on("move", show);
+    show();
+
+    return () => {
+      map.off("move", show);
+    };
+  }, []);
+
+  return (
+    <Map
+      ref={mapRef}
+      apiKey="YOUR-API-KEY"
+      center={[139.75, 35.68]}
+      zoom={11}
+      containerStyle={{ width: "100%", height: "100%" }}
+    />
+  );
+}
+```
+
+**Cleanup can be written as the return value.** The example detaches the listener with `off("move", show)` inside the returned function.
+
+Returning a cleanup function from a callback ref requires **React 19 or later**. On 18 and earlier the return value is ignored, and instead the callback is called again with `null` when the element detaches. On 18, subscribe when `map` arrives and unsubscribe when called with `null`.
+
+To touch the map at arbitrary times later, keep the received instance yourself.
+
+```jsx
+const mapRef = useRef(null);
+
+<Map
+  ref={(map) => { mapRef.current = map; }}
+  apiKey="YOUR-API-KEY"
+  center={[139.75, 35.68]}
+  zoom={11}
+/>
+
+<button onClick={() => mapRef.current?.flyTo({ center: [135.5, 34.7], zoom: 12 })}>
+  大阪へ
+</button>
+```
+
+The `ref` fires right after the map is created and **does not wait for the style to load**. Adding layers and sources before load raises an error, so check `isStyleLoaded()` and wait with `once("load")` if it is not ready.
+
+```jsx
+const mapRef = useCallback((map) => {
+  if (!map) return;
+
+  const addLayer = () => {
+    map.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+    map.addLayer({ id: "spots", type: "circle", source: "spots" });
+  };
+
+  if (map.isStyleLoaded()) addLayer();
+  else map.once("load", addLayer);
+}, []);
+```
+
+`Map` also has an `onLoad` prop, which hands over the `GeoloniaMap` after loading completes. It is shorter for one-off initialisation, but **there is nowhere to detach listeners**, so use a callback ref if you subscribe with `on()`.
+
+Anything expressible the React way is available through props. `onMove` covers following map movement, and `<Source>` and `<Layer>` cover drawing data. Touching the underlying instance is for **operations with no prop**.
+
+**When it does not work**
+
+- embed `geoloniaMap` is `undefined`: the map has not been created yet. embed creates it when the element enters the viewport. Retrieve it with `new geolonia.Map()` instead.
+- embed reports "No HTML elements found matching": no element matches the selector passed. This also happens when the script is placed before the element.
+- "Style is not done loading": layers are being touched before the style has loaded. Await `whenReady()` in maps-suite, or check `isStyleLoaded()` and wait with `once("load")` in maps-react.
+- maps-react gave `null` with `useRef` plus `useEffect`: the map is created after mount, so it is not there on the first effect. Pass a function as `ref`.
+- Operations on the retrieved instance have no effect: changing values maps-suite manages, meaning centre, zoom, tilt and heading, from the underlying side has undefined behaviour. Change those through maps-suite methods.
+
+The full set of what the retrieved instance can do is everything the MapLibre GL JS `Map` can do; see https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/. What Geolonia adds is in https://docs.geolonia.com/reference/core/.
+
+---
+
+## Cluster a Large Number of Points
+
+URL: https://docs.geolonia.com/howto/clustering/
+
+Hundreds or thousands of points on a map overlap and become hard to read. Clustering groups nearby points automatically, shows a count label, and splits them into individual points as you zoom in.
+
+### embed
+
+Add `data-cluster="on"`.
+
+```html
+<div class="geolonia"
+     data-lat="35.67" data-lng="139.74" data-zoom="10"
+     data-marker="off"
+     data-geojson="/data/dense-points.geojson"
+     data-cluster="on"></div>
+```
+
+- **`data-cluster="on"`**: clusters the GeoJSON points automatically.
+- **`data-cluster-color`**: changes the cluster colour, for example `data-cluster-color="#e74c3c"`.
+
+### maps-suite
+
+Passing an array of markers to `MarkerClusterer` groups nearby points automatically.
+
+```js
+const res = await fetch("/data/dense-points.geojson");
+const gj = await res.json();
+
+const markers = gj.features.map(
+  (f) =>
+    new geolonia.maps.Marker({
+      position: { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] },
+    }),
+);
+
+new geolonia.maps.MarkerClusterer({ map, markers });
+```
+
+- Create the `Marker` objects **without passing `map`**, leaving them detached. `MarkerClusterer` manages attaching them.
+- **`MarkerClusterer({ map, markers })`**: groups nearby markers into counted clusters that split on zoom.
+
+### maps-react
+
+Adding `cluster` to `Source` makes maplibre build the clusters. You decide the drawing, so three layers are needed: **the cluster circles, the count labels, and the points that did not cluster**.
+
+```jsx
+<Source
+  id="spots"
+  type="geojson"
+  data="/data/dense-points.geojson"
+  cluster
+  clusterRadius={50}
+>
+  <Layer
+    id="clusters"
+    type="circle"
+    filter={["has", "point_count"]}
+    paint={{
+      "circle-color": "#e2543a",
+      "circle-radius": ["step", ["get", "point_count"], 16, 10, 22, 50, 30],
+      "circle-opacity": 0.85,
+    }}
+  />
+  <Layer
+    id="cluster-count"
+    type="symbol"
+    filter={["has", "point_count"]}
+    layout={{
+      "text-field": ["get", "point_count_abbreviated"],
+      "text-font": ["Noto Sans Regular"],
+      "text-size": 12,
+    }}
+    paint={{ "text-color": "#ffffff" }}
+  />
+  <Layer
+    id="unclustered"
+    type="circle"
+    filter={["!", ["has", "point_count"]]}
+    paint={{
+      "circle-color": "#e2543a",
+      "circle-radius": 6,
+      "circle-stroke-width": 1.5,
+      "circle-stroke-color": "#ffffff",
+    }}
+  />
+</Source>
+```
+
+- **`cluster`**: `Source` takes the maplibre source definition as it is, so `cluster` and `clusterRadius`, the grouping distance in pixels, work directly.
+- **`filter`**: features carrying `point_count` are clusters, those without are single points. The two are drawn by separate layers.
+- **`point_count_abbreviated`**: the count in short form, turning `1200` into something like `1.2k`.
+- **`text-font`**: name a font included in the Geolonia style. The maplibre default font name is not included, so omitting this shows no counts.
+
+**When it does not work**
+
+- Nothing clusters: check that `data-cluster="on"` is written. The value is `"on"`, not `"true"`.
+- Nothing appears: check the `data-geojson` path. The file must exist on the server and be reachable.
+
+---
+
+## Colour Areas by Value (Choropleth)
+
+URL: https://docs.geolonia.com/howto/choropleth/
+
+A map showing numbers such as population or sales through the shading of areas (polygons) is called a **choropleth**. Give the polygon GeoJSON a numeric property and write the value-to-colour mapping as an expression.
+
+### Preparing the data
+
+```json
+{
+  "type": "Feature",
+  "geometry": { "type": "Polygon", "coordinates": [ ... ] },
+  "properties": { "name": "エリアA", "value": 72 }
+}
+```
+
+### embed
+
+Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+
+### maps-suite
+
+Wait for load, then stack a `fill` layer whose `fill-color` carries an `interpolate` expression.
+
+```js
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("areas", { type: "geojson", data: "/data/areas.geojson" });
+impl.addLayer({
+  id: "areas",
+  type: "fill",
+  source: "areas",
+  paint: {
+    "fill-color": [
+      "interpolate", ["linear"], ["get", "value"],
+      0, "#ffffcc",
+      50, "#fd8d3c",
+      100, "#bd0026",
+    ],
+    "fill-opacity": 0.75,
+    "fill-outline-color": "#ffffff",
+  },
+});
+```
+
+### maps-react
+
+```jsx
+<Source id="areas" type="geojson" data="/data/areas.geojson">
+  <Layer
+    id="areas-fill"
+    type="fill"
+    paint={{
+      "fill-color": [
+        "interpolate", ["linear"], ["get", "value"],
+        0, "#ffffcc",
+        50, "#fd8d3c",
+        100, "#bd0026",
+      ],
+      "fill-opacity": 0.75,
+      "fill-outline-color": "#ffffff",
+    }}
+  />
+</Source>
+```
+
+Reading the `interpolate` expression:
+
+1. `["linear"]`: interpolate linearly between values.
+2. `["get", "value"]`: take `properties.value` of each polygon.
+3. The rest are value and colour pairs. `0` is pale yellow, `100` is deep red, and everything between varies continuously.
+
+Keeping `fill-opacity` below 1 lets the map underneath, roads and place names, show through so the location stays legible.
+
+**When it does not work**
+
+- Everything is the same colour: check the spelling of the property name and that the value is a **number**. A string such as `"72"` disables the expression.
+- Some areas turn blackish: those polygons have a **missing** property. Fill it in the data or give a default with something like `["coalesce", ["get", "value"], 0]`.
+- Nothing appears: check for a missing `Layer` `id`, or a 404 on the GeoJSON.
+
+---
+
+## Visualise Density with a Heatmap
+
+URL: https://docs.geolonia.com/howto/heatmap/
+
+When there are too many points for individual markers to mean anything, a heatmap shows **where they concentrate** through shading. Use markers or clustering to show individual points, and a heatmap to show the shape of the distribution.
+
+### embed
+
+Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+
+### maps-suite
+
+```js
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("pts", { type: "geojson", data: "/data/dense-points.geojson" });
+impl.addLayer({
+  id: "heat",
+  type: "heatmap",
+  source: "pts",
+  paint: {
+    "heatmap-weight": ["interpolate", ["linear"], ["get", "weight"], 0, 0, 6, 1],
+    "heatmap-intensity": 1,
+    "heatmap-radius": 20,
+    "heatmap-opacity": 0.8,
+    "heatmap-color": [
+      "interpolate", ["linear"], ["heatmap-density"],
+      0, "rgba(0,0,255,0)",
+      0.2, "royalblue",
+      0.4, "cyan",
+      0.6, "lime",
+      0.8, "yellow",
+      1, "red",
+    ],
+  },
+});
+```
+
+### maps-react
+
+```jsx
+<Source id="pts" type="geojson" data="/data/dense-points.geojson">
+  <Layer
+    id="heat"
+    type="heatmap"
+    paint={{
+      "heatmap-weight": ["interpolate", ["linear"], ["get", "weight"], 0, 0, 6, 1],
+      "heatmap-intensity": 1,
+      "heatmap-radius": 20,
+      "heatmap-opacity": 0.8,
+      "heatmap-color": [
+        "interpolate", ["linear"], ["heatmap-density"],
+        0, "rgba(0,0,255,0)",
+        0.2, "royalblue",
+        0.4, "cyan",
+        0.6, "lime",
+        0.8, "yellow",
+        1, "red",
+      ],
+    }}
+  />
+</Source>
+```
+
+There are mainly four things to tune.
+
+- **`heatmap-weight`**: the weight of one point. The example converts each point `weight` property, running 0 to 6, into 0 to 1. Treating every point equally means a fixed `1`.
+- **`heatmap-radius`**: the radius in pixels one point influences. Larger spreads more smoothly.
+- **`heatmap-intensity`**: overall strength. Raising it with zoom keeps the shading as you zoom in.
+- **`heatmap-color`**: density, running 0 to 1, mapped to colour. Making density 0 transparent is the usual choice.
+
+**When it does not work**
+
+- Barely any colour: few points means low density. Try raising `heatmap-radius` or `heatmap-intensity`.
+- It fades away as you zoom in: higher zoom spreads the points and lowers density. Either raise `heatmap-intensity` with zoom, or switch to a `circle` layer at high zoom to show individual points.
+- Nothing appears: check for a missing `Layer` `id`, or a 404 on the GeoJSON.
+
+---
+
+## Show Buildings and Terrain in 3D
+
+URL: https://docs.geolonia.com/howto/3d/
+
+3D buildings are **included in the Geolonia standard style from the start**. Turn them on with the setting each library provides, tilt the viewpoint, and the city appears in three dimensions. Building shapes and heights come from the vector tiles, so there is no style and no data to prepare.
+
+Only the way to enable them differs. embed disables them by default and needs them turned on explicitly, maps-suite enables them by default, and maps-react disables them by default.
+
+### embed
+
+Add `data-3d="on"`. The viewpoint is tuned with `data-pitch` (tilt) and `data-bearing` (rotation).
+
+```html
+<div class="geolonia"
+     data-lat="35.6812" data-lng="139.7671" data-zoom="15.5"
+     data-pitch="60" data-bearing="-20"
+     data-3d="on"></div>
+```
+
+`data-3d="on"` switches on the 3D building layer built into the standard style. It only takes effect while using a Geolonia style that contains 3D buildings, so it does nothing if `data-style` points at an external style.
+
+### maps-suite
+
+3D buildings are **enabled by default**, so tilting the viewpoint is enough. There is no layer to add. Tilt is `tilt` and rotation is `heading`, both in degrees, and both changeable afterwards with `map.setTilt()` and `map.setHeading()`.
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.6812, lng: 139.7671 },
+  zoom: 15.5,
+  tilt: 60,
+  heading: -20,
+});
+```
+
+Passing `threeDimensional: false` keeps buildings flat even when tilted.
+
+### maps-react
+
+3D buildings are disabled by default, so pass `3d` to enable them. The name begins with a digit and therefore cannot be written as a JSX attribute; pass it through an object spread. The viewpoint uses `pitch` and `bearing`.
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.7671, 35.6812]}
+  zoom={15.5}
+  pitch={60}
+  bearing={-20}
+  {...{ "3d": true }}
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+**When it does not work**
+
+- No buildings: check whether you specified an external style. 3D buildings belong to the Geolonia styles, so replacing the style removes them.
+- They disappear when zoomed out: buildings are drawn only from the zoom level at which they carry meaning. This is intended.
+- maps-react will not enable them: `3d={true}` cannot be written. Check that you are passing `{...{ "3d": true }}`.
+- Performance suffers: 3D rendering is comparatively heavy. Narrow the visible extent or enable it only where needed.
+
+---
+
+## Add a Custom Data Source (Vector Tiles and More)
+
+URL: https://docs.geolonia.com/howto/custom-source/
+
+For data too large for GeoJSON, or tiles someone else publishes, add a **tile source**. This covers raster and vector tiles served from a `{z}/{x}/{y}` template URL.
+
+### embed
+
+Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+
+### maps-suite
+
+Wait for load, then pass `tiles`, an array of template URLs, to `addSource`. The example overlays GSI raster tiles.
+
+```js
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("gsi", {
+  type: "raster",
+  tiles: ["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"],
+  tileSize: 256,
+  attribution: "地理院タイル",
+});
+impl.addLayer({ id: "gsi", type: "raster", source: "gsi" });
+```
+
+- **`tiles`**: the tile template URL. The `{z}/{x}/{y}` part is replaced with real tile coordinates.
+- **`attribution`**: the data credit. Always include the wording the publisher terms require.
+- For **vector tiles**, use `type: "vector"` and give the layer a **`"source-layer"`**, the layer name inside the tile.
+
+```js
+impl.addSource("mytiles", { type: "vector", tiles: ["https://example.com/tiles/{z}/{x}/{y}.pbf"] });
+impl.addLayer({ id: "mytiles-line", type: "line", source: "mytiles", "source-layer": "roads" });
+```
+
+### maps-react
+
+```jsx
+<Source
+  id="gsi"
+  type="raster"
+  tiles={["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"]}
+  tileSize={256}
+  attribution="地理院タイル"
+>
+  <Layer id="gsi-raster" type="raster" />
+</Source>
+```
+
+For vector tiles, use `type="vector"` and give `Layer` a `source-layer`.
+
+```jsx
+<Source id="mytiles" type="vector" tiles={["https://example.com/tiles/{z}/{x}/{y}.pbf"]}>
+  <Layer id="mytiles-line" type="line" source-layer="roads" />
+</Source>
+```
+
+The vector tile example uses a fictional `example.com` URL and will not work as written. Replace it with your own publisher.
+
+**When it does not work**
+
+- Nothing appears with raster: check the template URL directly in a browser. Substituting real numbers such as `12/3637/1612` and seeing whether an image comes back is the fastest check.
+- Nothing appears with vector: **a mismatched `source-layer` name** is the most common cause. Confirm the exact name from the tile specification or the publisher style definition.
+- Tiles are offset or coarse: check `tileSize`, which is 256 or 512 depending on the publisher.
+
+---
+
+## Search by Address and Show That Place
+
+URL: https://docs.geolonia.com/howto/address-search/
+
+Deriving latitude and longitude from an address string such as "東京都千代田区大手町1-1-1" is called **geocoding**. Geolonia Maps has no geocoder of its own, so it is combined with an address library. This recipe uses `@geolonia/normalize-japanese-addresses` (NJA), at https://github.com/geolonia/normalize-japanese-addresses.
+
+NJA is primarily an **address normalisation** library. It absorbs variation in notation, tidies the address, and also returns the coordinates of that point, which can be used on the map directly.
+
+### What comes back
+
+`normalize()` takes an address string and returns the decomposed address together with location information.
+
+```js
+await normalize("東京都台東区上野公園7-7");
+// {
+//   pref: "東京都",
+//   city: "台東区",
+//   town: "上野公園",
+//   addr: "7-7",
+//   level: 8,
+//   point: { lat: 35.714952981, lng: 139.775372778, level: 8 },
+//   other: "",
+//   metadata: { ... }
+// }
+```
+
+**`level` and `point.level` are different things.** `level` says how far into the input string could be read; `point.level` says how fine the returned coordinate is.
+
+| level | how much was read | point.level | what the coordinate points at |
+|---|---|---|---|
+| `0` | not even the prefecture | | (there is no `point`) |
+| `1` | prefecture | `1` | the prefectural office |
+| `2` | municipality | `2` | the municipal office |
+| `3` | district or block | `3` | a representative point of the district or block |
+| `8` | street or house number, or a parcel number | `8` | the addressed position, or the centre of the parcel |
+
+The two do not always agree. Even when the house number was read (`level: 8`), if that number has no location information the representative point of the district is returned (`point.level: 3`).
+
+Match zoom to `point.level`. Zooming to level 18 on the coordinates of a municipal office reads to the viewer as "that building is that address". Varying zoom by the fineness of the coordinate is safer, and all the code below does so.
+
+### embed
+
+NJA is an npm package but can be loaded from a CDN as an ES module. The embed CDN script is a plain `<script>` while NJA needs `<script type="module">`. Modules execute later, so `geolonia` is already loaded.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body { margin: 0; font: 14px/1.6 system-ui, sans-serif; }
+      #wrap { display: flex; flex-direction: column; height: 100vh; }
+      #search { display: flex; gap: 6px; padding: 8px; }
+      #q { flex: 1; padding: 6px 8px; }
+      #note { padding: 0 8px 8px; color: #555; }
+      #map { flex: 1; }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <form id="search">
+        <input id="q" aria-label="住所" value="東京都千代田区大手町1-1-1">
+        <button type="submit">検索</button>
+      </form>
+      <div id="note">住所を入力して検索してください。</div>
+      <div id="map" data-lat="35.68" data-lng="139.76" data-zoom="8" data-marker="off"></div>
+    </div>
+
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script type="module">
+      import { normalize } from "https://cdn.jsdelivr.net/npm/@geolonia/normalize-japanese-addresses@3.1.3/+esm";
+
+      const ZOOM = { 1: 9, 2: 12, 3: 15, 8: 18 };
+
+      const map = new geolonia.Map("#map");
+      const marker = new geolonia.Marker();
+      const note = document.getElementById("note");
+
+      document.getElementById("search").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        note.textContent = "検索中…";
+
+        const result = await normalize(document.getElementById("q").value);
+        if (!result.point) {
+          marker.remove();
+          note.textContent = "住所を特定できませんでした。";
+          return;
+        }
+
+        const { lat, lng, level } = result.point;
+        marker.setLngLat([lng, lat]).addTo(map);
+        map.flyTo({ center: [lng, lat], zoom: ZOOM[level] });
+        note.textContent =
+          `${result.pref}${result.city}${result.town || ""}${result.addr || ""}` +
+          `（位置情報レベル ${level}）`;
+      });
+    </script>
+  </body>
+</html>
+```
+
+- **`type="module"`**: required to load NJA from a CDN. Pinning the version avoids surprises from updates.
+- **`geolonia.Marker`**: loading embed puts the contents of MapLibre GL JS on `window.geolonia`, so marker and popup classes are usable directly.
+- **Whether `result.point` exists**: when the address could not be identified (`level: 0`) there is no `point`. Always check before reading it.
+
+### maps-suite
+
+Get the coordinates with `normalize()` and move with `panTo()` and `setZoom()`. Reuse one marker via `setPosition()`.
+
+```js
+import { normalize } from "@geolonia/normalize-japanese-addresses";
+import { geolonia } from "@geolonia/maps-suite";
+
+const ZOOM = { 1: 9, 2: 12, 3: 15, 8: 18 };
+
+const map = new geolonia.maps.Map(container, {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.76 },
+  zoom: 8,
+});
+
+const marker = new geolonia.maps.Marker();
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const result = await normalize(form.querySelector("#q").value);
+  if (!result.point) {
+    marker.setMap(null);
+    return;
+  }
+
+  const { lat, lng, level } = result.point;
+  marker.setPosition({ lat, lng });
+  marker.setMap(map);
+  map.panTo({ lat, lng });
+  map.setZoom(ZOOM[level]);
+});
+```
+
+- **`setPosition()` and `setMap()`**: create one marker and move it. Calling `new` on every search leaves the previous markers behind.
+- **`panTo()` and `setZoom()`**: coordinates go in as a `{ lat, lng }` object.
+
+### maps-react
+
+Put the search result in state and pass it to `center` and `zoom` on `Map`. Changing the values flies the map there.
+
+```jsx
+function App() {
+  const [query, setQuery] = useState("東京都千代田区大手町1-1-1");
+  const [found, setFound] = useState(null);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const result = await normalize(query);
+    if (!result.point) {
+      setFound(null);
+      return;
+    }
+
+    const { lat, lng, level } = result.point;
+    setFound({ lat, lng, zoom: ZOOM[level] });
+  };
+
+  return (
+    <Map
+      apiKey="YOUR-API-KEY"
+      center={found ? [found.lng, found.lat] : [139.76, 35.68]}
+      zoom={found ? found.zoom : 8}
+      containerStyle={{ flex: 1 }}
+    >
+      {found && <Marker lat={found.lat} lng={found.lng} />}
+    </Map>
+  );
+}
+```
+
+- **`center` and `zoom`**: `Map` watches these two and moves the map. No imperative API is needed. `center` is in **`[longitude, latitude]` order**.
+- **`Marker`**: `lat` and `lng` are separate props, written differently from the `center` order.
+
+### About address data retrieval
+
+NJA does not carry address data around; it fetches only the range it needs from a web API each time. The default endpoint is `https://japanese-addresses-v2.geoloniamaps.com/api/ja`.
+
+- **The first call takes a moment.** It walks prefecture, then municipality, then district, so there are several network round trips. Later calls hit the browser cache.
+- **It does not work offline.** For a disconnected environment, point `config.japaneseAddressesApi` at your own endpoint.
+- **Failure raises an exception.** Transient failures such as 5xx, 429 and network errors are retried automatically up to twice, but anything beyond that throws. When processing in bulk, wrap calls in `try` so one failure does not stop everything.
+
+### Can it go the other way?
+
+No. Deriving an address from coordinates, reverse geocoding, is not something NJA does. NJA takes address strings as input.
+
+**When it does not work**
+
+- Nothing happens: check that you handle the case where `result.point` is absent. An unidentifiable address gives `level: 0` and no `point`.
+- Accuracy drops when a building name is included: a trailing building name only remains in `other` and does not affect coordinates, but it can interfere with reading the address itself. Separating it in advance is the reliable route.
+- Only a rough place appears despite giving a house number: that number has no location information and the district representative point was returned. `point.level` distinguishes the two.
+- Markers accumulate with each search: you are creating a marker every time. Create one and move it.
+
+---
+
+## Show the Map as a Globe
+
+URL: https://docs.geolonia.com/howto/globe/
+
+Switching the map projection to **globe** shows a globe rather than a flat map when zoomed out. Zooming in deep transitions smoothly back to the usual map display, so everyday use is unchanged.
+
+### embed
+
+Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+
+### maps-suite
+
+Wait for load, then switch the projection with `setProjection` on the underlying map.
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 20, lng: 0 },
+  zoom: 2,
+});
+
+await map.whenReady();
+map.getGeoloniaMap().setProjection({ type: "globe" });
+```
+
+### maps-react
+
+Receive the map instance in `onLoad` and switch the projection.
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[0, 20]}
+  zoom={2}
+  onLoad={(map) => map.setProjection({ type: "globe" })}
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+- **`setProjection({ type: "globe" })`**: switches the projection to a globe. `{ type: "mercator" }` returns to the usual flat projection.
+- The tiles are the same as usual. No data or style change is needed.
+
+**When it does not work**
+
+- It stays flat: globe projection is a feature of **MapLibre GL JS v5 or later**. Check the `maplibre-gl` version.
+- You cannot tell whether it is a globe: zoom out. At high zoom it looks the same as the usual map.
+
+---
+
+## Place a Map with HTML Tags Only (maps-suite)
+
+URL: https://docs.geolonia.com/howto/web-component/
+
+maps-suite includes a custom element (Web Components) called `<geolonia-map>`. Load the CDN script and writing an HTML tag is all it takes. No JavaScript calling `new geolonia.maps.Map()` is required.
+
+This page is about maps-suite only. embed and maps-react have no equivalent. For a single map on static HTML, embed is enough; in React, use the `<Map>` component.
+
+### Code
+
+`center` is a single comma-separated attribute in `"latitude,longitude"` order. The element has no height of its own, so give it one in CSS.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      geolonia-map { width: 100%; height: 100vh; }
+    </style>
+    <script src="https://cdn.geolonia.com/maps-suite/v1/maps-suite.js"></script>
+  </head>
+  <body>
+    <geolonia-map
+      api-key="YOUR-API-KEY"
+      center="35.681236,139.767125"
+      zoom="14"></geolonia-map>
+  </body>
+</html>
+```
+
+The script registers itself as `geolonia-map` the moment it loads, so the tag works whether it appears before or after the script.
+
+The available attributes are:
+
+| attribute | meaning |
+|---|---|
+| `api-key` | the Geolonia API key |
+| `center` | initial centre, as `"latitude,longitude"` |
+| `zoom` | initial zoom level |
+| `map-style` | style identifier or URL |
+| `map-id` | identifier of the map instance |
+| `tilt-interaction-disabled` | present to disable tilt interaction |
+| `heading-interaction-disabled` | present to disable rotation interaction |
+
+### Changing attributes afterwards
+
+Rewriting `center` and `zoom` after placement makes the map follow. Being a standard custom element, changing an attribute is enough.
+
+```html
+<button id="tokyo">東京駅</button>
+<button id="osaka">大阪駅</button>
+<geolonia-map
+  id="map"
+  api-key="YOUR-API-KEY"
+  center="35.681236,139.767125"
+  zoom="13"></geolonia-map>
+
+<script>
+  const el = document.getElementById("map");
+  document.getElementById("tokyo").onclick = () => {
+    el.setAttribute("center", "35.681236,139.767125");
+  };
+  document.getElementById("osaka").onclick = () => {
+    el.setAttribute("center", "34.702485,135.495951");
+  };
+</script>
+```
+
+The embed `data-lat` and `data-lng` are read once as initial values, so this rewriting is not possible there. That is the single biggest difference between the two.
+
+### Touching the map inside
+
+The `innerMap` property of the element holds the maps-suite `Map` instance. Anything the attributes do not cover can be called from there.
+
+```js
+const el = document.querySelector("geolonia-map");
+el.innerMap.setTilt(45);
+el.innerMap.fitBounds({ north: 35.7, south: 35.6, east: 139.8, west: 139.7 }, 40);
+```
+
+For maplibre features beyond that, `getGeoloniaMap()` retrieves the underlying map.
+
+A `geolonia-zoomchange` event is dispatched from the element when the zoom changes.
+
+```js
+el.addEventListener("geolonia-zoomchange", () => {
+  console.log("zoom:", el.innerMap.getZoom());
+});
+```
+
+### Fitting a server-rendered HTML setup
+
+This approach pays off when **the server assembles the HTML and there is no bundler on the client**. Hono, for instance, returns HTML, so one `<geolonia-map>` line in the template finishes the job, touching neither the build configuration nor the npm dependencies.
+
+```jsx
+import { Hono } from "hono";
+
+const app = new Hono();
+
+app.get("/", (c) =>
+  c.html(
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <style>{"geolonia-map { width: 100%; height: 100vh; }"}</style>
+        <script src="https://cdn.geolonia.com/maps-suite/v1/maps-suite.js"></script>
+      </head>
+      <body>
+        <geolonia-map api-key="YOUR-API-KEY" center="35.681236,139.767125" zoom="14" />
+      </body>
+    </html>,
+  ),
+);
+
+export default app;
+```
+
+Running Hono on Cloudflare Workers, the demo key `YOUR-API-KEY` works as it is.
+
+Custom elements are a standard mechanism, so the tag also goes straight into Vue and Svelte templates. It initialises when the element appears on screen and cleans up when it detaches, so it is safe inside conditionally rendered UI.
+
+### Choosing between this and embed
+
+Both put a map on the page with one CDN script and an HTML tag. The criterion is **whether the page moves**.
+
+For a single map on static HTML, use embed. It has attributes such as `data-geojson` for loading data and `data-3d` for 3D buildings, and it takes the least writing.
+
+Where there is movement, such as changing the map position afterwards or showing and hiding maps as tabs switch, `<geolonia-map>` fits better. It follows attribute changes, and initialisation and cleanup run as the element enters and leaves. embed scans at load time and cannot pick up maps that appear later.
+
+**When it does not work**
+
+- The map height is zero: give `geolonia-map` itself a height. The element has no default height.
+- `center` has no effect: write it as `"latitude,longitude"`, one attribute with a comma. It is not split into separate `lat` and `lng` attributes.
+- `innerMap` is `null`: you are reading it before the element enters the DOM. The map is created at the moment of insertion.
+- The tag renders as plain text: the script has not loaded. Check in the network tab that `maps-suite.js` returns 200.
+
+---
+
+## Manage API Keys in YAML
+
+URL: https://docs.geolonia.com/howto/cli-map-keys/
+
+API keys and the origins allowed to display maps with them can be managed in a YAML file. Since you can review what will change before applying it, this suits growing numbers of keys and teams touching them.
+
+### Preparation
+
+Install the Geolonia CLI, then log in and select a team.
+
+```bash
+npm install --global @geolonia/cli
+geolonia login
+geolonia teams select
+```
+
+### Operating one at a time
+
+```bash
+geolonia map-keys list                                   # 一覧
+geolonia map-keys show <keyId>                           # 詳細
+geolonia map-keys search example.com                     # 名前や許可オリジンで検索
+geolonia map-keys new                                    # 新規作成
+geolonia map-keys add-origin <keyId> https://example.com # 許可オリジンを足す
+geolonia map-keys remove-origin <keyId> https://example.com
+```
+
+### Exporting the current state
+
+```bash
+geolonia map-keys pull -o keys.yml
+```
+
+Omitting `-o` writes to standard output. The exported shape is:
+
+```yaml
+keys:
+  - name: 本番サイト
+    keyId: xxxxxxxx
+    userKey: YOUR-API-KEY
+    origins:
+      - https://example.com
+      - https://www.example.com
+  - name: ステージング
+    keyId: yyyyyyyy
+    userKey: YOUR-API-KEY
+    origins:
+      - https://staging.example.com
+```
+
+### Reviewing the diff
+
+```bash
+geolonia map-keys plan -f keys.yml
+```
+
+Each key is judged as follows.
+
+| judgement | condition |
+| --- | --- |
+| `create` | not found by `keyId`, or not found by `name` when there is no `keyId` |
+| `update` | found, but `origins` differs from the current state |
+| `unchanged` | found, and `origins` matches |
+
+Matching uses `keyId` when present and `name` otherwise. **To add a new key, write `name` and `origins` without a `keyId`.**
+
+### Applying
+
+```bash
+geolonia map-keys apply -f keys.yml
+```
+
+Keys marked `create` are created, and keys marked `update` have their `origins` brought in line with the YAML, adding what is missing and removing what is extra. With no diff it prints `No changes required.` and does nothing.
+
+**Only origins are applied.** What `apply` reconciles is the allowed origins. Rewriting `name` in the YAML does not necessarily rename the key, so use the dashboard or an individual command when you want to change a name.
+
+**Keys cannot be deleted.** `geolonia map-keys delete <keyId>` exists but is disabled for safety. Removing a key entry from the YAML will not delete that key, because deleting a key stops every map using it at once.
+
+### Putting the file in a repository
+
+`keys.yml` holds key names, IDs, public keys and allowed origins. All of that is public information used in serving maps, so committing it is fine.
+
+By contrast `~/.config/geolonia/credential.yml` holds a refresh token. **Never put that in a repository.**
+
+---
+
+## Explanation
+
+URL: https://docs.geolonia.com/explanation/
+
+The Explanation section collects the concepts worth knowing when using Geolonia Maps, and the background to why certain parts are the way they are.
+
+### Why MapLibre GL JS compatible?
+
+Rather than learning a closed proprietary API, **knowledge of a standard map API used worldwide applies directly**. The official documentation is readable, the knowledge does not go to waste, and migration is easier. When stuck, search for "how would MapLibre write this". That is the learning strategy compatibility buys.
+
+### What vector tiles are
+
+A mechanism that divides map data into square tiles and serves only the range needed. Vector tiles in particular carry the data itself, "this is a road", rather than a picture, so they do not blur when zoomed and their appearance (the style) can be changed afterwards.
+
+### What a map style is
+
+What decides the appearance of a map is the style. Because data and appearance are separate, the same data yields both a light map and a dark one.
+
+### Icons available for marker-symbol
+
+The names writable in the GeoJSON `marker-symbol` are decided by the icons contained in the map style, not by type definitions. Usable names therefore change with the style.
+
+### What Geolonia Agent Skills is
+
+A Claude Code plugin for having an AI coding agent help with development that uses Geolonia Maps.
+
+---
+
+## What a Map Style Is
+
+URL: https://docs.geolonia.com/explanation/map-style/
+
+A **style** is a JSON file describing how to draw map data. What colour to fill the sea, how many pixels wide to draw a road, whether to omit station names below zoom 12. Those drawing rules are gathered in it.
+
+What you specify in Geolonia Maps as `geolonia/basic-v2` is the name of such a style.
+
+### Data and appearance are separate
+
+On a paper map, the terrain information and the printed colours are one thing. Rewriting means reprinting.
+
+On a vector tile map the two are separate. Map data is served carrying attributes such as "this is a road" and "this is water", and colours and widths are decided afterwards by the style. From the same data you can build both a light map and a dark one.
+
+Only the style is reloaded, so switching appearance does not refetch the data.
+
+### What is inside a style
+
+The style JSON holds three broad kinds of information.
+
+- **sources**: where data comes from. The URLs serving the vector tiles.
+- **layers**: drawing rules. Which data, at which scale, in which colour and width, listed one by one.
+- **glyphs and sprite**: the letterforms for text and the images for icons.
+
+`layers` is the substance. `geolonia/basic-v2` has 139 layers. Sea, rivers, greenery, buildings, the lines for each road class, station names and place names are each handled by a separate layer.
+
+The format of this JSON is defined by the MapLibre Style Spec and is not a Geolonia-specific format. Styles usable with MapLibre GL JS work as they are, and MapLibre materials are readable when researching how to write a style.
+
+### Specifying a style
+
+There are two ways.
+
+A **logical name** is a short name such as `geolonia/basic-v2`. Styles Geolonia provides are specified this way. Omitting the specification uses `geolonia/basic-v2`.
+
+A **URL** points directly at a style.json, for styles published elsewhere or written yourself.
+
+```html
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-style="geolonia/midnight"></div>
+```
+
+### Writing your own style
+
+When an existing style is not enough, a style you wrote yourself can be specified by URL. Besides writing JSON directly, editors such as Maputnik can be used.
+
+To start from a Geolonia style, fetch `https://cdn.geolonia.com/style/geolonia/basic-v2/ja.json` and modify it. Note that the API key contained in the `sources` URLs has to be replaced with your own.
+
+---
+
+## Geolonia Maps Style List
+
+URL: https://docs.geolonia.com/explanation/styles/
+
+The styles Geolonia officially provides. Pass the logical name to `data-style` or `style` to switch.
+
+| logical name | contents |
+|---|---|
+| `geolonia/basic-v2` | the standard style, used when the specification is omitted |
+| `geolonia/gsi` | a style using the vector tiles of the Geospatial Information Authority of Japan |
+| `geolonia/midnight` | a dark style based on deep navy |
+| `geolonia/red-planet` | a style based on dark red |
+| `geolonia/notebook` | a pale style based on white |
+| `geolonia/homework` | a simple worldwide style from Natural Earth |
+| `geoloniamaps/smartcity-base` | a style using the optimised vector tiles of the Geospatial Information Authority of Japan |
+
+There are also two deprecated styles.
+
+- **`geolonia/basic-v2`**: the standard style, based on OpenStreetMap data.
+- **`geolonia/gsi`**: uses the vector tiles of the Geospatial Information Authority of Japan, so representation within Japan resembles the GSI maps.
+- **`geolonia/midnight`**: dark, based on deep navy. Useful over a dark screen, or under strongly coloured data.
+- **`geolonia/red-planet`**: based on dark red.
+- **`geolonia/notebook`**: pale, based on white. Suited to keeping the map itself quiet so that overlaid data leads.
+- **`geolonia/homework`**: a simple worldwide style using Natural Earth, built from only 9 layers, centred on borders and country names. It contains no blocks or roads, so it is unsuited to zooming into Japan.
+- **`geoloniamaps/smartcity-base`**: reads the optimised vector tiles of the Geospatial Information Authority of Japan in PMTiles format. It is the only style whose logical name begins with `geoloniamaps/`.
+
+### Deprecated styles
+
+The following two are older styles superseded by `geolonia/basic-v2`. They are still served and will work if specified, but use `geolonia/basic-v2` for new work. The vector tiles they reference differ from those of `basic-v2`.
+
+- **`geolonia/basic`**: the original standard style. It includes the Ministry of Agriculture, Forestry and Fisheries parcel polygons (farmland plots), so zooming into rural areas shows plot boundaries.
+- **`geolonia/basic-v1`**: the previous generation standard style. Its palette is close to `basic-v2`, but the vector tiles it references differ.
+
+### Language
+
+Each style has a Japanese and an English version, changing the language of labels such as place names. Switch with the `data-lang` attribute or the `lang` option.
+
+---
+
+## Icons Available for marker-symbol
+
+URL: https://docs.geolonia.com/explanation/marker-symbol/
+
+Writing a name in the GeoJSON `marker-symbol` draws the marker with an icon contained in the map style.
+
+```json
+{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] },
+  "properties": {
+    "marker-symbol": "park"
+  }
+}
+```
+
+The list on this page is assembled at build time from the sprite JSON of the style, using `geolonia/basic-v2` as the baseline, which is the default style the examples in this documentation use. Because the usable names come from the style rather than from type definitions, they change when the style changes.
+
+---
+
+## Environments Where the Demo Key Works
+
+URL: https://docs.geolonia.com/explanation/free-referers/
+
+The `YOUR-API-KEY` appearing throughout the documentation and samples is a **demo key** that lets you try maps without issuing one. Only for access from pre-approved environments (domains) does a map render without a real API key. The point is to make the order "get it running first, obtain a key when publishing" possible.
+
+### Where it works
+
+The allowed domains are set for environments commonly used during development and prototyping. Representative ones follow, though this is not the complete set.
+
+**Local development**
+
+- `localhost` and `127.0.0.1`, on any port
+- Development domains such as `*.test`, `*.local` and `*.example`
+
+**Online editors and playgrounds**
+
+- CodePen (`codepen.io`)
+- CodeSandbox (`*.csb.app`)
+- JSFiddle
+- PlayCode
+
+**Free hosting and previews**
+
+- GitHub Pages (`*.github.io`)
+- Netlify (`*.netlify.app`)
+- Vercel (`*.vercel.app`)
+- Cloudflare Pages and Workers (`*.pages.dev` and `*.workers.dev`)
+
+So pasting into CodePen, or deploying straight to GitHub Pages, Netlify or Vercel, displays a map for checking without waiting for a key.
+
+### Production publishing needs a real key
+
+The demo key works only on such "try it and prototype" environments. To publish on your own domain such as `example.com`, issue a production API key on the Geolonia dashboard at https://app.geolonia.com/ and register the domain you will use.
+
+Allowed domains are updated from time to time, so the above is an excerpt of the main ones. The complete list is in `referers.json` at https://github.com/geolonia/free-referers/blob/master/referers.json.
+
+---
+
+## What the Geolonia CLI Is
+
+URL: https://docs.geolonia.com/explanation/cli/
+
+**Geolonia CLI** is the official tool for operating things in your Geolonia account from the command line. Its role differs from the map-drawing libraries (embed, maps-suite, maps-react); this one handles **the preparation and operation that comes before drawing a map**.
+
+Two things are available today.
+
+- **API key management**: creating keys, adding and removing allowed origins, exporting the configuration to YAML and applying it after reviewing the diff.
+- **Plan and usage checks**: the current plan, this month's map display count, and the quota.
+
+The dashboard can do the same things. What the CLI suits is **wanting the procedure to be reproducible**, such as writing the key configuration to a file and applying it after reviewing the diff.
+
+### Installing
+
+Node.js is required, **version 22.0.0 or later**.
+
+```bash
+npm install --global @geolonia/cli
+```
+
+```bash
+geolonia --version
+```
+
+### Logging in and selecting a team
+
+Every command assumes you are logged in and that a target team is selected.
+
+```bash
+geolonia login
+geolonia teams select
+```
+
+`geolonia teams select` lists the teams you belong to and asks for a number. If you know the team ID, pass it directly as `geolonia teams select <teamId>`.
+
+```bash
+geolonia whoami
+```
+
+### Where configuration and credentials live
+
+| file | contents |
+| --- | --- |
+| `~/.config/geolonia/credential.yml` | user name and refresh token |
+| `~/.config/geolonia/config.yml` | the selected team |
+
+Both can be pointed elsewhere with `--credential-file` and `--config-file`, which is useful for switching between several teams or accounts on one machine.
+
+`credential.yml` holds a refresh token. Do not include it in a repository or leave it on a shared machine.
+
+### Command list
+
+| command | what it does |
+| --- | --- |
+| `geolonia login` | log in and save the token |
+| `geolonia teams list` | list the teams you belong to |
+| `geolonia teams select [teamId]` | select the team to operate on |
+| `geolonia user show` / `whoami` / `me` | show the current user information |
+| `geolonia map-keys list` | list API keys |
+| `geolonia map-keys show <keyId>` | show the details of an API key |
+| `geolonia map-keys search <query>` | search keys by name or allowed origin |
+| `geolonia map-keys new` | create a new API key |
+| `geolonia map-keys add-origin <keyId> <origin>` | add an allowed origin |
+| `geolonia map-keys remove-origin <keyId> <origin>` | remove an allowed origin |
+| `geolonia map-keys pull` | export the current key configuration to YAML |
+| `geolonia map-keys plan -f <file>` | show the diff between the YAML and the current state |
+| `geolonia map-keys apply -f <file>` | apply the contents of the YAML |
+| `geolonia plan show` | show the current plan, this month's map display count and the quota |
+| `geolonia plan list` | list the available plans |
+| `geolonia generate-access-token` | issue a team access token |
+
+`geolonia map-keys delete <keyId>` exists, but running it **only tells you to delete the key from the dashboard**, because deleting a key stops every map using it at once.
+
+`geolonia plan show` and `geolonia plan list` require **0.4.0 or later**. Older versions report `unknown command 'plan'`.
+
+### Viewing plan and usage
+
+```bash
+geolonia plan show
+```
+
+Shows the current plan, this month's map display count and the quota for the selected team, without opening the dashboard.
+
+```bash
+geolonia plan list
+```
+
+Lists the available plans with their names, prices, included map display counts and member limits. **This is the one command that needs no login**, so plans can be compared before contracting.
+
+### Using it from CI
+
+`geolonia generate-access-token` issues a team access token from the saved refresh token. It is intended for environments where interactive login is impossible, such as CI, passing the token through an environment variable.
+
+---
+
+## What Geolonia Agent Skills Is
+
+URL: https://docs.geolonia.com/explanation/agent-skills/
+
+**Geolonia Agent Skills** is a plugin for having Claude Code (https://code.claude.com/) help build map applications with Geolonia Maps. It is neither a map-drawing library nor a tool for operating your account. It is **a way of teaching the agent how Geolonia Maps is written**.
+
+This documentation is written for people to read. Think of the plugin as the same content reorganised into a form an agent can read and use.
+
+| what you use | its role |
+| --- | --- |
+| embed, maps-suite, maps-react | drawing maps |
+| Geolonia CLI | managing API keys, checking plan and usage |
+| Geolonia Agent Skills | having an agent write the map code |
+
+It is distributed at https://github.com/geolonia/geolonia-agent-skills under the MIT licence.
+
+### Why it is needed
+
+Agents are not ignorant of Geolonia Maps, but they write from the knowledge they had at training time. That produces drift such as:
+
+- writing deprecated style names or old CDN paths
+- applying MapLibre GL JS idioms directly and missing the Geolonia conventions
+- treating a feature that **already exists** in maps-suite as absent and writing a roundabout workaround
+
+The skills hand these premises to the agent on the spot. Instead of pasting them into every prompt, they are loaded only when needed.
+
+### The skills included
+
+**maps** supports building map applications with Geolonia Maps.
+
+- **Embed API**: declarative map embedding through HTML `data-*` attributes
+- **JavaScript API**: working with `geolonia.Map`, `Marker`, `Popup` and `SimpleStyle`
+- **Geocoding**: address to coordinates, coordinates to address, and Japanese address normalisation
+- **Map styles**: the list of built-in styles and how to customise them
+
+Setup is standardised on CDN embedding.
+
+**geolonia-google-maps-migration** supports migration from the Google Maps JavaScript API to `@geolonia/maps-suite`. It carries the procedure from inventory through installation, obtaining an API key, initialising the map, moving markers and info windows over, and building and verifying.
+
+A correspondence table between `google.maps.*` and `geolonia.maps.*`, the APIs that differ in detail, and the gaps not yet filled along with their workarounds, are split across reference files.
+
+### Requirements and installation
+
+Claude Code **v1.0.33 or later** is required. Add the marketplace, then install.
+
+```text
+/plugin marketplace add geolonia/geolonia-agent-skills
+/plugin install geolonia@geolonia
+```
+
+### Using it
+
+Ask for anything map-related and the agent loads the skills it needs by itself.
+
+```text
+「Geolonia Maps で東京タワーにマーカーを置いた地図を作って」
+```
+
+To invoke one explicitly, use the slash command.
+
+```text
+/geolonia:maps
+```
+
+### How it is structured
+
+Rather than one file, a skill is split into an entry point `SKILL.md` and reference files read only when needed, so that the agent does not have to read everything up front.
+
+```text
+skills/
+├── maps/
+│   ├── SKILL.md               # 入口。いつ使うか、基本の方針
+│   ├── embed-api.md           # data-* 属性の一覧
+│   ├── javascript-api.md      # JavaScript API
+│   ├── geocoding.md           # 住所と座標の変換、住所正規化
+│   ├── styles.md              # スタイル一覧とカスタマイズ
+│   └── examples.md            # よくあるパターンのコード例
+└── geolonia-google-maps-migration/
+    ├── SKILL.md               # 入口。移行手順
+    ├── AGENTS.md              # 凝縮版のクイックリファレンス
+    └── references/
+        ├── known-gaps.md      # まだ無い機能と回避策
+        ├── api-differences.md # 細部が異なる API
+        ├── marker-icons.md    # マーカーアイコン
+        └── shapes.md          # 図形の移行
+```
+
+### It tracks the library version
+
+This is the part of the plugin that needs the most care.
+
+The content of the skills, and in particular the "gaps not yet filled and their workarounds" in the migration skill, **is written against a specific version of `@geolonia/maps-suite`**. When the library gains a feature, the workaround becomes nothing but a detour. `Polyline`, `Polygon` and `Circle`, absent from the early versions, were added later.
+
+To avoid having old workarounds written, observe the following.
+
+- Check **the stated target version** at the top of each reference file.
+- When it disagrees with the version of `@geolonia/maps-suite` you use, pull the latest from the repository again.
+- If generated code uses a `_getImpl()` workaround, check whether the current version has an official API for it.
+
+The repository is always the source of truth.
+
+### Trying and fixing it locally
+
+Clone the repository and load it directly with `--plugin-dir`.
+
+```bash
+git clone https://github.com/geolonia/geolonia-agent-skills.git
+cd /path/to/your-project
+claude --plugin-dir /path/to/geolonia-agent-skills
+```
+
+Restarting Claude Code applies edits to the skill files. The structure can be validated with:
+
+```bash
+claude plugin validate /path/to/geolonia-agent-skills
+```
+
+---
+
+## Reference
+
+URL: https://docs.geolonia.com/reference/
+
+API reference generated from the type definitions of each library. The generated pages themselves are not reproduced in this file.
+
+### @geolonia/embed
+
+The library that displays a map with only a `<script>` tag and a `<div>` tag, configured through `data-*` attributes. See https://docs.geolonia.com/reference/embed/.
+
+`EmbedAttributes` carries the complete list of `data-*` attributes and their defaults. For writing plugins, see `EmbedPlugin`.
+
+### @geolonia/maps-suite
+
+The library that drives the map imperatively from JavaScript, with classes and types under the `geolonia.maps` namespace. See https://docs.geolonia.com/reference/suite/geolonia.Namespace.maps/.
+
+Besides `Map` and `Marker` there are `InfoWindow` and `MarkerClusterer`, shapes such as `Circle` and `Polygon`, and value types such as `LatLng` and `LatLngBounds`. To draw GeoJSON with mixed geometry types in one go, there is the `Data` layer reached from `Map.data`.
+
+### @geolonia/maps-react
+
+The React library. **This is the only library without a reference generated from type definitions.** Most of its props are taken straight from maps-core, so `GeoloniaMapOptions` in the maps-core reference is the list of `Map` options, minus `container`. `GeoloniaMapOptions` is the MapLibre GL JS `MapOptions` type plus Geolonia-specific entries, so most map initialisation options are covered by the MapLibre documentation.
+
+`Map` additionally has props deciding the appearance of the container such as `containerStyle` and `className`, props receiving map events such as `onClick` and `onMoveEnd`, `interactiveLayerIds` for narrowing which layers are clickable, and `onLoad` for retrieving the map instance. These are maps-react additions and do not appear on the MapLibre side.
+
+The available components are `Map` for the map itself, `Source` and `Layer` for data and drawing, `Marker` and `Popup`, and the controls (`NavigationControl`, `GeolocateControl`, `FullscreenControl`, `ScaleControl`, `AttributionControl`, and `Control` for writing your own). There is also `MapProvider` for handling several maps together, along with hooks such as `useMap`.
+
+What you pass to `Source` and `Layer` is the MapLibre GL JS source and layer definition as it is. What can be written in `paint` and `layout`, and how `filter` expressions work, is covered by the MapLibre GL JS documentation. The map instance received in `onLoad` also extends the MapLibre `Map`, so the same documentation applies.
+
+### @geolonia/maps-core
+
+The shared foundation of the three libraries above. It is essentially MapLibre GL JS with Geolonia map access and conveniences added. See https://docs.geolonia.com/reference/core/.
+
+At its core, `GeoloniaMap` is **the MapLibre GL JS `Map` class extended to work with Geolonia maps**, covering API key handling, style name resolution and the default controls. MapLibre features such as `flyTo()`, `addLayer()` and `on()` are therefore available as they are. Only what Geolonia added appears in the reference, so **for the inherited API see the MapLibre GL JS documentation**, particularly the `Map` class reference at https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/. The supported line is MapLibre GL JS v5.
+
+The reference covers the map itself as `GeoloniaMap` and its options `GeoloniaMapOptions`, plus `GeoloniaMarker` and `SimpleStyle`, which applies styling to GeoJSON.

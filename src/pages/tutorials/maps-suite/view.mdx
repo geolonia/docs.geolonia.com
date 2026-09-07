@@ -1,0 +1,75 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段1：場所と視点
+description: maps-suite の Map に center と zoom を渡し、見たい場所と角度を指定します。
+page: tutorial
+kicker: maps-suite
+badge: tutorial
+---
+import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
+
+<Callout kind="success" title="前の段でできたこと">
+段0で、Web ページに地図を出せるようになりました。ただし場所は既定の世界全体のまま。この段では、地図を**自分の見たい場所と見たい角度**にします。
+</Callout>
+
+## 場所と拡大率を指定する
+
+場所と拡大率は、`Map` を作るときの**オプション**で指定します。場所は `center`、拡大率は `zoom` です。
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.658581, lng: 139.745438 },
+  zoom: 16,
+});
+```
+
+- **`center`**：地図の中心。`{ lat: 緯度, lng: 経度 }` のオブジェクトで渡します。上の値は東京タワーです。自分の見たい場所の座標は、Google マップ等で右クリックすると取得できます。
+- **`zoom`**：拡大率。数字が大きいほど寄ります。目安は、**11** で都市の全体、**14** で街区、**16** で建物が見えるくらいです。
+
+作った後から動かすこともできます。`map.setCenter({ lat, lng })` で移動、`map.panTo({ lat, lng })` でアニメーション付きの移動、`map.setZoom(14)` で拡大率の変更です。
+
+## 視点を傾けて回す
+
+視点の傾きと回転も、`Map` のオプションで指定できます。maps-suite では傾きを `tilt`、回転を `heading` と呼びます。
+
+ここまでを入れた `main.js` の全体が次のコードです。
+
+<LiveCode title="maps-suite で東京タワーを傾けて見る">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.658581, lng: 139.745438 },
+  zoom: 16,
+  tilt: 45,     // 地図を手前に倒す角度（度）。0 が真上からの平面図
+  heading: 20,  // 地図を回す角度（度）。0 が北が上
+});
+```
+
+</LiveCode>
+
+`tilt` は地図を手前に倒す角度、`heading` は地図を回す角度で、どちらも度で指定します。既定はどちらも `0` で、真上から見下ろした、北が上の平面図です。
+
+作った後から変えることもできます。傾きなら `map.setTilt(45)`、回転なら `map.setHeading(20)` で、中心や拡大率とまとめて動かすなら `map.moveCamera({ center, zoom, tilt, heading })` を使います。いずれも地図の読み込みを待つ必要はありません。
+
+maplibre にしかない操作が必要になったときは、`map.getGeoloniaMap()` で基盤の地図インスタンスを取り出せます。次の段のデータ追加で使います。
+
+## 動いたか確認する
+
+中心が東京タワーになり、地図が斜めから見た構図になっていれば成功です。`center` を自分の場所に差し替えて、狙った場所が中心に出ることも確かめてください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 中心が海や別の国に飛ぶ → `lat` と `lng` の**取り違え**を確認。日本国内なら `lat` はおよそ 24〜46、`lng` はおよそ 123〜146 です。
+- `setPitch` / `setBearing` で「関数がない」エラー → maps-suite での名前は `setTilt` / `setHeading` です。`pitch` と `bearing` は基盤の maplibre 側の呼び方です。
+- 傾けたら建物が立体になった → maps-suite は 3D 建物が既定で有効です。平面のままにしたいときは `threeDimensional: false` を渡します。
+</Callout>
+
+## 次は
+
+地図を自分の場所にできました。でも、のっているのは地図だけです。次の[段2：データを載せる](../data/)で、**自分のデータ（複数の地点）**を地図に重ねます。

@@ -1,0 +1,6 @@
+---
+// レンズタグ。<Tag k="embed" /> → embed / suite / react のラベル付きバッジ。
+// 見た目は components.css の .tag 側。
+const { k } = Astro.props;
+---
+<span class={`tag ${k}`}>{k}</span>

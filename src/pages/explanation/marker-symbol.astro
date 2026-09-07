@@ -1,0 +1,160 @@
+---
+// GeoJSON の marker-symbol に指定できるアイコンの一覧。
+//
+// 一覧はビルド時にスプライトの JSON を取得して組み立てる。手で並べた表を置くと、
+// スタイル側にアイコンが増えたときに黙って古くなるため、生成元を1つにしている。
+// 取得に失敗したらビルドを落とす（空の一覧を配ってしまうより、気づけるほうがよい）。
+//
+// 描画はスプライトシート1枚を background に敷いて位置をずらす方式。アイコンごとに
+// SVG を読むと 185 回リクエストが飛ぶので採らない。
+//
+// 基準にするスタイルは geolonia/basic-v2。このドキュメントの例が使っている
+// 既定のスタイルに合わせている（旧サイトは basic を基準にしていた）。
+import DocLayout from '../../layouts/DocLayout.astro';
+
+const STYLE = 'basic-v2';
+const SPRITE_BASE = `https://cdn.geolonia.com/sprites/${STYLE}@2x`;
+const ICONS_REPO = `https://github.com/geoloniamaps/${STYLE}/blob/main/icons`;
+
+// 地図の内部で使う記号は読者向けの一覧に出さない。
+// default_ は代替アイコン、highway- / national- / prefectural- は道路番号の下敷き。
+const INTERNAL = /^(default_|highway-|national-|prefectural-)/;
+
+type SpriteEntry = { width: number; height: number; x: number; y: number; pixelRatio: number };
+
+const res = await fetch(`${SPRITE_BASE}.json`);
+if (!res.ok) {
+  throw new Error(`marker-symbol の一覧を作れません: ${SPRITE_BASE}.json が ${res.status} を返しました`);
+}
+const sprite: Record<string, SpriteEntry> = await res.json();
+
+const icons = Object.entries(sprite)
+  .filter(([name]) => !INTERNAL.test(name))
+  .sort(([a], [b]) => a.localeCompare(b));
+
+const frontmatter = {
+  title: 'marker-symbol で使えるアイコン',
+  description: 'GeoJSON の marker-symbol に指定できるアイコンの一覧です。',
+  page: 'explanation',
+  badge: 'explanation',
+};
+---
+
+<DocLayout frontmatter={frontmatter}>
+  <p>
+    GeoJSON の <code>marker-symbol</code> に名前を書くと、地図スタイルに含まれるアイコンでマーカーを描けます。
+    ここに載せているのは <code>geolonia/{STYLE}</code> のアイコン {icons.length} 個です。
+  </p>
+
+  <p>
+    <strong>アイコンはスタイルごとに違います。</strong>
+    <code>geolonia/gsi</code> など別のスタイルを指定している場合、ここにある名前が使えるとは限りません。
+    指定した名前がスタイルに無いと、そのポイントにはアイコンが描かれません。
+    どのスタイルがあるかは<a href="/explanation/styles/">Geolonia Maps のスタイル一覧</a>を参照してください。
+  </p>
+
+  <div class="icon-filter">
+    <label for="icon-filter-field">名前で絞り込む</label>
+    <input id="icon-filter-field" type="search" placeholder="例: park" autocomplete="off" />
+    <span id="icon-filter-count" aria-live="polite"></span>
+  </div>
+
+  <table id="icon-table">
+    <thead>
+      <tr>
+        <th>アイコン</th>
+        <th>名前</th>
+        <th>SVG</th>
+      </tr>
+    </thead>
+    <tbody>
+      {icons.map(([name, def]) => (
+        <tr data-name={name}>
+          <td>
+            <span class="icon-box" style={`width:${def.width / def.pixelRatio}px;height:${def.height / def.pixelRatio}px`}>
+              <span
+                class="icon-art"
+                style={`width:${def.width}px;height:${def.height}px;background-image:url(${SPRITE_BASE}.png);background-position:-${def.x}px -${def.y}px;transform:scale(${1 / def.pixelRatio})`}
+              />
+            </span>
+          </td>
+          <td><code>{name}</code></td>
+          <td><a href={`${ICONS_REPO}/${name}.svg`} rel="noopener noreferrer" target="_blank">ソース</a></td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <h2>使い方</h2>
+
+  <pre><code>{`{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [139.7449, 35.6759] },
+  "properties": {
+    "marker-symbol": "park"
+  }
+}`}</code></pre>
+
+  <p>
+    指定できるスタイルの一覧は <a href="/reference/core/Class.SimpleStyle/"><code>SimpleStyle</code></a>、
+    GeoJSON の読み込み方は <a href="/howto/geojson-data/">外部データ（GeoJSON）を地図に読み込むには</a>にあります。
+  </p>
+</DocLayout>
+
+<style>
+  .icon-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0 1rem;
+  }
+  .icon-filter input {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--color-border, #ccc);
+    border-radius: 4px;
+    font: inherit;
+  }
+  .icon-filter span {
+    color: var(--color-text-muted, #666);
+    font-size: 0.9em;
+  }
+  /* スプライトは 2x の絵を 0.5 倍で置く。1x の論理サイズに収めると
+     高解像度の画面でも境界がぼやけない。 */
+  .icon-box {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+  .icon-art {
+    display: block;
+    background-repeat: no-repeat;
+    transform-origin: top left;
+  }
+</style>
+
+<script is:inline>
+  (function initIconFilter() {
+    const field = document.getElementById('icon-filter-field');
+    const count = document.getElementById('icon-filter-count');
+    const rows = Array.from(document.querySelectorAll('#icon-table tbody tr'));
+    if (!field || !count || rows.length === 0) return;
+
+    const report = (shown) => {
+      count.textContent = shown === rows.length ? `${rows.length} 個` : `${shown} / ${rows.length} 個`;
+    };
+
+    field.addEventListener('input', () => {
+      const q = field.value.trim().toLowerCase();
+      let shown = 0;
+      for (const row of rows) {
+        const hit = !q || (row.dataset.name || '').includes(q);
+        row.hidden = !hit;
+        if (hit) shown++;
+      }
+      report(shown);
+    });
+
+    report(rows.length);
+  })();
+</script>

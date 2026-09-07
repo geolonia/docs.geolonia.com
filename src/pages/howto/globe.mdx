@@ -1,0 +1,85 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 地図を地球儀（グローブ）で表示するには
+description: 地図の投影を globe に切り替え、ズームアウトしたときに地球儀として表示します。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+地図の投影を **globe** に切り替えると、ズームアウトしたときに平面地図ではなく地球儀として表示されます。深くズームインすると自動的に通常の地図表示へなめらかに移行するので、普段の使い勝手は変わりません。
+
+## コード
+
+<Lens name="embed">
+embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+
+</Lens>
+
+<Lens name="suite">
+読み込みを待ってから、基盤の地図の `setProjection` で投影を切り替えます。
+
+<LiveCode title="maps-suite で地球儀表示にする">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 20, lng: 0 },
+  zoom: 2,
+});
+
+await map.whenReady();
+map.getGeoloniaMap().setProjection({ type: "globe" });
+```
+
+</LiveCode>
+
+- **`setProjection({ type: "globe" })`**：投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
+- タイルは普段と同じものがそのまま使えます。データやスタイルの変更は不要です。
+
+</Lens>
+
+<Lens name="react">
+`onLoad` で地図インスタンスを受け取り、`setProjection` で投影を切り替えます。
+
+<LiveCode title="maps-react で地球儀表示にする">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[0, 20]}
+    zoom={2}
+    onLoad={(map) => map.setProjection({ type: "globe" })}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
+```
+
+</LiveCode>
+
+- **`setProjection({ type: "globe" })`**：投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
+- タイルは普段と同じものがそのまま使えます。データやスタイルの変更は不要です。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。ズームレベルが低いとき（世界全体〜大陸くらい）は地球儀として描画され、ドラッグで地球が回ります。ズームインしていくと、通常の平面地図になめらかに移行します。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 平面のまま変わらない → globe 投影は描画エンジン MapLibre GL JS の **v5 以降**の機能です。`maplibre-gl` のバージョンを確認してください。
+- 地球儀になっているか分からない → ズームアウトしてください。高ズームでは通常の地図と見た目が変わりません。
+</Callout>

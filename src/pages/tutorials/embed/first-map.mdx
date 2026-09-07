@@ -1,0 +1,87 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段0：地図を出す
+description: HTML ファイルを1つ作り、embed でブラウザに地図を表示します。
+page: tutorial
+kicker: embed
+badge: tutorial
+---
+import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
+
+embed チュートリアルへようこそ。embed は、Geolonia Maps の中でも**最も簡単な地図表示**を目指したライブラリです。この段では、HTML ファイルを1つ作って、ブラウザに地図を出すところまでをやります。
+
+## 地図を表示する
+
+embed はとにかく簡単です。1つの動く HTML ファイルがあれば、地図を表示することができます。次の内容を `index.html` という名前で保存してください。
+
+<LiveCode title="embed で地図を出す" height={400}>
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>embed</title>
+    <style>
+      .geolonia { width: 100%; height: 400px; }
+    </style>
+  </head>
+  <body>
+    <div class="geolonia"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+上に書いた `index.html` が、そのまま下で動いています。
+
+仕組みは2つだけです。
+
+- **`class="geolonia"` を持つ `div`**：ここが地図になります。`div` 自体には大きさがないので、CSS で高さを与えています（高さが 0 だと地図は見えません）。
+- **CDN の `<script>`**：読み込まれると、ページ内の `.geolonia` 要素を探して地図に変えます。URL の `YOUR-API-KEY` はお試し用のデモキーで、`localhost` や GitHub Pages・CodePen などの開発・プレビュー環境で地図が描画されます（[動く環境の一覧](/explanation/free-referers/)。自分のキーの発行は[段5](../publish/)でやります）。
+
+## ブラウザで開く
+
+保存した `index.html` を**ダブルクリックで開いても、地図は表示されません**。デモキーは許可された環境からのアクセスでしか描画されず、ファイルを直接開いた状態（`file://`）はその対象外だからです。
+
+手軽なのは、`index.html` を置いたフォルダで簡易ローカルサーバーを起動して、`localhost` として開く方法です。次のうち、手元で使えるものを使ってください。
+
+```
+# Node.js があるなら
+npx serve
+
+# Python があるなら
+python3 -m http.server
+
+# Windows で Python があるなら
+py -m http.server
+```
+
+`npx serve` は起動時に URL を表示するのでそれを開きます。`http.server` の場合は `http://localhost:8000/` を開きます。
+
+すでに HTML を置いて公開している Web サーバーがあるなら、そこに `index.html` をアップロードしても構いません。ただしデモキーが動くのは許可された環境だけなので、その場合は[段5：公開する](../publish/)に先に進み、自分のキーを発行して差し替えてください。
+
+サーバーを用意せずに試したい場合は、[CodePen](https://codepen.io/) や [JSFiddle](https://jsfiddle.net/) などのオンラインエディタに貼り付けても地図が出ます。ほかにどんな環境で動くかは[デモキーで無料で試せる環境](/explanation/free-referers/)にまとめてあります。
+
+## 動いたか確認する
+
+場所を何も指定していないので、地図は**世界全体**が見える状態で表示されます。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
+
+<Callout kind="warning" title="うまく出ないとき">
+- 真っ白で何も出ない → `.geolonia` の**高さが 0** になっていないか。`<style>` の指定を確認。
+- 「地図が表示できません」のような表示 → デモキーが効かない環境で開いています。ファイルを直接（`file://`）開いていないか確認し、上の「ブラウザで開く」の方法で開き直してください。
+- 何も起きない → `<script>` の URL のつづりを確認。ネットワークがオフラインでも出ません。
+</Callout>
+
+## 書ける属性の一覧
+
+地図の場所や見た目は、`div` に `data-*` 属性を足して決めます。この後の段で必要なものを順に使っていくので、いま覚える必要はありません。
+
+書ける属性の**全一覧と既定値**は、リファレンスの [EmbedAttributes](/reference/embed/TypeAlias.EmbedAttributes/) にまとまっています。「こんな指定はできるのだろうか」と思ったときに開いてください。
+
+## 次は
+
+地図は出ました。でも、見たいのは世界全体ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心、拡大率、傾きを指定します。

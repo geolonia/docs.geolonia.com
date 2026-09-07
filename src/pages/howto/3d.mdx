@@ -1,0 +1,107 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 建物や地形を3Dで表示するには
+description: 標準スタイルに含まれる3D建物を有効にし、視点を傾けて都市を立体で見せます。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+3D 建物は Geolonia の標準スタイルに**最初から含まれています**。ライブラリごとに用意された設定で表示に切り替え、視点を傾ければ都市が立体で見えます。建物の形と高さはベクトルタイルに入っているものを使うので、スタイルもデータも自分で用意する必要はありません。
+
+有効にする方法だけがライブラリごとに違います。embed は既定で無効なので明示的に有効にし、maps-suite は既定で有効、maps-react は既定で無効です。
+
+## コード
+
+<Lens name="embed">
+`data-3d="on"` を足すだけです。視点は `data-pitch`（傾き）と `data-bearing`（回転）で調整します。
+
+<LiveCode title="embed で3D建物を表示する">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.6812" data-lng="139.7671" data-zoom="15.5"
+     data-pitch="60" data-bearing="-20"
+     data-3d="on"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+`data-3d="on"` は、標準スタイルに組み込まれた 3D 建物のレイヤを表示に切り替えます。この切り替えは 3D 建物を含む Geolonia のスタイルを使っているときだけ効くので、`data-style` で外部のスタイルを指定した場合は効きません。
+
+視点は `data-pitch`（傾き）と `data-bearing`（回転）で調整します。傾けなくても 3D 建物は表示されますが、真上から見たままでは高さが分かりません。
+
+</Lens>
+
+<Lens name="suite">
+maps-suite では 3D 建物が**既定で有効**なので、視点を傾けるだけで立体になります。レイヤを自分で足す必要はありません。手前に倒す角度が `tilt`、回す角度が `heading` で、どちらも度で指定します（作った後から変えるなら `map.setTilt()` と `map.setHeading()` です）。
+
+<LiveCode title="maps-suite で3D建物を表示する">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.6812, lng: 139.7671 },
+  zoom: 15.5,
+  tilt: 60,
+  heading: -20,
+});
+```
+
+</LiveCode>
+
+立体で見せたくないときは `threeDimensional: false` を渡すと、傾けても建物が平らなままになります。
+
+</Lens>
+
+<Lens name="react">
+maps-react では 3D 建物は既定で無効なので、`3d` を渡して有効にします。この名前は数字で始まるため、JSX の属性としては書けません。オブジェクトのスプレッドで渡してください。視点は `pitch`（傾き）と `bearing`（回転）で指定します。
+
+<LiveCode title="maps-react で3D建物を表示する">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.7671, 35.6812]}
+    zoom={15.5}
+    pitch={60}
+    bearing={-20}
+    {...{ "3d": true }}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
+```
+
+</LiveCode>
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。斜めから見た構図で、建物が高さを持って立ち上がって見えます。傾きを 0 に戻すと真上から見た平面的な見え方になりますが、3D 建物のレイヤ自体は表示されたままです（高さが知覚しにくくなるだけです）。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 建物が出ない → 外部のスタイルを指定していないか確認。3D 建物は Geolonia のスタイルに含まれるものなので、他のスタイルに差し替えると出ません。
+- ズームアウトすると消える → 建物が意味を持つズームからだけ描画されます。仕様どおりの挙動です。
+- maps-react で有効にならない → `3d={true}` とは書けません。`{...{ "3d": true }}` の形で渡しているか確認してください。
+- 動作が重い → 3D 描画は負荷が高めです。表示範囲を絞るか、必要な場面だけ有効にしてください。
+</Callout>

@@ -1,0 +1,108 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 現在地を表示するには
+description: ボタンからブラウザの位置情報を取得し、地図を現在地へ移動します。
+page: howto
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+地図上にボタンを出し、押すとブラウザの位置情報を取得して現在地に移動します。
+
+## コード
+
+<Lens name="embed">
+`data-geolocate-control="on"` を足すだけです。
+
+<LiveCode title="embed で現在地ボタンを出す">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-geolocate-control="on"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-geolocate-control="on"`**：地図の右上に現在地ボタンが追加されます。ボタンを押すとブラウザが位置情報の許可を求め、許可するとその地点に移動します。
+
+</Lens>
+
+<Lens name="suite">
+ブラウザの位置情報 API で現在地を取得し、`setCenter` で移動してマーカーを立てます。
+
+<LiveCode title="maps-suite で現在地に移動する">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+navigator.geolocation.getCurrentPosition(
+  (pos) => {
+    const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    map.setCenter(c);
+    new geolonia.maps.Marker({ position: c, map, title: "現在地" });
+  },
+  (err) => console.warn("位置情報を取得できません", err),
+);
+```
+
+</LiveCode>
+
+- **`navigator.geolocation.getCurrentPosition`**：ブラウザ標準の位置情報 API。呼ぶとユーザーに許可を求めます。
+- 第2引数のエラーコールバックで、許可拒否や取得失敗時のフォールバック（既定の場所のまま表示するなど）を用意しておきます。
+
+</Lens>
+
+<Lens name="react">
+`geolocateControl` プロパティを付けるだけです。
+
+<LiveCode title="maps-react で現在地ボタンを出す">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    geolocateControl
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
+```
+
+</LiveCode>
+
+- **`geolocateControl`**：地図の右上に現在地ボタンが追加されます。ボタンを押すとブラウザが位置情報の許可を求め、許可するとその地点に移動します。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。embed と react では地図の右上に現在地ボタン（矢印のアイコン）が出ます。クリックして位置情報を許可すると、現在地に移動します。suite の例はボタンを出さず、読み込み時に一度だけ現在地を取りにいきます。
+
+<Callout kind="warning" title="うまくいかないとき">
+- ボタンを押しても何も起きない → ブラウザの位置情報の許可を確認。ブロックしている場合はアドレスバーの鍵アイコンから許可を変更できます。
+- 「位置情報を取得できません」→ HTTPS（または `localhost`）でないと位置情報 API は動きません。`http://` のサイトでは使えません。
+- 現在地がずれる → GPS やネットワーク環境による誤差です。特にデスクトップでは IP ベースの推定になるため、大きくずれることがあります。
+</Callout>

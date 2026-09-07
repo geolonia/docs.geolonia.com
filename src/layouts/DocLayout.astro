@@ -1,0 +1,63 @@
+---
+// Markdown / MDX ページ用のレイアウト。frontmatter の layout で指定して使う。
+//   ---
+//   layout: ../../layouts/DocLayout.astro
+//   title: ...
+//   page: howto
+//   kicker: ハウツー / レシピ   # 見出し上のアイキャッチ
+//   quadrant: Diátaxis / ...   # 任意。分類の管理用メタデータ。表示しない
+//   badge: tutorial            # 任意。H1 の頭に象限バッジを付ける
+//   sidebar: api               # 任意。左サイドバーの種類を明示する。
+//                              # 省略時は page から決まる（下記）ので、ふつうは要らない
+//   htmlTitle: ...             # 任意。<title> だけ上書きする（H1 は title のまま）
+//   description: ...           # 任意。meta description と OGP に使う一文
+//   ---
+import BaseLayout from './BaseLayout.astro';
+import EmbedLayout from './EmbedLayout.astro';
+import QuadBadge from '../components/QuadBadge.astro';
+import ApiNav from '../components/ApiNav.astro';
+import DocNav from '../components/DocNav.astro';
+import type { SectionKind } from '../lib/doc-nav';
+const { frontmatter } = Astro.props;
+const { title, page = '', kicker, badge, embed, sidebar, htmlTitle, description, search } = frontmatter ?? {};
+// 見出し上に出すのは kicker だけ。frontmatter の quadrant（Diátaxis の象限）は
+// ページを分類するための管理用メタデータで、読者には意味が伝わらないので表示しない。
+const eyebrow = kicker;
+// 地図を使うページは frontmatter に embed: true を付ける。その時だけ embed スクリプトを読み込む。
+const Shell = embed ? EmbedLayout : BaseLayout;
+const badgeLabels = { tutorial: 'チュートリアル', howto: 'ハウツー', reference: 'リファレンス', explanation: '解説' };
+// 左サイドバーの種類。ふつうは page から決まるので frontmatter に書く必要はない。
+// frontmatter の sidebar は明示したいときの上書き（/reference/ の索引が sidebar: api を使う）。
+// トップ（page: home）のようにここに無い page は、サイドバーなしで描画される。
+const NAV_BY_PAGE: Record<string, SectionKind> = {
+  tutorial: 'tutorial',
+  howto: 'howto',
+  explanation: 'explanation',
+};
+const navKind = sidebar ?? NAV_BY_PAGE[page] ?? null;
+// 本文に data-pagefind-body を付けて、全文検索が索く範囲を本文だけに絞る。
+// この属性がサイト内に1つでもあると、Pagefind は持たないページを索かない。
+// つまりヘッダ・サイドバー・フッタと、デモページ（DemoLayout）は自動的に外れる。
+// 検索結果から入っても意味がないページ（404 など）は frontmatter に search: false を
+// 書いて外す。false のときは属性そのものを出さない（値が "false" でも属性が
+// 在れば索かれてしまうため）。
+const pagefindBody = search === false ? undefined : '';
+---
+<Shell title={htmlTitle ?? `${title} — Geolonia Docs`} page={page} description={description}>
+  {navKind ? (
+    <div class="doc-shell">
+      {navKind === 'api' ? <ApiNav /> : <DocNav section={navKind} />}
+      <main class="content" data-pagefind-body={pagefindBody}>
+        {eyebrow && <p class="kicker">{eyebrow}</p>}
+        <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
+        <slot />
+      </main>
+    </div>
+  ) : (
+    <main class="content" data-pagefind-body={pagefindBody}>
+      {eyebrow && <p class="kicker">{eyebrow}</p>}
+      <h1>{badge && <><QuadBadge kind={badge}>{badgeLabels[badge]}</QuadBadge>{' '}</>}{title}</h1>
+      <slot />
+    </main>
+  )}
+</Shell>

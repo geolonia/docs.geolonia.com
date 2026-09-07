@@ -1,0 +1,158 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 大量の点をクラスタリングするには
+description: 近い点をまとめて件数を表示し、拡大すると個別の点に分かれるようにします。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+数百〜数千の点を地図に載せると、点が重なって見づらくなります。クラスタリングを有効にすると、近い点を自動でまとめて件数ラベルを表示し、拡大すると個別の点に分かれます。
+
+## コード
+
+<Lens name="embed">
+`data-cluster="on"` を足すだけです。
+
+<LiveCode title="embed で点をクラスタリングする">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.67" data-lng="139.74" data-zoom="10"
+     data-marker="off"
+     data-geojson="/data/dense-points.geojson"
+     data-cluster="on"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-cluster="on"`**：GeoJSON の点を自動でクラスタリングします。
+- **`data-cluster-color`**：クラスターの色を変えたいときに指定します（例: `data-cluster-color="#e74c3c"`）。
+
+</Lens>
+
+<Lens name="suite">
+マーカーの配列を `MarkerClusterer` に渡すと、近い点を自動でまとめてくれます。
+
+<LiveCode title="maps-suite でマーカーをクラスタリングする">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.67, lng: 139.74 },
+  zoom: 10,
+});
+
+const res = await fetch("/data/dense-points.geojson");
+const gj = await res.json();
+
+const markers = gj.features.map(
+  (f) =>
+    new geolonia.maps.Marker({
+      position: { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] },
+    }),
+);
+
+new geolonia.maps.MarkerClusterer({ map, markers });
+```
+
+</LiveCode>
+
+- **`Marker` は `map` を渡さずに**作ります（取り外した状態）。地図への取り付けは `MarkerClusterer` が管理します。
+- **`MarkerClusterer({ map, markers })`**：近いマーカーを件数付きのクラスターにまとめ、ズームすると分かれます。
+- GeoJSON の `coordinates` は `[経度, 緯度]` の順なので、`position` に詰め替えるときの順序に注意してください。
+
+</Lens>
+
+<Lens name="react">
+`Source` に `cluster` を付けると、maplibre がクラスターを作ります。描き方は自分で決めるので、**クラスターの丸・件数のラベル・まとまらなかった点**の3つのレイヤを置きます。
+
+<LiveCode title="maps-react で点をクラスタリングする">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Layer, Map, Source } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.74, 35.67]}
+    zoom={10}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source
+      id="spots"
+      type="geojson"
+      data="/data/dense-points.geojson"
+      cluster
+      clusterRadius={50}
+    >
+      <Layer
+        id="clusters"
+        type="circle"
+        filter={["has", "point_count"]}
+        paint={{
+          "circle-color": "#e2543a",
+          "circle-radius": ["step", ["get", "point_count"], 16, 10, 22, 50, 30],
+          "circle-opacity": 0.85,
+        }}
+      />
+      <Layer
+        id="cluster-count"
+        type="symbol"
+        filter={["has", "point_count"]}
+        layout={{
+          "text-field": ["get", "point_count_abbreviated"],
+          "text-font": ["Noto Sans Regular"],
+          "text-size": 12,
+        }}
+        paint={{ "text-color": "#ffffff" }}
+      />
+      <Layer
+        id="unclustered"
+        type="circle"
+        filter={["!", ["has", "point_count"]]}
+        paint={{
+          "circle-color": "#e2543a",
+          "circle-radius": 6,
+          "circle-stroke-width": 1.5,
+          "circle-stroke-color": "#ffffff",
+        }}
+      />
+    </Source>
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **`cluster`**：`Source` が受け取るのは maplibre のソース定義そのままなので、`cluster` と `clusterRadius`（まとめる距離、ピクセル）がそのまま使えます。
+- **`filter`**：`point_count` を持つ地物がクラスター、持たない地物が単独の点です。この2つを別のレイヤで描き分けます。
+- **`point_count_abbreviated`**：件数を短く整えた値です。`1200` が `1.2k` のようになります。
+- **`text-font`**：Geolonia のスタイルに含まれるフォントを指定します。maplibre の既定のフォント名は含まれていないため、省略すると件数が出ません。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。300点のデータがクラスタリングされて表示され、拡大するとクラスターが分かれて個別の点になります。
+
+<Callout kind="warning" title="うまくいかないとき">
+- クラスターにならず全部バラバラ → `data-cluster="on"` が書かれているか確認。値は `"on"` です（`"true"` ではありません）。
+- 何も出ない → `data-geojson` のパスが正しいか確認。GeoJSON ファイルがサーバー上に存在し、アクセスできる必要があります。
+</Callout>

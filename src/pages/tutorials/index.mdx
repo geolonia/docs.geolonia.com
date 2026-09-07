@@ -1,0 +1,32 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: Geolonia Maps チュートリアル
+description: 地図の表示から公開まで6段階で進むチュートリアルです。
+page: tutorial
+quadrant: Diátaxis / 学習 × 行動
+---
+
+Geolonia Mapsを使って実用的な地図アプリケーションを作ってみましょう。このチュートリアルでは、以下のことができます。
+
+- 地図を表示する
+- 地図の見た目を変える
+- 地図にマーカーを表示する
+- 地図に独自データを反映させる
+
+## 自分に合ったライブラリを選ぶ
+
+Geolonia Mapsでは3つのライブラリを用意しており、同じ機能を、それぞれの環境に合ったやり方で実現できます。
+
+- embed: `<script>`タグと`<div>`タグだけで地図を表示できます。「とりあえず地図が欲しい！」という初心者向けライブラリです。
+- maps-suite: 他の地図サービスからの移行に適したライブラリです。既存ユーザーが導入しやすいようなAPI設計をしてあります。
+- maps-react: Reactに対応したライブラリです。マーカーやデータの切り替えなどを動的に行うことができます。
+
+これら3つのライブラリは、MapLibre GL JSをGeoloniaの地図に対応させたmaps-coreを土台にしています。そのため、TypeScriptを書けばMapLibre GL JSのすべての機能をそのまま使えます。
+
+## チュートリアルの入り口
+
+各ライブラリに対応した入り口です。
+
+- [embed](/tutorials/embed/)
+- [maps-react](/tutorials/maps-react/)
+- [maps-suite](/tutorials/maps-suite/)

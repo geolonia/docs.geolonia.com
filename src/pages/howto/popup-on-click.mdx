@@ -1,0 +1,271 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: クリックでポップアップを出すには
+description: マーカーをクリックしたときに、情報をポップアップで表示します。
+page: howto
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+マーカーをクリックしたときに情報をポップアップで表示します。
+
+## コード
+
+<Lens name="embed">
+`.geolonia` の `div` の中に HTML を書くと、それがマーカーのポップアップになります。
+
+<LiveCode title="embed でクリックポップアップを出す">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.681236" data-lng="139.767125"
+     data-zoom="15">
+  <strong>東京駅</strong><br>JR・地下鉄各線
+</div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`div` の子要素**がそのままポップアップの内容です。HTML なので、太字やリンク、画像なども使えます。
+- 子要素を書くと中心にマーカーが立ち、クリックでポップアップが開きます。
+- embed のポップアップは**中心の1つのマーカーだけ**に付けられます。複数のマーカーそれぞれにポップアップを付けたい場合は suite や react を使ってください。
+
+</Lens>
+
+<Lens name="suite">
+`Marker` を置き、クリックイベントで `InfoWindow` を開きます。
+
+<LiveCode title="maps-suite でクリックポップアップを出す">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.681236, lng: 139.767125 },
+  zoom: 15,
+});
+
+const marker = new geolonia.maps.Marker({
+  position: { lat: 35.681236, lng: 139.767125 },
+  map,
+  title: "東京駅",
+});
+
+const infoWindow = new geolonia.maps.InfoWindow({
+  content: "<strong>東京駅</strong><br>JR・地下鉄各線",
+});
+
+marker.addListener("click", () => infoWindow.open(map, marker));
+```
+
+</LiveCode>
+
+- **`InfoWindow`**：`content` に HTML を渡して作り、`open(map, marker)` でマーカーの位置に開きます。引数は**この順番の2つ**（地図、アンカー）です。
+- マーカーを複数作って、それぞれにリスナーを付ければ、複数の点で個別のポップアップが出せます。
+
+</Lens>
+
+<Lens name="react">
+`Marker` コンポーネントの**子要素**が、そのままポップアップの内容になります。
+
+<LiveCode title="maps-react でクリックポップアップを出す">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Marker } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.767125, 35.681236]}
+    zoom={15}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Marker lat={35.681236} lng={139.767125} color="#e4402f">
+      <strong>東京駅</strong>
+      <p style={{ margin: 0 }}>JR・地下鉄各線</p>
+    </Marker>
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **`lat` / `lng`**：マーカーを立てる場所。個別の props で渡します（`Map` の `center` は `[経度, 緯度]` の配列なので混同に注意）。
+- **子要素**：クリックしたときに開くポップアップの中身。JSX なので React コンポーネントも書けます。
+- embed と違い、`Marker` を複数並べて**それぞれにポップアップ**を付けられます（[マーカーを複数置くには](/howto/multiple-markers/)を参照）。
+
+</Lens>
+
+## 画像つきのポップアップを複数置く
+
+ポップアップの中身は HTML なので、`<img>` を書けば写真やサムネイルが入ります。ここでは3つの地点それぞれに、名前・説明・画像を載せたポップアップを付けます。
+
+ひとつだけ注意があります。**ポップアップの最大幅は既定で 240px** です。原寸のまま画像を入れると枠からはみ出すので、画像側で幅を決めてください（下の例では `width: 100%` を効かせています）。
+
+<Lens name="embed">
+属性だけで書けるポップアップは中心の1つに限られますが、**embed の JavaScript API を使えば複数の地点**に付けられます。
+
+<LiveCode title="embed で画像つきのポップアップを複数出す">
+
+```html
+<style>
+  body { margin: 0; }
+  #map { width: 100%; height: 100vh; }
+  .spot-popup img { width: 100%; display: block; margin-top: 6px; }
+</style>
+
+<div id="map" data-lat="35.68" data-lng="139.75" data-zoom="11" data-marker="off"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+<script>
+  const spots = [
+    { name: "東京駅", note: "JR・地下鉄各線", lng: 139.767125, lat: 35.681236 },
+    { name: "新宿駅", note: "JR・私鉄・地下鉄各線", lng: 139.700258, lat: 35.690921 },
+    { name: "渋谷駅", note: "JR・私鉄・地下鉄各線", lng: 139.701636, lat: 35.658034 },
+  ];
+
+  const map = new geolonia.Map("#map");
+
+  for (const spot of spots) {
+    const popup = new geolonia.Popup({ className: "spot-popup" }).setHTML(`
+      <strong>${spot.name}</strong><br>${spot.note}
+      <img src="/geolonia-icon.png" alt="${spot.name}">
+    `);
+
+    new geolonia.Marker().setLngLat([spot.lng, spot.lat]).setPopup(popup).addTo(map);
+  }
+</script>
+```
+
+</LiveCode>
+
+- **`geolonia.Popup` / `geolonia.Marker`**：embed を読み込むと `window.geolonia` に MapLibre GL JS の中身が入るので、ポップアップとマーカーのクラスをそのまま使えます。
+- **`setPopup()`**：マーカーにポップアップを結び付けます。クリックで開く動きは MapLibre が受け持つので、リスナーは書きません。
+- **`className`**：ポップアップの外枠に付くクラス名です。`<style>` から中の画像を指定できるようになります。
+- **`data-marker="off"`**：中心のマーカーを消しています。付けないと、ポップアップを持たないマーカーが1本余ります。
+
+</Lens>
+
+<Lens name="suite">
+一覧をループして、`Marker` と `InfoWindow` を地点ごとに作ります。
+
+<LiveCode title="maps-suite で画像つきのポップアップを複数出す">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const spots = [
+  { name: "東京駅", note: "JR・地下鉄各線", lng: 139.767125, lat: 35.681236 },
+  { name: "新宿駅", note: "JR・私鉄・地下鉄各線", lng: 139.700258, lat: 35.690921 },
+  { name: "渋谷駅", note: "JR・私鉄・地下鉄各線", lng: 139.701636, lat: 35.658034 },
+];
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+// InfoWindow は幅のオプションを持たないので、画像の幅は style 属性で決めます
+const IMG_STYLE = "width: 100%; display: block; margin-top: 6px";
+
+for (const spot of spots) {
+  const marker = new geolonia.maps.Marker({
+    position: { lat: spot.lat, lng: spot.lng },
+    map,
+    title: spot.name,
+  });
+
+  const infoWindow = new geolonia.maps.InfoWindow({
+    content: `
+      <strong>${spot.name}</strong><br>${spot.note}
+      <img src="/geolonia-icon.png" alt="${spot.name}" style="${IMG_STYLE}">
+    `,
+  });
+
+  marker.addListener("click", () => infoWindow.open(map, marker));
+}
+```
+
+</LiveCode>
+
+- **`content`**：HTML 文字列を渡します。`InfoWindow` に幅のオプションはないので、画像の幅は `style` 属性で指定します。
+- **地点ごとに `InfoWindow` を作る**書き方なので、複数のポップアップが同時に開きます。**常に1つだけ開いた状態にしたい**ときは、`InfoWindow` を1つ作って `setContent()` で中身を差し替えてください。`open()` は開く前に自分を閉じるので、前のポップアップは自動的に閉じます。
+
+</Lens>
+
+<Lens name="react">
+`Marker` の子要素に `<img>` を並べるだけです。
+
+<LiveCode title="maps-react で画像つきのポップアップを複数出す">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Marker } from "@geolonia/maps-react";
+
+const spots = [
+  { name: "東京駅", note: "JR・地下鉄各線", lng: 139.767125, lat: 35.681236 },
+  { name: "新宿駅", note: "JR・私鉄・地下鉄各線", lng: 139.700258, lat: 35.690921 },
+  { name: "渋谷駅", note: "JR・私鉄・地下鉄各線", lng: 139.701636, lat: 35.658034 },
+];
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    {spots.map((spot) => (
+      <Marker key={spot.name} lat={spot.lat} lng={spot.lng} color="#e4402f">
+        <strong>{spot.name}</strong>
+        <p style={{ margin: "2px 0 0" }}>{spot.note}</p>
+        <img
+          src="/geolonia-icon.png"
+          alt={spot.name}
+          style={{ width: "100%", display: "block", marginTop: 6 }}
+        />
+      </Marker>
+    ))}
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **子要素**：ふつうの JSX なので、`<img>` もコンポーネントも置けます。画像の幅は `style` で指定します。
+- **`key`**：配列から作るときは忘れずに付けます。
+
+</Lens>
+
+上の例の `src` は、このサイトに置いたサンプル画像（`/geolonia-icon.png`）を指しています。自分のサイトの画像に差し替えるときは、**ルートからの絶対パス**（`/img/tokyo-station.jpg`）か**絶対 URL**（`https://example.com/tokyo-station.jpg`）で書いてください。ポップアップの HTML はページのどこからでも同じ文字列として使われるので、相対パスにするとページによって解決先が変わります。
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。マーカーをクリックするとポップアップが開きます。画像つきの例では、3つのマーカーそれぞれに画像入りのポップアップが開きます。
+
+<Callout kind="warning" title="うまくいかないとき">
+- マーカーが出ない → 属性だけで書いているときは `data-marker="off"` が付いていないか確認。中心のマーカーを消すと、ポップアップも開かなくなります。
+- ポップアップが空 → `div` の子要素が空になっていないか確認。空白文字だけではポップアップは開きません。
+- クリックしても何も出ない → `div` タグの閉じ忘れに注意。`<div class="geolonia" ...>内容</div>` と正しく閉じてください。
+- 画像がはみ出す・切れる → ポップアップの最大幅は既定で 240px です。画像に `width: 100%` を効かせてください。
+- 画像が出ない → `src` のパスを確認。相対パスはページの場所によって解決先が変わるので、絶対パスか絶対 URL で書きます。
+</Callout>

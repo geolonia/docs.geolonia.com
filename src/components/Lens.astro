@@ -1,0 +1,7 @@
+---
+// レンズ依存ブロック。<Lens name="embed"> … </Lens>
+// 現在のレンズと一致するものだけ BaseLayout の applyLens スクリプトが表示する。
+// 初期表示は embed のみ（他は hidden）。見た目は components.css の .lens 側。
+const { name } = Astro.props;
+---
+<div class={`lens ${name}`} hidden={name !== 'embed'}><slot /></div>

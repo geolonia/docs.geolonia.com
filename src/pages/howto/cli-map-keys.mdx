@@ -1,0 +1,101 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: API キーを YAML でまとめて管理するには
+description: Geolonia CLI でキーの構成をファイルに書き、差分を確認してから反映します。
+page: howto
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+
+API キーと、そのキーで地図を出せるオリジンの組み合わせを、YAML ファイルに書いて管理できます。何が変わるかを先に確認してから反映できるので、キーが増えてきたときや、複数人で触るときに向いています。
+
+## 準備
+
+[Geolonia CLI](/explanation/cli/) をインストールし、ログインとチーム選択を済ませておきます。
+
+```bash
+npm install --global @geolonia/cli
+geolonia login
+geolonia teams select
+```
+
+## 1つずつ操作する
+
+まとめて管理する前に、単発の操作を確認しておきます。
+
+```bash
+geolonia map-keys list                                   # 一覧
+geolonia map-keys show <keyId>                           # 詳細
+geolonia map-keys search example.com                     # 名前や許可オリジンで検索
+geolonia map-keys new                                    # 新規作成
+geolonia map-keys add-origin <keyId> https://example.com # 許可オリジンを足す
+geolonia map-keys remove-origin <keyId> https://example.com
+```
+
+## 現状を書き出す
+
+```bash
+geolonia map-keys pull -o keys.yml
+```
+
+`-o` を省くと標準出力に出ます。書き出される形はこうなります。
+
+```yaml
+keys:
+  - name: 本番サイト
+    keyId: xxxxxxxx
+    userKey: YOUR-API-KEY
+    origins:
+      - https://example.com
+      - https://www.example.com
+  - name: ステージング
+    keyId: yyyyyyyy
+    userKey: YOUR-API-KEY
+    origins:
+      - https://staging.example.com
+```
+
+## 差分を見る
+
+ファイルを編集したら、反映する前に差分を確認します。
+
+```bash
+geolonia map-keys plan -f keys.yml
+```
+
+各キーは次のように判定されます。
+
+| 判定 | 条件 |
+| --- | --- |
+| `create` | `keyId` で見つからない（`keyId` が無ければ `name` で見つからない） |
+| `update` | 見つかったが、`origins` が現状と違う |
+| `unchanged` | 見つかって、`origins` も一致している |
+
+照合は `keyId` があればそれで行い、無ければ `name` で行います。**新しいキーを増やすときは `keyId` を書かずに `name` と `origins` だけ書きます。**
+
+## 反映する
+
+```bash
+geolonia map-keys apply -f keys.yml
+```
+
+`create` のキーが作られ、`update` のキーは `origins` が YAML の状態に合わせられます（足りないものを追加し、余っているものを削除します）。差分が無ければ `No changes required.` と出て何もしません。
+
+<Callout kind="warning" title="反映されるのは origins だけです">
+`apply` が現状に合わせるのは許可オリジンです。YAML の `name` を書き換えてもキーの名前が変わるとは限らないので、名前を変えたいときは管理画面か個別のコマンドで確認してください。
+</Callout>
+
+<Callout kind="danger" title="キーの削除はできません">
+`geolonia map-keys delete <keyId>` は用意されていますが、安全のため無効化されています。YAML からキーの項目を消しても、そのキーが削除されることはありません。キーを消すと、そのキーを使っている地図が一斉に止まるためです。
+</Callout>
+
+## ファイルをリポジトリに置くとき
+
+`keys.yml` に入るのは、キーの名前・ID・公開キー・許可オリジンです。いずれも地図の配信に使われる公開情報なので、リポジトリに置いても問題ありません。
+
+一方 `~/.config/geolonia/credential.yml` にはリフレッシュトークンが入ります。**こちらは絶対にリポジトリへ入れないでください。**
+
+## 関連
+
+- [Geolonia CLI とは](/explanation/cli/)
+- [デモキーで無料で試せる環境](/explanation/free-referers/) … キーを発行せずに動く環境の一覧

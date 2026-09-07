@@ -1,0 +1,134 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 地図のコントロールの表示を切り替えるには
+description: ズームや現在地、縮尺などのコントロールの表示と位置を指定します。
+page: howto
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+地図の隅に出るボタン類（ズームや回転のナビゲーション、現在地、フルスクリーン、縮尺、Geolonia ロゴ）は、それぞれ表示するかどうかと位置を指定できます。位置は `top-right`、`bottom-right`、`bottom-left`、`top-left` のいずれかで指定します。
+
+## コード
+
+<Lens name="embed">
+それぞれ `data-*-control` 属性で指定します。`on` / `off` に加えて、位置を表す文字列を渡すと表示位置も変えられます。
+
+<LiveCode title="embed でコントロールを切り替える">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-navigation-control="on"
+     data-geolocate-control="top-right"
+     data-fullscreen-control="on"
+     data-scale-control="bottom-left"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-navigation-control`**：ズームと回転のボタン。初期値は `on`。
+- **`data-geolocate-control`**：現在地ボタン。初期値は `off`。
+- **`data-fullscreen-control`**：全画面表示ボタン。初期値は `off`。
+- **`data-scale-control`**：縮尺スケール。初期値は `off`。
+- **`data-geolonia-control`**：Geolonia ロゴの位置。初期値は `bottom-left`。
+- **`data-gesture-handling`**：初期値は `on`。ページのスクロールを妨げないよう、地図の操作に `Ctrl`（`alt`）キーや2本指を要求します。地図を全面に使うページでは `off` にします。
+
+</Lens>
+
+<Lens name="suite">
+maps-suite の初期化オプションで指定できるのは、既定のコントロールをまとめて消す `disableDefaultUI` だけです。個別に足したり位置を変えたりするときは、読み込みを待ってから基盤の地図（maplibre）に `addControl` します。
+
+何も指定しないときは、**ナビゲーションと Geolonia のロゴが表示され、現在地・全画面・スケールは非表示**です。全部消したいなら次のように書きます。
+
+```js
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  disableDefaultUI: true,
+});
+```
+
+`disableDefaultUI` は一括なので、「ナビゲーションだけ残す」のような指定はできません。その場合は一度すべて消してから、必要なものを `addControl` で足し直します。
+
+<LiveCode title="maps-suite でコントロールを足す">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+import maplibregl from "maplibre-gl";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addControl(new maplibregl.NavigationControl(), "top-right");
+impl.addControl(new maplibregl.GeolocateControl({ trackUserLocation: true }), "top-right");
+impl.addControl(new maplibregl.FullscreenControl(), "top-right");
+impl.addControl(new maplibregl.ScaleControl(), "bottom-left");
+```
+
+</LiveCode>
+
+- **`addControl(コントロール, 位置)`**：第2引数を省略すると `top-right` に付きます。
+- ナビゲーション（`NavigationControl`）は既定で付いているため、位置だけ変えたいなら一度 `removeControl` してから付け直します。
+
+</Lens>
+
+<Lens name="react">
+`Map` のそれぞれの props で指定します。`true` / `false` に加えて、位置を表す文字列も渡せます。
+
+<LiveCode title="maps-react でコントロールを切り替える">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    navigationControl
+    geolocateControl="top-right"
+    fullscreenControl
+    scaleControl="bottom-left"
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
+```
+
+</LiveCode>
+
+- **`navigationControl`**：ズームと回転のボタン。
+- **`geolocateControl`**：現在地ボタン。
+- **`fullscreenControl`**：全画面表示ボタン。
+- **`scaleControl`**：縮尺スケール。
+- **`geoloniaControl`**：Geolonia ロゴの位置。
+- 各 props は `true`（既定位置に表示）または位置文字列（例: `"top-left"`）を受け取ります。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。ナビゲーション、現在地、全画面のボタンが右上に、縮尺が左下に表示されます。
+
+<Callout kind="warning" title="うまくいかないとき">
+- コントロールが出ない → 属性名や props 名のつづりを確認。間違った名前は黙って無視されます。
+- 現在地ボタンを押しても動かない → 位置情報は HTTPS（または `localhost`）でのみ動きます。ブラウザ側の許可も確認してください。
+- 地図の上でスクロールしても地図が動かない → `data-gesture-handling` が `on` のためです。地図を全面に使うページでは `off` にします。
+</Callout>

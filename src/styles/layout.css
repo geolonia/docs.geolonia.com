@@ -1,0 +1,83 @@
+/* =====================================================================
+   layout.css — ページ骨格（ヘッダ・ナビ・レンズ切替・本文コンテナ・フッタ）
+   ===================================================================== */
+.site-top {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 12px 22px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+}
+.brand { font-weight: 800; font-size: 16px; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.brand:hover { text-decoration: none; }
+/* ロゴ（Geolonia | Docs ロックアップ）。元SVGは 793.93x124.72 ≒ 6.37:1 */
+.brand .brand-logo { height: 32px; width: auto; display: block; }
+
+.dtx-nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.dtx-nav a { font-size: 13px; font-weight: 700; color: var(--text-soft); padding: 5px 10px; border-radius: 7px; }
+.dtx-nav a:hover { background: var(--bg-soft); text-decoration: none; }
+.dtx-nav a.active { background: var(--accent-soft); color: var(--color-accent-text); }
+
+/* ダッシュボードへの導線。margin-left:auto でセクションのナビから引き離して右端に置く。
+   塗り＝誘導したい行動、テキストリンク＝必要な人のための道具、という序列で出し分ける。
+   塗りの配色は DS の規定どおり「オレンジ地＋白文字（ボタンなので可）」。 */
+.site-cta { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.site-cta__link {
+  font-size: 13px; font-weight: 700; line-height: 1.4;
+  padding: 6px 14px; border-radius: 7px; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.site-cta__link:hover { text-decoration: none; }
+/* サインインはボタンではなくテキストリンク。主要CTAはユーザー登録に一本化する */
+.site-cta__signin { color: var(--text-soft); padding: 6px 8px; }
+.site-cta__signin:hover { color: var(--color-accent-text); text-decoration: underline; }
+.site-cta__signup { color: var(--color-background); background: var(--brand); border-color: var(--brand); }
+.site-cta__signup:hover { background: var(--brand-dark); border-color: var(--brand-dark); }
+
+/* narrow: ロゴと導線を1行目に残し、セクションのナビを2行目へ送る。
+   「使ってみる」への出口なので、畳んでも隠さない。 */
+@media (max-width: 700px) {
+  .dtx-nav { order: 3; width: 100%; }
+  .site-cta { margin-left: auto; }
+  .site-cta__signup { padding: 6px 11px; }
+}
+
+.content { max-width: var(--maxw); margin: 0 auto; padding: 28px 22px 80px; }
+
+/* サイドバー付きページの2カラム骨格（左ツリー＋本文）。
+   本文は .content をそのまま使うが、中央寄せではなく右カラムに収める。 */
+.doc-shell {
+  max-width: calc(var(--maxw) + 260px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+.doc-shell > .content { margin: 0; max-width: none; }
+.doc-nav {
+  position: sticky; top: 57px; /* .site-top の高さぶん下げる */
+  max-height: calc(100vh - 57px);
+  overflow-y: auto;
+  padding: 28px 8px 40px 22px;
+}
+
+/* narrow: 1カラムに畳み、ツリーを本文の上に置く。
+   本文の前に積み上がりすぎないよう、畳んだときは高さを抑えて中でスクロールさせる。 */
+@media (max-width: 900px) {
+  .doc-shell { grid-template-columns: minmax(0, 1fr); max-width: var(--maxw); }
+  .doc-nav {
+    position: static; max-height: 40vh; overflow-y: auto;
+    padding: 20px 22px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+}
+.site-foot { border-top: 1px solid var(--border); }
+.site-foot__inner { max-width: var(--maxw); margin: 0 auto; padding: 30px 22px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.site-foot__brand { display: flex; flex-direction: column; gap: 8px; }
+.site-foot__logo { font-weight: 800; font-size: 14px; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.site-foot__logo:hover { text-decoration: none; color: var(--color-accent-text); }
+.site-foot__logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 4px var(--accent-soft); }
+.site-foot__copyright { margin: 0; color: var(--text-faint); font-size: 12.5px; line-height: 1.5; }
+.site-foot__social { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; }
+.site-foot__social-link { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; color: var(--text-soft); border: 1px solid var(--border); }
+.site-foot__social-link:hover { color: var(--color-accent-text); background: var(--accent-soft); border-color: transparent; text-decoration: none; }

@@ -1,0 +1,112 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段3：見た目を変える
+description: maps-react で、データの属性に応じて点を色分けします。
+page: tutorial
+kicker: maps-react
+badge: tutorial
+---
+import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
+
+<Callout kind="success" title="前の段でできたこと">
+段2で、5地点のデータを地図に載せました。でも全部同じ色。データには `category`（ターミナル／観光）が入っているので、この段では**属性に応じて点を色分け**します。
+</Callout>
+
+## paint プロパティで描き方を決める
+
+`<Layer>` の描き方は **`paint`** プロパティで細かく指定できます。まず色分けの前に、点を見やすくしてみます。
+
+```jsx
+<Layer
+  id="spots"
+  type="circle"
+  paint={{
+    "circle-radius": 8,
+    "circle-stroke-width": 2,
+    "circle-stroke-color": "#fff",
+    "circle-color": "#e4402f",
+  }}
+/>
+```
+
+- **`circle-radius`**：丸の半径（ピクセル）。
+- **`circle-stroke-width` / `circle-stroke-color`**：縁取りの太さと色。白い縁取りを付けると、地図の上で点が読みやすくなります。
+- **`circle-color`**：塗りの色。
+
+## データの属性で色を変える
+
+`circle-color` には、固定の色だけでなく**式**も書けます。`match` 式を使うと、「`category` の値がこれなら、この色」という対応表になります。
+
+<LiveCode title="maps-react で属性に応じて色分けする">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Layer, Map, Source } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+      <Layer
+        id="spots"
+        type="circle"
+        paint={{
+          "circle-radius": 8,
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#fff",
+          "circle-color": [
+            "match",
+            ["get", "category"],
+            "ターミナル", "#e4402f",
+            "観光", "#2b6cb0",
+            "#888888",
+          ],
+        }}
+      />
+    </Source>
+  </Map>,
+);
+```
+
+</LiveCode>
+
+配列の読み方は上から順に、
+
+1. `"match"`：対応表を引く式。
+2. `["get", "category"]`：各地点の `properties.category` の値を取り出す。
+3. `"ターミナル", "#e4402f"`：値が「ターミナル」なら赤。
+4. `"観光", "#2b6cb0"`：値が「観光」なら青。
+5. `"#888888"`：どれにも当てはまらないときの色（フォールバック。**必須**です）。
+
+このように、データの属性から見た目を決める書き方を**データ駆動スタイル**と呼びます。色以外にも、値に応じて `circle-radius` を変える（数が大きい点ほど大きく）といった使い方ができます。
+
+## ベース地図ごと変えるには
+
+点の色ではなく、背景の地図そのものの見た目を変えたいときは、`Map` の `style` プロパティにスタイル名や URL を指定します。
+
+```jsx
+<Map apiKey="YOUR-API-KEY" style="geolonia/midnight" ...>
+```
+
+`geolonia/midnight` は Geolonia が用意しているスタイルの1つです。ほかにどんなものがあるかは[Geolonia Maps のスタイル一覧](/explanation/styles/)で、実際の地図とあわせて見られます。スタイルという仕組みそのものについては[地図のスタイルとは](/explanation/map-style/)を参照してください。
+
+## 動いたか確認する
+
+駅の3点が赤、観光地の2点が青で表示されていれば成功です。GeoJSON の `category` の値を書き換えて、色が追従することも確かめてください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 全部フォールバックの色になる → `match` に書いた値と、GeoJSON の `properties` の値が**完全一致**しているか確認。全角と半角の違いや、余分な空白にも注意。
+- 何も出なくなった → `match` 式の**フォールバック（最後の1つ）を書き忘れる**と式が不正になります。必ず末尾に既定の色を置いてください。
+- プロパティ名を間違えるとエラーは出ずに反映されません（`circle-colour` 等のつづりに注意）。
+</Callout>
+
+## 次は
+
+データが色で語るようになりました。次の[段4：インタラクションを足す](../interaction/)で、**クリックでポップアップを出す**インタラクションを追加します。

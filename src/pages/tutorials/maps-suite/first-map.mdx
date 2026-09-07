@@ -1,0 +1,81 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段0：地図を出す
+description: maps-suite を npm で導入し、JavaScript で地図を1枚表示します。
+page: tutorial
+kicker: maps-suite
+badge: tutorial
+---
+import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
+
+maps-suite チュートリアルへようこそ。maps-suite は、Geolonia Maps を **JavaScript から命令的に操作する**ためのライブラリです。この段では、Web ページに地図を1枚出すところまでをやります。
+
+ビルド環境は何でも構いません。まだない方は [Vite](https://ja.vite.dev/) のバニラ JavaScript テンプレートで作るのが手軽です。
+
+## インストールする
+
+maps-suite と、地図の描画エンジンである maplibre-gl をインストールします。
+
+```
+npm install @geolonia/maps-suite maplibre-gl
+```
+
+## 地図を表示する
+
+まず HTML に、地図を入れる要素を用意します。要素自体には大きさがないので、CSS で高さを与えます。
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>suite</title>
+    <style>
+      #map { width: 100%; height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
+```
+
+次に `main.js` で、CSS を読み込んで `Map` を作ります。
+
+<LiveCode title="maps-suite で地図を出す">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+});
+```
+
+</LiveCode>
+
+上のコードが、そのまま下で動いています。
+
+ポイントは3つです。
+
+- **CSS のインポート**：`maplibre-gl/dist/maplibre-gl.css` と `@geolonia/maps-core/css` の2つが必要です。忘れるとコントロールやポップアップの表示が崩れます。
+- **`new geolonia.maps.Map(要素, オプション)`**：第1引数は **HTML 要素そのもの**です（`"map"` のような id 文字列を渡すと例外になります）。
+- **`apiKey`**：`YOUR-API-KEY` はお試し用のデモキーで、`localhost` や GitHub Pages・CodePen などの開発・プレビュー環境で地図が描画されます（[動く環境の一覧](/explanation/free-referers/)。自分のキーの発行は[段5](../publish/)でやります）。
+
+## 動いたか確認する
+
+`npm run dev` で開発サーバーを起動してブラウザで開くと、地図が表示されます。maps-suite は中心を指定しないと**世界全体**が見える状態（緯度経度 `0, 0`・ズーム `0`）で表示します。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
+
+<Callout kind="warning" title="うまく出ないとき">
+- 真っ白で何も出ない → `#map` の**高さが 0** になっていないか確認。`<style>` の指定を確認してください。
+- 「The first argument must be an HTMLElement」という例外 → `Map` に id **文字列**を渡しています。`document.getElementById("map")` で要素を取得して渡してください。
+- 表示が崩れる（コントロールのアイコンが変な場所に出る等）→ **CSS のインポート忘れ**。2つとも読み込んでいるか確認。
+</Callout>
+
+## 次は
+
+地図は出ました。でも、見たいのは世界全体ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心、拡大率、傾きを指定します。

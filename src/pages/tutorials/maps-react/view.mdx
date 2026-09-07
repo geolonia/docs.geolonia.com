@@ -1,0 +1,75 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段1：場所と視点
+description: maps-react の props で、地図の中心と拡大率、傾きを指定します。
+page: tutorial
+kicker: maps-react
+badge: tutorial
+---
+import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
+
+<Callout kind="success" title="前の段でできたこと">
+段0で、React アプリに地図を出せるようになりました。ただし場所は既定のまま。この段では、地図を**自分の見たい場所と見たい角度**にします。
+</Callout>
+
+## 場所と拡大率を指定する
+
+maps-react の設定は、すべて `Map` コンポーネントの **props** で書きます。場所は `center`、拡大率は `zoom` です。
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.745438, 35.658581]}
+  zoom={16}
+  containerStyle={{ width: "100%", height: "100vh" }}
+/>
+```
+
+- **`center`**：地図の中心の座標。**`[経度, 緯度]` の順**です。上の値は東京タワーです。自分の見たい場所の座標は、Google マップ等で右クリックすると取得できます（Google マップは「緯度, 経度」の順で表示するので、入れ替えて使います）。
+- **`zoom`**：拡大率。数字が大きいほど寄ります。目安は、**11** で都市の全体、**14** で街区、**16** で建物が見えるくらいです。
+
+## 視点を傾けて回す
+
+平面図だけでなく、視点そのものも変えられます。`pitch`（傾き）と `bearing`（回転）です。中心にマーカーも立ててみます。ここまでを入れた全体が次のコードです。
+
+<LiveCode title="maps-react で東京タワーを傾けて見る">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.745438, 35.658581]}
+    zoom={16}
+    pitch={45}
+    bearing={20}
+    marker
+    markerColor="#e4402f"
+    containerStyle={{ width: "100%", height: "100vh" }}
+  />,
+);
+```
+
+</LiveCode>
+
+- **`pitch`**：地図を手前に倒す角度（度）。`0` が真上からの平面図。
+- **`bearing`**：地図を回す角度（度）。`0` が北が上。
+- **`marker` / `markerColor`**：中心にマーカーを立てるかどうかと、その色。
+
+## 動いたか確認する
+
+中心が東京タワーになり、地図が斜めから見た構図になっていれば成功です。`center` を自分の場所に差し替えて、狙った場所が中心に出ることも確かめてください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 中心が海や別の国に飛ぶ → **経度と緯度を取り違え**ています。`center` は `[経度, 緯度]` の順。日本国内なら経度はおよそ 123〜146、緯度はおよそ 24〜46 です。
+- props を書いたのに反映されない → 値を文字列で渡していないか確認。`zoom="16"` ではなく `zoom={16}` のように、数値や配列は JSX の `{}` で渡します。
+</Callout>
+
+## 次は
+
+地図を自分の場所にできました。でも、のっているのは中心の点ひとつだけです。次の[段2：データを載せる](../data/)で、**自分のデータ（複数の地点）**を地図に重ねます。

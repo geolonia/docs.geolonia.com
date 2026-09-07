@@ -1,0 +1,8 @@
+---
+// 象限バッジ。<QuadBadge kind="tutorial">チュートリアル</QuadBadge>
+// 見た目は components.css の .qb 側。
+// data-pagefind-ignore：h1 の中に居るので、付けないと検索結果の見出しが
+// 「ハウツー クリックで…」のように象限名込みになる。
+const { kind } = Astro.props;
+---
+<span class={`qb ${kind}`} data-pagefind-ignore><slot /></span>

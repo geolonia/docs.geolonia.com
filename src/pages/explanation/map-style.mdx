@@ -1,0 +1,73 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 地図のスタイルとは
+description: 地図の見た目を決めるスタイルの役割と、データと分かれている理由を説明します。
+page: explanation
+badge: explanation
+---
+import Callout from '../../components/Callout.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+**スタイル**は、地図データをどう描くかを書いた JSON ファイルです。海を何色で塗るか、道路を何ピクセルの線で引くか、ズーム 12 以下では駅名を出さないか。そうした描画の規則がまとまっています。
+
+Geolonia Maps で `geolonia/basic-v2` のように指定しているのは、このスタイルの名前です。
+
+## データと見た目が分かれている
+
+紙の地図では、地形の情報と印刷された色は一体です。書き換えるには刷り直すしかありません。
+
+ベクトルタイルの地図では、この2つが分かれています。地図データは「ここは道路」「ここは水域」という属性を持ったまま配信され、色や太さはスタイルが後から決めます。同じデータから、明るい地図も暗い地図も作れます。
+
+読み込み直すのはスタイルだけなので、見た目の切り替えにデータの取得はやり直しません。[地図の見た目（スタイル）を切り替えるには](/howto/change-style/)で、実際に切り替えるコードを試せます。
+
+## スタイルの中身
+
+スタイルの JSON には、大きく分けて3種類の情報が入っています。
+
+- **sources**：データの取得先。ベクトルタイルの配信元 URL を書きます
+- **layers**：描き方の規則。どのデータを、どの縮尺で、どの色と太さで描くかを1つずつ並べます
+- **glyphs と sprite**：文字の字形と、アイコンの画像
+
+`layers` が本体です。`geolonia/basic-v2` は 139 個の layer を持っています。海、川、緑地、建物、道路の種別ごとの線、駅名、地名といった要素を、それぞれ別の layer が担当します。
+
+<Callout kind="info" title="MapLibre のスタイル仕様に準拠しています">
+この JSON の書式は MapLibre Style Spec で決まっているもので、Geolonia の独自形式ではありません。MapLibre GL JS で使えるスタイルはそのまま使えますし、スタイルの書き方を調べるときは MapLibre の資料が読めます。
+</Callout>
+
+## スタイルの指定
+
+スタイルは2通りの方法で指定できます。
+
+**論理名**は `geolonia/basic-v2` のような短い名前です。Geolonia が用意しているスタイルはこれで指定します。指定を省略したときは `geolonia/basic-v2` が使われます。
+
+**URL** は style.json を直接指すもので、他所が公開しているスタイルや、自分で書いたスタイルを使うときに指定します。
+
+<LiveCode title="論理名でスタイルを指定する" height={360}>
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      .geolonia { width: 100%; height: 360px; }
+    </style>
+  </head>
+  <body>
+    <div class="geolonia"
+         data-lat="35.68" data-lng="139.75" data-zoom="11"
+         data-style="geolonia/midnight"></div>
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+Geolonia が提供している論理名は [Geolonia Maps のスタイル一覧](/explanation/styles/)にまとめてあります。
+
+## 自分でスタイルを作る
+
+既存のスタイルで足りないときは、自分で書いたスタイルを URL で指定できます。JSON を直接書くほか、[Maputnik](https://maputnik.github.io/) のようなエディタで編集する方法もあります。
+
+Geolonia のスタイルを出発点にする場合は、`https://cdn.geolonia.com/style/geolonia/basic-v2/ja.json` を取得して手を入れてください。ただし `sources` の URL に含まれる API キーは、自分のキーに置き換える必要があります。

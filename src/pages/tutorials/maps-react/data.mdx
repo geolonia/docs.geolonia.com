@@ -1,0 +1,81 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段2：データを載せる
+description: maps-react の Source と Layer で、自分の地点データを地図に重ねます。
+page: tutorial
+kicker: maps-react
+badge: tutorial
+---
+import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
+
+<Callout kind="success" title="前の段でできたこと">
+段1で、地図を自分の見たい場所と角度にできました。でも、のっているのは中心の点ひとつだけ。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
+</Callout>
+
+## GeoJSON を知る
+
+地図にデータを載せるには、**GeoJSON** という形式のファイルを使います。GeoJSON は地理データの標準フォーマットで、テキストエディタで読み書きできる JSON です。
+
+このチュートリアルでは、東京の5地点を入れたサンプルを使います。次の内容を `public/data/sample-spots.geojson` として保存してください（Vite の場合、`public/` 以下のファイルは `/data/...` という URL で配信されます）。
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] }, "properties": { "name": "東京駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.700258, 35.690921] }, "properties": { "name": "新宿駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.701636, 35.658034] }, "properties": { "name": "渋谷駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.796747, 35.714765] }, "properties": { "name": "浅草寺", "category": "観光" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.745438, 35.658581] }, "properties": { "name": "東京タワー", "category": "観光" } }
+  ]
+}
+```
+
+- **`geometry`**：点、線、面などの形状。`coordinates` は `center` と同じ **`[経度, 緯度]`** の順です。
+- **`properties`**：名前や分類など、地物に付けたい属性。ここでは `name` と `category` を持たせています（`category` は次の段で使います）。
+
+## データを地図に重ねる
+
+maps-react では、データも JSX で宣言します。`Map` の子として `Source`（データ）を置き、その中に `Layer`（描き方）を置きます。
+
+<LiveCode title="maps-react で GeoJSON を重ねる">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Layer, Map, Source } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+      <Layer id="spots" type="circle" />
+    </Source>
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **`<Source>`**：データの供給元。`type="geojson"` で、`data` に GeoJSON の URL（またはオブジェクトそのもの）を渡します。
+- **`<Layer>`**：データの描き方。`type="circle"` は各点を丸として描きます。**`id` は必須**です。省略するとエラーも出ずにレイヤが追加されず、何も表示されません。
+
+## 動いたか確認する
+
+地図上に5つの丸（東京駅、新宿駅、渋谷駅、浅草寺、東京タワー）が出ていれば成功です。GeoJSON の中身を自分のデータに差し替えて、自分の点が出ることも確かめてください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 何も出ないがエラーもない → `<Layer>` の **`id` の書き忘れ**が一番多い原因です。必ず `id` を付けてください。
+- 点が海や別の大陸に出る → `coordinates` の**経度と緯度が逆**。`[経度, 緯度]` の順に直します。
+- それでも出ない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。404 や JSON の文法エラーが多い原因です。
+</Callout>
+
+## 次は
+
+自分のデータが地図にのりました。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。各点には `category` が入っています。次の[段3：見た目を変える](../style/)で、**属性に応じて色分け**します。

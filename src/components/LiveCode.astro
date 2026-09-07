@@ -1,0 +1,112 @@
+---
+/**
+ * コード表示と実行結果を一体で出すブロック。コードはここに直接書く。
+ *
+ *   <LiveCode>
+ *
+ *   ```html
+ *   <div class="geolonia" …></div>
+ *   <script src="…/embed?geolonia-api-key=YOUR-API-KEY"></script>
+ *   ```
+ *
+ *   </LiveCode>
+ *
+ * 書いたフェンスがそのまま
+ *   - 表示されるコード（Shiki 済み HTML をそのまま出す）
+ *   - 下の iframe で動くデモ（同じ本文から生成された /demos/inline/<ID>/）
+ * の両方になる。手書きのコードを別に持たないので、表示と実行がズレない。
+ *
+ * js / jsx は仮想モジュールとして実際にバンドルされるため、構文エラーや
+ * import ミスはビルドエラーになる。
+ *
+ * オプション:
+ *   demo={false}  デモを出さずコード表示だけにする。動かない断片や、
+ *                 html/js/jsx 以外の言語（bash など）はこれを付ける。
+ *   height={400}  デモ枠の高さ(px)。コード側で高さを宣言しているならそれに合わせる
+ */
+import manifest from 'virtual:livecode-manifest';
+import {
+  shikiHtmlToSource,
+  shikiLang,
+  normalizeCode,
+  snippetId,
+  isRunnableLang,
+  RUNNABLE_LANGS,
+  countCodeBlocks,
+} from '../lib/livecode';
+
+interface Props {
+  demo?: boolean;
+  title?: string;
+  height?: number;
+}
+
+const { demo = true, title, height } = Astro.props;
+
+// demo="false" は JSX では文字列（truthy）なので、書き手の意図と逆に働く。
+// 走査側も同じ判断をするため実害は出ないが、意図が通らないので止める。
+if (typeof demo !== 'boolean') {
+  throw new Error(
+    `LiveCode: demo は真偽値で書いてください（受け取った値: ${JSON.stringify(demo)}）。\n` +
+      'デモを出さないときは demo={false} です（demo="false" は文字列なので効きません）。',
+  );
+}
+
+if (!Astro.slots.has('default')) {
+  throw new Error('LiveCode: コードブロックを子として書いてください');
+}
+
+const slotHtml = await Astro.slots.render('default');
+
+// 実行されるのは最初の1つだけなので、2つ以上あると
+// 「表示されているのに動いていないコード」ができてしまう。
+const blockCount = countCodeBlocks(slotHtml);
+if (blockCount !== 1) {
+  throw new Error(
+    `LiveCode: コードブロックはちょうど1つにしてください（見つかった数: ${blockCount}）。\n` +
+      '複数見せたい場合は <LiveCode> を分けるか、動かさない方は素のフェンスで書いてください。',
+  );
+}
+
+const lang = shikiLang(slotHtml);
+const code = normalizeCode(shikiHtmlToSource(slotHtml));
+
+// 動かせない言語をデモ付きで書いてしまった場合。ビルドを止めて理由を伝える。
+// （走査側もこの言語を集めないので、放置すると「デモページが無い」という
+//   分かりにくいエラーになってしまう）
+if (demo && !isRunnableLang(lang)) {
+  throw new Error(
+    `LiveCode: ${lang} は動かせません（動かせるのは ${RUNNABLE_LANGS.join(' / ')}）。\n` +
+      'デモが不要なら demo={false} を付けるか、素のフェンスで書いてください。',
+  );
+}
+
+// 走査側と同じ規則で ID を出して、生成済みのデモページを引く。
+const entry = demo ? manifest[snippetId(lang, code)] : undefined;
+
+if (demo && !entry) {
+  throw new Error(
+    `LiveCode: このコードに対応するデモページが生成されていません（lang=${lang}）。\n` +
+      '走査（integrations/livecode.mjs）が拾った本文と、表示から復元した本文が食い違っています。\n' +
+      'LiveCode 側の不具合の可能性が高いので、下のコードを添えて報告してください。\n' +
+      `--- 復元されたコード ---\n${code.slice(0, 300)}`,
+  );
+}
+
+const showDemo = demo && !!entry;
+---
+<div class="livecode" data-has-demo={showDemo ? 'true' : 'false'}>
+  <Fragment set:html={slotHtml} />
+
+  {showDemo && (
+    <div class="livecode__demo">
+      <iframe
+        class="livecode__frame"
+        data-src={`/demos/inline/${entry!.id}/`}
+        title={title ?? `${lang} のライブデモ`}
+        loading="lazy"
+        style={height ? `height: ${height}px` : undefined}
+      ></iframe>
+    </div>
+  )}
+</div>

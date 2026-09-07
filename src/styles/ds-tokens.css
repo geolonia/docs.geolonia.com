@@ -1,0 +1,165 @@
+/* geolonia-design-system の tokens.css のベンダーコピー（210d1a3 時点・オレンジテーマ含む）
+   npm 公開後は @geolonia/design-tokens に置き換えて削除する。編集禁止。 */
+:root {
+  /* === カラー（意味で名付けたセマンティックトークン） === */
+
+  /* 主役：青。文字・ボタン・リンク・フォーカスに使用可（白地で4.5:1以上） */
+  --color-action-primary: #1E4FB8;
+  --color-action-primary-hover: #163E86;
+
+  /* 差し色：オレンジ。縁取り・バッジ・下線・フォーカスのみ。白文字を乗せた塗りは禁止 */
+  --color-action-accent: #E85A19;
+  --color-accent-text: #9A3D0E;   /* 薄いオレンジ地に乗せる濃いオレンジ文字 */
+  --color-accent-surface: #FBEADF; /* バッジ等の薄いオレンジ地 */
+
+  /* 構造：濃紺。見出し・テキスト強調・フッター等の濃い面。
+     ヘッダーは白ベース（ロゴ設置を想定。background + border-bottom: var(--color-border)） */
+  --color-structure-navy: #1B2A4A;
+
+  /* 状態色（機能カラー） */
+  --color-status-success: #1F7A3D;
+  --color-status-warning: #B25E00;
+  --color-status-danger: #C0271E;
+  --color-status-info: #0B69A3; /* 情報。primary の青と識別できるシアン寄り（白地5.9:1） */
+
+  /* 状態色ペア：バッジ・通知等の「淡い地＋濃い文字」。
+     accent の surface/text と同じ規則（地は白86%混合、文字は地に対し約5.9:1）で、
+     各ペアは AA（4.5:1）以上を保証する。warning のみ茶色く沈むのを避けて
+     アンバー（金色）寄りに調整（オレンジテーマの warning と同じ方向） */
+  --color-status-success-surface: #E0ECE4;
+  --color-status-success-text: #196432;
+  --color-status-warning-surface: #FAECC2;
+  --color-status-warning-text: #7A4F00;
+  --color-status-danger-surface: #F6E1E0;
+  --color-status-danger-text: #A5221A;
+  --color-status-info-surface: #DDEAF2;
+  --color-status-info-text: #0A5B8E;
+
+  /* 稼働状態：success ペアの別名。「処理の成功」ではなく「現在動いている」を表す */
+  --color-status-active-surface: #E0ECE4;
+  --color-status-active-text: #196432;
+
+  /* 差分表示：追加＝緑・削除＝赤。地は状態ペアの surface を白で55%に薄めたもの
+     （モノスペース本文の可読性優先）。文字は状態ペアの text と同値 */
+  --color-diff-added-surface: #EEF5F0;
+  --color-diff-added-text: #196432;
+  --color-diff-removed-surface: #FAEFEE;
+  --color-diff-removed-text: #A5221A;
+
+  /* === グラフ用パレット ===
+     系列色は番号順に使う。全色とも既存トークンの参照（新色は chart-4 のみ、
+     オレンジテーマの warning と同値）。グラフの塗りは図形なので AA 4.5:1 は
+     不要（3:1 目安）。chart-4 に明るい金色を使えるのはそのため。
+     テーマによらず同一（ブランドテーマでも変わらない） */
+  --color-chart-1: #1E4FB8; /* 青（action-primary） */
+  --color-chart-2: #E85A19; /* オレンジ（action-accent） */
+  --color-chart-3: #1F7A3D; /* 緑（status-success） */
+  --color-chart-4: #D98E00; /* 金色アンバー（オレンジテーマの warning と同値） */
+  --color-chart-5: #1B2A4A; /* 濃紺（structure-navy） */
+  --color-chart-success: #1F7A3D; /* 成功系列（status-success） */
+  --color-chart-error: #C0271E;   /* エラー系列（status-danger） */
+
+  /* テキスト・面・境界（ニュートラル） */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #5A5A5A;
+  --color-background: #FFFFFF;
+  --color-surface: #F3F4F6;
+  --color-border: #D6D9DE;
+
+  /* === フォントファミリー === */
+  --font-family-base: "Noto Sans JP", "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif;
+
+  /* === タイポグラフィ（weightは400/500の2種のみ） === */
+  --font-size-heading-l: 28px;
+  --font-size-heading-m: 22px;
+  --font-size-heading-s: 18px;
+  --font-size-body: 16px;
+  --font-size-caption: 13px;
+  --font-weight-regular: 400;
+  --font-weight-bold: 500;
+  --line-height-body: 1.7;
+
+  /* === スペーシング === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* === 角丸 === */
+  --radius-tight: 2px;   /* 通知・タグなど「面より帯」の部品。ほぼ直角 */
+  --radius-control: 6px; /* 入力欄・パネル等のコントロール */
+  --radius-button: 6px;  /* ボタン専用。デフォルトは control と同じ。オレンジテーマでカプセル型になる */
+  --radius-card: 10px;   /* カード・パネル */
+
+  /* === シャドウ（elevation） ===
+     色は構造色ネイビー（#1B2A4A）ベースの半透明で統一。
+     フォーカスリング等の操作系シャドウは対象外（従来どおり各部品側で定義） */
+  --shadow-card: 0 1px 3px rgba(27, 42, 74, 0.1);        /* カード・パネルの通常状態 */
+  --shadow-card-hover: 0 4px 12px rgba(27, 42, 74, 0.12); /* カードのホバー・浮き上がり */
+  --shadow-modal: 0 8px 24px rgba(27, 42, 74, 0.16);      /* モーダル・ドロップダウン */
+
+  /* === レスポンシブ: ブレークポイント ===
+     CSS @media の min-width/max-width 値には直接使えない（カスタムプロパティ制約）。
+     参照・JavaScript でのビューポート判定・calc() での使用に限る。 */
+  --bp-sm:  640px;  /* スマートフォン横向き・小型タブレット */
+  --bp-md:  768px;  /* タブレット縦向き（ナビ切り替え基準） */
+  --bp-lg: 1024px;  /* タブレット横向き・小型デスクトップ */
+  --bp-xl: 1280px;  /* デスクトップ標準 */
+
+  /* === レスポンシブ: コンテナ幅 === */
+  --container-sm:   640px;  /* フォームパネル・狭いコンテンツ */
+  --container-md:   768px;  /* 本文カラム（モバイル上限） */
+  --container-lg:  1024px;  /* サイドバー付きダッシュボード */
+  --container-xl:  1280px;  /* 標準ページ幅 */
+  --container-max: 1440px;  /* フルワイドレイアウト上限 */
+
+  /* === レスポンシブ: フルイドタイポグラフィ ===
+     clamp(最小, 流動値, 最大) で画面幅に応じてサイズが変化する。
+     既存の heading-* は可読性のため固定値を維持。
+     大型ランディングページ等で使う display サイズのみ流動にする。 */
+  --font-size-display: clamp(24px, 3vw + 6px, 44px);
+}
+
+/* === ブランドテーマ（オレンジ） ===
+   コーポレートサイト・ブランディング重視のサイト向け。<html data-theme="orange"> で適用。
+   ⚠ このテーマはAA準拠を保証しない（ブランド優先・意図的）。行政向け案件では使わず、
+   デフォルト（青）テーマを使うこと。
+   使用ルール:
+   - 黄（accent）はバッジ・ハイライト・グラフ等の面と装飾のみ。文字を乗せない
+   - 濃いオレンジ地の上に黒系のボタンを置かない（白地・クリーム地＋濃オレンジ文字にする）
+   - オレンジ地への白文字は大きめの要素（ボタン・見出し）に限る */
+[data-theme="orange"] {
+  /* 主役：ブランドオレンジ。大面積でも強すぎない色として選定 */
+  --color-action-primary: #FF7F14;
+  --color-action-primary-hover: #FF540D; /* サブオレンジ。hover・強調 */
+
+  /* 差し色：黄。文字を乗せた使用は禁止（白文字1.8:1） */
+  --color-action-accent: #FFB333;
+  --color-accent-text: #C94F00;    /* 見出し・バッジ文字用の濃オレンジ（白地4.6:1） */
+  --color-accent-surface: #FFF3ED; /* バッジ等の薄ピーチ地 */
+
+  /* 構造：黒に近い暖色グレー（ネイビーは使わない）。フッター・濃い面 */
+  --color-structure-navy: #23201D;
+
+  /* 状態色：警告とエラーを上書き（AA非準拠・ブランド優先）。
+     警告はデフォルトの #B25E00 が茶色く沈むため金色寄りのアンバーに、
+     エラーはロゴ由来の赤に合わせて明るく */
+  --color-status-warning: #D98E00; /* 文字・アイコン・縁取りで使われるため、白地で識別できる明るさの上限 */
+  --color-status-danger: #E74230;
+
+  /* 状態色ペア：上書きした warning / danger の base から同じ規則で導出。
+     単色と違いペアは AA（4.5:1）以上を維持する。success / info はデフォルトを継承 */
+  --color-status-warning-surface: #FAEFDB;
+  --color-status-warning-text: #7E5200;
+  --color-status-danger-surface: #FCE5E2;
+  --color-status-danger-text: #A22E22;
+
+  /* 面・境界：上書きしない（ニュートラルグレーを継承）。
+     コーポレートサイト同様、ベースは白/グレーでオレンジを効かせる。
+     暖色に寄せるのはアクセント面（--color-accent-surface）のみ */
+
+  /* 角丸：ボタンのみカプセル型（geolonia.com のボタンに合わせる）。
+     入力欄・パネル等（--radius-control）は 6px のまま */
+  --radius-button: 999px;
+}

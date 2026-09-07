@@ -1,0 +1,161 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 外部データ（GeoJSON）を地図に読み込むには
+description: GeoJSON ファイルを読み込み、点や線、面のデータを地図に重ねます。
+page: howto
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+GeoJSON ファイルを地図に重ねて、自分のデータ（点、線、面）を表示します。
+
+## コード
+
+<Lens name="embed">
+`data-geojson` 属性に GeoJSON ファイルの URL を書くだけです。
+
+<LiveCode title="embed で GeoJSON を重ねる">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.68" data-lng="139.75" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/sample-spots.geojson"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-geojson`**：GeoJSON ファイルのパスまたは URL。同じサーバー上のパスか、CORS を許可した外部 URL を指定します。
+- **`data-marker="off"`**：中心のデフォルトマーカーを非表示にしています。データの点だけを見たいときに便利です。
+
+</Lens>
+
+<Lens name="suite">
+`map.data` に GeoJSON を渡すのがいちばん短い書き方です。読み込みの完了は内部で待つので、こちら側で待つ必要はありません。
+
+<LiveCode title="maps-suite で GeoJSON を重ねる">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+const res = await fetch("/data/sample-spots.geojson");
+map.data.addGeoJson(await res.json());
+```
+
+</LiveCode>
+
+`addGeoJson()` が受け取るのはオブジェクトなので、URL から読むときは `fetch` を挟みます。点・線・面が混ざっていてもそのまま渡せます。色や線の太さは `map.data.setStyle({ fillColor: "#f00", strokeWeight: 2 })` のように指定します。
+
+### 描き方を細かく決めたいとき
+
+`map.data` で指定できるのは塗りと線の色・不透明度・太さだけです。点の大きさを変えるといった細かい調整には、基盤の地図（maplibre）を直接触る `getGeoloniaMap()` を使います。**maps-suite に用意されていない機能が必要になったときの逃げ道**がこれです。
+
+<LiveCode title="maps-suite で GeoJSON を重ねて点の大きさを変える">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+impl.addLayer({
+  id: "spots",
+  type: "circle",
+  source: "spots",
+  paint: { "circle-radius": 8, "circle-color": "#e2543a" },
+});
+```
+
+</LiveCode>
+
+こちらは `whenReady()` で読み込みの完了を待ってから、`addSource`（データ）→ `addLayer`（描き方）の順に呼びます。`addSource` に渡す `data` は URL のままで構いません。
+
+CSS のインポートなどセットアップは [maps-suite チュートリアル 段0](/tutorials/maps-suite/first-map/) を参照してください。
+
+</Lens>
+
+<Lens name="react">
+`Map` の子に `Source`（データ）と `Layer`（描き方）を置きます。
+
+<LiveCode title="maps-react で GeoJSON を重ねる">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Source, Layer } from "@geolonia/maps-react";
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.75, 35.68]}
+    zoom={11}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Source id="spots" type="geojson" data="/data/sample-spots.geojson">
+      <Layer id="spots" type="circle" />
+    </Source>
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **`<Source>`**：`type="geojson"` で、`data` に GeoJSON の URL（またはオブジェクトそのもの）を渡します。
+- **`<Layer>`**：データの描き方。`type="circle"` は各点を丸として描きます。**`id` は必須**です。省略するとエラーも出ずにレイヤが追加されず、何も表示されません。
+- CSS のインポートなどセットアップは [maps-react チュートリアル 段0](/tutorials/maps-react/first-map/) を参照してください。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。GeoJSON に含まれる地点が地図に表示されます（embed はマーカー、suite / react は `circle` レイヤの丸として描かれます）。
+
+## GeoJSON の形式
+
+GeoJSON は地理データの標準フォーマットです。最小の例はこのようになります。
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] },
+      "properties": { "name": "東京駅" }
+    }
+  ]
+}
+```
+
+`coordinates` は **`[経度, 緯度]`** の順です。`data-lat`/`data-lng` とは逆なので注意してください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 点が海に出る → `coordinates` の経度と緯度が逆になっています。`[経度, 緯度]` の順に直してください。
+- 何も出ない → ブラウザの開発者ツール（ネットワークタブ）でファイルの HTTP ステータスを確認。404 や JSON の文法エラーが多い原因です。
+- 外部 URL の GeoJSON が読めない → CORS の制限です。同じサーバーにファイルを置くか、CORS ヘッダを設定してください。
+</Callout>

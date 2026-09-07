@@ -1,25 +1,29 @@
-# ------
-# Common
-# ------
-*~
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# API リファレンスの生成元。必要なときだけ scripts/vendor.sh が clone する
+vendor/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
 .DS_Store
-.svn
-.cvs
-*.bak
-*.swp
-Thumbs.db
 
-# -----------------------
-# Local Development Tools
-# -----------------------
-/node_modules
-/npm-debug.log
+# jetbrains setting folder
+.idea/
 
-# ---------------
-# Compiled assets
-# ---------------
-.sass-cache
-_site
-
-/vendor
-/.bundle
+# wrangler
+.wrangler/

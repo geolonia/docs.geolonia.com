@@ -1,0 +1,201 @@
+/* =====================================================================
+   components.css — 部品の見た目（バッジ・カード・callout・地図枠・手順…）
+   デザイナーはここで各部品の質感を調整できる。構造は .astro/.md 側。
+   ===================================================================== */
+/* Pagefind の既定 UI（ベンダー CSS）。@import は他の規則より前でなければ効かない。
+   見た目の寄せ方は下の「全文検索」の節で変数を上書きしている。 */
+@import '@pagefind/default-ui/css/ui.css';
+
+.kicker { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--brand-dark); margin: 0 0 4px; }
+
+/* 象限バッジ */
+.qb { display: inline-block; font-size: 12px; font-weight: 800; color: #fff; border-radius: 7px; padding: 2px 9px; }
+.qb.tutorial    { background: var(--q-tutorial); }
+.qb.howto       { background: var(--q-howto); }
+.qb.reference   { background: var(--q-reference); }
+.qb.explanation { background: var(--q-explanation); }
+
+/* レンズタグ */
+.tag { display: inline-block; font-size: 12px; font-weight: 700; color: #fff; border-radius: 6px; padding: 1px 8px; }
+.tag.embed { background: var(--lens-embed); }
+.tag.suite { background: var(--lens-suite); }
+.tag.react { background: var(--lens-react); }
+
+/* 象限カード（トップの4入口） */
+.quad-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+.quad { display: block; border: 1px solid var(--border); border-top: 4px solid var(--border); border-radius: var(--radius); padding: 18px; background: var(--bg); transition: box-shadow .15s, transform .15s; }
+.quad:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); text-decoration: none; }
+.quad h3 { margin: 8px 0 4px; }
+.quad p { margin: 0; font-size: 13px; color: var(--text-soft); }
+.quad.tutorial    { border-top-color: var(--q-tutorial); }
+.quad.howto       { border-top-color: var(--q-howto); }
+.quad.reference   { border-top-color: var(--q-reference); }
+.quad.explanation { border-top-color: var(--q-explanation); }
+
+/* callout */
+.callout { border: 1px solid var(--border); background: var(--bg-soft); border-radius: var(--radius); padding: 14px 18px; margin: 16px 0; }
+.callout .ttl { display: block; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
+.callout > :last-child { margin-bottom: 0; }
+/* 状態付き callout：DS の status surface/text ペア（ペア側で AA 4.5:1 を保証） */
+.callout.info    { background: var(--color-status-info-surface);    border-color: var(--color-status-info); }
+.callout.info .ttl    { color: var(--color-status-info-text); }
+.callout.success { background: var(--color-status-success-surface); border-color: var(--color-status-success); }
+.callout.success .ttl { color: var(--color-status-success-text); }
+.callout.warning { background: var(--color-status-warning-surface); border-color: var(--color-status-warning); }
+.callout.warning .ttl { color: var(--color-status-warning-text); }
+.callout.danger  { background: var(--color-status-danger-surface);  border-color: var(--color-status-danger); }
+.callout.danger .ttl  { color: var(--color-status-danger-text); }
+
+/* 地図 */
+.map-figure { margin: 16px 0; }
+.map-box { height: 360px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.map-box.tall { height: 460px; }
+.map-box .geolonia { width: 100%; height: 100%; }
+.map-cap { font-size: 12px; color: var(--text-faint); margin-top: 6px; }
+
+/* レンズ依存ブロック（タブで選択中のものだけ表示） */
+.lens[hidden] { display: none; }
+
+/* 記事内レンズタブ（BaseLayout の initLensTabs が .lens 群の直前に挿入） */
+.lens-tabs__bar { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin: 16px 0 0; }
+.lens-tab { font: inherit; font-size: 13px; font-weight: 700; border: none; background: none; color: var(--text-soft); padding: 7px 13px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.lens-tab:hover { color: var(--text); }
+.lens-tab.active { color: var(--text); border-bottom-color: var(--brand); }
+.lens-tab[data-lens="embed"].active { color: var(--lens-embed); border-bottom-color: var(--lens-embed); }
+.lens-tab[data-lens="suite"].active { color: var(--lens-suite); border-bottom-color: var(--lens-suite); }
+.lens-tab[data-lens="react"].active { color: var(--lens-react); border-bottom-color: var(--lens-react); }
+
+/* コード表示と実行結果の一体ブロック（LiveCode）。
+   同じスニペットから作られる2つなので、見た目も1つの塊として繋げる。 */
+.livecode { margin: 16px 0; }
+.livecode[data-has-demo="true"] pre {
+  margin-bottom: 0;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+.livecode__demo {
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+.livecode__frame { display: block; width: 100%; height: 360px; border: 0; }
+
+/* 手順 */
+.steps { list-style: none; counter-reset: s; padding: 0; }
+.steps li { counter-increment: s; position: relative; padding: 4px 0 14px 38px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 2px; width: 26px; height: 26px; border-radius: 50%; background: var(--q-tutorial); color: #fff; font-weight: 800; font-size: 13px; display: grid; place-items: center; }
+.steps li .obj { display: inline-block; margin-top: 4px; font-size: 13px; color: var(--q-tutorial); font-weight: 700; }
+
+/* 左サイドバーのツリー。API リファレンス（ApiNav）と
+   チュートリアル / ハウツー / 解説（DocNav）で共用する。
+   details/summary で開閉するので JS を持たない。現在地を含む
+   グループだけが開いた状態で描画される。
+
+   2階層ぶんのスタイルがある。__top が最上段（リファレンスのパッケージ、
+   チュートリアルのライブラリ、ハウツーの分類）、__group がその中の段
+   （リファレンスの種別グループ）。 */
+.doc-nav__top { margin-bottom: 10px; }
+.doc-nav__top-name,
+.doc-nav__group-name {
+  cursor: pointer; list-style: none;
+  display: flex; align-items: center; gap: 6px;
+  border-radius: 7px;
+}
+.doc-nav__top-name::-webkit-details-marker,
+.doc-nav__group-name::-webkit-details-marker { display: none; }
+.doc-nav__top-name::before,
+.doc-nav__group-name::before {
+  content: '▸'; font-size: 10px; color: var(--text-faint);
+  transition: transform 0.12s ease; flex: none;
+}
+.doc-nav__top[open] > .doc-nav__top-name::before,
+.doc-nav__group[open] > .doc-nav__group-name::before { transform: rotate(90deg); }
+
+.doc-nav__top-name {
+  font-size: 12.5px; font-weight: 800; color: var(--text);
+  padding: 5px 8px;
+}
+/* パッケージ名・ライブラリ名は等幅。ハウツーの「レシピ」などは地の文なので付けない。 */
+.doc-nav__top-name--mono { font-family: var(--font-mono); }
+.doc-nav__group-name {
+  font-size: 12px; font-weight: 700; color: var(--text-soft);
+  padding: 4px 8px 4px 16px;
+}
+.doc-nav__top-name:hover,
+.doc-nav__group-name:hover { background: var(--bg-soft); }
+
+.doc-nav__count {
+  margin-left: auto; font-size: 10.5px; font-weight: 700;
+  color: var(--text-faint); font-family: var(--font-mono);
+}
+
+.doc-nav__list { list-style: none; margin: 0; padding: 0; }
+.doc-nav__link {
+  display: block; font-size: 12.5px; color: var(--text-soft);
+  padding: 3px 8px 3px 30px; border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+/* グループを持たないセクション（解説）は入れ子のぶんの字下げが要らない。 */
+.doc-nav__list--flat > li > .doc-nav__link { padding-left: 16px; }
+.doc-nav__link--index { padding-left: 16px; font-weight: 700; }
+.doc-nav__link:hover { background: var(--bg-soft); text-decoration: none; color: var(--text); }
+.doc-nav__link.is-current {
+  background: var(--accent-soft); color: var(--color-accent-text); font-weight: 700;
+}
+
+/* =====================================================================
+   全文検索（ヘッダのボタン → モーダル → Pagefind の UI）
+   ===================================================================== */
+.site-search__button {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700; line-height: 1.4; color: var(--text-soft);
+  background: var(--bg-soft); border: 1px solid var(--border); border-radius: 7px;
+  padding: 5px 10px; cursor: pointer;
+}
+.site-search__button:hover { color: var(--color-accent-text); border-color: var(--brand); }
+.site-search__icon { display: block; }
+.site-search__kbd {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-faint);
+  border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; background: var(--bg);
+}
+
+/* モーダル本体。dialog の既定の枠と余白は使わず、中のパネルで形を作る。 */
+.site-search {
+  border: 0; padding: 0; background: transparent;
+  width: min(720px, 92vw); max-width: none;
+  max-height: 82vh; margin-top: 8vh;
+}
+.site-search::backdrop { background: rgba(15, 27, 39, 0.45); }
+.site-search__panel {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 18px 48px rgba(15, 27, 39, 0.18);
+  padding: 16px 18px 8px; max-height: 82vh; overflow: auto;
+}
+.site-search__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.site-search__title { margin: 0; font-size: 13px; font-weight: 800; color: var(--text-soft); }
+.site-search__close {
+  margin-left: auto; font-size: 12px; font-weight: 700; color: var(--text-soft);
+  background: none; border: 0; padding: 2px 4px; cursor: pointer;
+}
+.site-search__close:hover { color: var(--color-accent-text); text-decoration: underline; }
+.site-search__note { font-size: 13px; color: var(--text-soft); margin: 4px 0 12px; }
+
+/* Pagefind の既定 UI を、DS の色・フォント・角丸に寄せる。
+   使えるのは default-ui が公開している変数だけ（クラス名は svelte のハッシュ付きなので触らない）。 */
+.site-search__ui {
+  --pagefind-ui-scale: 0.8;
+  --pagefind-ui-font: var(--font-sans);
+  --pagefind-ui-primary: var(--color-accent-text);
+  --pagefind-ui-text: var(--text);
+  --pagefind-ui-background: var(--bg);
+  --pagefind-ui-border: var(--border);
+  --pagefind-ui-tag: var(--bg-soft);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 7px;
+}
+
+@media (max-width: 700px) {
+  .site-search__label, .site-search__kbd { display: none; }
+  .site-search__button { padding: 6px 8px; }
+}

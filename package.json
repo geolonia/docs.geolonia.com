@@ -1,13 +1,52 @@
 {
-  "devDependencies": {
-    "husky": "^8.0.0",
-    "textlint": "^12.2.3",
-    "textlint-filter-rule-comments": "^1.2.2",
-    "textlint-rule-preset-japanese": "^7.0.0",
-    "textlint-rule-prh": "^5.3.0"
+  "name": "docs.geolonia.com",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
   },
   "scripts": {
-    "lint": "textlint */**.md",
-    "prepare": "husky install"
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview",
+    "check:links": "node scripts/check-links.mjs",
+    "astro": "astro",
+    "cf:dev": "wrangler dev",
+    "docs:build:suite": "sh scripts/vendor.sh maps-suite && cd vendor/maps-suite && npm ci && npm run docs",
+    "docs:build:core": "sh scripts/vendor.sh maps-core && cd vendor/maps-core && npm ci && npm run docs:api",
+    "docs:build:embed": "sh scripts/vendor.sh maps-embed && cd vendor/maps-embed && npm ci && npm run docs:api",
+    "docs:import:suite": "node scripts/to-reference.mjs vendor/maps-suite/api-docs src/pages/reference/suite /reference/suite --skip README.md,Namespace.geolonia.md",
+    "docs:import:core": "node scripts/to-reference.mjs vendor/maps-core/api-docs src/pages/reference/core /reference/core",
+    "docs:import:embed": "node scripts/to-reference.mjs vendor/maps-embed/api-docs src/pages/reference/embed /reference/embed",
+    "docs:sync:suite": "npm run docs:build:suite && npm run docs:import:suite",
+    "docs:sync:core": "npm run docs:build:core && npm run docs:import:core",
+    "docs:sync:embed": "npm run docs:build:embed && npm run docs:import:embed"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^7.0.2",
+    "@astrojs/react": "^6.0.1",
+    "@astrojs/sitemap": "^3.7.3",
+    "@expo-google-fonts/noto-sans-jp": "^0.4.3",
+    "@geolonia/maps-react": "^0.2.1",
+    "@geolonia/maps-suite": "^1.2.2",
+    "@geolonia/normalize-japanese-addresses": "^3.1.3",
+    "@pagefind/default-ui": "^1.5.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^7.0.6",
+    "astro-og-canvas": "^0.13.0",
+    "maplibre-gl": "^5.24.0",
+    "pagefind": "^1.5.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "remark-cjk-friendly": "^2.3.1",
+    "remark-cjk-friendly-gfm-strikethrough": "^2.3.1",
+    "remark-mdx": "^3.1.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.107.0"
   }
 }

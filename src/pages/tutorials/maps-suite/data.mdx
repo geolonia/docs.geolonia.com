@@ -1,0 +1,81 @@
+---
+layout: ../../../layouts/DocLayout.astro
+title: 段2：データを載せる
+description: maps-suite で GeoJSON を読み込み、自分の地点データを地図に重ねます。
+page: tutorial
+kicker: maps-suite
+badge: tutorial
+---
+import Callout from '../../../components/Callout.astro'
+import LiveCode from '../../../components/LiveCode.astro'
+
+<Callout kind="success" title="前の段でできたこと">
+段1で、地図を自分の見たい場所と角度にできました。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
+</Callout>
+
+## GeoJSON を知る
+
+地図にデータを載せるには、**GeoJSON** という形式のファイルを使います。GeoJSON は地理データの標準フォーマットで、テキストエディタで読み書きできる JSON です。
+
+このチュートリアルでは、東京の5地点を入れたサンプルを使います。次の内容を `public/data/sample-spots.geojson` として保存してください（Vite の場合、`public/` 以下のファイルは `/data/...` という URL で配信されます）。
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] }, "properties": { "name": "東京駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.700258, 35.690921] }, "properties": { "name": "新宿駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.701636, 35.658034] }, "properties": { "name": "渋谷駅", "category": "ターミナル" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.796747, 35.714765] }, "properties": { "name": "浅草寺", "category": "観光" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.745438, 35.658581] }, "properties": { "name": "東京タワー", "category": "観光" } }
+  ]
+}
+```
+
+- **`geometry`**：点、線、面などの形状。`coordinates` は **`[経度, 緯度]`** の順です（`center` の `{ lat, lng }` とは逆順なので注意）。
+- **`properties`**：名前や分類など、地物に付けたい属性。ここでは `name` と `category` を持たせています（`category` は次の段で使います）。
+
+## データを地図に重ねる
+
+データの追加には、段1で名前だけ出た `getGeoloniaMap()` を使います。**基盤の地図（maplibre）を直接触るための公開 API**で、maps-suite が用意していない機能はここから呼びます。ソース（データ）を登録し、レイヤ（描き方）を重ねます。
+
+GeoJSON を載せるだけなら `map.data` という短い書き方もありますが、この段では描き方まで自分で決めたいので、ソースとレイヤを分けて扱います。
+
+<LiveCode title="maps-suite で GeoJSON を重ねる">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.68, lng: 139.75 },
+  zoom: 11,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("spots", { type: "geojson", data: "/data/sample-spots.geojson" });
+impl.addLayer({ id: "spots", type: "circle", source: "spots" });
+```
+
+</LiveCode>
+
+- **`addSource`**：データの供給元を登録します。`type: "geojson"` で、`data` に URL（またはオブジェクトそのもの）を渡します。
+- **`addLayer`**：データの描き方を重ねます。`type: "circle"` は各点を丸として描きます。`source` に、登録したソースの名前を指定します。
+- **順番が大事**：`addLayer` が参照するソースは先に `addSource` してある必要があります。そして両方とも、地図の読み込み完了（`whenReady()`）より後に呼びます。
+
+## 動いたか確認する
+
+地図上に5つの丸（東京駅、新宿駅、渋谷駅、浅草寺、東京タワー）が出ていれば成功です。GeoJSON の中身を自分のデータに差し替えて、自分の点が出ることも確かめてください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 「Style is not done loading」のようなエラー → `whenReady()` を**待たずに** `addSource`/`addLayer` を呼んでいます。`await` を確認してください。
+- 点が海や別の大陸に出る → GeoJSON の `coordinates` の**経度と緯度が逆**。`[経度, 緯度]` の順に直します。
+- 何も出ないがエラーもない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。404 や JSON の文法エラーが多い原因です。
+</Callout>
+
+## 次は
+
+自分のデータが地図にのりました。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。各点には `category` が入っています。次の[段3：見た目を変える](../style/)で、**属性に応じて色分け**します。
