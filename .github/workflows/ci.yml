@@ -15,11 +15,21 @@ on:
     # main-renewal-2026 を畳んだ時点で main だけにする。
     branches: [main, main-renewal-2026]
 
+# 既定では書き込み権限まで付く。このワークフローは読むだけなので絞る。
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # persist-credentials: false は、checkout が入れる認証情報を
+      # ローカルの Git 設定に残さないため。npm ci は依存パッケージの
+      # ライフサイクルスクリプトを走らせるので、残すとそこから
+      # 認証済みの Git 操作ができてしまう。
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v7
         with:

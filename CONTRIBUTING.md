@@ -59,18 +59,17 @@ npm run cf:dev    # dist/ を wrangler で動かす（配信環境の再現。_h
 
 ## ブランチ運用
 
-**リニューアル中は `main` に PR を出さないでください。** 実質的な main は
-`main-renewal-2026` です。
+作業ブランチは `main` から作り、PR の宛先も `main` にします。
 
 ```bash
-git switch main-renewal-2026
+git switch main
 git pull
-git switch -c renewal/なにをするか
+git switch -c なにをするか
 # 作業して commit
-git push -u origin renewal/なにをするか
+git push -u origin なにをするか
 ```
 
-PR の宛先も `main-renewal-2026` にします。
+`main` は保護されているので直接 push できません。PR には approve が1件必要です。
 
 ## どこに何を書くか（Diátaxis）
 
