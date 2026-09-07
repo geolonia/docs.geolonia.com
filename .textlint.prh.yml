@@ -1,0 +1,66 @@
+# 表記揺れチェック辞書
+# prh フォーマット
+# https://github.com/textlint-rule/textlint-rule-prh
+
+version: 1
+rules:
+  # 除外するもの:
+  #   geolonia.       ドメイン (geolonia.com)
+  #   geolonia/       スタイルの論理名や npm スコープ (geolonia/basic, @geolonia/maps-suite)
+  #   geoloniamaps    GitHub org 名とスタイルの論理名 (geoloniamaps/smartcity-base)
+  #   geolonia-       ケバブケースの識別子 (geolonia-google-maps-migration)
+  - expected: Geolonia
+    pattern: /^geolonia(?!\.|\/|maps|-)/i
+    specs:
+      - from: gEoLoNiA
+        to:   Geolonia
+      - from: geolonia.com
+        to:   geolonia.com
+      - from: geolonia/basic
+        to:   geolonia/basic
+      - from: geoloniamaps/smartcity-base
+        to:   geoloniamaps/smartcity-base
+      - from: geolonia-google-maps-migration
+        to:   geolonia-google-maps-migration
+
+  - expected: Embed API
+
+  - expected: JavaScript API
+
+  - expected: JavaScript
+
+  - expected: MapLibre GL JS
+
+  - expected: OpenStreetMap
+
+  - expected: CodePen
+
+  - expected: JSON
+    pattern: /^(?!\.)json/i
+    specs:
+      - from: Json
+        to:   JSON
+      - from: hello.json
+        to:   hello.json
+
+  - expected: GeoJSON
+    pattern: /^(?!\.)geojson/i
+    specs:
+      - from: GeoJson
+        to:   GeoJSON
+      - from: sample.geojson
+        to:   sample.geojson
+
+  - expected: WebGL
+    pattern: /web( )?gl/i
+
+  - expected: Maputnik
+    pattern: /map(tu|ut)nik/i
+    specs:
+      - from: maputnik
+        to: Maputnik
+      - from: Maptunik
+        to: Maputnik
+
+  - expected: カスタマイズ
+    pattern: /カストマイズ/
