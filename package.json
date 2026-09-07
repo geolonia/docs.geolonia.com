@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
+    "check:links": "node scripts/check-links.mjs",
     "astro": "astro",
     "cf:dev": "wrangler dev",
     "docs:build:suite": "sh scripts/vendor.sh maps-suite && cd vendor/maps-suite && npm ci && npm run docs",

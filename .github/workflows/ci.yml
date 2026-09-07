@@ -1,0 +1,32 @@
+name: ci
+
+# サイトがビルドでき、描画後のリンクが切れていないことを確かめる。
+#
+# リンクの検査を dist/ に対して行うのは、ソースを見ると2種類の誤りが起きるためである。
+# 描画されないリンク（reference 配下に残る TypeDoc のパンくず）を不具合として数えて
+# しまうことと、レイアウトが組み立てたリンク（サイドバー等）を見落とすことである。
+# 詳しくは scripts/check-links.mjs のコメントを参照。
+
+on:
+  pull_request:
+  push:
+    branches: [main-renewal-2026]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: ビルド
+        run: npm run build
+
+      - name: 内部リンクの検査
+        run: npm run check:links
