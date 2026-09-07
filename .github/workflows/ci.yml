@@ -10,10 +10,7 @@ name: ci
 on:
   pull_request:
   push:
-    # main-renewal-2026 は現在の本番配信元。main はカットオーバー後の配信元。
-    # 切り替えの前後どちらでも走るように両方を挙げてある。
-    # main-renewal-2026 を畳んだ時点で main だけにする。
-    branches: [main, main-renewal-2026]
+    branches: [main]
 
 # 既定では書き込み権限まで付く。このワークフローは読むだけなので絞る。
 permissions:
