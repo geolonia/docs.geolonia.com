@@ -1,4 +1,6 @@
-# 旧 docs.geolonia.com（Jekyll 版）の URL を、リニューアル後の URL へ送る。
+# URL のリダイレクト規則。大半は旧 docs.geolonia.com（Jekyll 版）の URL を
+# リニューアル後の URL へ送るものだが、現行サイトの構造上ページが存在しない
+# URL の受け皿もここに置く（末尾の「リファレンス」の節）。
 #
 # 旧サイトの正規 URL は末尾スラッシュ付きのディレクトリ形式である（`/tutorial/001/`）。
 # `_config.yml` の `permalink: /:title/` によるもので、`.html` 形式は旧サイト側で
@@ -70,6 +72,26 @@
 # 旧サイトの CLI の節は解説側に置き直した。CLI は地図を描くライブラリではなく
 # 「地図を描く前の準備」を担うもので、引くための仕様でもないため。
 /cli/                             /explanation/cli/             301
+
+# ── リファレンス（生成物の構造上、実体が無い URL） ──────────────
+# reference/ 配下は TypeDoc の出力を取り込んだものなので、ページを手で足しても
+# 次の `npm run docs:import:*` で消える。そのためリダイレクトとして持つ。
+#
+# maps-suite だけ入口の URL が無い。`docs:import:suite` が README.md と
+# Namespace.geolonia.md を --skip しているためで、これは意図した設定である。
+# どちらも次のページへの1リンクしか無い中継ページで、実体は
+# geolonia.Namespace.maps.md 側にある。core と embed には --skip が無いので
+# /reference/core/ と /reference/embed/ は実在する。
+#
+# 送り先は src/pages/reference/index.md が maps-suite の入口として指している
+# ページに合わせた。取り込んだ .md のパンくずも同じ2つの URL を指しているが、
+# こちらは astro.config.mjs の remarkStripTypedocBreadcrumb が H1 より前を
+# 落とすため描画されない。つまり踏むのは URL を直接打った読者だけである。
+# 末尾スラッシュの有無を両方書いてあるのは、その読者がどちらで打つか
+# 決められないため。
+/reference/suite                     /reference/suite/geolonia.Namespace.maps/  301
+/reference/suite/                    /reference/suite/geolonia.Namespace.maps/  301
+/reference/suite/Namespace.geolonia  /reference/suite/geolonia.Namespace.maps/  301
 
 # ── 対応先が無い URL（意図して 404 のままにしている） ────────────
 #
