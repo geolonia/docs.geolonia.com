@@ -4,11 +4,11 @@ title: 'Class: Polyline'
 page: reference
 ---
 
-[**@geolonia/maps-suite**](/reference/suite/)
+[**@geolonia/maps-suite**](/reference/suite/geolonia.Namespace.maps)
 
 ***
 
-[@geolonia/maps-suite](/reference/suite/) / [geolonia](/reference/suite/Namespace.geolonia) / [maps](/reference/suite/geolonia.Namespace.maps) / Polyline
+[@geolonia/maps-suite](/reference/suite/geolonia.Namespace.maps) / [geolonia](/reference/suite/geolonia.Namespace.maps) / [maps](/reference/suite/geolonia.Namespace.maps) / Polyline
 
 # Class: Polyline
 
