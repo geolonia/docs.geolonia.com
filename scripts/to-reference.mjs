@@ -21,6 +21,13 @@
  * --skip は取り込まないファイル名（カンマ区切り）。
  * maps-suite は名前空間ごとに中継ページを吐くが、中身が次のページへの1リンクしか
  * ないため取り込まない。実体は geolonia.Namespace.maps.md 側にある。
+ *
+ * ただしスキップは「書き出さない」だけであり、他ページからスキップ対象への
+ * リンクは残ったままだと宛先の無いリンクになる（実例: reference/suite で150箇所）。
+ * そこでスキップされた各ファイル自身の本文（見出し行より後、パンくずを除く）から
+ * 「次のページへのリンク」を辿り、スキップされていない実体ページに解決してから
+ * リンクを書き換える。連鎖してスキップ対象を跨ぐ場合（README.md → Namespace.
+ * geolonia.md → geolonia.Namespace.maps.md）も辿る。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -57,7 +64,45 @@ const titleFromH1 = (body) => {
   return m[1].replace(/\\([<>])/g, '$1');
 };
 
+// スキップされたファイルの本文（見出し行より後）から「次のページへのリンク」を
+// 1件だけ取り出す。パンくず（見出し行より前）は行き先の解決に使わない。
+const resolveForwardLink = (fileName) => {
+  const filePath = path.join(srcDir, fileName);
+  if (!fs.existsSync(filePath)) return null;
+  const body = fs.readFileSync(filePath, 'utf8');
+  const afterHeading = body.replace(/^[\s\S]*?^#\s+.+$/m, '');
+  const links = [...afterHeading.matchAll(/\]\(([^)]+?)\)/g)]
+    .map((m) => m[1])
+    .filter((l) => !l.startsWith('#') && !l.startsWith('/') && !/^[a-z]+:\/\//.test(l))
+    .map((l) => l.split('#')[0])
+    .filter((l) => l.endsWith('.md'));
+  return links.pop() ?? null;
+};
+
+// スキップされた各ファイルを、スキップされていない実体ページまで解決する。
+// 連鎖してスキップ対象を跨ぐ場合（中継ページから中継ページへ）も辿る。
+const resolveSkipTarget = (fileName, seen = new Set()) => {
+  if (seen.has(fileName)) {
+    throw new Error(`--skip の解決で循環参照を検出: ${[...seen, fileName].join(' -> ')}`);
+  }
+  seen.add(fileName);
+  const next = resolveForwardLink(fileName);
+  if (!next) return null;
+  return skip.has(next) ? resolveSkipTarget(next, seen) : next;
+};
+
+const skipRedirect = new Map();
+for (const f of skip) {
+  const target = resolveSkipTarget(f);
+  if (target) {
+    skipRedirect.set(f, target);
+  } else {
+    console.log(`${f} -> skip (次ページを解決できず。参照リンクは従来どおり残ります)`);
+  }
+}
+
 // リンク書き換え: 相対 .md リンクを route 絶対パスへ。README.md は route ルートへ。
+// スキップされたファイルへのリンクは skipRedirect で解決した実体ページへ差し替える。
 const rewriteLinks = (body) =>
   body.replace(/\]\(([^)]+)\)/g, (whole, target) => {
     // 同一ページ内アンカーや外部/絶対リンクは据え置き
@@ -66,7 +111,8 @@ const rewriteLinks = (body) =>
     }
     const [file, anchor] = target.split('#');
     if (!file.endsWith('.md')) return whole;
-    const name = file.slice(0, -3); // strip .md
+    const resolved = skipRedirect.get(file) ?? file;
+    const name = resolved.slice(0, -3); // strip .md
     const routePath = name === 'README' ? `${routeBase}/` : `${routeBase}/${name}`;
     return `](${routePath}${anchor ? `#${anchor}` : ''})`;
   });
@@ -76,7 +122,7 @@ let written = 0;
 
 for (const f of files) {
   if (skip.has(f)) {
-    console.log(`${f} -> skip`);
+    console.log(`${f} -> skip (リンクは ${skipRedirect.get(f) ?? '解決できず据え置き'} へ付け替え)`);
     continue;
   }
   const body = fs.readFileSync(path.join(srcDir, f), 'utf8');
