@@ -54,5 +54,8 @@
     "textlint-rule-preset-japanese": "^10.0.4",
     "textlint-rule-prh": "^6.1.0",
     "wrangler": "^4.107.0"
+  },
+  "overrides": {
+    "sharp": "^0.35.4"
   }
 }
