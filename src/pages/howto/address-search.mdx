@@ -116,7 +116,7 @@ NJA は npm のパッケージですが、CDN から ES モジュールとして
 
 </LiveCode>
 
-- **`type="module"`**：NJA を CDN から読むために必要です。バージョンは固定しておくと、更新で挙動が変わる事故を避けられます。
+- **`type="module"`**：NJA を CDN から読むために必要です。バージョンを固定すると、更新によって挙動が変わることを避けられます。
 - **`geolonia.Marker`**：embed を読み込むと `window.geolonia` に MapLibre GL JS の中身が入るので、マーカーやポップアップのクラスがそのまま使えます。
 - **`result.point` の有無**：住所を特定できなかったとき（`level: 0`）は `point` がありません。読む前に必ず確かめてください。
 
