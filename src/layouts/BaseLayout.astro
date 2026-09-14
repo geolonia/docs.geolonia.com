@@ -70,10 +70,13 @@ const nav = [
       {/* ダッシュボードへの導線。ドキュメントを読んで「使ってみる」に進む出口なので、
           セクションのナビとは離して右端に置く。signup の utm_* は流入元の計測に使う。
           Mixpanel が自動で拾う5種のうち、媒体（utm_source）・種別（utm_medium）・
-          導線の位置（utm_content）を付ける。 */}
+          導線の位置（utm_content）を付ける。
+          ref も同じ値で併記する。app.geolonia.com が流入元を Cognito のユーザー属性に
+          記録する処理は ref を読んでおり、utm_source を読む実装はまだ本番に出ていない。
+          本番に出たら ref は落としてよい。 */}
       <div class="site-cta">
         <a class="site-cta__link site-cta__signin" href="https://app.geolonia.com/#/signin">サインイン</a>
-        <a class="site-cta__link site-cta__signup" href="https://app.geolonia.com/?lang=ja&amp;utm_source=docs.geolonia.com&amp;utm_medium=referral&amp;utm_content=header-cta#/signup">ユーザー登録</a>
+        <a class="site-cta__link site-cta__signup" href="https://app.geolonia.com/?lang=ja&amp;utm_source=docs.geolonia.com&amp;utm_medium=referral&amp;utm_content=header-cta&amp;ref=docs.geolonia.com#/signup">ユーザー登録</a>
       </div>
     </header>
 
