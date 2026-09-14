@@ -12,7 +12,20 @@
       }
     },
     "prh": {
-      "rulePaths": [".textlint.prh.yml"]
+      "rulePaths": [
+        ".textlint.prh.yml"
+      ]
+    },
+    "preset-ai-words-ja": {
+      "no-ai-words": {
+        "allows": [
+          "既定",
+          "/効[かきくけこい]/",
+          "漏れ",
+          "部品",
+          "検査"
+        ]
+      }
     }
   },
   "filters": {
