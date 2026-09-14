@@ -155,7 +155,7 @@ createRoot(document.getElementById("root")).render(
 
 - **`geolonia.Popup` / `geolonia.Marker`**：embed を読み込むと `window.geolonia` に MapLibre GL JS の中身が入るので、ポップアップとマーカーのクラスをそのまま使えます。
 - **`setPopup()`**：マーカーにポップアップを結び付けます。クリックで開く動きは MapLibre が受け持つので、リスナーは書きません。
-- **`className`**：ポップアップの外枠に付くクラス名です。`<style>` から中の画像を指定できるようになります。
+- **`className`**：ポップアップの外枠に付くクラス名です。`<style>` から内部の画像を指定するときに使用します。
 - **`data-marker="off"`**：中心のマーカーを消しています。付けないと、ポップアップを持たないマーカーが1本余ります。
 
 </Lens>

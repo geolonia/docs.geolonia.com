@@ -1,6 +1,6 @@
 ---
 layout: ../../layouts/DocLayout.astro
-title: HTML のタグだけで地図を置くには（maps-suite）
+title: JavaScript を使わずに HTML 属性のみで地図を設置するには（maps-suite）
 description: カスタム要素 geolonia-map を使い、JavaScript を書かずに HTML のタグとして地図を配置します。
 page: howto
 kicker: 応用
@@ -149,7 +149,7 @@ export default app;
 Hono を Cloudflare Workers で動かす場合、デモキーの `YOUR-API-KEY` はそのまま使えます（[デモキーで無料で試せる環境](/explanation/free-referers/)）。
 
 <Callout kind="info" title="Vue や Svelte でも同じです">
-カスタム要素は標準の仕組みなので、Vue や Svelte のテンプレートにもそのまま書けます。要素が画面に現れた時点で初期化され、外れた時点で後片付けされるので、条件付きで表示する UI の中に置いても大丈夫です。
+カスタム要素は標準の仕組みなので、Vue や Svelte のテンプレートにもそのまま書けます。要素が画面に現れた時点で初期化され、外れた時点で破棄されるため、条件付きで表示する UI の中にも配置できます。
 </Callout>
 
 ## embed との使い分け

@@ -23,7 +23,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const ogImageUrl = new URL(ogImagePath(Astro.url.pathname), Astro.site);
 
 const nav = [
-  { href: '/',             sec: 'home',        label: '入口' },
+  { href: '/',             sec: 'home',        label: 'はじめに' },
   { href: '/tutorials/',   sec: 'tutorial',    label: 'チュートリアル' },
   { href: '/howto/',       sec: 'howto',       label: 'ハウツー' },
   { href: '/reference/',   sec: 'reference',   label: 'リファレンス' },
@@ -93,10 +93,10 @@ const nav = [
       </div>
     </footer>
 
-    <!-- 記事内レンズタブ：連続する .lens 兄弟を1つのタブ群にまとめ、直下のコードを切り替える。
-         選択中のレンズ（ライブラリ）はサイト全体で同期し、localStorage に保存して
-         ページ遷移後も保持する。ページ内の全タブ群が連動する。
-         JS 無効時は先頭レンズのみ表示。 -->
+    <!-- 記事内の実装方式タブ：連続する .lens 兄弟を1つのタブ群にまとめ、直下のコードを
+         切り替える。選択中の実装方式（ライブラリ）はサイト全体で同期し、localStorage に
+         保存してページ遷移後も保持する。ページ内の全タブ群が連動する。
+         JS 無効時は先頭の実装方式のみ表示。 -->
     <script>
       (function initLensTabs() {
         const KEY = 'geolonia-docs-lens';

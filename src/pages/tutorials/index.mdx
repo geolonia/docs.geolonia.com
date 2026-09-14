@@ -1,31 +1,31 @@
 ---
 layout: ../../layouts/DocLayout.astro
 title: Geolonia Maps チュートリアル
-description: 地図の表示から公開まで6段階で進むチュートリアルです。
+description: 地図の表示から本番公開までを6つの Step で進めるチュートリアルです。
 page: tutorial
 quadrant: Diátaxis / 学習 × 行動
 ---
 
-Geolonia Mapsを使って実用的な地図アプリケーションを作ってみましょう。このチュートリアルでは、以下のことができます。
+Geolonia Maps を使って地図アプリケーションを実装する手順を、6つの Step に分けて解説します。このチュートリアルで扱う内容は次のとおりです。
 
 - 地図を表示する
-- 地図の見た目を変える
+- 地図のスタイルを変更する
 - 地図にマーカーを表示する
-- 地図に独自データを反映させる
+- 地図に任意のデータを重ねる
 
-## 自分に合ったライブラリを選ぶ
+## 実装方式の選択
 
-Geolonia Mapsでは3つのライブラリを用意しており、同じ機能を、それぞれの環境に合ったやり方で実現できます。
+Geolonia Maps は3つのライブラリを提供しています。いずれのライブラリでも同じ機能を実装できます。導入先の環境に応じて選択してください。
 
-- embed: `<script>`タグと`<div>`タグだけで地図を表示できます。「とりあえず地図が欲しい！」という初心者向けライブラリです。
-- maps-suite: 他の地図サービスからの移行に適したライブラリです。既存ユーザーが導入しやすいようなAPI設計をしてあります。
-- maps-react: Reactに対応したライブラリです。マーカーやデータの切り替えなどを動的に行うことができます。
+| ライブラリ | 技術的な前提 | 適した場面 |
+| --- | --- | --- |
+| embed | HTML のみ。ビルドツールと npm は不要 | HTML タグだけで地図を埋め込む場合 |
+| maps-suite | npm によるビルド環境。JavaScript から命令的に操作する | 他の地図サービスからの移行、および既存の JavaScript 資産がある場合 |
+| maps-react | npm によるビルド環境と React | React で構築したサイトとアプリケーションに組み込む場合 |
 
-これら3つのライブラリは、MapLibre GL JSをGeoloniaの地図に対応させたmaps-coreを土台にしています。そのため、TypeScriptを書けばMapLibre GL JSのすべての機能をそのまま使えます。
+3つのライブラリはいずれも、MapLibre GL JS を Geolonia の地図に対応させた maps-core を基盤としています。TypeScript を使用する場合、MapLibre GL JS のすべての機能をそのまま利用できます。
 
-## チュートリアルの入り口
-
-各ライブラリに対応した入り口です。
+## 各ライブラリのチュートリアル
 
 - [embed](/tutorials/embed/)
 - [maps-react](/tutorials/maps-react/)

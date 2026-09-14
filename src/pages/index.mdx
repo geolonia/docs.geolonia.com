@@ -12,20 +12,20 @@ import Callout from '../components/Callout.astro'
 import QuadGrid from '../components/QuadGrid.astro'
 import Tag from '../components/Tag.astro'
 
-Geolonia Mapsは、Geoloniaの提供する地図を利用できるライブラリです。まず、例を見てみましょう。
+Geolonia Maps は、Geolonia が提供する地図を Web サイトとアプリケーションに組み込むためのライブラリです。次の地図は、Geolonia Maps で描画した例です。
 
-<GeoloniaMap lat={35.68} lng={139.75} zoom={11} marker="off" geojson="/data/sample-spots.geojson" cluster="on" tall={true} caption="本物の地図（localhost や GitHub Pages などの開発・プレビュー環境で描画）。東京の5スポット。" />
+<GeoloniaMap lat={35.68} lng={139.75} zoom={11} marker="off" geojson="/data/sample-spots.geojson" cluster="on" tall={true} caption="開発環境とプレビュー環境（localhost、GitHub Pages など）で描画した地図。東京の5地点を表示しています。" />
 
-もっと例を見たい方は、[ハウツー](/howto/)で見ることができます。
+他の実装例は[ハウツー](/howto/)に掲載しています。
 
-## 3つのライブラリからスタート
+## 3つのライブラリ
 
-Geolonia Mapsは、様々な方に使っていただけるように、コア技術に加えて3つのライブラリを提供しています。簡単なものから最先端のWeb技術まで、様々な書き方ができます。チュートリアルでは、導入する環境やすでに使っているライブラリに合わせて3つのルートを用意しています。
+Geolonia Maps は、コアとなる maps-core に加えて3つのライブラリを提供しています。HTML だけで完結する方式から、React に組み込む方式まで選択できます。チュートリアルは、導入先の環境と使用中のライブラリに応じて3系統を用意しています。
 
 [チュートリアル](/tutorials)
 
 <QuadGrid />
 
-<Callout kind="info" title="3つのレンズ">
-同じ地図を <Tag k="embed" /> <Tag k="suite" /> <Tag k="react" /> の3つの実装手段で読み解けます。各ページのコード例の上にある **タブ** で、embed / suite / react を切り替えられます（チュートリアルで体験できます）。
+<Callout kind="info" title="実装方式の切り替え">
+同じ地図を <Tag k="embed" /> <Tag k="suite" /> <Tag k="react" /> の3つの実装方式で記述できます。各ページのコード例の上にある **タブ** で、embed、suite、react の実装を切り替えて表示します。
 </Callout>

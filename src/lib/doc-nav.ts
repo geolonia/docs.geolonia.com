@@ -104,7 +104,7 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
       ['overlay-hazardmap', 'ハザードマップを地図に重ねるには'],
       ['address-search', '住所で検索してその場所の地図を表示するには'],
       ['globe', '地図を地球儀（グローブ）で表示するには'],
-      ['web-component', 'HTML のタグだけで地図を置くには（maps-suite）'],
+      ['web-component', 'JavaScript を使わずに HTML 属性のみで地図を設置するには（maps-suite）'],
     ],
   },
   {

@@ -37,7 +37,7 @@ quadrant: Diátaxis / 仕事 × 行動
 - [ハザードマップを地図に重ねるには](/howto/overlay-hazardmap/)
 - [住所で検索してその場所の地図を表示するには](/howto/address-search/)
 - [地図を地球儀（グローブ）で表示するには](/howto/globe/)
-- [HTML のタグだけで地図を置くには（maps-suite）](/howto/web-component/)
+- [JavaScript を使わずに HTML 属性のみで地図を設置するには（maps-suite）](/howto/web-component/)
 
 ## CLI（コマンドライン）
 

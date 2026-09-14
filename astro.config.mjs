@@ -59,7 +59,7 @@ export default defineConfig({
     react(),
     livecode(),
     sitemap({
-      // 読者向けの入口だけを載せる。除外するのは次の2種類。
+      // 読者向けのページだけを載せる。除外するのは次の2種類。
       //
       //   /demos/inline/<ID>/ … LiveCode が iframe で読み込むスニペットの実体。
       //     ページ単体では文脈が無く、本文の断片が重複して見えるだけなので、
