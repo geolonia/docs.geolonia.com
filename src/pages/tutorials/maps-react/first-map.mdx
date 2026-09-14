@@ -11,7 +11,9 @@ import LiveCode from '../../../components/LiveCode.astro'
 
 maps-react は、Geolonia Maps を **React コンポーネント**として扱うためのライブラリです。この Step では、React アプリに地図を1枚表示します。
 
-React のビルド環境（Vite、Next.js、webpack など）であれば、大半はそのまま動作します。環境の用意がない場合は [Vite](https://ja.vite.dev/) を使用してください。
+このチュートリアルのコード例は、`#root` に対して `createRoot()` を実行するブラウザ用のエントリーポイントを前提としています。Vite や webpack で構築した環境がこれにあたります。環境の用意がない場合は [Vite](https://ja.vite.dev/) を使用してください。
+
+Next.js のように React ツリーをフレームワークが構築する環境では、`createRoot()` は実行しません。`Map` を [クライアントコンポーネント](https://nextjs.org/docs/app/api-reference/directives/use-client)の中に配置してください。
 
 ## インストールする
 

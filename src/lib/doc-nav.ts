@@ -56,6 +56,7 @@ const TUTORIAL_STEPS: { slug: string; label: string }[] = [
 /**
  * ライブラリごとに扱う内容が異なる Step のラベル。
  *
+ * - maps-react と maps-suite の Step 2 は、マーカーではなくソースとレイヤで点を描画する。
  * - maps-react と maps-suite の Step 3 は、ベース地図の差し替えではなく
  *   データの属性に応じた色分けを扱う。
  * - maps-suite の Step 4 は、ポップアップではなく情報ウィンドウを扱う。
@@ -63,10 +64,12 @@ const TUTORIAL_STEPS: { slug: string; label: string }[] = [
  */
 const TUTORIAL_STEP_OVERRIDES: Record<string, Record<string, string>> = {
   'maps-react': {
+    data: 'Step 2: GeoJSON データの追加',
     style: 'Step 3: データに応じたスタイルの適用',
     publish: 'Step 5: ビルドと本番公開',
   },
   'maps-suite': {
+    data: 'Step 2: GeoJSON データの追加',
     style: 'Step 3: データに応じたスタイルの適用',
     interaction: 'Step 4: イベント処理と情報ウィンドウ',
     publish: 'Step 5: ビルドと本番公開',
