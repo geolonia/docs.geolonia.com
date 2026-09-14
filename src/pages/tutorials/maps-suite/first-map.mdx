@@ -1,6 +1,6 @@
 ---
 layout: ../../../layouts/DocLayout.astro
-title: 段0：地図を出す
+title: 'Step 0: 地図を表示する'
 description: maps-suite を npm で導入し、JavaScript で地図を1枚表示します。
 page: tutorial
 kicker: maps-suite
@@ -9,9 +9,9 @@ badge: tutorial
 import Callout from '../../../components/Callout.astro'
 import LiveCode from '../../../components/LiveCode.astro'
 
-maps-suite チュートリアルへようこそ。maps-suite は、Geolonia Maps を **JavaScript から命令的に操作する**ためのライブラリです。この段では、Web ページに地図を1枚出すところまでをやります。
+maps-suite は、Geolonia Maps を **JavaScript から命令的に操作する**ためのライブラリです。この Step では、Web ページに地図を1枚表示します。
 
-ビルド環境は何でも構いません。まだない方は [Vite](https://ja.vite.dev/) のバニラ JavaScript テンプレートで作るのが手軽です。
+ビルド環境の種類は問いません。用意がない場合は、[Vite](https://ja.vite.dev/) のバニラ JavaScript テンプレートを使用してください。
 
 ## インストールする
 
@@ -23,7 +23,7 @@ npm install @geolonia/maps-suite maplibre-gl
 
 ## 地図を表示する
 
-まず HTML に、地図を入れる要素を用意します。要素自体には大きさがないので、CSS で高さを与えます。
+はじめに、地図を描画する要素を HTML に用意します。要素自体には大きさがないため、CSS で高さを指定します。
 
 ```html
 <!doctype html>
@@ -42,7 +42,7 @@ npm install @geolonia/maps-suite maplibre-gl
 </html>
 ```
 
-次に `main.js` で、CSS を読み込んで `Map` を作ります。
+次に `main.js` で CSS を読み込み、`Map` のインスタンスを生成します。
 
 <LiveCode title="maps-suite で地図を出す">
 
@@ -58,24 +58,24 @@ new geolonia.maps.Map(document.getElementById("map"), {
 
 </LiveCode>
 
-上のコードが、そのまま下で動いています。
+上のコードが、そのまま下で動作しています。
 
-ポイントは3つです。
+記述の要点は次の3点です。
 
-- **CSS のインポート**：`maplibre-gl/dist/maplibre-gl.css` と `@geolonia/maps-core/css` の2つが必要です。忘れるとコントロールやポップアップの表示が崩れます。
+- **CSS のインポート**：`maplibre-gl/dist/maplibre-gl.css` と `@geolonia/maps-core/css` の2つが必要です。どちらかが欠けると、コントロールとポップアップの表示が崩れます。
 - **`new geolonia.maps.Map(要素, オプション)`**：第1引数は **HTML 要素そのもの**です（`"map"` のような id 文字列を渡すと例外になります）。
-- **`apiKey`**：`YOUR-API-KEY` はお試し用のデモキーで、`localhost` や GitHub Pages・CodePen などの開発・プレビュー環境で地図が描画されます（[動く環境の一覧](/explanation/free-referers/)。自分のキーの発行は[段5](../publish/)でやります）。
+- **`apiKey`**：`YOUR-API-KEY` は動作確認用のデモキーであり、`localhost`、GitHub Pages、CodePen などの開発環境とプレビュー環境でのみ地図が描画されます（対象の一覧は[デモキーで無料で試せる環境](/explanation/free-referers/)を参照してください。自分のキーの発行は [Step 5](../publish/) で扱います）。
 
 ## 動いたか確認する
 
-`npm run dev` で開発サーバーを起動してブラウザで開くと、地図が表示されます。maps-suite は中心を指定しないと**世界全体**が見える状態（緯度経度 `0, 0`・ズーム `0`）で表示します。マウスのドラッグで動き、ホイールで拡大縮小できれば成功です。
+`npm run dev` で開発サーバーを起動し、ブラウザで開くと地図が表示されます。中心を指定しない場合、maps-suite は**世界全体**が見える状態（緯度経度 `0, 0`、ズーム `0`）で描画します。マウスのドラッグで移動し、ホイールで拡大縮小できれば成功です。
 
 <Callout kind="warning" title="うまく出ないとき">
 - 真っ白で何も出ない → `#map` の**高さが 0** になっていないか確認。`<style>` の指定を確認してください。
 - 「The first argument must be an HTMLElement」という例外 → `Map` に id **文字列**を渡しています。`document.getElementById("map")` で要素を取得して渡してください。
-- 表示が崩れる（コントロールのアイコンが変な場所に出る等）→ **CSS のインポート忘れ**。2つとも読み込んでいるか確認。
+- 表示が崩れる（コントロールのアイコンの位置がずれるなど）→ **CSS のインポート漏れ**。2つとも読み込んでいるか確認。
 </Callout>
 
-## 次は
+## 次の Step
 
-地図は出ました。でも、見たいのは世界全体ではなく**自分の場所**のはずです。次の[段1：場所と視点](../view/)で、地図の中心、拡大率、傾きを指定します。
+以上で、maps-suite による地図の表示は完了です。次の [Step 1: 初期位置とズームの設定](../view/) で、地図の中心座標、拡大率、傾きを指定します。

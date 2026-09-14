@@ -74,19 +74,19 @@ Claude Code の **v1.0.33 以降**が必要です。
 
 ## 中身の構成
 
-スキルは1つのファイルではなく、入口となる `SKILL.md` と、必要になったときだけ読まれる参照ファイルに分かれています。エージェントが最初から全部を読まずに済むようにするための構成です。
+スキルは1つのファイルではなく、エントリーポイントとなる `SKILL.md` と、必要になったときだけ読まれる参照ファイルに分かれています。エージェントが最初から全部を読まずに済むようにするための構成です。
 
 ```text
 skills/
 ├── maps/
-│   ├── SKILL.md               # 入口。いつ使うか、基本の方針
+│   ├── SKILL.md               # エントリーポイント。いつ使うか、基本の方針
 │   ├── embed-api.md           # data-* 属性の一覧
 │   ├── javascript-api.md      # JavaScript API
 │   ├── geocoding.md           # 住所と座標の変換、住所正規化
 │   ├── styles.md              # スタイル一覧とカスタマイズ
 │   └── examples.md            # よくあるパターンのコード例
 └── geolonia-google-maps-migration/
-    ├── SKILL.md               # 入口。移行手順
+    ├── SKILL.md               # エントリーポイント。移行手順
     ├── AGENTS.md              # 凝縮版のクイックリファレンス
     └── references/
         ├── known-gaps.md      # まだ無い機能と回避策

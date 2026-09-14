@@ -1,32 +1,32 @@
 ---
 layout: ../../../layouts/DocLayout.astro
-title: 段5：公開する
-description: embed で作った地図を公開し、自分の API キーを発行します。
+title: 'Step 5: API キーの設定と本番公開'
+description: embed で作成した地図を公開し、本番用の API キーを発行します。
 page: tutorial
 kicker: embed
 badge: tutorial
 ---
 import Callout from '../../../components/Callout.astro'
 
-<Callout kind="success" title="前の段でできたこと">
-段0〜4で、地図の表示、場所の指定、データの表示、スタイルの変更、ポップアップまでできました。この段では、作った地図を**自分のドメインで公開**します。
+<Callout kind="info" title="この Step の前提">
+Step 0 から Step 4 までで、地図の表示、場所の指定、データの表示、スタイルの変更、ポップアップを扱いました。この Step では、作成した地図を自分のドメインで公開します。
 </Callout>
 
 ## デモキーと本番キーの違い
 
-これまでのコードでは、CDN の URL に `YOUR-API-KEY` と書いていました。これは Geolonia が用意した**デモキー**で、`localhost` や GitHub Pages・CodePen・Netlify・Vercel などの開発・プレビュー環境で動きます（[詳しくはこちら](/explanation/free-referers/)）。
+ここまでのコードでは、CDN の URL に `YOUR-API-KEY` を指定していました。これは Geolonia が提供する**デモキー**であり、`localhost`、GitHub Pages、CodePen、Netlify、Vercel などの開発環境とプレビュー環境でのみ地図が描画されます（対象の一覧は[デモキーで無料で試せる環境](/explanation/free-referers/)を参照してください）。
 
-自分のドメインで公開するには、**本番用の API キー**を発行する必要があります。
+自分のドメインで公開する場合は、**本番用の API キー**の発行が必要です。
 
 ## API キーを取得する
 
 1. [Geolonia のダッシュボード](https://app.geolonia.com/)にログインする。
 2. API キーの管理画面で新しいキーを作成する。
-3. **利用するドメイン**を登録する（例：`example.com`）。登録したドメインでのみ地図が描画されます。
+3. **利用する URL** を登録する（例: `https://example.com`）。登録した URL でのみ地図が描画されます。許可の判定はスキームとポートまで含めて行われるため、`http://` と `https://` は別の値として扱われます。
 
 ## コードを書き換える
 
-取得した API キーで `YOUR-API-KEY` を差し替えます。それ以外のコードは変わりません。
+取得した API キーで `YOUR-API-KEY` を差し替えます。それ以外のコードに変更はありません。
 
 ```html
 <!doctype html>
@@ -54,29 +54,27 @@ import Callout from '../../../components/Callout.astro'
 
 ## 公開する
 
-embed は HTML ファイルだけで動くので、ビルドは不要です。ファイルをそのまま静的ホスティングにアップロードすれば公開できます。
+embed は HTML ファイルだけで動作するため、ビルドは不要です。ファイルをそのまま静的ホスティングにアップロードすると公開されます。
 
 - **GitHub Pages**：リポジトリに `index.html` を置いて Pages を有効にする。
-- **Netlify / Vercel**：リポジトリを接続するだけ。
+- **Netlify / Vercel**：リポジトリを接続する。
 - **レンタルサーバー**：FTP 等でファイルをアップロード。
 
-GeoJSON ファイルも忘れずに同じサーバーに置いてください（`data-geojson` のパスが解決できる場所）。
+GeoJSON ファイルも同じサーバーに配置してください。配置先は `data-geojson` のパスが解決できる場所です。
 
 ## 動いたか確認する
 
-公開した URL をブラウザで開いて、地図が表示されれば成功です。
+公開した URL をブラウザで開き、地図が表示されれば成功です。
 
 <Callout kind="warning" title="うまくいかないとき">
-- 「地図が表示できません」と出る → API キーに登録したドメインと、実際のドメインが一致しているか確認。`www.example.com` と `example.com` は別のドメインとして扱われます。
-- ローカルでは出たのにサーバーで出ない → デモキー（`YOUR-API-KEY`）のままになっていないか確認。
+- 「地図が表示できません」と出る → API キーに登録した URL と、公開先の URL が一致しているか確認。スキーム（`http://` と `https://`）、ホスト名（`www.example.com` と `example.com`）、ポートは、いずれか1つでも異なると別の値として扱われます。
+- ローカルでは表示されるがサーバーで表示されない → デモキー（`YOUR-API-KEY`）のままになっていないか確認。
 - GeoJSON だけ出ない → サーバー上に GeoJSON ファイルが配置されているか、パスが正しいか確認。
 </Callout>
 
 ## チュートリアル完了
 
-おめでとうございます。embed チュートリアルはこれで完了です。
-
-段0〜5を通して、次のことができるようになりました。
+以上で embed チュートリアルは完了です。Step 0 から Step 5 までで扱った内容は次のとおりです。
 
 - HTML だけで地図を表示する
 - 場所と視点を指定する
@@ -85,7 +83,7 @@ GeoJSON ファイルも忘れずに同じサーバーに置いてください（
 - ポップアップで情報を出す
 - API キーを使って本番公開する
 
-さらに詳しく知りたいときは、次のリソースが参考になります。
+続けて参照するドキュメントは次のとおりです。
 
-- **[ハウツー](/howto/)**：「〜したい」に答えるレシピ集。
-- **embed 以外のチュートリアル**：[suite](/tutorials/maps-suite/)（JavaScript で細かく制御）、[react](/tutorials/maps-react/)（React コンポーネントとして使う）。
+- **[ハウツー](/howto/)**：目的別の実装手順をまとめた記事。
+- **他のライブラリのチュートリアル**：[maps-suite](/tutorials/maps-suite/)（JavaScript から地図を制御する）、[maps-react](/tutorials/maps-react/)（React コンポーネントとして地図を扱う）。

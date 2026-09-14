@@ -1,6 +1,6 @@
 ---
 layout: ../../../layouts/DocLayout.astro
-title: 段3：見た目を変える
+title: 'Step 3: データに応じたスタイルの適用'
 description: maps-react で、データの属性に応じて点を色分けします。
 page: tutorial
 kicker: maps-react
@@ -9,13 +9,13 @@ badge: tutorial
 import Callout from '../../../components/Callout.astro'
 import LiveCode from '../../../components/LiveCode.astro'
 
-<Callout kind="success" title="前の段でできたこと">
-段2で、5地点のデータを地図に載せました。でも全部同じ色。データには `category`（ターミナル／観光）が入っているので、この段では**属性に応じて点を色分け**します。
+<Callout kind="info" title="この Step の前提">
+Step 2 を終えて、5地点のデータを地図に重ねた状態から始めます。この時点ではすべての点が同じ色です。データは `category`（ターミナル、観光）を持っているため、この Step では属性に応じて点を色分けします。
 </Callout>
 
 ## paint プロパティで描き方を決める
 
-`<Layer>` の描き方は **`paint`** プロパティで細かく指定できます。まず色分けの前に、点を見やすくしてみます。
+`<Layer>` の描画方法は **`paint`** プロパティで指定します。色分けの前に、まず点の大きさと縁取りを指定します。
 
 ```jsx
 <Layer
@@ -31,12 +31,12 @@ import LiveCode from '../../../components/LiveCode.astro'
 ```
 
 - **`circle-radius`**：丸の半径（ピクセル）。
-- **`circle-stroke-width` / `circle-stroke-color`**：縁取りの太さと色。白い縁取りを付けると、地図の上で点が読みやすくなります。
+- **`circle-stroke-width` / `circle-stroke-color`**：縁取りの太さと色。白い縁取りを付けると、地図上で点を判別しやすくなります。
 - **`circle-color`**：塗りの色。
 
 ## データの属性で色を変える
 
-`circle-color` には、固定の色だけでなく**式**も書けます。`match` 式を使うと、「`category` の値がこれなら、この色」という対応表になります。
+`circle-color` には、固定の色のほかに**式**を指定できます。`match` 式は、`category` の値と色の対応表として機能します。
 
 <LiveCode title="maps-react で属性に応じて色分けする">
 
@@ -77,36 +77,36 @@ createRoot(document.getElementById("root")).render(
 
 </LiveCode>
 
-配列の読み方は上から順に、
+配列の各要素の意味は次のとおりです。
 
 1. `"match"`：対応表を引く式。
 2. `["get", "category"]`：各地点の `properties.category` の値を取り出す。
 3. `"ターミナル", "#e4402f"`：値が「ターミナル」なら赤。
 4. `"観光", "#2b6cb0"`：値が「観光」なら青。
-5. `"#888888"`：どれにも当てはまらないときの色（フォールバック。**必須**です）。
+5. `"#888888"`：いずれにも一致しない場合の色（フォールバック。**必須**です）。
 
-このように、データの属性から見た目を決める書き方を**データ駆動スタイル**と呼びます。色以外にも、値に応じて `circle-radius` を変える（数が大きい点ほど大きく）といった使い方ができます。
+このように、データの属性から描画結果を決定する方式を**データ駆動スタイル**と呼びます。色のほか、値に応じて `circle-radius` を変える（値が大きい点ほど大きく描画する）指定もできます。
 
 ## ベース地図ごと変えるには
 
-点の色ではなく、背景の地図そのものの見た目を変えたいときは、`Map` の `style` プロパティにスタイル名や URL を指定します。
+点の色ではなく、背景の地図そのものを変更する場合は、`Map` の `style` プロパティにスタイル名または URL を指定します。
 
 ```jsx
 <Map apiKey="YOUR-API-KEY" style="geolonia/midnight" ...>
 ```
 
-`geolonia/midnight` は Geolonia が用意しているスタイルの1つです。ほかにどんなものがあるかは[Geolonia Maps のスタイル一覧](/explanation/styles/)で、実際の地図とあわせて見られます。スタイルという仕組みそのものについては[地図のスタイルとは](/explanation/map-style/)を参照してください。
+`geolonia/midnight` は Geolonia が提供する標準スタイルの1つです。利用できるスタイルは [Geolonia Maps のスタイル一覧](/explanation/styles/)に実際の地図とあわせて掲載しています。スタイルという仕組みについては[地図のスタイルとは](/explanation/map-style/)を参照してください。
 
 ## 動いたか確認する
 
-駅の3点が赤、観光地の2点が青で表示されていれば成功です。GeoJSON の `category` の値を書き換えて、色が追従することも確かめてください。
+駅の3点が赤、観光地の2点が青で表示されていれば成功です。GeoJSON の `category` の値を変更し、色が追従することも確認してください。
 
 <Callout kind="warning" title="うまくいかないとき">
-- 全部フォールバックの色になる → `match` に書いた値と、GeoJSON の `properties` の値が**完全一致**しているか確認。全角と半角の違いや、余分な空白にも注意。
-- 何も出なくなった → `match` 式の**フォールバック（最後の1つ）を書き忘れる**と式が不正になります。必ず末尾に既定の色を置いてください。
-- プロパティ名を間違えるとエラーは出ずに反映されません（`circle-colour` 等のつづりに注意）。
+- すべてフォールバックの色になる → `match` に記述した値と GeoJSON の `properties` の値が**完全一致**しているか確認。全角と半角の違い、および余分な空白にも注意が必要です。
+- 何も表示されなくなった → `match` 式の**フォールバック（末尾の1要素）が欠けている**と式が不正になります。末尾には必ず既定の色を指定してください。
+- プロパティ名が誤っている場合、エラーは出ずに指定が無視されます（`circle-colour` などのつづりに注意）。
 </Callout>
 
-## 次は
+## 次の Step
 
-データが色で語るようになりました。次の[段4：インタラクションを足す](../interaction/)で、**クリックでポップアップを出す**インタラクションを追加します。
+以上で、データに応じたスタイルの適用は完了です。次の [Step 4: イベント処理とポップアップ](../interaction/) で、クリックに応じてポップアップを表示します。

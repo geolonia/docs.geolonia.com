@@ -3,7 +3,7 @@
  *
  * リファレンス（src/lib/api-nav.ts）は TypeDoc の出すファイル名から機械的に木を
  * 組めるので手で維持する一覧を持たない。こちらは事情が違う。並び順と分類が
- * 意味を持つ（チュートリアルは段0→段5、ハウツーは「レシピ」と「応用」）ため、
+ * 意味を持つ（チュートリアルは Step 0 から Step 5、ハウツーは「レシピ」と「応用」）ため、
  * ファイル名の辞書順やディレクトリ構造からは導出できない。
  *
  * 索引ページの本文をパースする案もあったが、docs 側の機構をこれ以上増やさない
@@ -40,17 +40,41 @@ export interface DocNav {
 }
 
 /**
- * チュートリアルの段。6段の title は embed / maps-react / maps-suite の
- * 3本で完全に一致しているので、ラダーの定義は1つで足りる。
+ * チュートリアルの Step。6つの title は embed / maps-react / maps-suite で
+ * おおむね共通なので、共通の定義を1つ置き、内容が異なる Step だけを
+ * ライブラリごとに上書きする。上書きの理由は TUTORIAL_STEP_OVERRIDES を参照。
  */
 const TUTORIAL_STEPS: { slug: string; label: string }[] = [
-  { slug: 'first-map', label: '段0：地図を出す' },
-  { slug: 'view', label: '段1：場所と視点' },
-  { slug: 'data', label: '段2：データを載せる' },
-  { slug: 'style', label: '段3：見た目を変える' },
-  { slug: 'interaction', label: '段4：インタラクションを足す' },
-  { slug: 'publish', label: '段5：公開する' },
+  { slug: 'first-map', label: 'Step 0: 地図を表示する' },
+  { slug: 'view', label: 'Step 1: 初期位置とズームの設定' },
+  { slug: 'data', label: 'Step 2: マーカーとデータの追加' },
+  { slug: 'style', label: 'Step 3: 地図スタイルの適用' },
+  { slug: 'interaction', label: 'Step 4: イベント処理とポップアップ' },
+  { slug: 'publish', label: 'Step 5: API キーの設定と本番公開' },
 ];
+
+/**
+ * ライブラリごとに扱う内容が異なる Step のラベル。
+ *
+ * - maps-react と maps-suite の Step 2 は、マーカーではなくソースとレイヤで点を描画する。
+ * - maps-react と maps-suite の Step 3 は、ベース地図の差し替えではなく
+ *   データの属性に応じた色分けを扱う。
+ * - maps-suite の Step 4 は、ポップアップではなく情報ウィンドウを扱う。
+ * - maps-react と maps-suite の Step 5 は、npm のビルドを伴う。
+ */
+const TUTORIAL_STEP_OVERRIDES: Record<string, Record<string, string>> = {
+  'maps-react': {
+    data: 'Step 2: GeoJSON データの追加',
+    style: 'Step 3: データに応じたスタイルの適用',
+    publish: 'Step 5: ビルドと本番公開',
+  },
+  'maps-suite': {
+    data: 'Step 2: GeoJSON データの追加',
+    style: 'Step 3: データに応じたスタイルの適用',
+    interaction: 'Step 4: イベント処理と情報ウィンドウ',
+    publish: 'Step 5: ビルドと本番公開',
+  },
+};
 
 /** チュートリアルのライブラリ。ディレクトリ名がそのまま表示名になる。 */
 const TUTORIAL_LIBS = ['embed', 'maps-react', 'maps-suite'];
@@ -83,7 +107,7 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
       ['overlay-hazardmap', 'ハザードマップを地図に重ねるには'],
       ['address-search', '住所で検索してその場所の地図を表示するには'],
       ['globe', '地図を地球儀（グローブ）で表示するには'],
-      ['web-component', 'HTML のタグだけで地図を置くには（maps-suite）'],
+      ['web-component', 'JavaScript を使わずに HTML 属性のみで地図を設置するには（maps-suite）'],
     ],
   },
   {
@@ -131,7 +155,9 @@ export function buildDocNav(section: SectionKind, currentPath: string): DocNav {
       mono: true,
       links: [
         link(`/tutorials/${lib}/`, '概要', currentPath),
-        ...TUTORIAL_STEPS.map((s) => link(`/tutorials/${lib}/${s.slug}/`, s.label, currentPath)),
+        ...TUTORIAL_STEPS.map((s) =>
+          link(`/tutorials/${lib}/${s.slug}/`, TUTORIAL_STEP_OVERRIDES[lib]?.[s.slug] ?? s.label, currentPath),
+        ),
       ],
       open: false,
     }));

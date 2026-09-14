@@ -12,28 +12,28 @@ For full documentation content, see: https://docs.geolonia.com/llms-full.txt
 
 ## Tutorials
 
-- [Geolonia Maps Tutorials](https://docs.geolonia.com/tutorials/): Entry point for the three tracks, with guidance on which library to pick
-- [embed Tutorial](https://docs.geolonia.com/tutorials/embed/): Six-rung ladder from a single HTML file to a published map
-- [embed Rung 0: Show a Map](https://docs.geolonia.com/tutorials/embed/first-map/): One HTML file, the `.geolonia` div and the CDN script tag, plus how to serve it over localhost
-- [embed Rung 1: Place and Viewpoint](https://docs.geolonia.com/tutorials/embed/view/): `data-lat`, `data-lng`, `data-zoom`, `data-pitch` and `data-bearing`
-- [embed Rung 2: Add Data](https://docs.geolonia.com/tutorials/embed/data/): GeoJSON structure and loading it with `data-geojson`, plus `data-cluster`
-- [embed Rung 3: Change the Look](https://docs.geolonia.com/tutorials/embed/style/): Replacing the base map with `data-style`
-- [embed Rung 4: Add Interaction](https://docs.geolonia.com/tutorials/embed/interaction/): Child elements of the div become the marker popup
-- [embed Rung 5: Publish](https://docs.geolonia.com/tutorials/embed/publish/): Issuing a production API key, registering domains and deploying
-- [maps-suite Tutorial](https://docs.geolonia.com/tutorials/maps-suite/): Six-rung ladder for the imperative JavaScript library
-- [maps-suite Rung 0: Show a Map](https://docs.geolonia.com/tutorials/maps-suite/first-map/): npm install, the two required CSS imports and `new geolonia.maps.Map()`
-- [maps-suite Rung 1: Place and Viewpoint](https://docs.geolonia.com/tutorials/maps-suite/view/): `center`, `zoom`, `tilt` and `heading`, and the corresponding setters
-- [maps-suite Rung 2: Add Data](https://docs.geolonia.com/tutorials/maps-suite/data/): `whenReady()`, `getGeoloniaMap()`, `addSource` and `addLayer`
-- [maps-suite Rung 3: Change the Look](https://docs.geolonia.com/tutorials/maps-suite/style/): Data-driven styling with the `match` expression in `paint`
-- [maps-suite Rung 4: Add Interaction](https://docs.geolonia.com/tutorials/maps-suite/interaction/): `Marker`, `InfoWindow` and `addListener`
-- [maps-suite Rung 5: Publish](https://docs.geolonia.com/tutorials/maps-suite/publish/): Production key, build and static hosting
-- [maps-react Tutorial](https://docs.geolonia.com/tutorials/maps-react/): Six-rung ladder for the React library
-- [maps-react Rung 0: Show a Map](https://docs.geolonia.com/tutorials/maps-react/first-map/): npm install, CSS imports, the `Map` component and `containerStyle`
-- [maps-react Rung 1: Place and Viewpoint](https://docs.geolonia.com/tutorials/maps-react/view/): `center` as `[lng, lat]`, plus `zoom`, `pitch`, `bearing` and `marker`
-- [maps-react Rung 2: Add Data](https://docs.geolonia.com/tutorials/maps-react/data/): Declaring `Source` and `Layer` as children of `Map`
-- [maps-react Rung 3: Change the Look](https://docs.geolonia.com/tutorials/maps-react/style/): Data-driven styling with the `match` expression in `paint`
-- [maps-react Rung 4: Add Interaction](https://docs.geolonia.com/tutorials/maps-react/interaction/): `Marker` children become the popup, and building markers from an array
-- [maps-react Rung 5: Publish](https://docs.geolonia.com/tutorials/maps-react/publish/): Production key, build and static hosting
+- [Geolonia Maps Tutorials](https://docs.geolonia.com/tutorials/): Overview of the three tracks, with guidance on which library to pick
+- [embed Tutorial](https://docs.geolonia.com/tutorials/embed/): Six steps from a single HTML file to a published map
+- [embed Step 0: Show a Map](https://docs.geolonia.com/tutorials/embed/first-map/): One HTML file, the `.geolonia` div and the CDN script tag, plus how to serve it over localhost
+- [embed Step 1: Set the Initial Position and Zoom](https://docs.geolonia.com/tutorials/embed/view/): `data-lat`, `data-lng`, `data-zoom`, `data-pitch` and `data-bearing`
+- [embed Step 2: Add Markers and Data](https://docs.geolonia.com/tutorials/embed/data/): GeoJSON structure and loading it with `data-geojson`, plus `data-cluster`
+- [embed Step 3: Apply a Map Style](https://docs.geolonia.com/tutorials/embed/style/): Replacing the base map with `data-style`
+- [embed Step 4: Handle Events and Show Popups](https://docs.geolonia.com/tutorials/embed/interaction/): Child elements of the div become the marker popup
+- [embed Step 5: Set the API Key and Publish](https://docs.geolonia.com/tutorials/embed/publish/): Issuing a production API key, registering URLs and deploying
+- [maps-suite Tutorial](https://docs.geolonia.com/tutorials/maps-suite/): Six steps for the imperative JavaScript library
+- [maps-suite Step 0: Show a Map](https://docs.geolonia.com/tutorials/maps-suite/first-map/): npm install, the two required CSS imports and `new geolonia.maps.Map()`
+- [maps-suite Step 1: Set the Initial Position and Zoom](https://docs.geolonia.com/tutorials/maps-suite/view/): `center`, `zoom`, `tilt` and `heading`, and the corresponding setters
+- [maps-suite Step 2: Add GeoJSON Data](https://docs.geolonia.com/tutorials/maps-suite/data/): `whenReady()`, `getGeoloniaMap()`, `addSource` and `addLayer`
+- [maps-suite Step 3: Apply Data-driven Styling](https://docs.geolonia.com/tutorials/maps-suite/style/): Data-driven styling with the `match` expression in `paint`
+- [maps-suite Step 4: Handle Events and Show Info Windows](https://docs.geolonia.com/tutorials/maps-suite/interaction/): `Marker`, `InfoWindow` and `addListener`
+- [maps-suite Step 5: Build and Publish](https://docs.geolonia.com/tutorials/maps-suite/publish/): Production key, build and static hosting
+- [maps-react Tutorial](https://docs.geolonia.com/tutorials/maps-react/): Six steps for the React library
+- [maps-react Step 0: Show a Map](https://docs.geolonia.com/tutorials/maps-react/first-map/): npm install, CSS imports, the `Map` component and `containerStyle`
+- [maps-react Step 1: Set the Initial Position and Zoom](https://docs.geolonia.com/tutorials/maps-react/view/): `center` as `[lng, lat]`, plus `zoom`, `pitch`, `bearing` and `marker`
+- [maps-react Step 2: Add GeoJSON Data](https://docs.geolonia.com/tutorials/maps-react/data/): Declaring `Source` and `Layer` as children of `Map`
+- [maps-react Step 3: Apply Data-driven Styling](https://docs.geolonia.com/tutorials/maps-react/style/): Data-driven styling with the `match` expression in `paint`
+- [maps-react Step 4: Handle Events and Show Popups](https://docs.geolonia.com/tutorials/maps-react/interaction/): `Marker` children become the popup, and building markers from an array
+- [maps-react Step 5: Build and Publish](https://docs.geolonia.com/tutorials/maps-react/publish/): Production key, build and static hosting
 
 ## How-to Guides
 

@@ -1,6 +1,6 @@
 ---
 layout: ../../../layouts/DocLayout.astro
-title: 段2：データを載せる
+title: 'Step 2: GeoJSON データの追加'
 description: maps-react の Source と Layer で、自分の地点データを地図に重ねます。
 page: tutorial
 kicker: maps-react
@@ -9,15 +9,15 @@ badge: tutorial
 import Callout from '../../../components/Callout.astro'
 import LiveCode from '../../../components/LiveCode.astro'
 
-<Callout kind="success" title="前の段でできたこと">
-段1で、地図を自分の見たい場所と角度にできました。でも、のっているのは中心の点ひとつだけ。この段では、**自分のデータ（複数の地点）**を地図に重ねます。
+<Callout kind="info" title="この Step の前提">
+Step 1 を終えて、地図の場所と視点を指定できる状態から始めます。この時点で表示されているのは中心の1点だけです。この Step では、複数の地点データを地図に重ねます。
 </Callout>
 
 ## GeoJSON を知る
 
 地図にデータを載せるには、**GeoJSON** という形式のファイルを使います。GeoJSON は地理データの標準フォーマットで、テキストエディタで読み書きできる JSON です。
 
-このチュートリアルでは、東京の5地点を入れたサンプルを使います。次の内容を `public/data/sample-spots.geojson` として保存してください（Vite の場合、`public/` 以下のファイルは `/data/...` という URL で配信されます）。
+このチュートリアルでは、東京の5地点を含むサンプルを使用します。次の内容を `public/data/sample-spots.geojson` として保存してください（Vite の場合、`public/` 以下のファイルは `/data/...` の URL で配信されます）。
 
 ```json
 {
@@ -33,11 +33,11 @@ import LiveCode from '../../../components/LiveCode.astro'
 ```
 
 - **`geometry`**：点、線、面などの形状。`coordinates` は `center` と同じ **`[経度, 緯度]`** の順です。
-- **`properties`**：名前や分類など、地物に付けたい属性。ここでは `name` と `category` を持たせています（`category` は次の段で使います）。
+- **`properties`**：名前や分類など、地物に付与する属性。ここでは `name` と `category` を指定しています（`category` は次の Step で使用します）。
 
 ## データを地図に重ねる
 
-maps-react では、データも JSX で宣言します。`Map` の子として `Source`（データ）を置き、その中に `Layer`（描き方）を置きます。
+maps-react では、データも JSX で宣言します。`Map` の子要素として `Source`（データ）を配置し、その中に `Layer`（描画方法）を配置します。
 
 <LiveCode title="maps-react で GeoJSON を重ねる">
 
@@ -63,19 +63,19 @@ createRoot(document.getElementById("root")).render(
 
 </LiveCode>
 
-- **`<Source>`**：データの供給元。`type="geojson"` で、`data` に GeoJSON の URL（またはオブジェクトそのもの）を渡します。
-- **`<Layer>`**：データの描き方。`type="circle"` は各点を丸として描きます。**`id` は必須**です。省略するとエラーも出ずにレイヤが追加されず、何も表示されません。
+- **`<Source>`**：データの供給元。`type="geojson"` を指定し、`data` に GeoJSON の URL またはオブジェクトそのものを渡します。
+- **`<Layer>`**：データの描画方法。`type="circle"` は各点を円として描画します。**`id` は必須**です。省略した場合、エラーは出ずにレイヤが追加されず、何も表示されません。
 
 ## 動いたか確認する
 
-地図上に5つの丸（東京駅、新宿駅、渋谷駅、浅草寺、東京タワー）が出ていれば成功です。GeoJSON の中身を自分のデータに差し替えて、自分の点が出ることも確かめてください。
+地図上に5つの円（東京駅、新宿駅、渋谷駅、浅草寺、東京タワー）が表示されていれば成功です。GeoJSON の内容を任意のデータに差し替え、指定した点が表示されることも確認してください。
 
 <Callout kind="warning" title="うまくいかないとき">
-- 何も出ないがエラーもない → `<Layer>` の **`id` の書き忘れ**が一番多い原因です。必ず `id` を付けてください。
-- 点が海や別の大陸に出る → `coordinates` の**経度と緯度が逆**。`[経度, 緯度]` の順に直します。
-- それでも出ない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。404 や JSON の文法エラーが多い原因です。
+- 何も表示されずエラーも出ない → 原因の多くは `<Layer>` の **`id` の指定漏れ**です。必ず `id` を指定してください。
+- 点が海や別の大陸に出る → `coordinates` で**経度と緯度が逆**になっています。`[経度, 緯度]` の順に修正します。
+- それでも表示されない → ブラウザの開発者ツール（ネットワークタブ）で GeoJSON のレスポンスを確認。原因の多くは 404 と JSON の文法エラーです。
 </Callout>
 
-## 次は
+## 次の Step
 
-自分のデータが地図にのりました。でも全部同じ色で、ターミナル駅か観光地か区別がつきません。各点には `category` が入っています。次の[段3：見た目を変える](../style/)で、**属性に応じて色分け**します。
+以上で、地点データの追加は完了です。この時点ではすべての点が同じ色で描画され、ターミナル駅と観光地を区別できません。各点は `category` を持っています。次の [Step 3: データに応じたスタイルの適用](../style/) で、属性に応じて色分けします。

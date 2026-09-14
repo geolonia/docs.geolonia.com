@@ -18,11 +18,11 @@ URL: https://docs.geolonia.com/
 
 Geolonia Maps is a library set that gives you access to the maps Geolonia provides.
 
-### Start from one of three libraries
+### Three libraries
 
-Geolonia Maps offers three libraries on top of the core technology, so that people arriving from very different backgrounds can all use it. The tutorials provide three separate routes, one per library, so you can pick the one that matches your environment or the framework you already use.
+Geolonia Maps offers three libraries on top of maps-core, ranging from one that needs only HTML to one that plugs into React. The tutorials provide three separate tracks, one per library, so you can pick the one that matches your environment and the libraries you already use.
 
-Every page that shows code has tabs above the sample, letting you read the same map through the embed, maps-suite and maps-react lenses.
+Pages that carry more than one implementation have tabs above the sample for switching between embed, maps-suite and maps-react. Some features are not available in every library; where that is the case the tab says so.
 
 ---
 
@@ -30,19 +30,19 @@ Every page that shows code has tabs above the sample, letting you read the same 
 
 URL: https://docs.geolonia.com/tutorials/
 
-Let us build a practical map application with Geolonia Maps. By the end of the tutorials you will be able to display a map, change how it looks, put markers on it, and show your own data on it.
+The tutorials explain how to build a map application with Geolonia Maps in six steps. They cover displaying a map, changing its style, placing markers, and overlaying your own data.
 
-### Choosing the library that fits you
+### Choosing an implementation
 
-Geolonia Maps provides three libraries. They deliver the same capabilities in the way that suits each environment.
+Geolonia Maps provides three libraries. Every library can implement the same features; pick the one that matches the environment you are adding the map to.
 
-- **embed**: displays a map with nothing but a `<script>` tag and a `<div>` tag. This is the beginner-oriented library for "I just want a map".
-- **maps-suite**: suited to migrating from another map service. Its API is designed so that existing users of such services find it easy to adopt.
-- **maps-react**: the React-ready library. It handles dynamic switching of markers and data well.
+- **embed**: HTML only, with no build tool and no npm. Use it when you want to embed a map with HTML tags alone.
+- **maps-suite**: an npm build environment, driving the map imperatively from JavaScript. Use it when migrating from another map service or when you already have JavaScript code.
+- **maps-react**: an npm build environment plus React. Use it when embedding a map into a React site or application.
 
 All three are built on maps-core, which adapts MapLibre GL JS to Geolonia maps. That means that if you write TypeScript, every MapLibre GL JS feature remains available.
 
-### Tutorial entry points
+### Tutorials per library
 
 - embed: https://docs.geolonia.com/tutorials/embed/
 - maps-react: https://docs.geolonia.com/tutorials/maps-react/
@@ -56,24 +56,24 @@ URL: https://docs.geolonia.com/tutorials/embed/
 
 embed is the easiest way to display a map in Geolonia Maps. It works by writing a `<div>` tag and a `<script>` tag into your HTML. No build tool and no npm required.
 
-This tutorial climbs a ladder of capability from the bottom. Each rung is short and always produces something that works. By the top of rung 5 you will be able to publish a map carrying your own data at your own URL.
+This tutorial is made up of six steps. Each step is self-contained and produces working code. By the end of Step 5 you will be able to publish a map carrying your own data at your own URL.
 
-1. Rung 0, Show a Map: a map appears from a single HTML file
-2. Rung 1, Place and Viewpoint: specify the place, the zoom level and the tilt
-3. Rung 2, Add Data: overlay your own point data as GeoJSON
-4. Rung 3, Change the Look: replace the base map style
-5. Rung 4, Add Interaction: show a popup on click
-6. Rung 5, Publish: obtain an API key and go to production
+1. Step 0, Show a Map: a map appears from a single HTML file
+2. Step 1, Set the Initial Position and Zoom: specify the centre, the zoom level and the tilt
+3. Step 2, Add Markers and Data: overlay your own point data as GeoJSON
+4. Step 3, Apply a Map Style: replace the base map style
+5. Step 4, Handle Events and Show Popups: show a popup on click
+6. Step 5, Set the API Key and Publish: obtain an API key and go to production
 
-Every rung includes a "when it does not work" checklist.
+Every step ends with a "when it does not work" checklist.
 
 ---
 
-## embed Rung 0: Show a Map
+## embed Step 0: Show a Map
 
 URL: https://docs.geolonia.com/tutorials/embed/first-map/
 
-embed aims at the simplest possible map display. In this rung you create one HTML file and get a map into the browser.
+embed needs the least code of the Geolonia Maps libraries. In this step you create one HTML file and get a map into the browser.
 
 ### Displaying a map
 
@@ -99,7 +99,7 @@ Save the following as `index.html`.
 There are only two mechanisms at work.
 
 - **A `div` carrying `class="geolonia"`**: this becomes the map. The `div` has no size of its own, so CSS gives it a height. A height of 0 means an invisible map.
-- **The CDN `<script>`**: once loaded it looks for `.geolonia` elements on the page and turns them into maps. The `YOUR-API-KEY` in the URL is the trial demo key, which renders on development and preview environments such as `localhost`, GitHub Pages and CodePen. Issuing your own key happens at rung 5.
+- **The CDN `<script>`**: once loaded it looks for `.geolonia` elements on the page and turns them into maps. The `YOUR-API-KEY` in the URL is the trial demo key, which renders on development and preview environments such as `localhost`, GitHub Pages and CodePen. Issuing your own key happens in Step 5.
 
 ### Opening it in a browser
 
@@ -120,7 +120,7 @@ py -m http.server
 
 `npx serve` prints a URL on start. For `http.server`, open `http://localhost:8000/`.
 
-If you already have a web server publishing HTML, uploading `index.html` there also works. Since the demo key only renders on approved environments, in that case go to rung 5 first, issue your own key and swap it in.
+If you already have a web server publishing HTML, uploading `index.html` there also works. Since the demo key only renders on approved environments, in that case go to Step 5 first, issue your own key and swap it in.
 
 To try it without setting up a server at all, pasting into an online editor such as CodePen or JSFiddle also shows a map.
 
@@ -136,11 +136,11 @@ Since no place is specified, the map shows the whole world. If you can drag with
 
 **The attributes you can write**
 
-Place and appearance come from `data-*` attributes on the `div`, introduced one at a time over the following rungs. The full list with defaults is the `EmbedAttributes` type in the reference: https://docs.geolonia.com/reference/embed/TypeAlias.EmbedAttributes/
+Place and appearance come from `data-*` attributes on the `div`, introduced one at a time over the following steps. The full list with defaults is the `EmbedAttributes` type in the reference: https://docs.geolonia.com/reference/embed/TypeAlias.EmbedAttributes/
 
 ---
 
-## embed Rung 1: Place and Viewpoint
+## embed Step 1: Set the Initial Position and Zoom
 
 URL: https://docs.geolonia.com/tutorials/embed/view/
 
@@ -182,7 +182,7 @@ Every embed setting is written as a **`data-*` attribute** on the `div`. Place i
 
 ---
 
-## embed Rung 2: Add Data
+## embed Step 2: Add Markers and Data
 
 URL: https://docs.geolonia.com/tutorials/embed/data/
 
@@ -255,7 +255,7 @@ Zooming out turns individual points into clusters. To change the colour, specify
 
 ---
 
-## embed Rung 3: Change the Look
+## embed Step 3: Apply a Map Style
 
 URL: https://docs.geolonia.com/tutorials/embed/style/
 
@@ -301,7 +301,7 @@ The list of usable style names is at https://docs.geolonia.com/explanation/style
 
 ---
 
-## embed Rung 4: Add Interaction
+## embed Step 4: Handle Events and Show Popups
 
 URL: https://docs.geolonia.com/tutorials/embed/interaction/
 
@@ -334,7 +334,7 @@ One popup is still enough to answer "what is this place?". For a map embedded on
 
 ### Combining with GeoJSON
 
-`data-geojson` from rung 2 and a popup (child elements) can be used together. Several data points appear, and a marker with a popup stands at the centre as well.
+`data-geojson` from Step 2 and a popup (child elements) can be used together. Several data points appear, and a marker with a popup stands at the centre as well.
 
 ```html
 <div class="geolonia"
@@ -352,7 +352,7 @@ One popup is still enough to answer "what is this place?". For a map embedded on
 
 ---
 
-## embed Rung 5: Publish
+## embed Step 5: Set the API Key and Publish
 
 URL: https://docs.geolonia.com/tutorials/embed/publish/
 
@@ -366,7 +366,7 @@ Publishing on your own domain requires issuing a **production API key**.
 
 1. Log in to the Geolonia dashboard at https://app.geolonia.com/.
 2. Create a new key in the API key management screen.
-3. Register **the domain you will use**, for example `example.com`. The map renders only on registered domains.
+3. Register **the URL you will use**, for example `https://example.com`. Matching includes the scheme and the port, so `http://` and `https://` count as different values.
 
 ### Rewriting the code
 
@@ -406,7 +406,7 @@ Do not forget to put the GeoJSON file on the same server, somewhere the `data-ge
 
 **When it does not work**
 
-- "The map cannot be displayed" appears: check that the domain registered on the API key matches the actual domain. `www.example.com` and `example.com` count as different domains.
+- "The map cannot be displayed" appears: check that the URL registered on the API key matches the URL you published on. The scheme (`http://` against `https://`), the host name (`www.example.com` against `example.com`) and the port each count separately.
 - It worked locally but not on the server: check that the demo key (`YOUR-API-KEY`) has not been left in place.
 - Only the GeoJSON fails: check that the file is deployed on the server and that the path is correct.
 
@@ -418,18 +418,18 @@ URL: https://docs.geolonia.com/tutorials/maps-suite/
 
 maps-suite is the library for driving Geolonia Maps **imperatively from JavaScript**. Its class structure of `Map`, `Marker` and `InfoWindow` will look familiar to anyone who has used another map service, and it supports the straightforward "create a map, then call methods on it" style. It works in any web page regardless of framework.
 
-By the top of rung 5 you will be able to publish, at your own URL, a map carrying your own data with colours driven by its attributes.
+This tutorial is made up of six steps. Each step is self-contained and produces working code. By the end of Step 5 you will be able to publish, at your own URL, a map carrying your own data with colours driven by its attributes.
 
-1. Rung 0, Show a Map: a map appears from `new geolonia.maps.Map()`
-2. Rung 1, Place and Viewpoint: specify the place, the zoom level and the tilt
-3. Rung 2, Add Data: overlay your own point data as GeoJSON
-4. Rung 3, Change the Look: colour points by a data attribute
-5. Rung 4, Add Interaction: open an info window on marker click
-6. Rung 5, Publish: build and go to production
+1. Step 0, Show a Map: a map appears from `new geolonia.maps.Map()`
+2. Step 1, Set the Initial Position and Zoom: specify the centre, the zoom level and the tilt
+3. Step 2, Add GeoJSON Data: overlay your own point data as GeoJSON
+4. Step 3, Apply Data-driven Styling: colour points by a data attribute
+5. Step 4, Handle Events and Show Info Windows: open an info window on marker click
+6. Step 5, Build and Publish: build and go to production
 
 ---
 
-## maps-suite Rung 0: Show a Map
+## maps-suite Step 0: Show a Map
 
 URL: https://docs.geolonia.com/tutorials/maps-suite/first-map/
 
@@ -494,7 +494,7 @@ Start the dev server with `npm run dev` and open it in a browser. Without a cent
 
 ---
 
-## maps-suite Rung 1: Place and Viewpoint
+## maps-suite Step 1: Set the Initial Position and Zoom
 
 URL: https://docs.geolonia.com/tutorials/maps-suite/view/
 
@@ -537,7 +537,7 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 They can be changed afterwards too: `map.setTilt(45)` for tilt, `map.setHeading(20)` for rotation, and `map.moveCamera({ center, zoom, tilt, heading })` to move them together with centre and zoom. None of these require waiting for the map to load.
 
-When you need an operation that only exists in maplibre, `map.getGeoloniaMap()` retrieves the underlying map instance. The next rung uses it for adding data.
+When you need an operation that only exists in MapLibre GL JS, `map.getGeoloniaMap()` retrieves the underlying map instance. The next step uses it for adding data.
 
 **When it does not work**
 
@@ -547,7 +547,7 @@ When you need an operation that only exists in maplibre, `map.getGeoloniaMap()` 
 
 ---
 
-## maps-suite Rung 2: Add Data
+## maps-suite Step 2: Add GeoJSON Data
 
 URL: https://docs.geolonia.com/tutorials/maps-suite/data/
 
@@ -568,16 +568,16 @@ This tutorial uses a sample of five places in Tokyo. Save the following as `publ
 }
 ```
 
-The `category` values are `ターミナル` (terminal station) and `観光` (sightseeing); the next rung uses them.
+The `category` values are `ターミナル` (terminal station) and `観光` (sightseeing); the next step uses them.
 
 - **`geometry`**: `coordinates` is in **`[longitude, latitude]`** order, the reverse of the `{ lat, lng }` used by `center`.
 - **`properties`**: attributes attached to the feature. Here `name` and `category`.
 
 ### Overlaying data on the map
 
-Adding data uses `getGeoloniaMap()`, mentioned by name in rung 1. It is **the public API for touching the underlying maplibre map directly**, and it is where you go for anything maps-suite does not provide. You register a source (the data) and stack a layer (how to draw it) on top.
+Adding data uses `getGeoloniaMap()`, mentioned by name in Step 1. It is **the public API for touching the underlying maplibre map directly**, and it is where you go for anything maps-suite does not provide. You register a source (the data) and stack a layer (how to draw it) on top.
 
-There is also a shorter form, `map.data`, for simply loading GeoJSON, but this rung wants control over the drawing, so source and layer are handled separately.
+There is also a shorter form, `map.data`, for simply loading GeoJSON, but this step specifies the drawing as well, so source and layer are handled separately.
 
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -608,7 +608,7 @@ impl.addLayer({ id: "spots", type: "circle", source: "spots" });
 
 ---
 
-## maps-suite Rung 3: Change the Look
+## maps-suite Step 3: Apply Data-driven Styling
 
 URL: https://docs.geolonia.com/tutorials/maps-suite/style/
 
@@ -700,7 +700,7 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 ---
 
-## maps-suite Rung 4: Add Interaction
+## maps-suite Step 4: Handle Events and Show Info Windows
 
 URL: https://docs.geolonia.com/tutorials/maps-suite/interaction/
 
@@ -759,7 +759,7 @@ To "put a marker where the user clicked", just call `new geolonia.maps.Marker({ 
 
 ---
 
-## maps-suite Rung 5: Publish
+## maps-suite Step 5: Build and Publish
 
 URL: https://docs.geolonia.com/tutorials/maps-suite/publish/
 
@@ -771,7 +771,7 @@ Every code sample so far wrote `apiKey: "YOUR-API-KEY"`, the demo key, which wor
 
 1. Log in to the Geolonia dashboard at https://app.geolonia.com/.
 2. Create a new key in the API key management screen.
-3. Register the domain you will use. The map renders only on registered domains.
+3. Register the URL you will use, including the scheme. Matching includes the scheme and the port.
 
 ### Rewriting the code
 
@@ -803,7 +803,7 @@ GeoJSON placed in `public/data/` is copied to `dist/data/` by the build and publ
 
 **When it does not work**
 
-- "The map cannot be displayed" appears: check that the domain registered on the API key matches the actual domain. `www.example.com` and `example.com` count as different domains.
+- "The map cannot be displayed" appears: check that the URL registered on the API key matches the URL you published on. The scheme (`http://` against `https://`), the host name (`www.example.com` against `example.com`) and the port each count separately.
 - It worked locally but not in production: check that the demo key has not been left in place.
 - Only the data fails: check that the GeoJSON URL resolves in production. Publishing under a subdirectory can break absolute paths such as `/data/...`; check the Vite `base` setting.
 
@@ -813,20 +813,24 @@ GeoJSON placed in `public/data/` is copied to `dist/data/` by the build and publ
 
 URL: https://docs.geolonia.com/tutorials/maps-react/
 
-maps-react is the library for using Geolonia Maps **as React components**. Putting `<Map>` in your JSX produces a map, and markers and data are declared through props and children. In a React site or application it works as it is under almost any build environment, including Vite, Next.js and webpack.
+maps-react is the library for using Geolonia Maps **as React components**. Putting `<Map>` in your JSX produces a map, and markers and data are declared through props and children. In a React site or application it works as it is under almost any build environment, including Vite, Next.js and webpack. Under Next.js the `Map` has to sit inside a client component.
 
-1. Rung 0, Show a Map: a map appears from a single `<Map>` component
-2. Rung 1, Place and Viewpoint: specify place, zoom and tilt through props
-3. Rung 2, Add Data: overlay your own point data as GeoJSON
-4. Rung 3, Change the Look: colour points by a data attribute
-5. Rung 4, Add Interaction: show a popup on click
-6. Rung 5, Publish: build and go to production
+This tutorial is made up of six steps. Each step is self-contained and produces working code.
+
+1. Step 0, Show a Map: a map appears from a single `<Map>` component
+2. Step 1, Set the Initial Position and Zoom: specify the centre, zoom and tilt through props
+3. Step 2, Add GeoJSON Data: overlay your own point data as GeoJSON
+4. Step 3, Apply Data-driven Styling: colour points by a data attribute
+5. Step 4, Handle Events and Show Popups: show a popup on click
+6. Step 5, Build and Publish: build and go to production
 
 ---
 
-## maps-react Rung 0: Show a Map
+## maps-react Step 0: Show a Map
 
 URL: https://docs.geolonia.com/tutorials/maps-react/first-map/
+
+The samples in this tutorial assume a browser entry point that calls `createRoot()` on `#root`, as produced by Vite or webpack. Under Next.js, where the framework builds the React tree, you do not call `createRoot()`; place `Map` inside a client component instead.
 
 ### Installing
 
@@ -872,7 +876,7 @@ Start the dev server with `npm run dev`. Since `center` is not specified, the fi
 
 ---
 
-## maps-react Rung 1: Place and Viewpoint
+## maps-react Step 1: Set the Initial Position and Zoom
 
 URL: https://docs.geolonia.com/tutorials/maps-react/view/
 
@@ -927,7 +931,7 @@ createRoot(document.getElementById("root")).render(
 
 ---
 
-## maps-react Rung 2: Add Data
+## maps-react Step 2: Add GeoJSON Data
 
 URL: https://docs.geolonia.com/tutorials/maps-react/data/
 
@@ -986,7 +990,7 @@ createRoot(document.getElementById("root")).render(
 
 ---
 
-## maps-react Rung 3: Change the Look
+## maps-react Step 3: Apply Data-driven Styling
 
 URL: https://docs.geolonia.com/tutorials/maps-react/style/
 
@@ -1068,7 +1072,7 @@ Pass a style name or URL in the `style` prop of `Map`.
 
 ---
 
-## maps-react Rung 4: Add Interaction
+## maps-react Step 4: Handle Events and Show Popups
 
 URL: https://docs.geolonia.com/tutorials/maps-react/interaction/
 
@@ -1132,13 +1136,13 @@ Combined with state, a UI where "clicking a list entry adds a marker to the map"
 
 ---
 
-## maps-react Rung 5: Publish
+## maps-react Step 5: Build and Publish
 
 URL: https://docs.geolonia.com/tutorials/maps-react/publish/
 
 ### Demo key versus production key
 
-Every code sample so far wrote `apiKey="YOUR-API-KEY"`, the demo key. Publishing on your own domain requires issuing a production API key from https://app.geolonia.com/ and registering the domain.
+Every code sample so far wrote `apiKey="YOUR-API-KEY"`, the demo key. Publishing on your own domain requires issuing a production API key from https://app.geolonia.com/ and registering the URL, scheme included.
 
 ```jsx
 <Map
@@ -1163,7 +1167,7 @@ HTML, JS and CSS are emitted into `dist/`, and putting that on static hosting pu
 
 **When it does not work**
 
-- "The map cannot be displayed" appears: check that the registered domain matches the actual domain.
+- "The map cannot be displayed" appears: check that the registered URL matches the URL you published on, scheme and port included.
 - It worked locally but not in production: check that the demo key has not been left in place.
 - Only the data fails: check that the GeoJSON URL resolves in production, and check the Vite `base` setting if you published under a subdirectory.
 
