@@ -67,7 +67,7 @@ impl.addLayer({
 - **`heatmap-weight`**：点1つの重み。上の例では各点の `weight` プロパティ（0〜6）を 0〜1 に換算しています。全点を同じ扱いにするなら `1` の固定値で構いません。
 - **`heatmap-radius`**：1点が影響する半径（ピクセル）。大きいほどなだらかに広がります。
 - **`heatmap-intensity`**：全体の強さ。ズームレベルに応じて上げると、拡大しても濃淡が保たれます。
-- **`heatmap-color`**：密度（0〜1）から色への対応。密度 0 を透明にしておくのが定番です。
+- **`heatmap-color`**：密度（0〜1）から色への対応。密度 0 は透明にするのが一般的です。
 
 </Lens>
 
@@ -121,7 +121,7 @@ createRoot(document.getElementById("root")).render(
 - **`heatmap-weight`**：点1つの重み。上の例では各点の `weight` プロパティ（0〜6）を 0〜1 に換算しています。全点を同じ扱いにするなら `1` の固定値で構いません。
 - **`heatmap-radius`**：1点が影響する半径（ピクセル）。大きいほどなだらかに広がります。
 - **`heatmap-intensity`**：全体の強さ。ズームレベルに応じて上げると、拡大しても濃淡が保たれます。
-- **`heatmap-color`**：密度（0〜1）から色への対応。密度 0 を透明にしておくのが定番です。
+- **`heatmap-color`**：密度（0〜1）から色への対応。密度 0 は透明にするのが一般的です。
 
 </Lens>
 
@@ -131,6 +131,6 @@ createRoot(document.getElementById("root")).render(
 
 <Callout kind="warning" title="うまくいかないとき">
 - ほとんど色が付かない → 点が少ないと密度が上がりません。`heatmap-radius` または `heatmap-intensity` の値を上げてください。
-- 拡大すると消えていく → ズームが上がると点がばらけて密度が下がるためです。ズーム連動で `heatmap-intensity` を上げるか、高ズームでは `circle` レイヤに切り替えて個別の点を見せる構成が定番です。
+- 拡大すると消えていく → ズームが上がると点がばらけて密度が下がるためです。ズーム連動で `heatmap-intensity` を上げるか、高ズームでは `circle` レイヤに切り替えて個別の点を表示する構成が一般的です。
 - 何も出ない → `Layer` の `id` の書き忘れ、または GeoJSON の 404 を確認。
 </Callout>

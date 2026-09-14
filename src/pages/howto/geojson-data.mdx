@@ -60,7 +60,7 @@ map.data.addGeoJson(await res.json());
 
 </LiveCode>
 
-`addGeoJson()` が受け取るのはオブジェクトなので、URL から読むときは `fetch` を挟みます。点・線・面が混ざっていてもそのまま渡せます。色や線の太さは `map.data.setStyle({ fillColor: "#f00", strokeWeight: 2 })` のように指定します。
+`addGeoJson()` が受け取るのはオブジェクトなので、URL から読むときは `fetch` を挟みます。点・線・面が混在していてもそのまま渡せます。色や線の太さは `map.data.setStyle({ fillColor: "#f00", strokeWeight: 2 })` のように指定します。
 
 ### 描き方を細かく決めたいとき
 

@@ -50,7 +50,7 @@ marker.on("dragend", () => {
 </LiveCode>
 
 - **`new maplibregl.Marker({ draggable: true })`**：ドラッグを有効にしてマーカーを作ります。`setLngLat` は `[経度, 緯度]` の順です。
-- **`marker.on("dragend", ...)`**：離した瞬間に一度だけ呼ばれます。動いている最中に追いたいときは `drag` を使います。
+- **`marker.on("dragend", ...)`**：離した時点で一度だけ呼ばれます。動いている最中に追いたいときは `drag` を使います。
 - **`marker.getLngLat()`**：現在位置を返します。フォームの緯度と経度の欄に書き戻すなどして使います。
 
 </Lens>
