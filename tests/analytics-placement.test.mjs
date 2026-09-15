@@ -25,21 +25,21 @@ test('デモのレイアウトは計測スクリプトを読み込まない', ()
   assert.doesNotMatch(demoLayout, /Mixpanel/);
 });
 
-test('Mixpanel は本番ホストでだけ動く', () => {
+test('Mixpanel の送り先は本番ホストかどうかで分ける', () => {
   assert.match(mixpanel, /const PRODUCTION_HOST = 'docs\.geolonia\.com';/);
-  assert.match(mixpanel, /if \(location\.hostname === PRODUCTION_HOST\) \{/);
-  // init はガードの中にしかない。
+  assert.match(mixpanel, /const isProduction = location\.hostname === PRODUCTION_HOST;/);
+  assert.match(mixpanel, /mixpanel\.init\(isProduction \? TOKEN_PRODUCTION : TOKEN_DEVELOPMENT\);/);
+  // init はこの1か所だけ。
   assert.equal(mixpanel.match(/mixpanel\.init\(/g).length, 1);
-  assert.ok(
-    mixpanel.indexOf('if (location.hostname === PRODUCTION_HOST)') < mixpanel.indexOf('mixpanel.init('),
-  );
 });
 
-test('Mixpanel のトークンは app と同じ本番プロジェクトのもの', () => {
-  // app.geolonia.com の netlify.toml の context.production と同じ値。
-  // 訪問者の識別子は cookie で共有されるが、cookie 名がトークンから作られる
-  // ため、トークンがずれると docs と app が別人として記録される。
-  assert.match(mixpanel, /const TOKEN = '012def15980f6899b0c457ea325bef5f';/);
+test('Mixpanel のトークンは app と同じプロジェクトのもの', () => {
+  // app.geolonia.com の netlify.toml の context.production と
+  // context.develop / deploy-preview の値。訪問者の識別子は cookie で
+  // 共有されるが、cookie 名がトークンから作られるため、トークンがずれると
+  // docs と app が別人として記録される。
+  assert.match(mixpanel, /const TOKEN_PRODUCTION = '012def15980f6899b0c457ea325bef5f';/);
+  assert.match(mixpanel, /const TOKEN_DEVELOPMENT = '7a365e861ed4ee35992a503f79c25701';/);
 });
 
 test('Pageview のイベント名とプロパティは app と揃える', () => {
