@@ -1,0 +1,44 @@
+---
+// Mixpanel。app.geolonia.com が使っているものと同じプロジェクトのトークンを使う。
+//
+// mixpanel-browser は既定で状態を cookie に持ち（persistence: 'cookie'）、
+// cross_subdomain_cookie が true なので、cookie は .geolonia.com に置かれる。
+// docs.geolonia.com と app.geolonia.com は同じドメインの下にあるため、
+// 同じトークンで初期化するだけで訪問者の識別子が共有され、ドキュメントを
+// 読んでからダッシュボードで登録するまでを1人の動線として追える。
+// サイト間で ID を受け渡すコードは要らない。
+//
+// 計測するのは本番ホストで表示された時だけ。理由は Analytics.astro と同じで、
+// ホスト名でしか本番と *.workers.dev・localhost を区別できないため。
+//
+// BaseLayout からだけ呼ぶ。DemoLayout（記事内の iframe）には入れない。
+// 入れると1ページの閲覧が本文とデモの二重に記録される。
+---
+
+<script>
+  // 既定の入口（mixpanel-browser）はセッション録画の一式まで含んでいて、
+  // 束ねると gzip で 122KB になる。読み物のサイトに載せる重さではないので、
+  // 録画を含まない core のビルドを直接読む。こちらは gzip で 36KB。
+  import mixpanel from 'mixpanel-browser/dist/mixpanel-core.cjs.js';
+
+  // app.geolonia.com の本番と同じプロジェクトのトークン。ブラウザに配る前提の
+  // 公開値で、できるのはイベントの書き込みだけ。
+  const TOKEN = '012def15980f6899b0c457ea325bef5f';
+  const PRODUCTION_HOST = 'docs.geolonia.com';
+
+  if (location.hostname === PRODUCTION_HOST) {
+    mixpanel.init(TOKEN);
+
+    // イベント名とプロパティ名は app.geolonia.com の Pageview に合わせる。
+    // site で docs と app を見分ける。スーパープロパティにすると
+    // .geolonia.com の cookie を通じて app のイベントにも付いてしまうので、
+    // イベントのプロパティとして毎回渡す。
+    //
+    // docs は静的なページの集まりで、ページを移るたびにこのスクリプトが
+    // 走り直す。app のような履歴の購読は要らない。
+    mixpanel.track('Pageview', {
+      path: location.pathname,
+      site: 'docs',
+    });
+  }
+</script>

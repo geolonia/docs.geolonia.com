@@ -8,6 +8,7 @@ import '../styles/components.css';
 
 import { ogImagePath } from '../lib/og';
 import Analytics from '../components/Analytics.astro';
+import Mixpanel from '../components/Mixpanel.astro';
 import Search from '../components/Search.astro';
 
 const {
@@ -55,6 +56,7 @@ const nav = [
     <!-- 計測。デモページ（DemoLayout）には入れない。デモは記事内の iframe として
          読み込まれるので、入れると1ページの閲覧が二重に記録される。 -->
     <Analytics />
+    <Mixpanel />
   </head>
   <body data-page={page}>
     <header class="site-top">
