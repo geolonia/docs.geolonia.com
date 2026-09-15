@@ -27,7 +27,9 @@ const signupHref = () => {
 test('ユーザー登録リンクは UTM で流入元を伝える', () => {
   const url = new URL(signupHref());
   assert.equal(url.searchParams.get('utm_source'), 'docs.geolonia.com');
-  assert.equal(url.searchParams.get('utm_medium'), 'referral');
+  // internal は「施策ではなく内部の遷移」の印。app 側はこの値を見て
+  // 初回接触（initial_utm_*）の記録を飛ばす。
+  assert.equal(url.searchParams.get('utm_medium'), 'internal');
   assert.equal(url.searchParams.get('utm_content'), 'header-cta');
 });
 
