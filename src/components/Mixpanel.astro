@@ -1,0 +1,52 @@
+---
+// Mixpanel。app.geolonia.com が使っているものと同じプロジェクトのトークンを使う。
+//
+// mixpanel-browser は既定で状態を cookie に持ち（persistence: 'cookie'）、
+// cross_subdomain_cookie が true なので、cookie は .geolonia.com に置かれる。
+// docs.geolonia.com と app.geolonia.com は同じドメインの下にあるため、
+// 同じトークンで初期化するだけで訪問者の識別子が共有され、ドキュメントを
+// 読んでからダッシュボードで登録するまでを1人の動線として追える。
+// サイト間で ID を受け渡すコードは要らない。
+//
+// 本番ホストで表示された時は app.geolonia.com の本番と同じプロジェクトへ、
+// それ以外（Cloudflare のプレビュー・localhost）は app-dev.geolonia.com と
+// 同じ dev のプロジェクトへ送る。GA4（Analytics.astro）は本番以外では何も
+// しないが、Mixpanel は送り先を分けられるので、プレビューで動作を確かめて
+// から本番に出せるようにする。
+//
+// 本番かどうかはホスト名で見る。ビルド時の環境変数では本番と
+// Cloudflare のプレビューを区別できないため。
+//
+// BaseLayout からだけ呼ぶ。DemoLayout（記事内の iframe）には入れない。
+// 入れると1ページの閲覧が本文とデモの二重に記録される。
+---
+
+<script>
+  // 既定の入口（mixpanel-browser）はセッション録画の一式まで含んでいて、
+  // 束ねると gzip で 122KB になる。読み物のサイトに載せる重さではないので、
+  // 録画を含まない core のビルドを直接読む。こちらは gzip で 36KB。
+  import mixpanel from 'mixpanel-browser/dist/mixpanel-core.cjs.js';
+
+  // app.geolonia.com の netlify.toml にあるトークンと同じ値。前者が
+  // context.production、後者が context.develop / deploy-preview のもの。
+  // ブラウザに配る前提の公開値で、できるのはイベントの書き込みだけ。
+  const TOKEN_PRODUCTION = '012def15980f6899b0c457ea325bef5f';
+  const TOKEN_DEVELOPMENT = '7a365e861ed4ee35992a503f79c25701';
+  const PRODUCTION_HOST = 'docs.geolonia.com';
+
+  const isProduction = location.hostname === PRODUCTION_HOST;
+
+  mixpanel.init(isProduction ? TOKEN_PRODUCTION : TOKEN_DEVELOPMENT);
+
+  // イベント名とプロパティ名は app.geolonia.com の Pageview に合わせる。
+  // site で docs と app を見分ける。スーパープロパティにすると
+  // .geolonia.com の cookie を通じて app のイベントにも付いてしまうので、
+  // イベントのプロパティとして毎回渡す。
+  //
+  // docs は静的なページの集まりで、ページを移るたびにこのスクリプトが
+  // 走り直す。app のような履歴の購読は要らない。
+  mixpanel.track('Pageview', {
+    path: location.pathname,
+    site: 'docs',
+  });
+</script>
