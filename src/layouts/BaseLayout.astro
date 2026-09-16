@@ -77,9 +77,11 @@ const nav = [
           施策による流入ではなく内部の遷移である。app 側はこの値を見て、初回接触
           （initial_utm_*）の記録を飛ばす。飛ばさないと、gmail や x.com から来た人の
           初回接触が docs に上書きされ、施策の効果を測れなくなる。
-          ref も同じ値で併記する。app.geolonia.com が流入元を Cognito のユーザー属性に
-          記録する処理は ref を読んでおり、utm_source を読む実装はまだ本番に出ていない。
-          本番に出たら ref は落としてよい。 */}
+          ref も同じ値で併記する。app.geolonia.com は流入元を Cognito のユーザー属性に
+          記録しており、その処理は utm_source を優先し、無いときだけ ref を読む。
+          外部のページやブックマークに残る古いリンクは ref しか持たないため、
+          app 側にフォールバックがある。この導線では utm_source が必ず付くので
+          ref は使われない。 */}
       <div class="site-cta">
         <a class="site-cta__link site-cta__signin" href="https://app.geolonia.com/#/signin">サインイン</a>
         <a class="site-cta__link site-cta__signup" href="https://app.geolonia.com/?lang=ja&amp;utm_source=docs.geolonia.com&amp;utm_medium=internal&amp;utm_content=header-cta&amp;ref=docs.geolonia.com#/signup">ユーザー登録</a>
