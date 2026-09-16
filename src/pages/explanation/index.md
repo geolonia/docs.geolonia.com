@@ -29,6 +29,10 @@ quadrant: Diátaxis / 学習 × 認知
 
 地図の見た目を決めているのがスタイルです。データと見た目が分かれているので、同じデータから明るい地図も暗い地図も作れます。仕組みは [地図のスタイルとは](/explanation/map-style/)、Geolonia が提供しているスタイルは [Geolonia Maps のスタイル一覧](/explanation/styles/) を参照してください。
 
+## SimpleStyle とは
+
+GeoJSON のフィーチャーに色やサイズを書き込むと、そのとおりに地図が描かれます。スタイルファイルを別に用意せずに済む仕組みで、何が書けるかは [SimpleStyle とは](/explanation/simplestyle/) を参照してください。
+
 ## marker-symbol で使えるアイコン
 
 GeoJSON の `marker-symbol` に書ける名前は、型定義ではなく地図スタイルに含まれるアイコンで決まります。スタイルによって使える名前が変わるので、一覧は [marker-symbol で使えるアイコン](/explanation/marker-symbol/) にあります。
