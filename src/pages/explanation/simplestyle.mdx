@@ -1,0 +1,97 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: SimpleStyle とは
+description: GeoJSON にスタイルを書き込んで地図の見た目を決める仕様と、Geolonia Maps での扱いを説明します。
+page: explanation
+badge: explanation
+---
+import Callout from '../../components/Callout.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+**SimpleStyle** は、GeoJSON のフィーチャーに色やサイズを書き込むための取り決めです。Mapbox 社が仕様を公開し、GeoJSON を編集できる [geojson.io](https://geojson.io) などが採用しています。
+
+GeoJSON（JSON で地理データを表すファイル形式）は、本来は座標と属性を運ぶだけの入れ物です。見た目に関する決まりはありません。SimpleStyle は、その属性の置き場所である `properties` に、あらかじめ決めた名前で色やサイズを書くという約束を足したものです。
+
+Geolonia Maps はこの約束に従います。GeoJSON を渡すだけで、各フィーチャーが持つ `marker-color` や `fill` のとおりに描かれます。
+
+## なぜデータの中に見た目を書くのか
+
+[地図のスタイルとは](/explanation/map-style/) で説明したとおり、地図の見た目は通常スタイルという別のファイルが決めます。データと見た目を分けておけば、同じデータから明るい地図と暗い地図の両方を作れるからです。
+
+SimpleStyle はその逆を行きます。データ1件ごとに見た目を持たせます。
+
+この使い分けには理由があります。地図の背景にある道路や建物は、種類ごとに規則を書けば済みます。一方、利用者が持ち込むデータは1件ずつ意味が違います。この店舗は赤、この避難所は青というように、データを作る人が直接指定できると早く済みます。スタイルファイルを別に書かずに済むことが、SimpleStyle の利点です。
+
+## 書き方
+
+スタイルは、フィーチャーの `properties` に書きます。
+
+```json
+{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] },
+  "properties": {
+    "title": "東京駅",
+    "marker-color": "#e2555c",
+    "marker-size": "large"
+  }
+}
+```
+
+`geometry` は場所を、`properties` はその場所に関する情報を表します。SimpleStyle のプロパティは、名前と説明の間にある区切りが `-`（ハイフン）である点に注意してください。JSON のキーとして書くので、引用符で囲みます。
+
+## 動かして確かめる
+
+3種類のジオメトリに、それぞれ別のスタイルを書いた GeoJSON を読み込みます。
+
+<LiveCode title="SimpleStyle を書いた GeoJSON を表示する">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.670" data-lng="139.756" data-zoom="13"
+     data-marker="off"
+     data-geojson="/data/simplestyle-sample.geojson"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+マーカー、線、面のそれぞれが、GeoJSON に書いた色で描かれます。地物をクリックすると `description` の内容が表示されます。
+
+## 指定できるプロパティ
+
+ジオメトリの種類によって、効くプロパティが変わります。
+
+| プロパティ | 内容 | Point | LineString | Polygon |
+| --- | --- | :---: | :---: | :---: |
+| `title` | 地物の名前。地図上のラベルに使われます | ○ | ○ | ○ |
+| `description` | 地物をクリックしたときに表示される内容。HTML を書けます | ○ | ○ | ○ |
+| `marker-size` | マーカーの大きさ。`small`、`medium`、`large` のいずれか | ○ | | |
+| `marker-symbol` | マーカーに重ねるアイコンの名前 | ○ | | |
+| `marker-color` | マーカーの色。例: `#7e7e7e` | ○ | | |
+| `stroke` | 線の色。例: `#555555` | ○ | ○ | ○ |
+| `stroke-width` | 線の太さ。例: `2` | ○ | ○ | |
+| `stroke-opacity` | 線の不透明度。0 から 1 の数値 | ○ | ○ | ○ |
+| `fill` | 塗りつぶしの色。例: `#7e7e7e` | | | ○ |
+| `fill-opacity` | 塗りつぶしの不透明度。0 から 1 の数値 | | | ○ |
+| `text-color` | `title` を表示する文字の色 | ○ | ○ | ○ |
+
+<Callout>
+`marker-symbol` に書ける名前は、SimpleStyle の仕様ではなく地図のスタイルが持つアイコンで決まります。スタイルを変えると使える名前も変わるため、一覧は [marker-symbol で使えるアイコン](/explanation/marker-symbol/) を参照してください。
+</Callout>
+
+## ベクトルタイルでも使えます
+
+ここまでは GeoJSON の話ですが、同じ約束はベクトルタイルにも適用できます。`g-simplestyle-v1` という名前のレイヤーに同じプロパティを持たせておくと、Geolonia Maps は同じ規則で描きます。
+
+データ件数が多く GeoJSON では重くなる場合に使います。詳しくは [SimpleStyleVector](/reference/core/Class.SimpleStyleVector/) を参照してください。
+
+## 次に読むもの
+
+- 手元の GeoJSON を地図に出す手順は [外部データ（GeoJSON）を地図に読み込むには](/howto/geojson-data/) にあります。
+- API としての詳細は [SimpleStyle](/reference/core/Class.SimpleStyle/) にあります。

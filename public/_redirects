@@ -60,7 +60,7 @@
 /javascript-api/                  /reference/embed/             301
 
 # 旧「GeoJSON 仕様」は GeoJSON にスタイルを与える仕様（Simple Style）の説明。
-/geojson/                         /reference/core/Class.SimpleStyle/  301
+/geojson/                         /howto/geojson-data/          301
 
 # アイコン一覧はリファレンスではなく解説にある。marker-symbol に書ける名前は
 # 型定義ではなく地図スタイルに含まれるアイコンで決まるため。

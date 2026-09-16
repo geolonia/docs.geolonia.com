@@ -1,0 +1,43 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.767125, 35.681236] },
+      "properties": {
+        "title": "東京駅",
+        "description": "スタイルはこのフィーチャーの properties に書いてあります。",
+        "marker-color": "#e2555c",
+        "marker-size": "large",
+        "marker-symbol": "rail"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[139.767125, 35.681236], [139.745438, 35.658581]]
+      },
+      "properties": {
+        "title": "東京駅から東京タワーへ",
+        "stroke": "#2b6cb0",
+        "stroke-width": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [139.744, 35.655], [139.751, 35.655], [139.751, 35.661], [139.744, 35.661], [139.744, 35.655]
+        ]]
+      },
+      "properties": {
+        "title": "芝公園のあたり",
+        "fill": "#38a169",
+        "fill-opacity": 0.4,
+        "stroke": "#276749"
+      }
+    }
+  ]
+}
