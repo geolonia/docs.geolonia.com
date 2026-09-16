@@ -26,6 +26,7 @@
   // 束ねると gzip で 122KB になる。読み物のサイトに載せる重さではないので、
   // 録画を含まない core のビルドを直接読む。こちらは gzip で 36KB。
   import mixpanel from 'mixpanel-browser/dist/mixpanel-core.cjs.js';
+  import trackingPath from '../lib/tracking-path.mjs';
 
   // app.geolonia.com の netlify.toml にあるトークンと同じ値。前者が
   // context.production、後者が context.develop / deploy-preview のもの。
@@ -46,7 +47,9 @@
   // docs は静的なページの集まりで、ページを移るたびにこのスクリプトが
   // 走り直す。app のような履歴の購読は要らない。
   mixpanel.track('Pageview', {
-    path: location.pathname,
+    // docs は末尾にスラッシュの付いた URL を出すが app は付けない。
+    // 横断で集計するので表記を揃える。
+    path: trackingPath(location.pathname),
     site: 'docs',
   });
 </script>

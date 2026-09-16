@@ -44,7 +44,7 @@ test('Mixpanel のトークンは app と同じプロジェクトのもの', () 
 
 test('Pageview のイベント名とプロパティは app と揃える', () => {
   assert.match(mixpanel, /mixpanel\.track\('Pageview', \{/);
-  assert.match(mixpanel, /path: location\.pathname,/);
+  assert.match(mixpanel, /path: trackingPath\(location\.pathname\),/);
   assert.match(mixpanel, /site: 'docs',/);
 });
 
