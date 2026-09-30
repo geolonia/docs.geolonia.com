@@ -3,6 +3,11 @@ import { defineConfig } from 'astro/config';
 
 import mdx from '@astrojs/mdx';
 
+// Markdown は unified（remark / rehype）で処理する。astro 7.3 以降の既定は
+// Sätteri だが、Sätteri は下の CJK 強調の問題を解消できず、remark-cjk-friendly に
+// 相当するものも無い。MDX もこのプロセッサを引き継ぐ。
+import { unified } from '@astrojs/markdown-remark';
+
 // 日本語（CJK）で ** 等の強調が全角約物（）。」など）に隣接すると
 // CommonMark のフランキング規則で無効化される問題を解消する remark プラグイン。
 // HTML 出力用途なのでパースのみの /parseOnly を使う。.md / .mdx 双方に効く。
@@ -75,12 +80,14 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    remarkPlugins: [
-      remarkCjkFriendly,
-      remarkCjkFriendlyGfmStrikethrough,
-      remarkStripHtmlComments,
-      remarkStripTypedocBreadcrumb,
-    ],
+    processor: unified({
+      remarkPlugins: [
+        remarkCjkFriendly,
+        remarkCjkFriendlyGfmStrikethrough,
+        remarkStripHtmlComments,
+        remarkStripTypedocBreadcrumb,
+      ],
+    }),
   },
   vite: {
     // maplibre-gl は CJS/UMD でのみ配布されている（ESM ビルドなし）。
