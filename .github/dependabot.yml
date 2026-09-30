@@ -1,0 +1,19 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # version updates は使わず、security updates の挙動だけをこのファイルで調整する。
+    # security updates はこの上限の対象外なので、0 にしても止まらない。
+    open-pull-requests-limit: 0
+    ignore:
+      # maplibre-gl 6 系は @geolonia/maps-react の peerDependencies（^5）を満たさず、
+      # 上げると npm ci が ERESOLVE で落ちる。maps-react が 6 系に対応したら
+      # 手動で上げ、この ignore を外す。
+      #
+      # ignore は security updates にも効く。これが無いと、勧告の修正版が 6 系にしか
+      # ない間、main へのマージのたびに Dependabot が落ちる PR を rebase し続ける。
+      - dependency-name: "maplibre-gl"
+        versions: [">=6.0.0"]
