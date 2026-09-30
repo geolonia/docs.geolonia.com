@@ -4,8 +4,8 @@
  * ソースの .md / .mdx ではなく dist/ の HTML を見るのが要点である。理由は2つ。
  *
  *   1. 描画されないリンクを数えてしまわない。src/pages/reference/ 配下には
- *      TypeDoc のパンくずが残っているが、astro.config.mjs の
- *      remarkStripTypedocBreadcrumb が H1 より前を落とすので読者には出ない。
+ *      TypeDoc のパンくずが残っているが、markdown/plugins.mjs の
+ *      stripTypedocBreadcrumb が H1 より前を落とすので読者には出ない。
  *      ソースを grep すると、踏めないリンクを不具合として報告してしまう。
  *   2. レイアウトやコンポーネントが組み立てたリンクも対象になる。サイドバーや
  *      パンくずはソースに文字列として存在しない。

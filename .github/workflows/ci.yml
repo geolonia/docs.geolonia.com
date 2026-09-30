@@ -50,3 +50,8 @@ jobs:
 
       - name: 内部リンクの検査
         run: npm run check:links
+
+      # Sätteri は日本語の約物に隣接した ** を強調と認識しないことがある。
+      # ビルドは通ってしまうので、出力に記号が残っていないかをここで見る。
+      - name: 強調の検査
+        run: npm run check:emphasis
