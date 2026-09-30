@@ -11,8 +11,8 @@
  *
  * やらないこと:
  *   - TypeDoc が本文冒頭に出すパンくずの除去。
- *     手でコピーされた場合にも効くよう、ビルド時に remark（astro.config.mjs の
- *     remarkStripTypedocBreadcrumb）で落とす。取り込んだ .md は TypeDoc 出力の
+ *     手でコピーされた場合にも効くよう、ビルド時に Sätteri のプラグイン（markdown/plugins.mjs の
+ *     stripTypedocBreadcrumb）で落とす。取り込んだ .md は TypeDoc 出力の
  *     忠実なミラーのままにしておき、上流との差分を取りやすくする。
  *
  * 使い方:

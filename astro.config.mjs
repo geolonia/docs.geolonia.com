@@ -3,16 +3,9 @@ import { defineConfig } from 'astro/config';
 
 import mdx from '@astrojs/mdx';
 
-// Markdown は unified（remark / rehype）で処理する。astro 7.3 以降の既定は
-// Sätteri だが、Sätteri は下の CJK 強調の問題を解消できず、remark-cjk-friendly に
-// 相当するものも無い。MDX もこのプロセッサを引き継ぐ。
-import { unified } from '@astrojs/markdown-remark';
-
-// 日本語（CJK）で ** 等の強調が全角約物（）。」など）に隣接すると
-// CommonMark のフランキング規則で無効化される問題を解消する remark プラグイン。
-// HTML 出力用途なのでパースのみの /parseOnly を使う。.md / .mdx 双方に効く。
-import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
-import remarkCjkFriendlyGfmStrikethrough from 'remark-cjk-friendly-gfm-strikethrough/parseOnly';
+// Markdown（と、それを引き継ぐ MDX）は Sätteri で処理する。
+import { satteri } from '@astrojs/markdown-satteri';
+import { stripHtmlComments, stripTypedocBreadcrumb } from './markdown/plugins.mjs';
 
 import react from '@astrojs/react';
 
@@ -22,38 +15,6 @@ import livecode from './integrations/livecode.mjs';
 // /sitemap-index.xml と /sitemap-0.xml を出す。旧サイト（Jekyll）は
 // jekyll-sitemap が /sitemap.xml を配信していたので、切替で失われた分を戻す。
 import sitemap from '@astrojs/sitemap';
-
-// TypeDoc が本文の冒頭に出すパンくず（パッケージ名 → 名前空間 → 現在地）を落とす。
-// ナビゲーションは ApiLayout の左サイドバーが担うので、本文側には要らない。
-//
-// 取り込んだ .md は TypeDoc 出力の忠実なミラーにしておきたい（上流との差分を
-// 取りやすくするため）ので、取り込みスクリプト側ではなくここで落とす。
-// 手でコピーされた場合にも効く。
-//
-// パンくずは必ず最初の H1 より前にあり、H1 以降が本文。
-function remarkStripTypedocBreadcrumb() {
-  return (tree, file) => {
-    const p = (file?.path ?? '').replace(/\\/g, '/');
-    if (!p.includes('/src/pages/reference/')) return;
-    const h1 = tree.children.findIndex((n) => n.type === 'heading' && n.depth === 1);
-    if (h1 > 0) tree.children.splice(0, h1);
-  };
-}
-
-// .md 内の HTML コメント（<!-- OUTLINE ... --> など執筆用メモ）を
-// ビルド出力から除去する。MDX の {/* */} は元々出力に残らないので対象外。
-// これにより執筆用アウトラインが公開HTMLのソースに漏れない。
-function remarkStripHtmlComments() {
-  const strip = (node) => {
-    if (Array.isArray(node.children)) {
-      node.children = node.children.filter(
-        (c) => !(c.type === 'html' && c.value.trimStart().startsWith('<!--'))
-      );
-      node.children.forEach(strip);
-    }
-  };
-  return (tree) => strip(tree);
-}
 
 // https://astro.build/config
 export default defineConfig({
@@ -80,13 +41,8 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    processor: unified({
-      remarkPlugins: [
-        remarkCjkFriendly,
-        remarkCjkFriendlyGfmStrikethrough,
-        remarkStripHtmlComments,
-        remarkStripTypedocBreadcrumb,
-      ],
+    processor: satteri({
+      mdastPlugins: [stripHtmlComments, stripTypedocBreadcrumb],
     }),
   },
   vite: {
