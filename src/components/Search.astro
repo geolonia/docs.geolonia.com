@@ -44,6 +44,8 @@
 </dialog>
 
 <script>
+  import isEditableTarget from '../lib/editable-target.mjs';
+
   (function initSearch() {
     const button = document.querySelector('[data-search-open]');
     const dialog = document.querySelector('[data-search-dialog]');
@@ -130,6 +132,7 @@
     // ⌘K / Ctrl+K で開く。入力欄にいる時は邪魔しない。Esc は dialog の既定で閉じる。
     document.addEventListener('keydown', (event) => {
       if (event.key !== 'k' || !(event.metaKey || event.ctrlKey)) return;
+      if (isEditableTarget(event.target)) return;
       event.preventDefault();
       if (dialog.open) dialog.close();
       else open();
