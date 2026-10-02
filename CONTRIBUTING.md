@@ -589,6 +589,8 @@ npm run docs:sync:embed   # @geolonia/embed
 生成元のリポジトリは `scripts/vendor.sh` が `vendor/` に `git clone --depth 1` します。
 `vendor/` は gitignore してあるので、コミットに含まれることはありません。
 
+取り込み（`docs:import:*`）は、取り込み先の `src/pages/reference/<pkg>/` にある `.md` をいったんすべて消してから書き出します。上流で削除されたシンボルのページも、これで一緒に消えます。ただし取り込み元に `.md` が1件も無いときは、既存のページを消さずにエラーで止まります。
+
 バージョンを指定して生成したいときは ref を渡します。
 
 ```bash

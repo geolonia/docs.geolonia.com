@@ -8,6 +8,8 @@
  *   - frontmatter を付ける（layout / title / page）。title は H1 から取る
  *   - 相対 .md リンクをサイト内の絶対パスへ書き換える
  *   - README.md は index.md にリネームする
+ *   - 取り込み先（destDir）の既存の .md を消してから書き出す。上流で削除された
+ *     シンボルのページを残さないため。destDir の外（reference/index.md など）は触らない
  *
  * やらないこと:
  *   - TypeDoc が本文冒頭に出すパンくずの除去。
@@ -57,11 +59,13 @@ if (!srcDir || !destDir || !routeBase) {
 
 fs.mkdirSync(destDir, { recursive: true });
 
-// title: H1 のテキストから \< \> のエスケープを外す
+// title: H1 のテキストから Markdown のエスケープ（\_ \< \> \* など）を外す。
+// title は frontmatter に入り、<title> へそのまま出るので Markdown として解釈されない。
+// CommonMark でバックスラッシュによるエスケープの対象になるのは ASCII の記号だけ。
 const titleFromH1 = (body) => {
   const m = body.match(/^#\s+(.+?)\s*$/m);
   if (!m) return null;
-  return m[1].replace(/\\([<>])/g, '$1');
+  return m[1].replace(/\\([!-/:-@[-`{-~])/g, '$1');
 };
 
 // スキップされたファイルの本文（見出し行より後）から「次のページへのリンク」を
@@ -118,6 +122,19 @@ const rewriteLinks = (body) =>
   });
 
 const files = fs.readdirSync(srcDir).filter((f) => f.endsWith('.md'));
+if (files.length === 0) {
+  // 上流の生成に失敗した状態で取り込み先を空にしないよう、ここで止める。
+  console.error(`${srcDir} に .md がありません。先に docs:build:* を実行してください。`);
+  process.exit(1);
+}
+
+let removed = 0;
+for (const f of fs.readdirSync(destDir)) {
+  if (!f.endsWith('.md')) continue;
+  fs.rmSync(path.join(destDir, f));
+  removed++;
+}
+
 let written = 0;
 
 for (const f of files) {
@@ -139,5 +156,4 @@ for (const f of files) {
   written++;
 }
 
-console.log(`\n${written} 件を ${destDir} に書き出しました（skip: ${skip.size} 件）。`);
-console.log('上流で削除されたメンバーのファイルは残るので、必要なら手で消してください。');
+console.log(`\n${destDir} の既存の .md ${removed} 件を消し、${written} 件を書き出しました（skip: ${skip.size} 件）。`);
