@@ -109,7 +109,7 @@ el.innerMap.setTilt(45);
 el.innerMap.fitBounds({ north: 35.7, south: 35.6, east: 139.8, west: 139.7 }, 40);
 ```
 
-さらに maplibre の機能が必要なら、[`getGeoloniaMap()`](/howto/geojson-data/) で基盤の地図を取り出せます。
+さらに maplibre の機能が必要なら、読み込みの完了（`el.innerMap.whenReady()`）を待ってから `el.innerMap.getGeoloniaMap()` で基盤の地図を取り出せます（[地図インスタンス（maps-core）に直接アクセスするには](/howto/maps-core-access/)）。
 
 ズームが変わったときは `geolonia-zoomchange` イベントが要素から発行されます。
 

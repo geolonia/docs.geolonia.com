@@ -74,7 +74,6 @@ const map = new geolonia.maps.Map(document.getElementById("map"), {
 
 await map.whenReady();
 const impl = map.getGeoloniaMap();
-impl.addControl(new maplibregl.NavigationControl(), "top-right");
 impl.addControl(new maplibregl.GeolocateControl({ trackUserLocation: true }), "top-right");
 impl.addControl(new maplibregl.FullscreenControl(), "top-right");
 impl.addControl(new maplibregl.ScaleControl(), "bottom-left");
@@ -83,7 +82,7 @@ impl.addControl(new maplibregl.ScaleControl(), "bottom-left");
 </LiveCode>
 
 - **`addControl(コントロール, 位置)`**：第2引数を省略すると `top-right` に付きます。
-- ナビゲーション（`NavigationControl`）は既定で付いているため、位置だけ変えたいなら一度 `removeControl` してから付け直します。
+- ナビゲーション（`NavigationControl`）は既定で付いているので、ここでは足しません。足すと同じボタンが2組並びます。位置だけ変えたいなら一度 `removeControl` してから付け直します。
 
 </Lens>
 

@@ -14,7 +14,38 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-embed 単体ではドラッグできるマーカーは作れません。上のタブで suite / react のコードに切り替えてください。
+ドラッグできるマーカーは `data-*` 属性だけでは指定できません。embed を読み込むと `window.geolonia` に MapLibre GL JS 互換の `Marker` が入るので、JavaScript から `draggable: true` を付けて作ります。`dragend`（ドラッグ終了）で位置を取り出します。
+
+<LiveCode title="embed でドラッグできるマーカーを置く">
+
+```html
+<style>
+  body { margin: 0; }
+  #map { width: 100%; height: 100vh; }
+</style>
+
+<div id="map" data-lat="35.6812" data-lng="139.7671" data-zoom="14" data-marker="off"></div>
+
+<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+<script>
+  const map = new geolonia.Map("#map");
+
+  const marker = new geolonia.Marker({ draggable: true })
+    .setLngLat([139.7671, 35.6812])
+    .addTo(map);
+
+  marker.on("dragend", () => {
+    const { lng, lat } = marker.getLngLat();
+    console.log("緯度:", lat, "経度:", lng);
+  });
+</script>
+```
+
+</LiveCode>
+
+- **`new geolonia.Marker({ draggable: true })`**：ドラッグを有効にしてマーカーを作ります。`setLngLat` は `[経度, 緯度]` の順です。
+- **`marker.on("dragend", ...)`**：離した時点で一度だけ呼ばれます。動いている最中に追いたいときは `drag` を使います。
+- **`data-marker="off"`**：中心のマーカーを消しています。付けないと、ドラッグできないマーカーが1本余ります。
 
 </Lens>
 
@@ -105,10 +136,10 @@ createRoot(document.getElementById("root")).render(<App />);
 
 ## 結果
 
-上のコードは、それぞれのタブの下でそのまま動いています。マーカーをドラッグして離すと、その位置の緯度と経度が取得できます（suite の例はコンソールに出力、react の例は地図の上に表示します）。取得した座標は、フォームの入力欄に書き戻したり、サーバーへ送信したりして使います。
+上のコードは、それぞれのタブの下でそのまま動いています。マーカーをドラッグして離すと、その位置の緯度と経度が取得できます（embed と suite の例はコンソールに出力、react の例は地図の上に表示します）。取得した座標は、フォームの入力欄に書き戻したり、サーバーへ送信したりして使います。
 
 <Callout kind="warning" title="うまくいかないとき">
-- ドラッグできない → `draggable`（suite は `new maplibregl.Marker({ draggable: true })`）を付け忘れていないか確認します。
+- ドラッグできない → `draggable`（embed は `new geolonia.Marker({ draggable: true })`、suite は `new maplibregl.Marker({ draggable: true })`）を付け忘れていないか確認します。
 - 座標が `[経度, 緯度]` で混乱する → `getLngLat()` は `{ lng, lat }` のオブジェクトを返します。配列に直すときは `[経度, 緯度]` の順です。
 - ドラッグ中は座標が更新されない → `dragend`（`onDragEnd`）は離したときだけ呼ばれます。移動中も追いたいときは `drag`（`onDrag`）を使います。
 </Callout>
