@@ -1,6 +1,6 @@
 ---
 layout: ../../../layouts/ApiLayout.astro
-title: 'Variable: DEFAULT\_STAGE'
+title: 'Variable: DEFAULT_STAGE'
 page: reference
 ---
 
