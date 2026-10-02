@@ -82,7 +82,7 @@ impl.addControl(new maplibregl.ScaleControl(), "bottom-left");
 </LiveCode>
 
 - **`addControl(コントロール, 位置)`**：第2引数を省略すると `top-right` に付きます。
-- ナビゲーション（`NavigationControl`）は既定で付いているので、ここでは足しません。足すと同じボタンが2組並びます。位置だけ変えたいなら一度 `removeControl` してから付け直します。
+- ナビゲーション（`NavigationControl`）は既定で付いているので、ここでは足しません。足すと同じボタンが2組並びます。位置を変えたいときは、上のとおり `disableDefaultUI: true` で既定のコントロールをすべて消してから、`addControl` で好きな位置に足し直します。
 
 </Lens>
 
