@@ -9,8 +9,9 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const script = new URL('../scripts/to-reference.mjs', import.meta.url).pathname;
+const script = fileURLToPath(new URL('../scripts/to-reference.mjs', import.meta.url));
 
 const roots = [];
 after(() => {
