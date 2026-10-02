@@ -3,7 +3,7 @@
  *
  * 一時ディレクトリに TypeDoc 風の .md を置き、スクリプトを実際に走らせて出力を見る。
  */
-import { test } from 'node:test';
+import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -12,8 +12,14 @@ import path from 'node:path';
 
 const script = new URL('../scripts/to-reference.mjs', import.meta.url).pathname;
 
+const roots = [];
+after(() => {
+  for (const root of roots) fs.rmSync(root, { recursive: true, force: true });
+});
+
 const setup = (files) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'to-reference-'));
+  roots.push(root);
   const src = path.join(root, 'api-docs');
   const dest = path.join(root, 'reference', 'core');
   fs.mkdirSync(src, { recursive: true });
@@ -74,6 +80,6 @@ test('取り込み元に .md が無いときは、取り込み先を消さずに
   const ctx = setup({});
   fs.mkdirSync(ctx.dest, { recursive: true });
   fs.writeFileSync(path.join(ctx.dest, 'Class.Map.md'), '# Class: Map\n');
-  assert.throws(() => run({ ...ctx }), /Command failed/);
+  assert.throws(() => run(ctx), /Command failed/);
   assert.deepEqual(fs.readdirSync(ctx.dest), ['Class.Map.md']);
 });
