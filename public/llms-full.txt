@@ -3173,7 +3173,7 @@ The allowed domains are set for environments commonly used during development an
 - Vercel (`*.vercel.app`)
 - Cloudflare Pages and Workers (`*.pages.dev` and `*.workers.dev`)
 
-**A saved HTML file opened directly (`file://`, for example by double-clicking it) does not render a map with the demo key**, because it is not one of the allowed environments. Start a local server in the folder holding `index.html`, with `python3 -m http.server` or `npx serve`, and open it as `http://localhost:8000/`. The steps are in embed Step 0.
+**A saved HTML file opened directly (`file://`, for example by double-clicking it) does not render a map with the demo key**, because it is not one of the allowed environments. Start a local server in the folder holding `index.html` and open it as `localhost`. With `python3 -m http.server`, open `http://localhost:8000/`; with `npx serve`, open the URL it prints on start. The steps are in embed Step 0.
 
 So pasting into CodePen, or deploying straight to GitHub Pages, Netlify or Vercel, displays a map for checking without waiting for a key.
 
