@@ -32,6 +32,10 @@ import Callout from '../../components/Callout.astro'
 - Vercel（`*.vercel.app`）
 - Cloudflare Pages / Workers（`*.pages.dev` / `*.workers.dev`）
 
+<Callout kind="warning" title="HTML ファイルを直接開いても動きません">
+保存した HTML をダブルクリックなどで開いた状態（`file://`）は、許可された環境に含まれないため、デモキーでは地図が描画されません。`index.html` を置いたフォルダで簡易サーバーを起動し、`localhost` として開いてください。`python3 -m http.server` なら `http://localhost:8000/` を、`npx serve` なら起動時に表示される URL を開きます。手順は [embed の Step 0](/tutorials/embed/first-map/#ブラウザで開く) にあります。
+</Callout>
+
 つまり CodePen に貼り付けたり、GitHub Pages や Netlify / Vercel にそのままデプロイしたりするだけで、キーの発行を待たずに地図を表示して確認できます。
 
 ## 本番公開には実キーが必要

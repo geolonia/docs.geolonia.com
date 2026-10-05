@@ -6,7 +6,7 @@ Geolonia Maps offers three libraries on top of a shared core. `embed` needs only
 
 The site is organised in the four Diátaxis quadrants: Tutorials for learning by doing, How-to Guides for task recipes, Explanation for concepts, and Reference for API documentation generated from the type definitions. The site content itself is written in Japanese; this file and llms-full.txt are English renderings.
 
-Code samples use the demo key `YOUR-API-KEY`, which renders maps only on approved hosts such as `localhost`, GitHub Pages, CodePen, Netlify, Vercel and Cloudflare Pages. Publishing on your own domain requires a real key from the dashboard at https://app.geolonia.com/.
+Code samples use the demo key `YOUR-API-KEY`, which renders maps only on approved hosts such as `localhost`, GitHub Pages, CodePen, Netlify, Vercel and Cloudflare Pages. Opening a saved HTML file directly (`file://`, e.g. double-clicking it) does not render the map; serve the folder with `python3 -m http.server` or `npx serve` and open it as `http://localhost:PORT/`. Publishing on your own domain requires a real key from the dashboard at https://app.geolonia.com/.
 
 For full documentation content, see: https://docs.geolonia.com/llms-full.txt
 
