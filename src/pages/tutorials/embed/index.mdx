@@ -4,6 +4,7 @@ title: embed チュートリアル
 description: HTML に script タグと div タグを書くだけで地図を表示する embed のチュートリアルです。
 page: tutorial
 ---
+import Callout from '../../../components/Callout.astro'
 
 embed は、Geolonia Maps の中で**記述量が最も少ない**ライブラリです。`<div>` タグと `<script>` タグを HTML に書くだけで動作し、ビルドツールと npm は必要ありません。
 
@@ -17,5 +18,9 @@ embed は、Geolonia Maps の中で**記述量が最も少ない**ライブラ�
 6. **Step 5** [API キーの設定と本番公開](./publish/): API キーを発行して本番公開する
 
 各 Step の末尾には、想定される失敗と確認手順をまとめた「うまくいかないとき」を用意しています。
+
+<Callout kind="warning" title="HTML ファイルを直接開いても地図は表示されません">
+HTML を保存して `file://` で開く（ダブルクリックや `open index.html`）と、デモキー `YOUR-API-KEY` では地図が描画されません。`index.html` を置いたフォルダで `python3 -m http.server` や `npx serve` を起動し、`http://localhost:8000/` のように **`localhost` として開いて**ください。詳しくは [Step 0](./first-map/#ブラウザで開く) を参照してください。
+</Callout>
 
 最初の手順は [Step 0: 地図を表示する](./first-map/) です。

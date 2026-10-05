@@ -6,7 +6,7 @@ Geolonia Maps offers three libraries on top of a shared core. `embed` needs only
 
 The site content is written in Japanese. This file is an English rendering of it. Code samples are reproduced verbatim, so string literals that are part of the sample data remain in Japanese.
 
-Code samples use the demo key `YOUR-API-KEY`, which renders maps only on approved hosts such as `localhost`, GitHub Pages, CodePen, Netlify, Vercel and Cloudflare Pages. Publishing on your own domain requires a real key from https://app.geolonia.com/.
+Code samples use the demo key `YOUR-API-KEY`, which renders maps only on approved hosts such as `localhost`, GitHub Pages, CodePen, Netlify, Vercel and Cloudflare Pages. Opening a saved HTML file directly (`file://`, e.g. double-clicking it) does not render the map; serve the folder with `python3 -m http.server` or `npx serve` and open it as `http://localhost:PORT/`. Publishing on your own domain requires a real key from https://app.geolonia.com/.
 
 The generated API reference is not reproduced here. See https://docs.geolonia.com/reference/ for it.
 
