@@ -21,6 +21,11 @@ page: reference
 `polyline.getPath().push(...)` や `setAt` などの変異操作を行うと
 折れ線は自動的に再描画されます。
 
+折れ線をクリックすると `"click"` イベントを発火します。リスナーには、クリック
+位置の `latLng`（[LatLng](/reference/suite/geolonia.maps.Class.LatLng)）と元の DOM イベントの `domEvent` を持つ
+オブジェクトが渡されます。非表示（`visible: false`）の間は発火しません。
+図形上のクリックでは、地図（[Map](/reference/suite/geolonia.maps.Class.Map)）の `"click"` イベントは発火しません。
+
 ## Example
 
 ```typescript
