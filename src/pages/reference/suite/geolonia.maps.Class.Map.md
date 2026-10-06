@@ -20,6 +20,8 @@ page: reference
 安全です。地図の読み込みが完了し次第、反映されます。変更を監視するには
 [addListener](/reference/suite/geolonia.maps.Class.MVCObject#addlistener) で登録します。地図は
 `center_changed`、`zoom_changed`、`bounds_changed`、`idle`、`click` のイベントを発火します。
+[Polyline](/reference/suite/geolonia.maps.Class.Polyline) などの図形の上をクリックした場合、`click` は図形だけが発火し、
+地図は発火しません。
 
 ## Example
 

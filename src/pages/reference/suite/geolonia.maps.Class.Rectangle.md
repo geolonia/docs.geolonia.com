@@ -20,6 +20,11 @@ page: reference
 内部的には [Polygon](/reference/suite/geolonia.maps.Class.Polygon) と同様に MapLibre の GeoJSON fill/line
 ソース・レイヤーを利用し、`bounds` の 4 隅から矩形の頂点を導出します。
 
+矩形をクリックすると `"click"` イベントを発火します。リスナーには、クリック
+位置の `latLng`（[LatLng](/reference/suite/geolonia.maps.Class.LatLng)）と元の DOM イベントの `domEvent` を持つ
+オブジェクトが渡されます。非表示（`visible: false`）の間は発火しません。
+図形上のクリックでは、地図（[Map](/reference/suite/geolonia.maps.Class.Map)）の `"click"` イベントは発火しません。
+
 ## Example
 
 ```typescript

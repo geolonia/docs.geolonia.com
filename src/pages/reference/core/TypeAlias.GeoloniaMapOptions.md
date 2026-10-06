@@ -72,6 +72,15 @@ Geolonia の API キー。Geolonia がホストするスタイルやタイルを
 
 カスタムマーカーのオフセット。`[x, y]` のピクセル値。
 
+### errorMessage?
+
+> `optional` **errorMessage?**: `string` \| `false`
+
+地図の初期化に失敗したときに表示する文言。
+文字列を指定するとその文言に差し替える（HTML としては解釈しない）。
+`false` または `'off'` を指定するとエラー表示自体を行わない。
+未指定のときは、原因と利用者が試せる復旧手順を示す既定の案内を表示する。
+
 ### fullscreenControl?
 
 > `optional` **fullscreenControl?**: `boolean` \| `ControlPosition`

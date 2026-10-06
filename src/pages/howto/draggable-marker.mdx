@@ -58,7 +58,7 @@ maps-suite の `Marker` はドラッグに対応していないため、読み�
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { geolonia } from "@geolonia/maps-suite";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
   apiKey: "YOUR-API-KEY",
@@ -97,6 +97,10 @@ import "@geolonia/maps-core/css";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Map, Marker } from "@geolonia/maps-react";
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
 
 function App() {
   const [pos, setPos] = useState({ lat: 35.6812, lng: 139.7671 });

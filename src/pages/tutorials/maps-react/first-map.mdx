@@ -34,6 +34,10 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { createRoot } from "react-dom/client";
 import { Map } from "@geolonia/maps-react";
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
 
 createRoot(document.getElementById("root")).render(
   <Map
@@ -47,9 +51,10 @@ createRoot(document.getElementById("root")).render(
 
 上のコードが、そのまま下で動作しています。
 
-記述の要点は次の3点です。
+記述の要点は次の4点です。
 
 - **CSS のインポート**：`maplibre-gl/dist/maplibre-gl.css` と `@geolonia/maps-core/css` の2つが必要です。どちらかが欠けると、コントロールとポップアップの表示が崩れます。
+- **Worker の設定**：MapLibre GL JS v6 は、地図の描画を担う Web Worker を実ファイルの URL から読み込みます。多くのバンドラーはそのファイルを出力に含めないため、最初の `Map` を描画する前に `setWorkerUrl` でその場所を教える必要があります。上のコードは Vite の書き方です。webpack の場合は [`@geolonia/maps-core` の Worker setup](https://github.com/geolonia/maps-core#worker-setup) を参照してください。
 - **`containerStyle`**：地図を描画する要素の大きさ。高さが 0 の場合、地図は表示されません。必ず高さを指定します。
 - **`apiKey`**：`YOUR-API-KEY` は動作確認用のデモキーであり、`localhost`、GitHub Pages、CodePen などの開発環境とプレビュー環境でのみ地図が描画されます（対象の一覧は[デモキーで無料で試せる環境](/explanation/free-referers/)を参照してください。自分のキーの発行は [Step 5](../publish/) で扱います）。
 
@@ -59,8 +64,8 @@ createRoot(document.getElementById("root")).render(
 
 <Callout kind="warning" title="うまく出ないとき">
 - 真っ白で何も出ない → `containerStyle` の**高さが 0** になっていないか確認。親要素が `height: 0` の場合も同じです。
+- コントロールだけが出て、地図が読み込み中のまま → **`setWorkerUrl` の呼び出し漏れ**。コンソールに `Worker failed to load` と出ていれば、これが原因です。
 - 表示が崩れる（コントロールのアイコンの位置がずれるなど）→ **CSS のインポート漏れ**。2つとも読み込んでいるか確認。
-- コンソールに `The requested module '.../maplibre-gl.js' does not provide an export named 'default'` と出る → maplibre-gl は ES モジュールとして宣言されたパッケージですが、中身は UMD 形式のファイルです。そのままでは ES モジュールとして読めず、Vite の事前バンドル（依存パッケージの変換）を通ったときだけ読み込めます。事前バンドルの対象から外れる一部のビルド環境で起きます。Astro など Vite ベースの環境では、設定に `vite: { optimizeDeps: { include: ['maplibre-gl', '@geolonia/maps-core'] } }` を追加すると解消します（Vite 単体の SPA では通常不要です）。
 </Callout>
 
 ## 次の Step

@@ -22,6 +22,11 @@ page: reference
 管理されるため、`polygon.getPath().push(...)` や外側の MVCArray への
 `insertAt` などの変異操作を行うとポリゴンは自動的に再描画されます。
 
+ポリゴンをクリックすると `"click"` イベントを発火します。リスナーには、クリック
+位置の `latLng`（[LatLng](/reference/suite/geolonia.maps.Class.LatLng)）と元の DOM イベントの `domEvent` を持つ
+オブジェクトが渡されます。非表示（`visible: false`）の間は発火しません。
+図形上のクリックでは、地図（[Map](/reference/suite/geolonia.maps.Class.Map)）の `"click"` イベントは発火しません。
+
 ## Example
 
 ```typescript

@@ -135,6 +135,10 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { createRoot } from "react-dom/client";
 import { Map, Source, Layer } from "@geolonia/maps-react";
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
 
 createRoot(document.getElementById("root")).render(
   <Map
@@ -441,6 +445,10 @@ import "@geolonia/maps-core/css";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Map, Source, Layer, Popup } from "@geolonia/maps-react";
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
 
 const TILE_URL =
   "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png";

@@ -18,6 +18,11 @@ page: reference
 MapLibre の GeoJSON fill/line ソース・レイヤーを利用し、
 Haversine の逆計算で円周上の座標列を近似ポリゴンとして生成します。
 
+円をクリックすると `"click"` イベントを発火します。リスナーには、クリック
+位置の `latLng`（[LatLng](/reference/suite/geolonia.maps.Class.LatLng)）と元の DOM イベントの `domEvent` を持つ
+オブジェクトが渡されます。非表示（`visible: false`）の間は発火しません。
+図形上のクリックでは、地図（[Map](/reference/suite/geolonia.maps.Class.Map)）の `"click"` イベントは発火しません。
+
 ## Example
 
 ```typescript
