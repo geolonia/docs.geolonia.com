@@ -43,7 +43,7 @@ CI は `npm test`、`npm run lint:text`、`npm run build`、`npm run check:links
 | `tests/` | 単体テスト |
 | `public/` | そのまま配信する静的ファイル |
 
-`src/pages/reference/` は各ライブラリの API ドキュメントから自動生成したページです。手で直さず、上流のソースを直して再生成します。
+`src/pages/reference/` のうち `embed/`、`suite/`、`core/` は、各ライブラリの型定義から自動生成したページです。手で直さず、各パッケージ側の JSDoc を直して再生成します。`reference/index.md` は手書きなので、直接編集できます。
 
 ## ドキュメントを書く、直す
 
