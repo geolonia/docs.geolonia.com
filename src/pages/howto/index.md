@@ -22,6 +22,7 @@ quadrant: Diátaxis / 仕事 × 行動
 - [外部データ（GeoJSON）を地図に読み込むには](/howto/geojson-data/)
 - [現在地を表示するには](/howto/current-location/)
 - [全地点が画面に収まるように表示するには](/howto/fit-bounds/)
+- [指定した範囲に地図を移動するには](/howto/fit-bounds-to-area/)
 - [地図のコントロールの表示を切り替えるには](/howto/map-controls/)
 - [地図の表示言語を切り替えるには](/howto/switch-language/)
 - [ドラッグできるマーカーで座標を取得するには](/howto/draggable-marker/)

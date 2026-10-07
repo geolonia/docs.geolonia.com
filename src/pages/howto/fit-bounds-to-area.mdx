@@ -1,0 +1,183 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 指定した範囲に地図を移動するには
+description: 東京や大阪など、あらかじめ決めた範囲にボタン 1 つで地図を合わせます。
+page: howto
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+あらかじめ決めた緯度経度の範囲（矩形）に、`fitBounds` で地図を合わせます。画面の大きさが違っても、その範囲がちょうど収まるようにズームが決まるので、`center` と `zoom` を地域ごとに調整する必要がありません。
+
+ここでは「東京」「大阪」のボタンを置き、押した地域に地図を切り替えます。マーカーなどのデータから範囲を計算する場合は、[全地点が画面に収まるように表示するには](/howto/fit-bounds/)を参照してください。
+
+## コード
+
+実装方式によって、範囲の書き方が違います。suite は `{ north, south, east, west }` と名前で指定します。embed と react は `[[西, 南], [東, 北]]` で、座標は**経度、緯度の順**に書きます。
+
+<Lens name="embed">
+`new geolonia.Map` で地図インスタンスを取り、ボタンの `click` で `fitBounds` を呼びます。
+
+<LiveCode title="embed でボタンから指定の範囲に移動する">
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body { margin: 0; display: flex; flex-direction: column; height: 100vh; }
+      #map { flex: 1; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <button data-area="tokyo">東京</button>
+      <button data-area="osaka">大阪</button>
+    </div>
+    <div id="map" data-lat="36" data-lng="137" data-zoom="4"></div>
+
+    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script>
+      const areas = {
+        tokyo: [[139.56, 35.52], [139.92, 35.82]],
+        osaka: [[135.40, 34.57], [135.60, 34.82]],
+      };
+
+      const map = new geolonia.Map("#map");
+
+      for (const button of document.querySelectorAll("button[data-area]")) {
+        button.addEventListener("click", () => {
+          map.fitBounds(areas[button.dataset.area], { padding: 40 });
+        });
+      }
+    </script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+- **`[[西, 南], [東, 北]]`**：範囲の南西の角と北東の角を、`[経度, 緯度]` の順で渡します。
+- **`padding`**：画面の縁からの余白（ピクセル）です。これがないと、範囲の端が画面の縁にくっつきます。
+- **`maxZoom`**：寄りすぎないように、ズームの上限を指定できます。狭い範囲を渡したときに便利です。
+- **`duration`**：移動にかける時間（ミリ秒）です。`0` にすると、アニメーションなしで切り替わります。
+- `class="geolonia"` を付けていないのは、自動で作られる地図ではなく、自分で作ったインスタンスを使うためです。詳しくは[地図インスタンスに直接アクセスするには](/howto/maps-core-access/)を参照してください。
+
+</Lens>
+
+<Lens name="suite">
+範囲を `{ north, south, east, west }` で渡します。第 2 引数は余白（ピクセル）です。
+
+<LiveCode title="maps-suite でボタンから指定の範囲に移動する">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const areas = {
+  東京: { north: 35.82, south: 35.52, east: 139.92, west: 139.56 },
+  大阪: { north: 34.82, south: 34.57, east: 135.60, west: 135.40 },
+};
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 36, lng: 137 },
+  zoom: 4,
+});
+
+const toolbar = document.createElement("div");
+toolbar.style.cssText =
+  "position: fixed; top: 8px; left: 8px; z-index: 1; display: flex; gap: 4px;";
+
+for (const [name, bounds] of Object.entries(areas)) {
+  const button = document.createElement("button");
+  button.textContent = name;
+  button.addEventListener("click", () => map.fitBounds(bounds, 40));
+  toolbar.append(button);
+}
+
+document.body.append(toolbar);
+```
+
+</LiveCode>
+
+- **`fitBounds({ north, south, east, west }, padding)`**：指定した範囲が収まるように、地図を移動してズームします。`padding` は画面の縁からの余白（ピクセル）です。
+- ボタンは地図の上に重ねて置いています。実際のページでは、HTML に書いたボタンからも同じ `map.fitBounds(...)` を呼べます。
+- suite の `fitBounds` で指定できるのは範囲と余白だけです。ズームの上限や移動時間を指定したいときは、`map.getGeoloniaMap().fitBounds(...)` で MapLibre GL JS の地図を直接呼びます。この場合の範囲は `[[西, 南], [東, 北]]` です。
+
+</Lens>
+
+<Lens name="react">
+`ref` で地図インスタンスを受け取っておき、ボタンの `onClick` から `fitBounds` を呼びます。
+
+<LiveCode title="maps-react でボタンから指定の範囲に移動する">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { useRef } from "react";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
+
+const areas = {
+  東京: [[139.56, 35.52], [139.92, 35.82]],
+  大阪: [[135.40, 34.57], [135.60, 34.82]],
+};
+
+function App() {
+  const mapRef = useRef(null);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <div>
+        {Object.entries(areas).map(([name, bounds]) => (
+          <button
+            key={name}
+            onClick={() => mapRef.current?.fitBounds(bounds, { padding: 40 })}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+      <Map
+        ref={(map) => { mapRef.current = map; }}
+        apiKey="YOUR-API-KEY"
+        center={[137, 36]}
+        zoom={4}
+        containerStyle={{ flex: 1 }}
+      />
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+```
+
+</LiveCode>
+
+- **`ref`**：地図ができた時点で、地図インスタンスが渡されます。`useRef` に持っておけば、ボタンのクリックなど好きなタイミングで操作できます。
+- **`[[西, 南], [東, 北]]`**：範囲の南西の角と北東の角を、`[経度, 緯度]` の順で渡します。
+- **`padding`**：画面の縁からの余白（ピクセル）です。
+- `maxZoom` でズームの上限、`duration` で移動時間（ミリ秒、`0` でアニメーションなし）も指定できます。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。「東京」を押すと東京周辺、「大阪」を押すと大阪周辺に地図が移動し、どちらも指定した範囲が余白つきで画面に収まります。
+
+コード中の範囲は、表示用に決めたおおよその矩形です。行政区域の境界ではありません。自分のサイトで使うときは、見せたい範囲の座標に置き換えてください。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 見当違いの場所や海の上に移動する → 緯度と経度の順を確認してください。embed と react は `[経度, 緯度]` の順です。suite は `north`、`south` が緯度、`east`、`west` が経度です。
+- 範囲が小さすぎて、地図が寄りすぎる → `maxZoom` を指定してください（embed と react）。
+- 範囲の端が画面の縁に切れる → `padding` を増やしてください。
+</Callout>
