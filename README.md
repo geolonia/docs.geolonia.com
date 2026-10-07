@@ -1,45 +1,52 @@
-# docs.geolonia.com (Astro renewal)
+# docs.geolonia.com
 
-# Astro Starter Kit: Minimal
+Geolonia Maps のドキュメントサイト（リニューアル版）のリポジトリです。公開先は <https://docs.geolonia.com/> です。
 
-```sh
-npm create astro@latest -- --template minimal
+サイトは [Astro](https://astro.build/) による静的サイトです。ページは Markdown と MDX で書きます。
+
+## セットアップ
+
+Node.js 22.12.0 以上が必要です。
+
+```bash
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+開発サーバーは <http://localhost:4321> で起動します。
 
-## 🚀 Project Structure
+## よく使うコマンド
 
-Inside of your Astro project, you'll see the following folders and files:
+リポジトリのルートで実行します。
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+| コマンド | 内容 |
+| :-- | :-- |
+| `npm run dev` | 開発サーバーを起動する |
+| `npm run build` | `./dist/` に静的サイトを書き出し、Pagefind の検索インデックスも作る |
+| `npm run preview` | ビルド結果をローカルで確認する |
+| `npm test` | `tests/` の単体テストを実行する |
+| `npm run lint:text` | 手書きページの文章を textlint で検査する |
+| `npm run check:links` | ビルド結果のリンク切れを検査する |
+| `npm run check:emphasis` | 強調記法の崩れを検査する |
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+CI は `npm test`、`npm run lint:text`、`npm run build`、`npm run check:links`、`npm run check:emphasis` の順に実行します。PR を出す前に、手元で同じ順に流すと CI と同じ範囲を確認できます。
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## ディレクトリ構成
 
-Any static assets, like images, can be placed in the `public/` directory.
+| パス | 内容 |
+| :-- | :-- |
+| `src/pages/` | ページ本体。`tutorials/`、`howto/`、`reference/`、`explanation/` の 4 つに分けている |
+| `src/components/` | ページから使うコンポーネント |
+| `src/layouts/` | ページのレイアウト |
+| `integrations/` | 載せたコードをそのまま動かす LiveCode の仕組み |
+| `scripts/` | リファレンスの取り込みやリンク検査のスクリプト |
+| `tests/` | 単体テスト |
+| `public/` | そのまま配信する静的ファイル |
 
-## 🧞 Commands
+`src/pages/reference/` のうち `embed/`、`suite/`、`core/` は、各ライブラリの型定義から自動生成したページです。手で直さず、各パッケージ側の JSDoc を直して再生成します。`reference/index.md` は手書きなので、直接編集できます。
 
-All commands are run from the root of the project, from a terminal:
+## ドキュメントを書く、直す
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build to `./dist/` and index it with Pagefind     |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+ページの書き方、ブランチ運用、文章の書き方は [CONTRIBUTING.md](./CONTRIBUTING.md) にまとめています。書き始める前に一度目を通してください。
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+`main` は保護されているため、作業ブランチを切って PR を出します。
