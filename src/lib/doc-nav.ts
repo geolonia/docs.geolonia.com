@@ -90,6 +90,7 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
       ['geojson-data', '外部データ（GeoJSON）を地図に読み込むには'],
       ['current-location', '現在地を表示するには'],
       ['fit-bounds', '全地点が画面に収まるように表示するには'],
+      ['fit-bounds-to-area', '指定した範囲に地図を移動するには'],
       ['map-controls', '地図のコントロールの表示を切り替えるには'],
       ['switch-language', '地図の表示言語を切り替えるには'],
       ['draggable-marker', 'ドラッグできるマーカーで座標を取得するには'],
