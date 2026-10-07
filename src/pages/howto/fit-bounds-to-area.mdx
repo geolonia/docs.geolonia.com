@@ -107,7 +107,7 @@ document.body.append(toolbar);
 
 - **`fitBounds({ north, south, east, west }, padding)`**：指定した範囲が収まるように、地図を移動してズームします。`padding` は画面の縁からの余白（ピクセル）です。
 - ボタンは地図の上に重ねて置いています。実際のページでは、HTML に書いたボタンからも同じ `map.fitBounds(...)` を呼べます。
-- suite の `fitBounds` で指定できるのは範囲と余白だけです。ズームの上限や移動時間を指定したいときは、`map.getGeoloniaMap().fitBounds(...)` で MapLibre GL JS の地図を直接呼びます。この場合の範囲は `[[西, 南], [東, 北]]` です。
+- suite の `fitBounds` で指定できるのは範囲と余白だけです。ズームの上限や移動時間は指定できないので、必要なときは embed か react を使ってください。`map.getGeoloniaMap()` から基盤の地図（GeoloniaMap）の `fitBounds` を直接呼ぶ方法もありますが、SDK が管理する `center` と `zoom` を直接変更するため、動作は保証されません。
 
 </Lens>
 
