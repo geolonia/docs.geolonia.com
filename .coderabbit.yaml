@@ -12,6 +12,7 @@
 # 適用タイミング: CodeRabbit はレビュー対象ブランチ (PR の head) の .coderabbit.yaml を
 # 読んでそのレビューに適用する。main へのマージを待たずに、このファイルを含む PR
 # 自身から有効になる。
+inheritance: true
 language: ja-JP
 reviews:
   # PR 作成時・push 時の自動レビュー
