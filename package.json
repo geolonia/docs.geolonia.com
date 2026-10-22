@@ -57,9 +57,9 @@
     "textlint-rule-preset-ai-words-ja": "^1.2.0",
     "textlint-rule-preset-japanese": "^10.0.4",
     "textlint-rule-prh": "^6.1.0",
-    "wrangler": "^4.107.0"
+    "wrangler": "^4.151.3"
   },
   "overrides": {
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.5"
   }
 }
