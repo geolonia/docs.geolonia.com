@@ -171,7 +171,7 @@
   box-shadow: 0 18px 48px rgba(15, 27, 39, 0.18);
   padding: 16px 18px 8px; max-height: 82vh; overflow: auto;
 }
-.site-search__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.site-search__head { display: flex; margin-bottom: 10px; }
 .site-search__close {
   margin-left: auto; font-size: 12px; font-weight: 700; color: var(--text-soft);
   background: none; border: 0; padding: 2px 4px; cursor: pointer;
