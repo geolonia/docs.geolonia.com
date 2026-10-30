@@ -72,7 +72,7 @@ impl.addLayer({
 </Lens>
 
 <Lens name="react">
-点の GeoJSON を `Source` で読み込み、`type="heatmap"` のレイヤで描きます。
+点のデータは `geojson` で、重みに使うプロパティと色は `heatmap` で `<Map>` へ渡します。
 
 <LiveCode title="maps-react でヒートマップを描く">
 
@@ -80,7 +80,7 @@ impl.addLayer({
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { createRoot } from "react-dom/client";
-import { Map, Source, Layer } from "@geolonia/maps-react";
+import { Map } from "@geolonia/maps-react";
 import { setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 
@@ -92,40 +92,25 @@ createRoot(document.getElementById("root")).render(
     center={[139.735, 35.668]}
     zoom={11}
     containerStyle={{ width: "100%", height: "100vh" }}
-  >
-    <Source id="pts" type="geojson" data="/data/dense-points.geojson">
-      <Layer
-        id="heat"
-        type="heatmap"
-        paint={{
-          "heatmap-weight": ["interpolate", ["linear"], ["get", "weight"], 0, 0, 6, 1],
-          "heatmap-intensity": 1,
-          "heatmap-radius": 20,
-          "heatmap-opacity": 0.8,
-          "heatmap-color": [
-            "interpolate", ["linear"], ["heatmap-density"],
-            0, "rgba(0,0,255,0)",
-            0.2, "royalblue",
-            0.4, "cyan",
-            0.6, "lime",
-            0.8, "yellow",
-            1, "red",
-          ],
-        }}
-      />
-    </Source>
-  </Map>,
+    geojson="/data/dense-points.geojson"
+    heatmap={{
+      weight: "weight",
+      colors: ["royalblue", "cyan", "lime", "yellow", "red"],
+    }}
+  />,
 );
 ```
 
 </LiveCode>
 
-調整するのは主に4つです。
+`heatmap` に指定する値は次のとおりです。
 
-- **`heatmap-weight`**：点1つの重み。上の例では各点の `weight` プロパティ（0〜6）を 0〜1 に換算しています。全点を同じ扱いにするなら `1` の固定値で構いません。
-- **`heatmap-radius`**：1点が影響する半径（ピクセル）。大きいほどなだらかに広がります。
-- **`heatmap-intensity`**：全体の強さ。ズームレベルに応じて上げると、拡大しても濃淡が保たれます。
-- **`heatmap-color`**：密度（0〜1）から色への対応。密度 0 は透明にするのが一般的です。
+- **`weight`**：重みに使うプロパティ名。データの最小値を 0、最大値を 1 として扱います。省略するか `heatmap={true}` と渡すと、すべての点を同じ重みで扱います。
+- **`colors`**：密度の低い側から高い側へ並べた色。密度 0 は透明になります。
+
+ヒートマップにすると、点のマーカーとクラスタリングは表示しません。`geojson` と `heatmap` は、地図を作るときに一度だけ読まれます。後から変えるときは、`<Map>` に `key` を付けて作り直してください。
+
+点1つが影響する半径（`heatmap-radius`）や全体の強さ（`heatmap-intensity`）まで調整したいときは、`<Source>` と `<Layer type="heatmap">` で、suite のタブと同じ `paint` を指定します。
 
 </Lens>
 
