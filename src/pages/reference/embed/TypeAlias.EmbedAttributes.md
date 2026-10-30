@@ -69,6 +69,58 @@ page: reference
 
 ***
 
+### choropleth?
+
+> `optional` **choropleth?**: `string`
+
+`data-choropleth`：`data-geojson` のポリゴンを、このプロパティの値で塗り分ける。
+既定値はなく、指定したときだけキーが入る。
+
+***
+
+### choroplethColors?
+
+> `optional` **choroplethColors?**: `string`
+
+`data-choropleth-colors`：塗り分けの色。値の小さい側から順にカンマで区切る。
+`data-choropleth` が無いときは無視する。
+
+***
+
+### choroplethRange?
+
+> `optional` **choroplethRange?**: `string`
+
+`data-choropleth-range`：色を割り当てる値の範囲。`"最小,最大"` 形式。
+省略時や読めないときはデータの最小値と最大値を使う。
+
+***
+
+### circleColor?
+
+> `optional` **circleColor?**: `string`
+
+`data-circle-color`：ポイントの円の色に使うプロパティ名。
+
+***
+
+### circleColors?
+
+> `optional` **circleColors?**: `string`
+
+`data-circle-colors`：`data-circle-color` に使う色をカンマで区切る。
+`data-circle-size` と `data-circle-color` のどちらも無いときは無視する。
+
+***
+
+### circleSize?
+
+> `optional` **circleSize?**: `string`
+
+`data-circle-size`：ポイントの円の大きさに使うプロパティ名。
+
+***
+
 ### cluster
 
 > **cluster**: `string`
@@ -192,6 +244,24 @@ page: reference
 #### Default Value
 
 `'off'`
+
+***
+
+### heatmap?
+
+> `optional` **heatmap?**: `string`
+
+`data-heatmap`：`data-geojson` のポイントをヒートマップで描く。`'on'` で重みなし、
+プロパティ名でその値を重みにする。`'off'` または空なら描かない。
+
+***
+
+### heatmapColors?
+
+> `optional` **heatmapColors?**: `string`
+
+`data-heatmap-colors`：ヒートマップの色。密度の低い側から順にカンマで区切る。
+`data-heatmap` が無いときは無視する。
 
 ***
 
