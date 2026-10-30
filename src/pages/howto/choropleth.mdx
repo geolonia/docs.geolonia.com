@@ -80,7 +80,7 @@ impl.addLayer({
 </Lens>
 
 <Lens name="react">
-`fill` レイヤの `fill-color` に `interpolate` 式を書いて、値を色に対応させます。
+データは `geojson` で、塗り分けに使うプロパティと色は `choropleth` で `<Map>` へ渡します。
 
 <LiveCode title="maps-react でコロプレスを描く">
 
@@ -88,7 +88,7 @@ impl.addLayer({
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { createRoot } from "react-dom/client";
-import { Map, Source, Layer } from "@geolonia/maps-react";
+import { Map } from "@geolonia/maps-react";
 import { setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 
@@ -100,36 +100,27 @@ createRoot(document.getElementById("root")).render(
     center={[139.725, 35.665]}
     zoom={12}
     containerStyle={{ width: "100%", height: "100vh" }}
-  >
-    <Source id="areas" type="geojson" data="/data/areas.geojson">
-      <Layer
-        id="areas-fill"
-        type="fill"
-        paint={{
-          "fill-color": [
-            "interpolate", ["linear"], ["get", "value"],
-            0, "#ffffcc",
-            50, "#fd8d3c",
-            100, "#bd0026",
-          ],
-          "fill-opacity": 0.75,
-          "fill-outline-color": "#ffffff",
-        }}
-      />
-    </Source>
-  </Map>,
+    geojson="/data/areas.geojson"
+    choropleth={{
+      property: "value",
+      colors: ["#ffffcc", "#fd8d3c", "#bd0026"],
+      range: [0, 100],
+    }}
+  />,
 );
 ```
 
 </LiveCode>
 
-`interpolate` 式の読み方は、
+`choropleth` に指定する値は次のとおりです。
 
-1. `["linear"]`：値の間を直線的に補間する。
-2. `["get", "value"]`：各ポリゴンの `properties.value` を取り出す。
-3. 以降は「値, 色」のペア。`0` なら薄い黄色、`100` なら濃い赤、その間は連続的に変化します。
+- **`property`**：塗り分けに使うプロパティ名。値が数値の地物だけを塗り分けます。
+- **`colors`**：値の小さい側から大きい側へ並べた色。`range` の範囲に等間隔で割り当て、間は補間します。上の例では `0` が薄い黄色、`50` がオレンジ、`100` が濃い赤です。
+- **`range`**：色を割り当てる値の範囲 `[最小, 最大]`。省略するとデータの最小値と最大値を使います。
 
-`fill-opacity` を 1 未満にしておくと、下の地図（道路や地名）が透けて位置が分かります。
+塗りの不透明度は 0.7 なので、下の地図（道路や地名）が透けて位置が分かります。プロパティ名だけを `choropleth="value"` と渡すと、既定の色で塗り分けます。
+
+`geojson` と `choropleth` は、地図を作るときに一度だけ読まれます。後から変えるときは、`<Map>` に `key` を付けて作り直してください。
 
 </Lens>
 
