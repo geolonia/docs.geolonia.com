@@ -102,6 +102,21 @@ new SimpleStyle(geojson).addTo(map);
 
 ***
 
+### applyDataDrivenPaint()
+
+> **applyDataDrivenPaint**(): `void`
+
+`choropleth`、`heatmap`、`circle` オプションの式を、現在のデータに合わせて設定します。
+
+値の範囲やカテゴリはデータから求めるため、[addTo](#addto) と
+[updateData](#updatedata) のたびに呼び出します。
+
+#### Returns
+
+`void`
+
+***
+
 ### fitBounds()
 
 > **fitBounds**(`options?`): `SimpleStyle`
@@ -115,6 +130,8 @@ new SimpleStyle(geojson).addTo(map);
 #### Parameters
 
 ##### options?
+
+\{ \}
 
 `map.fitBounds` に渡すオプションです。既定値は `duration: 3000`、`padding: 30` で、
   指定した項目のみがこれらを上書きします。
@@ -192,6 +209,22 @@ new SimpleStyle(geojson).addTo(map);
 
 ***
 
+### setHeatmap()
+
+> **setHeatmap**(): `void`
+
+ポイントのヒートマップレイヤーを設定します。
+
+`heatmap` オプションを指定したときに、ポイントのマーカーとクラスターの代わりに使います。
+重みは [applyDataDrivenPaint](#applydatadrivenpaint) がデータに合わせて設定します。
+通常は [addTo](#addto) から呼び出されます。
+
+#### Returns
+
+`void`
+
+***
+
 ### setLineGeometries()
 
 > **setLineGeometries**(): `void`
@@ -221,6 +254,8 @@ new SimpleStyle(geojson).addTo(map);
 `marker-size`（`small`、`large`、その他）に応じて円の半径やラベルのオフセットを変え、
 `marker-color`、`stroke`、`title`、`text-color` などの simplestyle プロパティを反映します。
 あわせて円レイヤーとシンボルレイヤーの双方に [setPopup](#setpopup) でポップアップを設定します。
+`circle` オプションを指定したときは、`marker-symbol` の有無にかかわらずすべてのポイントを円で描き、
+シンボルレイヤーは追加しません。
 通常は [addTo](#addto) から呼び出されます。
 
 #### Returns

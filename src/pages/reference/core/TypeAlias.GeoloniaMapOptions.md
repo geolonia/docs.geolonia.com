@@ -40,6 +40,23 @@ MapLibre の `MapOptions` から継承する。
 Geolonia の API キー。Geolonia がホストするスタイルやタイルを使う場合に必要。
 指定するとキーリングにも設定される。
 
+### choropleth?
+
+> `optional` **choropleth?**: `string` \| [`ChoroplethOptions`](/reference/core/TypeAlias.ChoroplethOptions)
+
+`geojson` のポリゴンを、プロパティの値で塗り分ける（コロプレス）。
+プロパティ名の文字列、または [ChoroplethOptions](/reference/core/TypeAlias.ChoroplethOptions) を指定する。
+地物の simplestyle の `fill` より優先する。地物に `fill-opacity` がないときの不透明度は、
+背景の地図が透けるよう 1 ではなく 0.7 にする。
+
+### circle?
+
+> `optional` **circle?**: [`CircleOptions`](/reference/core/TypeAlias.CircleOptions)
+
+`geojson` のポイントの円の大きさと色を、プロパティの値で変える。
+指定するとクラスタリングは行わず、`marker-symbol` を持つポイントも円で描く（アイコンとタイトルは表示しない）。
+地物の simplestyle の `marker-color` より優先する。
+
 ### cluster?
 
 > `optional` **cluster?**: `boolean`
@@ -129,6 +146,14 @@ Geolonia のロゴコントロール。`true` / `false`、または表示位置�
 
 `true`
 
+### heatmap?
+
+> `optional` **heatmap?**: `boolean` \| `string` \| [`HeatmapOptions`](/reference/core/TypeAlias.HeatmapOptions)
+
+`geojson` のポイントをヒートマップで描く。`true` で重みなし、
+プロパティ名の文字列でその値を重みにする。[HeatmapOptions](/reference/core/TypeAlias.HeatmapOptions) も指定できる。
+指定するとクラスタリングとポイントのマーカーは表示しない。
+
 ### lang?
 
 > `optional` **lang?**: `"ja"` \| `"en"` \| `"auto"`
@@ -169,6 +194,7 @@ Geolonia のロゴコントロール。`true` / `false`、または表示位置�
 
 ズームと回転のコントロール。`true` / `false`、または表示位置
 （`'top-right'`、`'bottom-left'` など）を指定する。
+コンパスは地図の傾きも表し、クリックすると向きと傾きの両方を戻す。
 
 #### Default Value
 
@@ -201,10 +227,11 @@ SimpleStyle Vector で表示するベクトルタイルの URL または論理�
 > `optional` **stage?**: `string`
 
 API のステージ（`'dev'` / `'v1'` など）。API エンドポイントの選択に使う。
+省略時は共有キーリングの現在のステージを使う。別の地図が `stage` を指定してキーリングを変更済みの場合は、その値になる。
 
 #### Default Value
 
-`'dev'`
+`'v1'`（キーリングの初期値）
 
 ### style?
 
@@ -216,6 +243,20 @@ style.json の完全な URL、または相対パスのいずれか。
 #### Default Value
 
 `'geolonia/basic-v2'`
+
+### transformRequest?
+
+> `optional` **transformRequest?**: `RequestTransformFunction` \| `null`
+
+リクエストを送る直前に URL やヘッダーを書き換える関数。MapLibre の `transformRequest` と同じ形。
+
+Geolonia のソース（`api.geolonia.com` と Geolonia のタイルホスト）とスプライトのリクエストでは、
+maps-core が `key` や `sessionId` を付けた後の URL が渡される。
+`undefined` を返すと maps-core の変換結果がそのまま使われる。
+Promise を返してもよい。解決値が `undefined` のときも maps-core の変換結果が使われる。
+
+`map.setTransformRequest()` で差し替えると maps-core の変換も外れる。後から変えるときは、
+maps-core が付ける `key` や `sessionId` を自分で付ける必要がある。
 
 ## Example
 
