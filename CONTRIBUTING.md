@@ -589,7 +589,7 @@ npm run docs:sync:embed   # @geolonia/embed
 生成元のリポジトリは `scripts/vendor.sh` が `vendor/` に `git clone --depth 1` します。
 `vendor/` は gitignore してあるので、コミットに含まれることはありません。
 
-`@geolonia/embed` は pnpm で依存を入れるので、`docs:sync:embed` は `npx` で pnpm を取ってきて使います。asdf で Node を管理している場合、`vendor/maps-embed/.tool-versions` の Node が入っていないと pnpm が起動しないので、`ASDF_NODEJS_VERSION` で手元の Node 22 を指定してください。
+`@geolonia/embed` は pnpm で依存を入れるので、`docs:sync:embed` は `npx` で pnpm を取ってきて使います。pnpm のメジャーバージョンは `package.json` の `docs:build:embed` で `pnpm@12` に固定しているので、embed の `packageManager` のメジャーが上がったら合わせて変えてください。asdf で Node を管理している場合、`vendor/maps-embed/.tool-versions` の Node が入っていないと pnpm が起動しないので、`ASDF_NODEJS_VERSION` で手元の Node 22 を指定してください。
 
 取り込み（`docs:import:*`）は、取り込み先の `src/pages/reference/<pkg>/` にある `.md` をいったんすべて消してから書き出します。上流で削除されたシンボルのページも、これで一緒に消えます。ただし取り込み元に `.md` が1件も無いときは、既存のページを消さずにエラーで止まります。
 
