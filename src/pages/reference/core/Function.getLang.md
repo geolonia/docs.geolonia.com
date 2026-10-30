@@ -12,7 +12,7 @@ page: reference
 
 # Function: getLang()
 
-> **getLang**(): `"en"` \| `"ja"`
+> **getLang**(): `"ja"` \| `"en"`
 
 ブラウザの言語設定を検出して `"ja"` または `"en"` を返します。
 
@@ -22,6 +22,6 @@ page: reference
 
 ## Returns
 
-`"en"` \| `"ja"`
+`"ja"` \| `"en"`
 
 検出された言語。日本語なら `"ja"`、それ以外は `"en"`。

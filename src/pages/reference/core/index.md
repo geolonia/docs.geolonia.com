@@ -21,7 +21,10 @@ page: reference
 
 ## Type Aliases
 
+- [ChoroplethOptions](/reference/core/TypeAlias.ChoroplethOptions)
+- [CircleOptions](/reference/core/TypeAlias.CircleOptions)
 - [GeoloniaMapOptions](/reference/core/TypeAlias.GeoloniaMapOptions)
+- [HeatmapOptions](/reference/core/TypeAlias.HeatmapOptions)
 
 ## Variables
 
