@@ -26,7 +26,6 @@
 .quad { display: block; border: 1px solid var(--border); border-top: 4px solid var(--border); border-radius: var(--radius); padding: 18px; background: var(--bg); transition: box-shadow .15s, transform .15s; }
 .quad:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); text-decoration: none; }
 .quad h3 { margin: 8px 0 4px; }
-.quad p { margin: 0; font-size: 13px; color: var(--text-soft); }
 .quad.tutorial    { border-top-color: var(--q-tutorial); }
 .quad.howto       { border-top-color: var(--q-howto); }
 .quad.reference   { border-top-color: var(--q-reference); }
@@ -172,8 +171,7 @@
   box-shadow: 0 18px 48px rgba(15, 27, 39, 0.18);
   padding: 16px 18px 8px; max-height: 82vh; overflow: auto;
 }
-.site-search__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
-.site-search__title { margin: 0; font-size: 13px; font-weight: 800; color: var(--text-soft); }
+.site-search__head { display: flex; margin-bottom: 10px; }
 .site-search__close {
   margin-left: auto; font-size: 12px; font-weight: 700; color: var(--text-soft);
   background: none; border: 0; padding: 2px 4px; cursor: pointer;
