@@ -27,7 +27,33 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+`data-geojson` でデータを読み込み、塗り分けに使うプロパティと色を `data-choropleth` の属性で指定します。
+
+<LiveCode title="embed でコロプレスを描く">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.665" data-lng="139.725" data-zoom="12"
+     data-marker="off"
+     data-geojson="/data/areas.geojson"
+     data-choropleth="value"
+     data-choropleth-colors="#ffffcc,#fd8d3c,#bd0026"
+     data-choropleth-range="0,100"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-choropleth`**：塗り分けに使うプロパティ名。値が数値の地物だけを塗り分けます。
+- **`data-choropleth-colors`**：値の小さい側から大きい側へ並べた色を、カンマで区切って書きます。`data-choropleth-range` の範囲に等間隔で割り当て、間は補間します。省略すると既定の色で塗り分けます。
+- **`data-choropleth-range`**：色を割り当てる値の範囲を `最小,最大` の形で書きます。省略するとデータの最小値と最大値を使います。
+
+この属性は embed v6 以降で使えます。
 
 </Lens>
 
