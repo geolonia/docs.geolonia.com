@@ -2259,7 +2259,23 @@ A map showing numbers such as population or sales through the shading of areas (
 
 ### embed
 
-Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+Load the data with `data-geojson` and set the property and colours with the `data-choropleth` attributes. Requires embed v6 or later.
+
+```html
+<div class="geolonia"
+     data-lat="35.665" data-lng="139.725" data-zoom="12"
+     data-marker="off"
+     data-geojson="/data/areas.geojson"
+     data-choropleth="value"
+     data-choropleth-colors="#ffffcc,#fd8d3c,#bd0026"
+     data-choropleth-range="0,100"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+- **`data-choropleth`**: the property used for colouring. Only features whose value is a number are coloured.
+- **`data-choropleth-colors`**: comma-separated colours from low to high values, spread evenly over the range and interpolated between. Omit it for the default colours.
+- **`data-choropleth-range`**: the value range as `min,max`. Omit it to use the minimum and maximum of the data.
 
 ### maps-suite
 
@@ -2288,26 +2304,26 @@ impl.addLayer({
 
 ### maps-react
 
+Pass the data with `geojson` and the colouring with `choropleth` on `<Map>`.
+
 ```jsx
-<Source id="areas" type="geojson" data="/data/areas.geojson">
-  <Layer
-    id="areas-fill"
-    type="fill"
-    paint={{
-      "fill-color": [
-        "interpolate", ["linear"], ["get", "value"],
-        0, "#ffffcc",
-        50, "#fd8d3c",
-        100, "#bd0026",
-      ],
-      "fill-opacity": 0.75,
-      "fill-outline-color": "#ffffff",
-    }}
-  />
-</Source>
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.725, 35.665]}
+  zoom={12}
+  containerStyle={{ width: "100%", height: "100vh" }}
+  geojson="/data/areas.geojson"
+  choropleth={{
+    property: "value",
+    colors: ["#ffffcc", "#fd8d3c", "#bd0026"],
+    range: [0, 100],
+  }}
+/>
 ```
 
-Reading the `interpolate` expression:
+`choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. `geojson` and `choropleth` are read once when the map is created; to change them later, give `<Map>` a `key` and recreate it.
+
+Reading the `interpolate` expression in the maps-suite code:
 
 1. `["linear"]`: interpolate linearly between values.
 2. `["get", "value"]`: take `properties.value` of each polygon.
@@ -2331,7 +2347,23 @@ When there are too many points for individual markers to mean anything, a heatma
 
 ### embed
 
-Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+Load the points with `data-geojson` and set the weight property and colours with the `data-heatmap` attributes. Requires embed v6 or later.
+
+```html
+<div class="geolonia"
+     data-lat="35.668" data-lng="139.735" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/dense-points.geojson"
+     data-heatmap="weight"
+     data-heatmap-colors="royalblue,cyan,lime,yellow,red"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+- **`data-heatmap`**: the property used as weight, with the data minimum treated as 0 and the maximum as 1. Write `on` to weight every point equally.
+- **`data-heatmap-colors`**: comma-separated colours from low to high density. Density 0 is transparent.
+
+With a heatmap, point markers and clustering are not shown.
 
 ### maps-suite
 
@@ -2363,31 +2395,25 @@ impl.addLayer({
 
 ### maps-react
 
+Pass the points with `geojson` and the weight and colours with `heatmap` on `<Map>`.
+
 ```jsx
-<Source id="pts" type="geojson" data="/data/dense-points.geojson">
-  <Layer
-    id="heat"
-    type="heatmap"
-    paint={{
-      "heatmap-weight": ["interpolate", ["linear"], ["get", "weight"], 0, 0, 6, 1],
-      "heatmap-intensity": 1,
-      "heatmap-radius": 20,
-      "heatmap-opacity": 0.8,
-      "heatmap-color": [
-        "interpolate", ["linear"], ["heatmap-density"],
-        0, "rgba(0,0,255,0)",
-        0.2, "royalblue",
-        0.4, "cyan",
-        0.6, "lime",
-        0.8, "yellow",
-        1, "red",
-      ],
-    }}
-  />
-</Source>
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.735, 35.668]}
+  zoom={11}
+  containerStyle={{ width: "100%", height: "100vh" }}
+  geojson="/data/dense-points.geojson"
+  heatmap={{
+    weight: "weight",
+    colors: ["royalblue", "cyan", "lime", "yellow", "red"],
+  }}
+/>
 ```
 
-There are mainly four things to tune.
+`heatmap` takes `weight` and `colors` with the same meaning as the embed attributes; `heatmap={true}` weights every point equally. To tune radius or intensity as well, use `<Source>` and `<Layer type="heatmap">` with the same `paint` as the maps-suite code.
+
+For the maps-suite code, there are mainly four things to tune.
 
 - **`heatmap-weight`**: the weight of one point. The example converts each point `weight` property, running 0 to 6, into 0 to 1. Treating every point equally means a fixed `1`.
 - **`heatmap-radius`**: the radius in pixels one point influences. Larger spreads more smoothly.
@@ -3432,6 +3458,6 @@ What you pass to `Source` and `Layer` is the MapLibre GL JS source and layer def
 
 The shared foundation of the three libraries above. It is essentially MapLibre GL JS with Geolonia map access and conveniences added. See https://docs.geolonia.com/reference/core/.
 
-At its core, `GeoloniaMap` is **the MapLibre GL JS `Map` class extended to work with Geolonia maps**, covering API key handling, style name resolution and the default controls. MapLibre features such as `flyTo()`, `addLayer()` and `on()` are therefore available as they are. Only what Geolonia added appears in the reference, so **for the inherited API see the MapLibre GL JS documentation**, particularly the `Map` class reference at https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/. The supported line is MapLibre GL JS v5.
+At its core, `GeoloniaMap` is **the MapLibre GL JS `Map` class extended to work with Geolonia maps**, covering API key handling, style name resolution and the default controls. MapLibre features such as `flyTo()`, `addLayer()` and `on()` are therefore available as they are. Only what Geolonia added appears in the reference, so **for the inherited API see the MapLibre GL JS documentation**, particularly the `Map` class reference at https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/. The supported line is MapLibre GL JS v6.
 
 The reference covers the map itself as `GeoloniaMap` and its options `GeoloniaMapOptions`, plus `GeoloniaMarker` and `SimpleStyle`, which applies styling to GeoJSON.
