@@ -15,7 +15,31 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+`data-geojson` で点のデータを読み込み、重みに使うプロパティと色を `data-heatmap` の属性で指定します。
+
+<LiveCode title="embed でヒートマップを描く">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.668" data-lng="139.735" data-zoom="11"
+     data-marker="off"
+     data-geojson="/data/dense-points.geojson"
+     data-heatmap="weight"
+     data-heatmap-colors="royalblue,cyan,lime,yellow,red"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-heatmap`**：重みに使うプロパティ名。データの最小値を 0、最大値を 1 として扱います。すべての点を同じ重みで扱うときは `on` と書きます。
+- **`data-heatmap-colors`**：密度の低い側から高い側へ並べた色を、カンマで区切って書きます。密度 0 は透明になります。
+
+ヒートマップにすると、点のマーカーとクラスタリングは表示しません。この属性は embed v6 以降で使えます。
 
 </Lens>
 

@@ -43,7 +43,7 @@ React 用のライブラリです。**このライブラリだけ、型定義か
 
 - [maps-core のリファレンス](/reference/core/)
 
-maps-coreの中核である `GeoloniaMap` は **MapLibre GL JS の `Map` クラスを継承して、Geolonia の地図（API キーの扱い、スタイル名の解決、既定のコントロールなど）に対応させたもの**です。そのため、`flyTo()` や `addLayer()`、`on()` といった MapLibre の機能はそのまま使えます。Geolonia 側で足したものだけが上のリファレンスに載っているので、**継承した側の API は [MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)、とりわけ [`Map` クラスのリファレンス](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/)を参照してください**。対応しているのは MapLibre GL JS v5 系です。
+maps-coreの中核である `GeoloniaMap` は **MapLibre GL JS の `Map` クラスを継承して、Geolonia の地図（API キーの扱い、スタイル名の解決、既定のコントロールなど）に対応させたもの**です。そのため、`flyTo()` や `addLayer()`、`on()` といった MapLibre の機能はそのまま使えます。Geolonia 側で足したものだけが上のリファレンスに載っているので、**継承した側の API は [MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)、とりわけ [`Map` クラスのリファレンス](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/)を参照してください**。対応しているのは MapLibre GL JS v6 系です。
 
 地図本体の `GeoloniaMap` とそのオプション `GeoloniaMapOptions`、`GeoloniaMarker`、GeoJSON にスタイルを当てる `SimpleStyle` などがあります。
 
