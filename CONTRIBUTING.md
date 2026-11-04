@@ -183,7 +183,7 @@ import LiveCode from '../../components/LiveCode.astro'
   </head>
   <body>
     <div class="geolonia" data-lat="35.681236" data-lng="139.767125" data-zoom="14"></div>
-    <script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
   </body>
 </html>
 ```
@@ -244,7 +244,7 @@ embed（`html`）— 高さの CSS と CDN スクリプトまで含めます。
 
 <div class="geolonia" data-lat="35.68" data-lng="139.75" data-zoom="11"></div>
 
-<script src="https://cdn.geolonia.com/embed/v5/embed?geolonia-api-key=YOUR-API-KEY"></script>
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
 ````
 
