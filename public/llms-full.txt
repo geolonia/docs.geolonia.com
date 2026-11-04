@@ -2262,6 +2262,10 @@ A map showing numbers such as population or sales through the shading of areas (
 Load the data with `data-geojson` and set the property and colours with the `data-choropleth` attributes. Requires embed v6 or later.
 
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.665" data-lng="139.725" data-zoom="12"
      data-marker="off"
@@ -2350,6 +2354,10 @@ When there are too many points for individual markers to mean anything, a heatma
 Load the points with `data-geojson` and set the weight property and colours with the `data-heatmap` attributes. Requires embed v6 or later.
 
 ```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
 <div class="geolonia"
      data-lat="35.668" data-lng="139.735" data-zoom="11"
      data-marker="off"
