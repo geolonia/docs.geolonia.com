@@ -12,7 +12,7 @@ import LiveCode from '../../components/LiveCode.astro'
 
 店舗や窓口を探す画面でよく見る「地方を選んでから都道府県を選ぶ」地図を作ります。1 回目のクリックで地方を選ぶとその地方に寄り、2 回目のクリックで都道府県を選びます。
 
-日本全体を 1 枚に収めると、沖縄県は九州から遠く離れていて地図が横に広がります。そこで沖縄県は、紙の日本地図と同じように、左上に重ねた小さな地図で見せます。
+日本全体を 1 枚に収めると、沖縄県は九州から遠く離れていて地図が横に広がります。そこで沖縄県は、紙の日本地図と同じように、左上に重ねた小さな地図で見せます。小さな地図に映すのは沖縄本島とその周りで、宮古島や石垣島、大東諸島は映りません。
 
 ## データの用意
 
@@ -55,7 +55,7 @@ import LiveCode from '../../components/LiveCode.astro'
       #map { height: 100%; }
       #okinawa {
         position: absolute; top: 8px; left: 8px; z-index: 1;
-        width: 150px; height: 170px; border: 2px solid #555; cursor: pointer;
+        width: 150px; height: 170px; border: 2px solid #555;
       }
     </style>
   </head>
@@ -130,16 +130,19 @@ import LiveCode from '../../components/LiveCode.astro'
         });
       }
 
-      main.on("load", () => main.fitBounds(japan, { padding: 20, duration: 0 }));
-      main.on("click", "prefectures", (e) => choose(e.features[0].properties));
-      main.on("mouseenter", "prefectures", () => { main.getCanvas().style.cursor = "pointer"; });
-      main.on("mouseleave", "prefectures", () => { main.getCanvas().style.cursor = ""; });
+      main.on("load", () => {
+        main.fitBounds(japan, { padding: 20, duration: 0 });
+        main.on("click", "prefectures", (e) => choose(e.features[0].properties));
+        main.on("mouseenter", "prefectures", () => { main.getCanvas().style.cursor = "pointer"; });
+        main.on("mouseleave", "prefectures", () => { main.getCanvas().style.cursor = ""; });
+      });
 
       okinawa.on("load", () => {
         okinawa.fitBounds(okinawaArea, { padding: { top: 8, right: 8, bottom: 72, left: 8 }, duration: 0 });
         for (const handler of ["dragPan", "scrollZoom", "doubleClickZoom", "touchZoomRotate", "dragRotate", "keyboard", "boxZoom"]) {
           okinawa[handler].disable();
         }
+        okinawa.getCanvas().style.cursor = "pointer";
       });
       okinawa.on("click", () => choose({ name: "沖縄県", region: "九州・沖縄" }));
 
@@ -154,7 +157,7 @@ import LiveCode from '../../components/LiveCode.astro'
 - **`fillColor(region)`**：全国を表示しているとき（`null`）は `match` 式で地方ごとに色を分け、地方を選んだら `case` 式でその地方だけを緑にします。`setPaintProperty` で 2 つの地図の色をまとめて切り替えます。
 - **`fitBounds`**：選んだ地方の範囲に寄ります。最初に全国を表示するときは `duration: 0` で、動かさずに合わせています。
 - **小さな地図の `fitBounds`**：下の余白を広く取り、右下の出典表記と沖縄本島が重ならないようにしています。
-- **小さな地図の `disable()`**：ドラッグやズームを止め、沖縄県が枠から外れないようにしています。
+- **小さな地図の `disable()`**：ドラッグやズームを止め、沖縄本島が枠から外れないようにしています。カーソルも、つかむ形ではなく指の形にしています。
 - **小さな地図の `click`**：沖縄本島は細くて押しにくいので、レイヤを指定せず、枠のどこを押しても沖縄県を選んだことにしています。
 
 </Lens>
@@ -332,6 +335,7 @@ function App() {
   const mainRef = useRef(null);
   const [selected, setSelected] = useState(null); // 選んでいる地方。null のときは全国
   const [chosen, setChosen] = useState(null); // 選んだ都道府県
+  const [hover, setHover] = useState(false); // カーソルが都道府県の上にあるか
 
   function show(region) {
     setSelected(region);
@@ -364,6 +368,9 @@ function App() {
           zoom={4}
           containerStyle={{ height: "100%" }}
           interactiveLayerIds={["prefectures"]}
+          cursor={hover ? "pointer" : ""}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
           onClick={(e) => e.features?.[0] && choose(e.features[0].properties)}
           onLoad={(map) => map.fitBounds(japan, { padding: 20, duration: 0 })}
         >
@@ -399,7 +406,7 @@ createRoot(document.getElementById("root")).render(<App />);
 </LiveCode>
 
 - **`<Prefectures selected={selected} />`**：2 つの地図に同じ都道府県のレイヤを入れる部品です。`selected` が変わると `paint` が変わり、2 つの地図の色が切り替わります。
-- **`interactiveLayerIds`**：クリックした位置にある `prefectures` レイヤの地物が、`onClick` の `e.features` に入ります。
+- **`interactiveLayerIds`**：クリックした位置にある `prefectures` レイヤの地物が、`onClick` の `e.features` に入ります。`onMouseEnter` と `onMouseLeave` も、このレイヤへの出入りで呼ばれます。これを使って `cursor` を指の形に切り替えています。
 - **`ref` と `onLoad`**：本土の地図は `ref` で地図インスタンスを持っておき、地方を選んだときに `fitBounds` を呼びます。最初の全国表示と、小さな地図の範囲合わせと操作の停止は `onLoad` で行います。
 - **小さな地図の `onClick`**：沖縄本島は細くて押しにくいので、`interactiveLayerIds` を付けず、枠のどこを押しても沖縄県を選んだことにしています。
 
@@ -409,7 +416,7 @@ createRoot(document.getElementById("root")).render(<App />);
 
 上のコードは、それぞれのタブの下でそのまま動いています。最初は日本全体を、地方ごとに色を分けて表示します。関東を押すと関東に寄り、関東の都県だけを緑にします。続けて東京都を押すと「東京都を選びました」と表示されます。左上の沖縄の枠を押すと九州・沖縄を選んだことになり、もう一度押すと沖縄県を選びます。
 
-実際のサイトでは、「〜を選びました」と表示する代わりに、都道府県ごとのページへ移動したり、一覧を絞り込んだりする処理を書きます。都道府県の `code`（1〜47）は全国地方公共団体コードの都道府県の部分と同じなので、URL やデータの検索に使えます。
+実際のサイトでは、「〜を選びました」と表示する代わりに、都道府県ごとのページへ移動したり、一覧を絞り込んだりする処理を書きます。都道府県の `code`（1〜47）は全国地方公共団体コードの都道府県の部分と同じなので、URL やデータの検索に使えます。文字列として使う場合は、`01` のように 2 桁に 0 を補ってください。
 
 <Callout kind="warning" title="うまくいかないとき">
 - 地方を押しても寄らない → `regions` のキーと、データの `region` の値が一字一句同じか確認してください。「九州・沖縄」の「・」が全角か半角かでも別の値になります。

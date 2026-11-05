@@ -2347,11 +2347,11 @@ Keeping `fill-opacity` below 1 lets the map underneath, roads and place names, s
 
 URL: https://docs.geolonia.com/howto/region-select/
 
-A map where the first click picks one of the eight regions and zooms to it with `fitBounds`, and the second click picks a prefecture. Okinawa is far from Kyushu, so it is shown in a small inset map in the top-left corner, as on paper maps of Japan.
+A map where the first click picks one of the eight regions and zooms to it with `fitBounds`, and the second click picks a prefecture. Okinawa is far from Kyushu, so it is shown in a small inset map in the top-left corner, as on paper maps of Japan. The inset covers Okinawa Island and the islands nearby; Miyako, Yaeyama and the Daito Islands are outside it.
 
 ### Data
 
-`/data/prefectures.geojson` (about 240 KB) holds the 47 prefectures cut from the Natural Earth 1:10m admin-1 data (public domain), with `code` (1 to 47, the prefecture part of the Japanese local government code), `name` and `region` in `properties`. The coastline is coarse, so it does not suit views zoomed to city level.
+`/data/prefectures.geojson` (about 240 KB) holds the 47 prefectures cut from the Natural Earth 1:10m admin-1 data (public domain), with `code` (1 to 47, the prefecture part of the Japanese local government code; pad to two digits such as `01` when used as a string), `name` and `region` in `properties`. The coastline is coarse, so it does not suit views zoomed to city level.
 
 ```json
 { "type": "Feature", "geometry": { "type": "MultiPolygon", "coordinates": [ ... ] }, "properties": { "code": 13, "name": "東京都", "region": "関東" } }
@@ -2371,7 +2371,7 @@ A map where the first click picks one of the eight regions and zooms to it with 
 <div id="stage" style="position: relative; height: 400px;">
   <div id="map" data-marker="off" style="height: 100%;"></div>
   <div id="okinawa" data-marker="off" data-navigation-control="off"
-       style="position: absolute; top: 8px; left: 8px; z-index: 1; width: 150px; height: 170px; border: 2px solid #555; cursor: pointer;"></div>
+       style="position: absolute; top: 8px; left: 8px; z-index: 1; width: 150px; height: 170px; border: 2px solid #555;"></div>
 </div>
 
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
@@ -2414,11 +2414,16 @@ A map where the first click picks one of the eight regions and zooms to it with 
         paint: { "fill-color": fillColor(null), "fill-opacity": 0.8, "fill-outline-color": "#ffffff" } });
     });
   }
-  main.on("load", () => main.fitBounds(japan, { padding: 20, duration: 0 }));
-  main.on("click", "prefectures", (e) => choose(e.features[0].properties));
+  main.on("load", () => {
+    main.fitBounds(japan, { padding: 20, duration: 0 });
+    main.on("click", "prefectures", (e) => choose(e.features[0].properties));
+    main.on("mouseenter", "prefectures", () => { main.getCanvas().style.cursor = "pointer"; });
+    main.on("mouseleave", "prefectures", () => { main.getCanvas().style.cursor = ""; });
+  });
   okinawa.on("load", () => {
     okinawa.fitBounds(okinawaArea, { padding: { top: 8, right: 8, bottom: 72, left: 8 }, duration: 0 });
     for (const h of ["dragPan", "scrollZoom", "doubleClickZoom", "touchZoomRotate", "dragRotate", "keyboard", "boxZoom"]) okinawa[h].disable();
+    okinawa.getCanvas().style.cursor = "pointer";
   });
   okinawa.on("click", () => choose({ name: "沖縄県", region: "九州・沖縄" }));
   back.addEventListener("click", () => show(null));
@@ -2431,7 +2436,7 @@ Create two `geolonia.maps.Map` instances; the inset gets `gestureHandling: "none
 
 ### maps-react
 
-Put two `<Map>` components, each with the same `<Source>` and `<Layer>`, and pass `paint={{ "fill-color": fillColor(selected) }}` from a `useState` value so both maps recolour together. The main map uses `interactiveLayerIds={["prefectures"]}` so `onClick` receives `e.features`, and keeps the instance through `ref` to call `fitBounds`. The inset uses `navigationControl={false}`, `cursor="pointer"`, an `onClick` without `interactiveLayerIds`, and `onLoad` to fit Okinawa and disable its handlers.
+Put two `<Map>` components, each with the same `<Source>` and `<Layer>`, and pass `paint={{ "fill-color": fillColor(selected) }}` from a `useState` value so both maps recolour together. The main map uses `interactiveLayerIds={["prefectures"]}` so `onClick` receives `e.features` and `onMouseEnter`/`onMouseLeave` fire on the layer (used to switch `cursor`), and keeps the instance through `ref` to call `fitBounds`. The inset uses `navigationControl={false}`, `cursor="pointer"`, an `onClick` without `interactiveLayerIds`, and `onLoad` to fit Okinawa and disable its handlers.
 
 **When it does not work**
 
