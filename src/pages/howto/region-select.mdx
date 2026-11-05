@@ -1,0 +1,418 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 地方から都道府県を選ぶ地図を作るには
+description: 地方をクリックするとその地方に寄り、続けて都道府県を選べる地図を作ります。沖縄県は左上の小さな地図で見せます。
+page: howto
+kicker: 応用
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+店舗や窓口を探す画面でよく見る「地方を選んでから都道府県を選ぶ」地図を作ります。1 回目のクリックで地方を選ぶとその地方に寄り、2 回目のクリックで都道府県を選びます。
+
+日本全体を 1 枚に収めると、沖縄県は九州から遠く離れていて地図が横に広がります。そこで沖縄県は、紙の日本地図と同じように、左上に重ねた小さな地図で見せます。
+
+## データの用意
+
+都道府県の境界を GeoJSON で用意し、各都道府県の `properties` に名前と地方を持たせます。
+
+```json
+{
+  "type": "Feature",
+  "geometry": { "type": "MultiPolygon", "coordinates": [ ... ] },
+  "properties": { "code": 13, "name": "東京都", "region": "関東" }
+}
+```
+
+この例では、[Natural Earth](https://www.naturalearthdata.com/) の 1:1000 万の行政区域（パブリックドメイン）から日本の 47 都道府県を切り出し、八地方区分を `region` に足した `/data/prefectures.geojson`（約 240KB）を使います。海岸線は粗いので、市区町村まで寄せて見せる用途には向きません。
+
+## コード
+
+3 つの実装方式とも、組み立ては同じです。
+
+1. 本土の地図と、沖縄県を映す小さな地図の 2 つを作り、どちらにも同じ都道府県のデータを `fill` レイヤで重ねる。
+2. 選んでいる地方を 1 つの変数で持つ。全国を表示しているときは地方ごとに色を分け、地方を選んだらその地方だけを緑にする。
+3. クリックした都道府県の地方が、選んでいる地方と違えば、その地方の範囲に `fitBounds` で寄る。同じなら、その都道府県を選んだことにする。
+
+地方ごとの範囲は、データから小さな島を除いて計算し、コードに書いています。沖縄県は小さな地図で見せるので、九州・沖縄の範囲には含めていません。
+
+<Lens name="embed">
+`class="geolonia"` を付けない要素を 2 つ用意し、`new geolonia.Map` でそれぞれ地図を作ります。案内の文と「全国に戻る」ボタンは、地図の上に置きます。
+
+<LiveCode title="embed で地方から都道府県を選ぶ" height={480}>
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body { margin: 0; display: flex; flex-direction: column; height: 100vh; font: 14px/1.6 system-ui, sans-serif; }
+      #panel { padding: 6px 8px; }
+      #stage { position: relative; flex: 1; }
+      #map { height: 100%; }
+      #okinawa {
+        position: absolute; top: 8px; left: 8px; z-index: 1;
+        width: 150px; height: 170px; border: 2px solid #555; cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="panel">
+      <span id="message">地方を選んでください</span>
+      <button id="back" hidden>全国に戻る</button>
+    </div>
+    <div id="stage">
+      <div id="map" data-marker="off"></div>
+      <div id="okinawa" data-marker="off" data-navigation-control="off"></div>
+    </div>
+
+    <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script>
+      // 地方ごとの範囲 [[西, 南], [東, 北]]
+      const regions = {
+        "北海道": [[139.7, 41.4], [145.9, 45.6]],
+        "東北": [[139.1, 36.7], [142.1, 41.6]],
+        "関東": [[138.3, 34.9], [140.9, 37.2]],
+        "中部": [[135.4, 34.5], [139.9, 38.6]],
+        "近畿": [[134.2, 33.4], [137.0, 35.8]],
+        "中国": [[130.8, 33.7], [134.6, 35.7]],
+        "四国": [[132.0, 32.7], [134.8, 34.4]],
+        "九州・沖縄": [[129.5, 31.0], [132.1, 34.0]],
+      };
+      const japan = [[129.5, 31.0], [145.9, 45.6]];
+      const okinawaArea = [[126.6, 25.9], [128.4, 27.1]];
+
+      const regionColors = [
+        "match", ["get", "region"],
+        "北海道", "#8dd3c7", "東北", "#bebada", "関東", "#fb8072", "中部", "#80b1d3",
+        "近畿", "#fdb462", "中国", "#b3de69", "四国", "#fccde5", "#ffed6f",
+      ];
+      const fillColor = (region) => region === null
+        ? regionColors
+        : ["case", ["==", ["get", "region"], region], "#4caf50", "#dddddd"];
+
+      const message = document.getElementById("message");
+      const back = document.getElementById("back");
+      const main = new geolonia.Map("#map");
+      const okinawa = new geolonia.Map("#okinawa");
+      let selected = null; // 選んでいる地方。null のときは全国
+
+      function show(region) {
+        selected = region;
+        for (const map of [main, okinawa]) {
+          map.setPaintProperty("prefectures", "fill-color", fillColor(region));
+        }
+        main.fitBounds(region === null ? japan : regions[region], { padding: 20 });
+        message.textContent = region === null ? "地方を選んでください" : `${region}：都道府県を選んでください`;
+        back.hidden = region === null;
+      }
+
+      function choose({ name, region }) {
+        if (region !== selected) {
+          show(region);
+        } else {
+          message.textContent = `${name}を選びました`;
+        }
+      }
+
+      for (const map of [main, okinawa]) {
+        map.on("load", () => {
+          map.addSource("prefectures", { type: "geojson", data: "/data/prefectures.geojson" });
+          map.addLayer({
+            id: "prefectures",
+            type: "fill",
+            source: "prefectures",
+            paint: { "fill-color": fillColor(null), "fill-opacity": 0.8, "fill-outline-color": "#ffffff" },
+          });
+        });
+      }
+
+      main.on("load", () => main.fitBounds(japan, { padding: 20, duration: 0 }));
+      main.on("click", "prefectures", (e) => choose(e.features[0].properties));
+      main.on("mouseenter", "prefectures", () => { main.getCanvas().style.cursor = "pointer"; });
+      main.on("mouseleave", "prefectures", () => { main.getCanvas().style.cursor = ""; });
+
+      okinawa.on("load", () => {
+        okinawa.fitBounds(okinawaArea, { padding: { top: 8, right: 8, bottom: 72, left: 8 }, duration: 0 });
+        for (const handler of ["dragPan", "scrollZoom", "doubleClickZoom", "touchZoomRotate", "dragRotate", "keyboard", "boxZoom"]) {
+          okinawa[handler].disable();
+        }
+      });
+      okinawa.on("click", () => choose({ name: "沖縄県", region: "九州・沖縄" }));
+
+      back.addEventListener("click", () => show(null));
+    </script>
+  </body>
+</html>
+```
+
+</LiveCode>
+
+- **`fillColor(region)`**：全国を表示しているとき（`null`）は `match` 式で地方ごとに色を分け、地方を選んだら `case` 式でその地方だけを緑にします。`setPaintProperty` で 2 つの地図の色をまとめて切り替えます。
+- **`fitBounds`**：選んだ地方の範囲に寄ります。最初に全国を表示するときは `duration: 0` で、動かさずに合わせています。
+- **小さな地図の `fitBounds`**：下の余白を広く取り、右下の出典表記と沖縄本島が重ならないようにしています。
+- **小さな地図の `disable()`**：ドラッグやズームを止め、沖縄県が枠から外れないようにしています。
+- **小さな地図の `click`**：沖縄本島は細くて押しにくいので、レイヤを指定せず、枠のどこを押しても沖縄県を選んだことにしています。
+
+</Lens>
+
+<Lens name="suite">
+地図を 2 つ作り、`map.getGeoloniaMap()` で取り出した基盤の地図にレイヤを足します。地方への移動は suite の `fitBounds` で行います。小さな地図は `gestureHandling: "none"` で動かせないようにします。
+
+<LiveCode title="maps-suite で地方から都道府県を選ぶ" height={480}>
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+// 地方ごとの範囲
+const regions = {
+  "北海道": { north: 45.6, south: 41.4, east: 145.9, west: 139.7 },
+  "東北": { north: 41.6, south: 36.7, east: 142.1, west: 139.1 },
+  "関東": { north: 37.2, south: 34.9, east: 140.9, west: 138.3 },
+  "中部": { north: 38.6, south: 34.5, east: 139.9, west: 135.4 },
+  "近畿": { north: 35.8, south: 33.4, east: 137.0, west: 134.2 },
+  "中国": { north: 35.7, south: 33.7, east: 134.6, west: 130.8 },
+  "四国": { north: 34.4, south: 32.7, east: 134.8, west: 132.0 },
+  "九州・沖縄": { north: 34.0, south: 31.0, east: 132.1, west: 129.5 },
+};
+const japan = { north: 45.6, south: 31.0, east: 145.9, west: 129.5 };
+const okinawaArea = { north: 27.1, south: 25.9, east: 128.4, west: 126.6 };
+
+const regionColors = [
+  "match", ["get", "region"],
+  "北海道", "#8dd3c7", "東北", "#bebada", "関東", "#fb8072", "中部", "#80b1d3",
+  "近畿", "#fdb462", "中国", "#b3de69", "四国", "#fccde5", "#ffed6f",
+];
+const fillColor = (region) => region === null
+  ? regionColors
+  : ["case", ["==", ["get", "region"], region], "#4caf50", "#dddddd"];
+
+// 地図の上に、案内の文と「全国に戻る」ボタンを置く
+const panel = document.createElement("div");
+panel.style.cssText = "height: 36px; padding: 6px 8px; box-sizing: border-box; font: 14px/24px system-ui, sans-serif;";
+const message = document.createElement("span");
+const back = document.createElement("button");
+back.textContent = "全国に戻る";
+back.hidden = true;
+panel.append(message, " ", back);
+document.body.prepend(panel);
+
+const container = document.getElementById("map");
+container.style.height = "calc(100vh - 36px)";
+
+// 沖縄県を映す小さな地図の入れ物を、左上に重ねる
+const inset = document.createElement("div");
+inset.style.cssText =
+  "position: absolute; top: 44px; left: 8px; z-index: 1; width: 150px; height: 170px; border: 2px solid #555; cursor: pointer;";
+document.body.append(inset);
+
+const main = new geolonia.maps.Map(container, {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 38, lng: 137 },
+  zoom: 4,
+});
+const okinawa = new geolonia.maps.Map(inset, {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 26.5, lng: 127.5 },
+  zoom: 6,
+  gestureHandling: "none",
+  disableDefaultUI: true,
+});
+
+let selected = null; // 選んでいる地方。null のときは全国
+
+function show(region) {
+  selected = region;
+  for (const map of [main, okinawa]) {
+    map.getGeoloniaMap().setPaintProperty("prefectures", "fill-color", fillColor(region));
+  }
+  main.fitBounds(region === null ? japan : regions[region], 20);
+  message.textContent = region === null ? "地方を選んでください" : `${region}：都道府県を選んでください`;
+  back.hidden = region === null;
+}
+
+function choose({ name, region }) {
+  if (region !== selected) {
+    show(region);
+  } else {
+    message.textContent = `${name}を選びました`;
+  }
+}
+
+await Promise.all([main.whenReady(), okinawa.whenReady()]);
+
+for (const map of [main, okinawa]) {
+  const impl = map.getGeoloniaMap();
+  impl.addSource("prefectures", { type: "geojson", data: "/data/prefectures.geojson" });
+  impl.addLayer({
+    id: "prefectures",
+    type: "fill",
+    source: "prefectures",
+    paint: { "fill-color": fillColor(null), "fill-opacity": 0.8, "fill-outline-color": "#ffffff" },
+  });
+}
+
+const impl = main.getGeoloniaMap();
+impl.on("click", "prefectures", (e) => choose(e.features[0].properties));
+impl.on("mouseenter", "prefectures", () => { impl.getCanvas().style.cursor = "pointer"; });
+impl.on("mouseleave", "prefectures", () => { impl.getCanvas().style.cursor = ""; });
+
+okinawa.addListener("click", () => choose({ name: "沖縄県", region: "九州・沖縄" }));
+okinawa.fitBounds(okinawaArea, { top: 8, right: 8, bottom: 72, left: 8 });
+
+back.addEventListener("click", () => show(null));
+show(null);
+```
+
+</LiveCode>
+
+- **`gestureHandling: "none"`**：小さな地図をドラッグやズームで動かせないようにします。`disableDefaultUI: true` で、ズームボタンなどの既定のコントロールも消しています。
+- **`fitBounds(範囲, 余白)`**：余白は数値 1 つか、`{ top, right, bottom, left }` で指定します。小さな地図は下の余白を広く取り、右下の出典表記と沖縄本島が重ならないようにしています。
+- **クリックの受け取り方**：本土の地図は、基盤の地図の `on("click", "prefectures", ...)` で、クリックした都道府県を受け取ります。小さな地図は、沖縄本島が細くて押しにくいので、suite の `addListener("click", ...)` で枠のどこを押しても沖縄県を選んだことにしています。
+
+</Lens>
+
+<Lens name="react">
+`<Map>` を 2 つ置き、どちらにも同じ `<Source>` と `<Layer>` を入れます。選んでいる地方を `useState` で持ち、`<Layer>` の `paint` に渡すと、地方を選ぶたびに 2 つの地図の色が切り替わります。
+
+<LiveCode title="maps-react で地方から都道府県を選ぶ" height={480}>
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { Map, Source, Layer } from "@geolonia/maps-react";
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
+
+// 地方ごとの範囲 [[西, 南], [東, 北]]
+const regions = {
+  "北海道": [[139.7, 41.4], [145.9, 45.6]],
+  "東北": [[139.1, 36.7], [142.1, 41.6]],
+  "関東": [[138.3, 34.9], [140.9, 37.2]],
+  "中部": [[135.4, 34.5], [139.9, 38.6]],
+  "近畿": [[134.2, 33.4], [137.0, 35.8]],
+  "中国": [[130.8, 33.7], [134.6, 35.7]],
+  "四国": [[132.0, 32.7], [134.8, 34.4]],
+  "九州・沖縄": [[129.5, 31.0], [132.1, 34.0]],
+};
+const japan = [[129.5, 31.0], [145.9, 45.6]];
+const okinawaArea = [[126.6, 25.9], [128.4, 27.1]];
+
+const regionColors = [
+  "match", ["get", "region"],
+  "北海道", "#8dd3c7", "東北", "#bebada", "関東", "#fb8072", "中部", "#80b1d3",
+  "近畿", "#fdb462", "中国", "#b3de69", "四国", "#fccde5", "#ffed6f",
+];
+const fillColor = (region) => region === null
+  ? regionColors
+  : ["case", ["==", ["get", "region"], region], "#4caf50", "#dddddd"];
+
+function Prefectures({ selected }) {
+  return (
+    <Source id="prefectures" type="geojson" data="/data/prefectures.geojson">
+      <Layer
+        id="prefectures"
+        type="fill"
+        paint={{ "fill-color": fillColor(selected), "fill-opacity": 0.8, "fill-outline-color": "#ffffff" }}
+      />
+    </Source>
+  );
+}
+
+function App() {
+  const mainRef = useRef(null);
+  const [selected, setSelected] = useState(null); // 選んでいる地方。null のときは全国
+  const [chosen, setChosen] = useState(null); // 選んだ都道府県
+
+  function show(region) {
+    setSelected(region);
+    setChosen(null);
+    mainRef.current?.fitBounds(region === null ? japan : regions[region], { padding: 20 });
+  }
+
+  function choose({ name, region }) {
+    if (region !== selected) {
+      show(region);
+    } else {
+      setChosen(name);
+    }
+  }
+
+  const message = chosen
+    ? `${chosen}を選びました`
+    : selected === null ? "地方を選んでください" : `${selected}：都道府県を選んでください`;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", font: "14px/1.6 system-ui, sans-serif" }}>
+      <div style={{ padding: "6px 8px" }}>
+        {message} {selected !== null && <button onClick={() => show(null)}>全国に戻る</button>}
+      </div>
+      <div style={{ position: "relative", flex: 1 }}>
+        <Map
+          ref={(map) => { mainRef.current = map; }}
+          apiKey="YOUR-API-KEY"
+          center={[137, 38]}
+          zoom={4}
+          containerStyle={{ height: "100%" }}
+          interactiveLayerIds={["prefectures"]}
+          onClick={(e) => e.features?.[0] && choose(e.features[0].properties)}
+          onLoad={(map) => map.fitBounds(japan, { padding: 20, duration: 0 })}
+        >
+          <Prefectures selected={selected} />
+        </Map>
+        <div style={{ position: "absolute", top: 8, left: 8, zIndex: 1, width: 150, height: 170, border: "2px solid #555" }}>
+          <Map
+            apiKey="YOUR-API-KEY"
+            center={[127.5, 26.5]}
+            zoom={6}
+            navigationControl={false}
+            containerStyle={{ height: "100%" }}
+            cursor="pointer"
+            onClick={() => choose({ name: "沖縄県", region: "九州・沖縄" })}
+            onLoad={(map) => {
+              map.fitBounds(okinawaArea, { padding: { top: 8, right: 8, bottom: 72, left: 8 }, duration: 0 });
+              for (const handler of ["dragPan", "scrollZoom", "doubleClickZoom", "touchZoomRotate", "dragRotate", "keyboard", "boxZoom"]) {
+                map[handler].disable();
+              }
+            }}
+          >
+            <Prefectures selected={selected} />
+          </Map>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+```
+
+</LiveCode>
+
+- **`<Prefectures selected={selected} />`**：2 つの地図に同じ都道府県のレイヤを入れる部品です。`selected` が変わると `paint` が変わり、2 つの地図の色が切り替わります。
+- **`interactiveLayerIds`**：クリックした位置にある `prefectures` レイヤの地物が、`onClick` の `e.features` に入ります。
+- **`ref` と `onLoad`**：本土の地図は `ref` で地図インスタンスを持っておき、地方を選んだときに `fitBounds` を呼びます。最初の全国表示と、小さな地図の範囲合わせと操作の停止は `onLoad` で行います。
+- **小さな地図の `onClick`**：沖縄本島は細くて押しにくいので、`interactiveLayerIds` を付けず、枠のどこを押しても沖縄県を選んだことにしています。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。最初は日本全体を、地方ごとに色を分けて表示します。関東を押すと関東に寄り、関東の都県だけを緑にします。続けて東京都を押すと「東京都を選びました」と表示されます。左上の沖縄の枠を押すと九州・沖縄を選んだことになり、もう一度押すと沖縄県を選びます。
+
+実際のサイトでは、「〜を選びました」と表示する代わりに、都道府県ごとのページへ移動したり、一覧を絞り込んだりする処理を書きます。都道府県の `code`（1〜47）は全国地方公共団体コードの都道府県の部分と同じなので、URL やデータの検索に使えます。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 地方を押しても寄らない → `regions` のキーと、データの `region` の値が一字一句同じか確認してください。「九州・沖縄」の「・」が全角か半角かでも別の値になります。
+- 小さな地図に沖縄県が映らない、または一部が切れる → 小さな地図の大きさを変えたときは、`fitBounds` の余白を合わせて調整してください。
+- スマートフォンで地図が狭い → 小さな地図の `width` と `height` を小さくするか、画面幅に応じて切り替えてください。
+</Callout>

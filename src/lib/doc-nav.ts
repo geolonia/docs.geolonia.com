@@ -102,6 +102,7 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
       ['maps-core-access', '地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには'],
       ['clustering', '大量の点をクラスタリングするには'],
       ['choropleth', '値に応じてエリアを色分けするには（コロプレス）'],
+      ['region-select', '地方から都道府県を選ぶ地図を作るには'],
       ['heatmap', 'ヒートマップで密度を可視化するには'],
       ['3d', '建物や地形を3Dで表示するには'],
       ['custom-source', '独自のデータソース（ベクトルタイル等）を追加するには'],
