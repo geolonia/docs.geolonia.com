@@ -2362,7 +2362,7 @@ A map where the first click picks one of the eight regions and zooms to it with 
 1. Create two maps, the main map and the Okinawa inset, and add the same prefecture data to both as a `fill` layer.
 2. Keep the selected region in one variable. With no region selected, colour by region with a `match` expression; with a region selected, colour only that region green with a `case` expression.
 3. When a clicked prefecture belongs to a different region, `fitBounds` to that region. When it belongs to the selected region, treat the prefecture as chosen and `fitBounds` to its bounds.
-4. Above the map, list the regions (or, once a region is selected, a back button and that region's prefectures) as buttons, so the map can be used with a keyboard alone. The prefecture names come from fetching the same GeoJSON. The message line has `aria-live="polite"`.
+4. Above the map, list the regions (or, once a region is selected, a back button and that region's prefectures) as buttons, so the map can be used with a keyboard alone. The prefecture names come from fetching the same GeoJSON. The message line has `aria-live="polite"`. The buttons stay disabled until both maps have loaded (and, in embed, have the layer), because recolouring before the layer exists throws, and in React a late `onLoad` would move the map back to the whole country.
 5. The inset is fixed: its drag and zoom handlers are disabled, and a click anywhere on it chooses Okinawa, because the main island is too thin to hit reliably. Its `fitBounds` uses a large bottom padding so the attribution does not cover the island.
 
 ### embed
@@ -2426,6 +2426,7 @@ A map where the first click picks one of the eight regions and zooms to it with 
       let prefectures = []; // { code, name, region } の一覧。ボタンに使う
       let selected = null; // 選んでいる地方。null のときは全国
       let chosen = null; // 選んだ都道府県の名前
+      let loaded = 0; // レイヤを足し終えた地図の数。2 になるまでボタンは押せない
 
       // 地図の外に、今選べるものをボタンで並べる（キーボードでも選べるようにする）
       function render() {
@@ -2440,6 +2441,7 @@ A map where the first click picks one of the eight regions and zooms to it with 
           const button = document.createElement("button");
           button.textContent = label;
           button.addEventListener("click", onClick);
+          button.disabled = loaded < 2;
           return button;
         }));
         if (hadFocus) choices.querySelector("button").focus();
@@ -2483,6 +2485,8 @@ A map where the first click picks one of the eight regions and zooms to it with 
             source: "prefectures",
             paint: { "fill-color": fillColor(null), "fill-opacity": 0.8, "fill-outline-color": "#ffffff" },
           });
+          loaded += 1;
+          render();
         });
       }
 

@@ -106,6 +106,7 @@ import LiveCode from '../../components/LiveCode.astro'
       let prefectures = []; // { code, name, region } の一覧。ボタンに使う
       let selected = null; // 選んでいる地方。null のときは全国
       let chosen = null; // 選んだ都道府県の名前
+      let loaded = 0; // レイヤを足し終えた地図の数。2 になるまでボタンは押せない
 
       // 地図の外に、今選べるものをボタンで並べる（キーボードでも選べるようにする）
       function render() {
@@ -120,6 +121,7 @@ import LiveCode from '../../components/LiveCode.astro'
           const button = document.createElement("button");
           button.textContent = label;
           button.addEventListener("click", onClick);
+          button.disabled = loaded < 2;
           return button;
         }));
         if (hadFocus) choices.querySelector("button").focus();
@@ -163,6 +165,8 @@ import LiveCode from '../../components/LiveCode.astro'
             source: "prefectures",
             paint: { "fill-color": fillColor(null), "fill-opacity": 0.8, "fill-outline-color": "#ffffff" },
           });
+          loaded += 1;
+          render();
         });
       }
 
@@ -191,7 +195,7 @@ import LiveCode from '../../components/LiveCode.astro'
 
 </LiveCode>
 
-- **`render()`**：全国を表示しているときは地方のボタンを、地方を選んだら「全国に戻る」とその地方の都道府県のボタンを並べます。都道府県の名前と地方は、地図と同じ GeoJSON を `fetch` して取り出します。ボタンを押して並びが変わったときは、先頭のボタンにフォーカスを移し、キーボードで続けて選べるようにしています。
+- **`render()`**：全国を表示しているときは地方のボタンを、地方を選んだら「全国に戻る」とその地方の都道府県のボタンを並べます。都道府県の名前と地方は、地図と同じ GeoJSON を `fetch` して取り出します。ボタンを押して並びが変わったときは、先頭のボタンにフォーカスを移し、キーボードで続けて選べるようにしています。2 つの地図にレイヤを足し終えるまでは、ボタンを押せないようにしています（`loaded`）。レイヤができる前に色を切り替えようとすると、エラーになるためです。
 - **`aria-live="polite"`**：案内の文が変わったことを、スクリーンリーダーに読み上げてもらうための指定です。
 - **`fillColor(region)`**：全国を表示しているとき（`null`）は `match` 式で地方ごとに色を分け、地方を選んだら `case` 式でその地方だけを緑にします。`setPaintProperty` で 2 つの地図の色をまとめて切り替えます。
 - **`fitBounds`**：地方を選んだらその地方の範囲に、都道府県を選んだらその都道府県の範囲（`properties` の `west`、`south`、`east`、`north`）に寄ります。最初に全国を表示するときは `duration: 0` で、動かさずに合わせています。
@@ -407,6 +411,7 @@ function App() {
   const [selected, setSelected] = useState(null); // 選んでいる地方。null のときは全国
   const [chosen, setChosen] = useState(null); // 選んだ都道府県の名前
   const [hover, setHover] = useState(false); // カーソルが都道府県の上にあるか
+  const [loaded, setLoaded] = useState(0); // 読み込みを終えた地図の数。2 になるまでボタンは押せない
 
   useEffect(() => {
     fetch("/data/prefectures.geojson")
@@ -450,12 +455,12 @@ function App() {
         <div ref={choicesRef} style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
           {selected === null
             ? Object.keys(regions).map((region) => (
-                <button key={region} onClick={() => show(region)}>{region}</button>
+                <button key={region} disabled={loaded < 2} onClick={() => show(region)}>{region}</button>
               ))
             : [
-                <button key="back" onClick={() => show(null)}>全国に戻る</button>,
+                <button key="back" disabled={loaded < 2} onClick={() => show(null)}>全国に戻る</button>,
                 ...prefectures.filter((p) => p.region === selected).map((p) => (
-                  <button key={p.code} onClick={() => choose(p)}>{p.name}</button>
+                  <button key={p.code} disabled={loaded < 2} onClick={() => choose(p)}>{p.name}</button>
                 )),
               ]}
         </div>
@@ -472,7 +477,10 @@ function App() {
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           onClick={(e) => e.features?.[0] && choose(e.features[0].properties)}
-          onLoad={(map) => map.fitBounds(japan, { padding: 20, duration: 0 })}
+          onLoad={(map) => {
+            map.fitBounds(japan, { padding: 20, duration: 0 });
+            setLoaded((n) => n + 1);
+          }}
         >
           <Prefectures selected={selected} />
         </Map>
@@ -490,6 +498,7 @@ function App() {
               for (const handler of ["dragPan", "scrollZoom", "doubleClickZoom", "touchZoomRotate", "dragRotate", "keyboard", "boxZoom"]) {
                 map[handler].disable();
               }
+              setLoaded((n) => n + 1);
             }}
           >
             <Prefectures selected={selected} />
@@ -506,7 +515,7 @@ createRoot(document.getElementById("root")).render(<App />);
 </LiveCode>
 
 - **`<Prefectures selected={selected} />`**：2 つの地図に同じ都道府県のレイヤを入れる部品です。`selected` が変わると `paint` が変わり、2 つの地図の色が切り替わります。
-- **ボタン**：都道府県の名前と地方は、`useEffect` で GeoJSON を `fetch` して `prefectures` に持ちます。`selected` が `null` なら地方のボタンを、地方を選んだら「全国に戻る」とその地方の都道府県のボタンを並べます。ボタンで地方を選んだときは、並び替わったあとの先頭のボタンにフォーカスを移し、キーボードで続けて選べるようにしています。
+- **ボタン**：都道府県の名前と地方は、`useEffect` で GeoJSON を `fetch` して `prefectures` に持ちます。`selected` が `null` なら地方のボタンを、地方を選んだら「全国に戻る」とその地方の都道府県のボタンを並べます。ボタンで地方を選んだときは、並び替わったあとの先頭のボタンにフォーカスを移し、キーボードで続けて選べるようにしています。2 つの地図の `onLoad` が終わるまでは、ボタンを押せないようにしています（`loaded`）。読み込み中に地方を選ぶと、そのあとの `onLoad` で全国に戻ってしまい、選んだ地方と表示がずれるためです。
 - **`interactiveLayerIds`**：クリックした位置にある `prefectures` レイヤの地物が、`onClick` の `e.features` に入ります。`onMouseEnter` と `onMouseLeave` も、このレイヤへの出入りで呼ばれます。これを使って `cursor` を指の形に切り替えています。
 - **`ref` と `onLoad`**：本土の地図は `ref` で地図インスタンスを持っておき、地方を選んだときに `fitBounds` を呼びます。最初の全国表示と、小さな地図の範囲合わせと操作の停止は `onLoad` で行います。
 - **小さな地図の `onClick`**：沖縄本島は細くて押しにくいので、`interactiveLayerIds` を付けず、枠のどこを押しても沖縄県を選んだことにしています。
