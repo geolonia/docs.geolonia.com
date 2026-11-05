@@ -139,6 +139,7 @@ import LiveCode from '../../components/LiveCode.astro'
 
       // pref は { code, name, region, west, south, east, north }
       function choose(pref) {
+        if (loaded < 2) return; // 地図のクリックも、準備が終わるまでは受け付けない
         if (pref.region !== selected) {
           show(pref.region);
         } else {
@@ -195,7 +196,7 @@ import LiveCode from '../../components/LiveCode.astro'
 
 </LiveCode>
 
-- **`render()`**：全国を表示しているときは地方のボタンを、地方を選んだら「全国に戻る」とその地方の都道府県のボタンを並べます。都道府県の名前と地方は、地図と同じ GeoJSON を `fetch` して取り出します。ボタンを押して並びが変わったときは、先頭のボタンにフォーカスを移し、キーボードで続けて選べるようにしています。2 つの地図にレイヤを足し終えるまでは、ボタンを押せないようにしています（`loaded`）。レイヤができる前に色を切り替えようとすると、エラーになるためです。
+- **`render()`**：全国を表示しているときは地方のボタンを、地方を選んだら「全国に戻る」とその地方の都道府県のボタンを並べます。都道府県の名前と地方は、地図と同じ GeoJSON を `fetch` して取り出します。ボタンを押して並びが変わったときは、先頭のボタンにフォーカスを移し、キーボードで続けて選べるようにしています。2 つの地図にレイヤを足し終えるまでは、ボタンを押せないようにし、地図のクリックも `choose()` で受け付けないようにしています（`loaded`）。レイヤができる前に色を切り替えようとすると、エラーになるためです。
 - **`aria-live="polite"`**：案内の文が変わったことを、スクリーンリーダーに読み上げてもらうための指定です。
 - **`fillColor(region)`**：全国を表示しているとき（`null`）は `match` 式で地方ごとに色を分け、地方を選んだら `case` 式でその地方だけを緑にします。`setPaintProperty` で 2 つの地図の色をまとめて切り替えます。
 - **`fitBounds`**：地方を選んだらその地方の範囲に、都道府県を選んだらその都道府県の範囲（`properties` の `west`、`south`、`east`、`north`）に寄ります。最初に全国を表示するときは `duration: 0` で、動かさずに合わせています。
@@ -434,7 +435,7 @@ function App() {
 
   // pref は { code, name, region, west, south, east, north }
   function choose(pref) {
-    if (!pref) return;
+    if (!pref || loaded < 2) return; // 地図のクリックも、準備が終わるまでは受け付けない
     if (pref.region !== selected) {
       show(pref.region);
     } else {
@@ -515,7 +516,7 @@ createRoot(document.getElementById("root")).render(<App />);
 </LiveCode>
 
 - **`<Prefectures selected={selected} />`**：2 つの地図に同じ都道府県のレイヤを入れる部品です。`selected` が変わると `paint` が変わり、2 つの地図の色が切り替わります。
-- **ボタン**：都道府県の名前と地方は、`useEffect` で GeoJSON を `fetch` して `prefectures` に持ちます。`selected` が `null` なら地方のボタンを、地方を選んだら「全国に戻る」とその地方の都道府県のボタンを並べます。ボタンで地方を選んだときは、並び替わったあとの先頭のボタンにフォーカスを移し、キーボードで続けて選べるようにしています。2 つの地図の `onLoad` が終わるまでは、ボタンを押せないようにしています（`loaded`）。読み込み中に地方を選ぶと、そのあとの `onLoad` で全国に戻ってしまい、選んだ地方と表示がずれるためです。
+- **ボタン**：都道府県の名前と地方は、`useEffect` で GeoJSON を `fetch` して `prefectures` に持ちます。`selected` が `null` なら地方のボタンを、地方を選んだら「全国に戻る」とその地方の都道府県のボタンを並べます。ボタンで地方を選んだときは、並び替わったあとの先頭のボタンにフォーカスを移し、キーボードで続けて選べるようにしています。2 つの地図の `onLoad` が終わるまでは、ボタンを押せないようにし、地図のクリックも `choose()` で受け付けないようにしています（`loaded`）。読み込み中に地方を選ぶと、そのあとの `onLoad` で全国に戻ってしまい、選んだ地方と表示がずれるためです。
 - **`interactiveLayerIds`**：クリックした位置にある `prefectures` レイヤの地物が、`onClick` の `e.features` に入ります。`onMouseEnter` と `onMouseLeave` も、このレイヤへの出入りで呼ばれます。これを使って `cursor` を指の形に切り替えています。
 - **`ref` と `onLoad`**：本土の地図は `ref` で地図インスタンスを持っておき、地方を選んだときに `fitBounds` を呼びます。最初の全国表示と、小さな地図の範囲合わせと操作の停止は `onLoad` で行います。
 - **小さな地図の `onClick`**：沖縄本島は細くて押しにくいので、`interactiveLayerIds` を付けず、枠のどこを押しても沖縄県を選んだことにしています。
