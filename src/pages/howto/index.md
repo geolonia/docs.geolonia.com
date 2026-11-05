@@ -32,6 +32,7 @@ quadrant: Diátaxis / 仕事 × 行動
 - [地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには](/howto/maps-core-access/)
 - [大量の点をクラスタリングするには](/howto/clustering/)
 - [値に応じてエリアを色分けするには（コロプレス）](/howto/choropleth/)
+- [地方から都道府県を選ぶ地図を作るには](/howto/region-select/)
 - [ヒートマップで密度を可視化するには](/howto/heatmap/)
 - [建物や地形を3Dで表示するには](/howto/3d/)
 - [独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)

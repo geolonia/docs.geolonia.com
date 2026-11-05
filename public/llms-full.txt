@@ -2343,6 +2343,192 @@ Keeping `fill-opacity` below 1 lets the map underneath, roads and place names, s
 
 ---
 
+## Pick a Region, Then a Prefecture
+
+URL: https://docs.geolonia.com/howto/region-select/
+
+A map where the first click picks one of the eight regions and zooms to it with `fitBounds`, and the second click picks a prefecture. Okinawa is far from Kyushu, so it is shown in a small inset map in the top-left corner, as on paper maps of Japan. The inset covers Okinawa Island and the islands nearby; Miyako, Yaeyama and the Daito Islands are outside it.
+
+### Data
+
+`/data/prefectures.geojson` (about 240 KB) holds the 47 prefectures cut from the Natural Earth 1:10m admin-1 data (public domain), with `code` (1 to 47, the prefecture part of the Japanese local government code; pad to two digits such as `01` when used as a string), `name`, `region`, and the bounds `west`, `south`, `east`, `north` in `properties`. The bounds leave out remote small islands such as Tokyo's Ogasawara Islands, and are four numbers rather than an array because array properties come back as strings from map clicks. Natural Earth puts the Amami Islands in Okinawa, so they were moved to Kagoshima. The coastline is coarse, so it does not suit views zoomed to city level.
+
+```json
+{ "type": "Feature", "geometry": { "type": "MultiPolygon", "coordinates": [ ... ] }, "properties": { "code": 13, "name": "東京都", "region": "関東", "west": 138.92, "south": 34.67, "east": 139.89, "north": 35.88 } }
+```
+
+### How it works (all three libraries)
+
+1. Create two maps, the main map and the Okinawa inset, and add the same prefecture data to both as a `fill` layer.
+2. Keep the selected region in one variable. With no region selected, colour by region with a `match` expression; with a region selected, colour only that region green with a `case` expression.
+3. When a clicked prefecture belongs to a different region, `fitBounds` to that region. When it belongs to the selected region, treat the prefecture as chosen and `fitBounds` to its bounds.
+4. Above the map, list the regions (or, once a region is selected, a back button and that region's prefectures) as buttons, so the map can be used with a keyboard alone. The prefecture names come from fetching the same GeoJSON. The message line has `aria-live="polite"`. The buttons stay disabled, and `choose()` ignores map clicks, until both maps have loaded (and, in embed, have the layer), because recolouring before the layer exists throws, and in React a late `onLoad` would move the map back to the whole country.
+5. The inset is fixed: its drag and zoom handlers are disabled, and a click anywhere on it chooses Okinawa, because the main island is too thin to hit reliably. Its `fitBounds` uses a large bottom padding so the attribution does not cover the island.
+
+### embed
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body { margin: 0; display: flex; flex-direction: column; height: 100vh; font: 14px/1.6 system-ui, sans-serif; }
+      #panel { padding: 6px 8px; }
+      #choices { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+      #stage { position: relative; flex: 1; }
+      #map { height: 100%; }
+      #okinawa {
+        position: absolute; top: 8px; left: 8px; z-index: 1;
+        width: 150px; height: 170px; border: 2px solid #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="panel">
+      <div id="message" aria-live="polite"></div>
+      <div id="choices"></div>
+    </div>
+    <div id="stage">
+      <div id="map" data-marker="off"></div>
+      <div id="okinawa" data-marker="off" data-navigation-control="off"></div>
+    </div>
+
+    <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+    <script>
+      // 地方ごとの範囲 [[西, 南], [東, 北]]
+      const regions = {
+        "北海道": [[139.7, 41.4], [145.9, 45.6]],
+        "東北": [[139.1, 36.7], [142.1, 41.6]],
+        "関東": [[138.3, 34.9], [140.9, 37.2]],
+        "中部": [[135.4, 34.5], [139.9, 38.6]],
+        "近畿": [[134.2, 33.4], [137.0, 35.8]],
+        "中国": [[130.8, 33.7], [134.6, 35.7]],
+        "四国": [[132.0, 32.7], [134.8, 34.4]],
+        "九州・沖縄": [[129.5, 31.0], [132.1, 34.0]],
+      };
+      const japan = [[129.5, 31.0], [145.9, 45.6]];
+      const okinawaArea = [[126.6, 25.9], [128.4, 27.1]];
+
+      const regionColors = [
+        "match", ["get", "region"],
+        "北海道", "#8dd3c7", "東北", "#bebada", "関東", "#fb8072", "中部", "#80b1d3",
+        "近畿", "#fdb462", "中国", "#b3de69", "四国", "#fccde5", "#ffed6f",
+      ];
+      const fillColor = (region) => region === null
+        ? regionColors
+        : ["case", ["==", ["get", "region"], region], "#4caf50", "#dddddd"];
+
+      const message = document.getElementById("message");
+      const choices = document.getElementById("choices");
+      const main = new geolonia.Map("#map");
+      const okinawa = new geolonia.Map("#okinawa");
+      let prefectures = []; // { code, name, region } の一覧。ボタンに使う
+      let selected = null; // 選んでいる地方。null のときは全国
+      let chosen = null; // 選んだ都道府県の名前
+      let loaded = 0; // レイヤを足し終えた地図の数。2 になるまでボタンは押せない
+
+      // 地図の外に、今選べるものをボタンで並べる（キーボードでも選べるようにする）
+      function render() {
+        message.textContent = chosen ? `${chosen}を選びました`
+          : selected === null ? "地方を選んでください" : `${selected}：都道府県を選んでください`;
+        const items = selected === null
+          ? Object.keys(regions).map((region) => [region, () => show(region)])
+          : [["全国に戻る", () => show(null)],
+             ...prefectures.filter((p) => p.region === selected).map((p) => [p.name, () => choose(p)])];
+        const hadFocus = choices.contains(document.activeElement);
+        choices.replaceChildren(...items.map(([label, onClick]) => {
+          const button = document.createElement("button");
+          button.textContent = label;
+          button.addEventListener("click", onClick);
+          button.disabled = loaded < 2;
+          return button;
+        }));
+        if (hadFocus) choices.querySelector("button").focus();
+      }
+
+      function show(region) {
+        selected = region;
+        chosen = null;
+        for (const map of [main, okinawa]) {
+          map.setPaintProperty("prefectures", "fill-color", fillColor(region));
+        }
+        main.fitBounds(region === null ? japan : regions[region], { padding: 20 });
+        render();
+      }
+
+      // pref は { code, name, region, west, south, east, north }
+      function choose(pref) {
+        if (loaded < 2) return; // 地図のクリックも、準備が終わるまでは受け付けない
+        if (pref.region !== selected) {
+          show(pref.region);
+        } else {
+          chosen = pref.name;
+          main.fitBounds([[pref.west, pref.south], [pref.east, pref.north]], { padding: 20 });
+          render();
+        }
+      }
+
+      fetch("/data/prefectures.geojson")
+        .then((res) => res.json())
+        .then((data) => {
+          prefectures = data.features.map((f) => f.properties);
+          render();
+        });
+      render();
+
+      for (const map of [main, okinawa]) {
+        map.on("load", () => {
+          map.addSource("prefectures", { type: "geojson", data: "/data/prefectures.geojson" });
+          map.addLayer({
+            id: "prefectures",
+            type: "fill",
+            source: "prefectures",
+            paint: { "fill-color": fillColor(null), "fill-opacity": 0.8, "fill-outline-color": "#ffffff" },
+          });
+          loaded += 1;
+          render();
+        });
+      }
+
+      main.on("load", () => {
+        main.fitBounds(japan, { padding: 20, duration: 0 });
+        main.on("click", "prefectures", (e) => choose(e.features[0].properties));
+        main.on("mouseenter", "prefectures", () => { main.getCanvas().style.cursor = "pointer"; });
+        main.on("mouseleave", "prefectures", () => { main.getCanvas().style.cursor = ""; });
+      });
+
+      okinawa.on("load", () => {
+        okinawa.fitBounds(okinawaArea, { padding: { top: 8, right: 8, bottom: 72, left: 8 }, duration: 0 });
+        for (const handler of ["dragPan", "scrollZoom", "doubleClickZoom", "touchZoomRotate", "dragRotate", "keyboard", "boxZoom"]) {
+          okinawa[handler].disable();
+        }
+        okinawa.getCanvas().style.cursor = "pointer";
+      });
+      okinawa.on("click", () => {
+        const pref = prefectures.find((p) => p.code === 47); // 沖縄県
+        if (pref) choose(pref);
+      });
+    </script>
+  </body>
+</html>
+```
+### maps-suite
+
+Create two `geolonia.maps.Map` instances; the inset gets `gestureHandling: "none"` and `disableDefaultUI: true`. After `whenReady()`, add the source and layer through `map.getGeoloniaMap()`, receive prefecture clicks with `getGeoloniaMap().on("click", "prefectures", ...)`, and move with the suite `fitBounds({ north, south, east, west }, padding)`, where padding is a number or `{ top, right, bottom, left }`. The inset uses `addListener("click", ...)` to choose Okinawa (the entry with `code` 47 from the fetched data). The suite fetches the GeoJSON first and passes the object to both the source and the buttons. It moves `#map` into a wrapper together with the inset so the inset stays on the map when the button row changes height.
+
+### maps-react
+
+Put two `<Map>` components, each with the same `<Source>` and `<Layer>`, and pass `paint={{ "fill-color": fillColor(selected) }}` from a `useState` value so both maps recolour together. The main map uses `interactiveLayerIds={["prefectures"]}` so `onClick` receives `e.features` and `onMouseEnter`/`onMouseLeave` fire on the layer (used to switch `cursor`), and keeps the instance through `ref` to call `fitBounds`. The inset uses `navigationControl={false}`, `cursor="pointer"`, an `onClick` without `interactiveLayerIds`, and `onLoad` to fit Okinawa and disable its handlers. The buttons come from fetching the GeoJSON in `useEffect`; after a button changes the list, focus moves to the first new button.
+
+**When it does not work**
+
+- Clicking a region does not zoom: check that the keys of `regions` match the `region` values in the data exactly. A full-width and a half-width "・" are different strings.
+- Okinawa is missing or cut off in the inset: when you change the inset size, adjust the `fitBounds` padding too.
+- The map is cramped on phones: make the inset smaller, or switch its size by screen width.
+
+---
+
 ## Visualise Density with a Heatmap
 
 URL: https://docs.geolonia.com/howto/heatmap/
