@@ -2245,17 +2245,21 @@ Adding `cluster` to `Source` makes maplibre build the clusters. You decide the d
 
 URL: https://docs.geolonia.com/howto/choropleth/
 
-A map showing numbers such as population or sales through the shading of areas (polygons) is called a **choropleth**. Give the polygon GeoJSON a numeric property and write the value-to-colour mapping as an expression.
+A map showing numbers such as population density or sales through the shading of areas (polygons) is called a **choropleth**. Give the polygon GeoJSON a numeric property and specify the value-to-colour mapping. This page colours Tokyo's 23 special wards by population density.
 
 ### Preparing the data
 
 ```json
 {
   "type": "Feature",
-  "geometry": { "type": "Polygon", "coordinates": [ ... ] },
-  "properties": { "name": "エリアA", "value": 72 }
+  "geometry": { "type": "MultiPolygon", "coordinates": [ ... ] },
+  "properties": { "code": 13112, "name": "世田谷区", "population": 867552, "area": 58.1, "density": 14920 }
 }
 ```
+
+`/data/tokyo23.geojson` (about 29 KB) takes the 23 wards from the administrative boundaries of the GSI "Global Map Japan" (version 2.2) and adds the Japanese ward name, the area in km² computed from the shapes, and the population density per km². The population is the 2014 value in the same data. At a scale of 1:1,000,000 the boundaries are coarse and do not suit close zooms. Colour by density, not by raw population: raw counts make the largest wards the darkest regardless of how crowded they are.
+
+Source: Geospatial Information Authority of Japan, "Global Map Japan" (https://www.gsi.go.jp/kankyochiri/gm_jpn.html), administrative boundaries, processed. Used under the Public Data License (Version 1.0).
 
 ### embed
 
@@ -2267,12 +2271,12 @@ Load the data with `data-geojson` and set the property and colours with the `dat
 </style>
 
 <div class="geolonia"
-     data-lat="35.665" data-lng="139.725" data-zoom="12"
+     data-lat="35.675" data-lng="139.73" data-zoom="9.4"
      data-marker="off"
-     data-geojson="/data/areas.geojson"
-     data-choropleth="value"
+     data-geojson="/data/tokyo23.geojson"
+     data-choropleth="density"
      data-choropleth-colors="#ffffcc,#fd8d3c,#bd0026"
-     data-choropleth-range="0,100"></div>
+     data-choropleth-range="5000,20000"></div>
 
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
@@ -2288,17 +2292,17 @@ Wait for load, then stack a `fill` layer whose `fill-color` carries an `interpol
 ```js
 await map.whenReady();
 const impl = map.getGeoloniaMap();
-impl.addSource("areas", { type: "geojson", data: "/data/areas.geojson" });
+impl.addSource("wards", { type: "geojson", data: "/data/tokyo23.geojson" });
 impl.addLayer({
-  id: "areas",
+  id: "wards",
   type: "fill",
-  source: "areas",
+  source: "wards",
   paint: {
     "fill-color": [
-      "interpolate", ["linear"], ["get", "value"],
-      0, "#ffffcc",
-      50, "#fd8d3c",
-      100, "#bd0026",
+      "interpolate", ["linear"], ["get", "density"],
+      5000, "#ffffcc",
+      12500, "#fd8d3c",
+      20000, "#bd0026",
     ],
     "fill-opacity": 0.75,
     "fill-outline-color": "#ffffff",
@@ -2313,14 +2317,14 @@ Pass the data with `geojson` and the colouring with `choropleth` on `<Map>`.
 ```jsx
 <Map
   apiKey="YOUR-API-KEY"
-  center={[139.725, 35.665]}
-  zoom={12}
+  center={[139.73, 35.675]}
+  zoom={9.4}
   containerStyle={{ width: "100%", height: "100vh" }}
-  geojson="/data/areas.geojson"
+  geojson="/data/tokyo23.geojson"
   choropleth={{
-    property: "value",
+    property: "density",
     colors: ["#ffffcc", "#fd8d3c", "#bd0026"],
-    range: [0, 100],
+    range: [5000, 20000],
   }}
 />
 ```
@@ -2330,15 +2334,15 @@ Pass the data with `geojson` and the colouring with `choropleth` on `<Map>`.
 Reading the `interpolate` expression in the maps-suite code:
 
 1. `["linear"]`: interpolate linearly between values.
-2. `["get", "value"]`: take `properties.value` of each polygon.
-3. The rest are value and colour pairs. `0` is pale yellow, `100` is deep red, and everything between varies continuously.
+2. `["get", "density"]`: take `properties.density` of each polygon.
+3. The rest are value and colour pairs. `5000` or less is pale yellow, `20000` or more is deep red, and everything between varies continuously.
 
 Keeping `fill-opacity` below 1 lets the map underneath, roads and place names, show through so the location stays legible.
 
 **When it does not work**
 
-- Everything is the same colour: check the spelling of the property name and that the value is a **number**. A string such as `"72"` disables the expression.
-- Some areas turn blackish: those polygons have a **missing** property. Fill it in the data or give a default with something like `["coalesce", ["get", "value"], 0]`.
+- Everything is the same colour: check the spelling of the property name and that the value is a **number**. A string such as `"14920"` is not coloured. Also check that the range is not far off the data values.
+- Some areas turn blackish: those polygons have a **missing** property. Fill it in the data or give a default with something like `["coalesce", ["get", "density"], 0]`.
 - Nothing appears: check for a missing `Layer` `id`, or a 404 on the GeoJSON.
 
 ---

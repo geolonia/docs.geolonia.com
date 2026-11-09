@@ -10,19 +10,28 @@ import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
-人口や売上のような数値を、エリア（ポリゴン）の色の濃淡で見せる地図を**コロプレス**と呼びます。ポリゴンの GeoJSON に数値プロパティを持たせ、値から色への対応を式で書きます。
+人口密度や売上のような数値を、エリア（ポリゴン）の色の濃淡で見せる地図を**コロプレス**と呼びます。ポリゴンの GeoJSON に数値プロパティを持たせ、値から色への対応を指定します。ここでは、東京都 23 区を人口密度で塗り分けます。
 
 ## データの用意
 
-各ポリゴンの `properties` に数値（ここでは `value`）を持たせた GeoJSON を用意します。
+各ポリゴンの `properties` に、塗り分けに使う数値（ここでは人口密度 `density`）を持たせた GeoJSON を用意します。
 
 ```json
 {
   "type": "Feature",
-  "geometry": { "type": "Polygon", "coordinates": [ ... ] },
-  "properties": { "name": "エリアA", "value": 72 }
+  "geometry": { "type": "MultiPolygon", "coordinates": [ ... ] },
+  "properties": {
+    "code": 13112, "name": "世田谷区",
+    "population": 867552, "area": 58.1, "density": 14920
+  }
 }
 ```
+
+この例の `/data/tokyo23.geojson`（約 29KB）は、国土地理院「地球地図日本」（第 2.2 版）の行政界データから東京都 23 区を取り出し、日本語の区名と、面積（km²）、人口密度（人/km²）を足したものです。人口は同じデータに入っている 2014 年の値で、面積は区の形から計算しています。縮尺 100 万分の 1 のデータなので、境界は粗く、寄せて見る用途には向きません。
+
+人口そのものではなく人口密度で塗るのは、人口のままでは面積の大きい区ほど濃くなり、混み具合を見せる地図にならないためです。コロプレスでは、面積や人口で割った値を使うのが基本です。
+
+出典：国土地理院「地球地図日本」（https://www.gsi.go.jp/kankyochiri/gm_jpn.html ）の行政界データを加工して作成。公共データ利用規約（第 1.0 版）に従って利用しています。
 
 ## コード
 
@@ -37,12 +46,12 @@ import LiveCode from '../../components/LiveCode.astro'
 </style>
 
 <div class="geolonia"
-     data-lat="35.665" data-lng="139.725" data-zoom="12"
+     data-lat="35.675" data-lng="139.73" data-zoom="9.4"
      data-marker="off"
-     data-geojson="/data/areas.geojson"
-     data-choropleth="value"
+     data-geojson="/data/tokyo23.geojson"
+     data-choropleth="density"
      data-choropleth-colors="#ffffcc,#fd8d3c,#bd0026"
-     data-choropleth-range="0,100"></div>
+     data-choropleth-range="5000,20000"></div>
 
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
@@ -69,23 +78,23 @@ import { geolonia } from "@geolonia/maps-suite";
 
 const map = new geolonia.maps.Map(document.getElementById("map"), {
   apiKey: "YOUR-API-KEY",
-  center: { lat: 35.665, lng: 139.725 },
-  zoom: 12,
+  center: { lat: 35.675, lng: 139.73 },
+  zoom: 9.4,
 });
 
 await map.whenReady();
 const impl = map.getGeoloniaMap();
-impl.addSource("areas", { type: "geojson", data: "/data/areas.geojson" });
+impl.addSource("wards", { type: "geojson", data: "/data/tokyo23.geojson" });
 impl.addLayer({
-  id: "areas",
+  id: "wards",
   type: "fill",
-  source: "areas",
+  source: "wards",
   paint: {
     "fill-color": [
-      "interpolate", ["linear"], ["get", "value"],
-      0, "#ffffcc",
-      50, "#fd8d3c",
-      100, "#bd0026",
+      "interpolate", ["linear"], ["get", "density"],
+      5000, "#ffffcc",
+      12500, "#fd8d3c",
+      20000, "#bd0026",
     ],
     "fill-opacity": 0.75,
     "fill-outline-color": "#ffffff",
@@ -98,8 +107,8 @@ impl.addLayer({
 `interpolate` 式の読み方は、
 
 1. `["linear"]`：値の間を直線的に補間する。
-2. `["get", "value"]`：各ポリゴンの `properties.value` を取り出す。
-3. 以降は「値, 色」のペア。`0` なら薄い黄色、`100` なら濃い赤、その間は連続的に変化します。
+2. `["get", "density"]`：各ポリゴンの `properties.density` を取り出す。
+3. 以降は「値, 色」のペア。`5000` 以下なら薄い黄色、`20000` 以上なら濃い赤、その間は連続的に変化します。
 
 `fill-opacity` を 1 未満にしておくと、下の地図（道路や地名）が透けて位置が分かります。
 
@@ -123,14 +132,14 @@ setWorkerUrl(workerUrl);
 createRoot(document.getElementById("root")).render(
   <Map
     apiKey="YOUR-API-KEY"
-    center={[139.725, 35.665]}
-    zoom={12}
+    center={[139.73, 35.675]}
+    zoom={9.4}
     containerStyle={{ width: "100%", height: "100vh" }}
-    geojson="/data/areas.geojson"
+    geojson="/data/tokyo23.geojson"
     choropleth={{
-      property: "value",
+      property: "density",
       colors: ["#ffffcc", "#fd8d3c", "#bd0026"],
-      range: [0, 100],
+      range: [5000, 20000],
     }}
   />,
 );
@@ -141,10 +150,10 @@ createRoot(document.getElementById("root")).render(
 `choropleth` に指定する値は次のとおりです。
 
 - **`property`**：塗り分けに使うプロパティ名。値が数値の地物だけを塗り分けます。
-- **`colors`**：値の小さい側から大きい側へ並べた色。`range` の範囲に等間隔で割り当て、間は補間します。上の例では `0` が薄い黄色、`50` がオレンジ、`100` が濃い赤です。
+- **`colors`**：値の小さい側から大きい側へ並べた色。`range` の範囲に等間隔で割り当て、間は補間します。上の例では `5000` が薄い黄色、`12500` がオレンジ、`20000` が濃い赤です。範囲の外の値は、端の色で塗ります。
 - **`range`**：色を割り当てる値の範囲 `[最小, 最大]`。省略するとデータの最小値と最大値を使います。
 
-塗りの不透明度は 0.7 なので、下の地図（道路や地名）が透けて位置が分かります。プロパティ名だけを `choropleth="value"` と渡すと、既定の色で塗り分けます。
+塗りの不透明度は 0.7 なので、下の地図（道路や地名）が透けて位置が分かります。プロパティ名だけを `choropleth="density"` と渡すと、既定の色で塗り分けます。
 
 `geojson` と `choropleth` は、地図を作るときに一度だけ読まれます。後から変えるときは、`<Map>` に `key` を付けて作り直してください。
 
@@ -152,10 +161,10 @@ createRoot(document.getElementById("root")).render(
 
 ## 結果
 
-上のコードは、それぞれのタブの下でそのまま動いています（データはサンプルの `/data/areas.geojson`）。値の小さいエリアは薄く、大きいエリアは濃く塗り分けられます。凡例を添える場合は、式に書いた「値, 色」のペアをそのまま使うと一致します。
+上のコードは、それぞれのタブの下でそのまま動いています。人口密度の低い千代田区（約 4,800 人/km²）は薄く、高い豊島区や中野区、荒川区（約 20,000 人/km²）は濃く塗り分けられます。凡例を添える場合は、指定した範囲と色をそのまま使うと一致します。
 
 <Callout kind="warning" title="うまくいかないとき">
-- 全部同じ色になる → プロパティ名のつづり（`value`）と、値が**数値型**であることを確認。`"72"` のような文字列だと式が効きません。
-- 一部のエリアだけ黒っぽくなる → そのポリゴンにプロパティが**欠損**しています。データ側で埋めるか、`["coalesce", ["get", "value"], 0]` のように既定値を与えます。
+- 全部同じ色になる → プロパティ名のつづり（`density`）と、値が**数値型**であることを確認。`"14920"` のような文字列だと塗り分けられません。範囲（`range`）がデータの値と大きく外れていないかも確認してください。
+- 一部のエリアだけ黒っぽくなる → そのポリゴンにプロパティが**欠損**しています。データ側で埋めるか、`["coalesce", ["get", "density"], 0]` のように既定値を与えます。
 - 何も出ない → `Layer` の `id` の書き忘れ、または GeoJSON の 404 を確認。
 </Callout>
