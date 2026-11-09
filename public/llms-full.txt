@@ -2257,9 +2257,9 @@ A map showing numbers such as population density or sales through the shading of
 }
 ```
 
-`/data/tokyo23.geojson` (about 29 KB) takes the 23 wards from the administrative boundaries of the GSI "Global Map Japan" (version 2.2) and adds the Japanese ward name, the area in km² computed from the shapes, and the population density per km². The population is the 2014 value in the same data. At a scale of 1:1,000,000 the boundaries are coarse and do not suit close zooms. Colour by density, not by raw population: raw counts make the largest wards the darkest regardless of how crowded they are.
+`/data/tokyo23.geojson` (about 29 KB) takes the 23 wards from the administrative boundaries of the GSI "Global Map Japan" (version 2.2; the boundaries are as of 1 January 2015) and adds the Japanese ward name, the area in km² computed from the shapes, and the population density per km². The population is the 2014 value in the same data. At a scale of 1:1,000,000 the boundaries are coarse and do not suit close zooms. Colour by density, not by raw population: raw counts make the largest wards the darkest regardless of how crowded they are.
 
-Source: Geospatial Information Authority of Japan, "Global Map Japan" (https://www.gsi.go.jp/kankyochiri/gm_jpn.html), administrative boundaries, processed. Used under the Public Data License (Version 1.0).
+Source: GSI website (https://www.gsi.go.jp/kankyochiri/gm_jpn.html). Created by Geolonia from the "Global Map Japan" administrative boundary data (GSI). Used under the Public Data License (Version 1.0).
 
 ### embed
 
@@ -2283,7 +2283,7 @@ Load the data with `data-geojson` and set the property and colours with the `dat
 
 - **`data-choropleth`**: the property used for colouring. Only features whose value is a number are coloured.
 - **`data-choropleth-colors`**: comma-separated colours from low to high values, spread evenly over the range and interpolated between. Omit it for the default colours.
-- **`data-choropleth-range`**: the value range as `min,max`. Omit it to use the minimum and maximum of the data.
+- **`data-choropleth-range`**: the value range as `min,max`. Values outside the range get the end colours. Omit it to use the minimum and maximum of the data.
 
 ### maps-suite
 
