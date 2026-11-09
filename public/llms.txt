@@ -49,7 +49,7 @@ For full documentation content, see: https://docs.geolonia.com/llms-full.txt
 - [Get Coordinates from a Draggable Marker](https://docs.geolonia.com/howto/draggable-marker/): `draggable` and `dragend`, reading `getLngLat()`
 - [Access the Map Instance Directly (maps-core)](https://docs.geolonia.com/howto/maps-core-access/): Reaching `GeoloniaMap` from each library to call any MapLibre GL JS API
 - [Cluster a Large Number of Points](https://docs.geolonia.com/howto/clustering/): `data-cluster`, `MarkerClusterer`, and the three-layer cluster pattern in React
-- [Colour Areas by Value (Choropleth)](https://docs.geolonia.com/howto/choropleth/): `data-choropleth` in embed, the `choropleth` prop in maps-react, and an `interpolate` expression in maps-suite
+- [Colour Areas by Value (Choropleth)](https://docs.geolonia.com/howto/choropleth/): Tokyo's 23 wards by population density, with `data-choropleth` in embed, the `choropleth` prop in maps-react, and an `interpolate` expression in maps-suite
 - [Pick a Region, Then a Prefecture](https://docs.geolonia.com/howto/region-select/): A drill-down map of the eight regions and 47 prefectures with `fitBounds`, buttons for keyboard use, and Okinawa shown in a small inset map
 - [Visualise Density with a Heatmap](https://docs.geolonia.com/howto/heatmap/): `data-heatmap` in embed, the `heatmap` prop in maps-react, and the `heatmap` layer with weight, radius, intensity and colour ramp
 - [Show Buildings and Terrain in 3D](https://docs.geolonia.com/howto/3d/): `data-3d`, the maps-suite default, and the JSX spread needed in maps-react
