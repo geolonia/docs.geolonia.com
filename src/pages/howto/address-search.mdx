@@ -45,7 +45,7 @@ await normalize("東京都台東区上野公園7-7");
 この2つは一致しないことがあります。番地まで読み取れても（`level: 8`）、その番地の位置情報が無ければ大字・丁目の代表点（`point.level: 3`）が返ります。
 
 <Callout kind="warning" title="ズームは point.level に合わせてください">
-市区町村役場の座標にズーム 18 で寄ると、読み手には「その建物がその住所だ」と見えてしまいます。座標の細かさに応じてズームを変えるのが安全です。下のコードはどれもそうしています。
+市区町村役場の座標にズーム 18 で寄ると、読み手には「その建物がその住所だ」と見えてしまいます。座標の細かさに応じてズームを変えるのが安全です。下のコードはどれもそうしています。maps-suite の `Geocoder` は、座標の細かさに合わせた表示範囲（`geometry.viewport`）を返します。
 </Callout>
 
 ## コード
@@ -171,8 +171,10 @@ form.addEventListener("submit", async (event) => {
     ({ results } = await geocoder.geocode({ address: form.querySelector("#q").value }));
   } catch (error) {
     marker.setMap(null);
-    note.textContent =
-      error.code === "ZERO_RESULTS" ? "住所を特定できませんでした。" : "住所データを取得できませんでした。";
+    note.textContent = {
+      ZERO_RESULTS: "住所を特定できませんでした。",
+      INVALID_REQUEST: "住所を入力してください。",
+    }[error.code] ?? "住所データを取得できませんでした。";
     return;
   }
 
@@ -187,8 +189,8 @@ form.addEventListener("submit", async (event) => {
 </LiveCode>
 
 - **`geometry.viewport`**：座標の細かさに合わせた範囲です。`fitBounds()` に渡すと、市区町村役場の座標なら広く、番地の位置なら狭く表示されます。ズームを自分で決める必要はありません。
-- **`geometry.location_type`**：番地の位置まで分かったときは `ROOFTOP`、町字・市区町村・都道府県の代表点のときは `APPROXIMATE` です。NJA の `point.level` の 8 とそれ以外にあたります。
-- **失敗**：住所を特定できないときは、`code` が `ZERO_RESULTS` のエラーで reject されます。住所データを取得できなかったときは `ERROR` です。
+- **`geometry.location_type`**：番地の位置まで分かったときは `ROOFTOP`、大字・丁目、市区町村、都道府県の代表点のときは `APPROXIMATE` です。NJA の `point.level` の 8 とそれ以外にあたります。
+- **失敗**：住所を特定できないときは、`code` が `ZERO_RESULTS` のエラーで reject されます。住所が空のときは `INVALID_REQUEST`、住所データを取得できなかったときは `ERROR` です。
 - **`setPosition()` と `setMap()`**：マーカーは1つ作って位置を付け替えます。検索のたびに `new` すると、前のマーカーが残ります。
 
 </Lens>
@@ -276,7 +278,7 @@ createRoot(document.getElementById("root")).render(<App />);
 
 上のコードは、それぞれのタブの下でそのまま動いています。初期値のまま検索すると大手町へ、`東京都台東区上野公園7-7` に書き換えると番地の位置まで寄ります。
 
-前者は `位置情報レベル 3`、後者は `位置情報レベル 8` と出ます（suite タブでは `APPROXIMATE` と `ROOFTOP`）。同じ「番地まで書いた住所」でも、返る座標の細かさが違うことが確かめられます。
+前者は `位置情報レベル 3`、後者は `位置情報レベル 8` と出ます。suite タブでは位置情報レベルの代わりに、前者は `APPROXIMATE`、後者は `ROOFTOP` と出ます。同じ「番地まで書いた住所」でも、返る座標の細かさが違うことが確かめられます。
 
 ## 住所データの取得について
 
@@ -293,9 +295,9 @@ NJA は住所データを持ち歩かず、必要な範囲だけを Web API か�
 ## うまくいかないとき
 
 <Callout kind="warning" title="うまくいかないとき">
-- 何も起きない → `result.point` が無い場合を処理しているか確認してください。住所を特定できなかったときは `level: 0` で `point` が付きません。
+- 何も起きない → `result.point` が無い場合を処理しているか確認してください。住所を特定できなかったときは `level: 0` で `point` が付きません。maps-suite の `Geocoder` では、`code` が `ZERO_RESULTS` のエラーで reject されるので、`catch` しているか確認してください。
 - 建物名を入れると精度が落ちる → 末尾の建物名は `other` に残るだけで座標には効きませんが、住所の読み取り自体を邪魔することがあります。あらかじめ分けておくのが確実です。
-- 番地まで入れたのに大まかな場所しか出ない → その番地の位置情報が無く、大字・丁目の代表点が返っています。`point.level` を見れば区別できます。
+- 番地まで入れたのに大まかな場所しか出ない → その番地の位置情報が無く、大字・丁目の代表点が返っています。`point.level` を見れば区別できます。maps-suite の `Geocoder` では、`geometry.location_type` が `APPROXIMATE` になります。
 - 検索のたびにマーカーが増える → マーカーを毎回作っています。1つ作って位置を付け替えてください。
 </Callout>
 
