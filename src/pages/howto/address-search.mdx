@@ -161,15 +161,18 @@ const map = new geolonia.maps.Map(container, {
 
 const geocoder = new geolonia.maps.Geocoder();
 const marker = new geolonia.maps.Marker();
+let latest = 0; // 最後に送った検索の番号
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const id = ++latest;
   note.textContent = "検索中…";
 
   let results;
   try {
     ({ results } = await geocoder.geocode({ address: form.querySelector("#q").value }));
   } catch (error) {
+    if (id !== latest) return; // 後から送った検索があれば、そちらに任せる
     marker.setMap(null);
     const messages = {
       ZERO_RESULTS: "住所を特定できませんでした。",
@@ -180,6 +183,7 @@ form.addEventListener("submit", async (event) => {
     note.textContent = messages[error.code] ?? "検索に失敗しました。";
     return;
   }
+  if (id !== latest) return;
 
   const { formatted_address, geometry } = results[0];
   marker.setPosition(geometry.location);
@@ -195,6 +199,7 @@ form.addEventListener("submit", async (event) => {
 - **`geometry.location_type`**：番地の位置まで分かったときは `ROOFTOP`、大字・丁目、市区町村、都道府県の代表点のときは `APPROXIMATE` です。NJA の `point.level` の 8 とそれ以外にあたります。
 - **失敗**：住所を特定できないときは、`code` が `ZERO_RESULTS` のエラーで reject されます。住所が空のときは `INVALID_REQUEST`、住所データを取得できなかったときは `ERROR` です。
 - **`setPosition()` と `setMap()`**：マーカーは1つ作って位置を付け替えます。検索のたびに `new` すると、前のマーカーが残ります。
+- **`latest`**：検索の結果は、送った順に返るとは限りません。続けて検索したときに古い結果で画面を上書きしないよう、最後に送った検索の結果だけを使います。
 
 </Lens>
 
