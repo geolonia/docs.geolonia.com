@@ -171,10 +171,13 @@ form.addEventListener("submit", async (event) => {
     ({ results } = await geocoder.geocode({ address: form.querySelector("#q").value }));
   } catch (error) {
     marker.setMap(null);
-    note.textContent = {
+    const messages = {
       ZERO_RESULTS: "住所を特定できませんでした。",
       INVALID_REQUEST: "住所を入力してください。",
-    }[error.code] ?? "住所データを取得できませんでした。";
+      ERROR: "住所データを取得できませんでした。",
+    };
+    if (!messages[error.code]) console.error(error);
+    note.textContent = messages[error.code] ?? "検索に失敗しました。";
     return;
   }
 
