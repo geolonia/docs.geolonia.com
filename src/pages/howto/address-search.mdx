@@ -10,7 +10,7 @@ import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
-「東京都千代田区大手町1-1-1」のような住所文字列から緯度経度を求めることを**ジオコーディング**といいます。Geolonia Maps 自体はジオコーダを持っていないので、住所を扱うライブラリと組み合わせます。ここでは [`@geolonia/normalize-japanese-addresses`](https://github.com/geolonia/normalize-japanese-addresses)（以下 NJA）を使います。
+「東京都千代田区大手町1-1-1」のような住所文字列から緯度経度を求めることを**ジオコーディング**といいます。ここでは住所を扱うライブラリ [`@geolonia/normalize-japanese-addresses`](https://github.com/geolonia/normalize-japanese-addresses)（以下 NJA）を使います。embed と maps-react はジオコーダを持っていないので、NJA を地図と組み合わせます。maps-suite には NJA を使ったジオコーダ `geolonia.maps.Geocoder` があります。
 
 NJA はもともと**住所の正規化**をするライブラリです。表記のゆれを吸収して住所を整えたうえで、その地点の緯度経度も返してくれるので、そのまま地図に使えます。動きを確かめるだけなら[公式のデモ](https://geolonia.github.io/normalize-japanese-addresses/)が手軽です。
 
@@ -123,17 +123,14 @@ NJA は npm のパッケージですが、CDN から ES モジュールとして
 </Lens>
 
 <Lens name="suite">
-`normalize()` で座標を求め、`panTo()` と `setZoom()` で移動します。マーカーは `setPosition()` で使い回します。
+maps-suite には `geolonia.maps.Geocoder` があります。中で NJA を使っているので、NJA を自分で読み込む必要はありません。`geocode()` で結果を受け取り、結果の `geometry.viewport` を `fitBounds()` に渡して移動します。マーカーは `setPosition()` で使い回します。
 
 <LiveCode title="maps-suite で住所を検索する" height={420}>
 
 ```js
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
-import { normalize } from "@geolonia/normalize-japanese-addresses";
 import { geolonia } from "@geolonia/maps-suite";
-
-const ZOOM = { 1: 9, 2: 12, 3: 15, 8: 18 };
 
 const container = document.getElementById("map");
 
@@ -162,35 +159,37 @@ const map = new geolonia.maps.Map(container, {
   zoom: 8,
 });
 
+const geocoder = new geolonia.maps.Geocoder();
 const marker = new geolonia.maps.Marker();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   note.textContent = "検索中…";
 
-  const result = await normalize(form.querySelector("#q").value);
-  if (!result.point) {
+  let results;
+  try {
+    ({ results } = await geocoder.geocode({ address: form.querySelector("#q").value }));
+  } catch (error) {
     marker.setMap(null);
-    note.textContent = "住所を特定できませんでした。";
+    note.textContent =
+      error.code === "ZERO_RESULTS" ? "住所を特定できませんでした。" : "住所データを取得できませんでした。";
     return;
   }
 
-  const { lat, lng, level } = result.point;
-  marker.setPosition({ lat, lng });
+  const { formatted_address, geometry } = results[0];
+  marker.setPosition(geometry.location);
   marker.setMap(map);
-  map.panTo({ lat, lng });
-  map.setZoom(ZOOM[level]);
-  note.textContent =
-    `${result.pref}${result.city}${result.town || ""}${result.addr || ""}` +
-    `（位置情報レベル ${level}）`;
+  map.fitBounds(geometry.viewport);
+  note.textContent = `${formatted_address}（${geometry.location_type}）`;
 });
 ```
 
 </LiveCode>
 
+- **`geometry.viewport`**：座標の細かさに合わせた範囲です。`fitBounds()` に渡すと、市区町村役場の座標なら広く、番地の位置なら狭く表示されます。ズームを自分で決める必要はありません。
+- **`geometry.location_type`**：番地の位置まで分かったときは `ROOFTOP`、町字・市区町村・都道府県の代表点のときは `APPROXIMATE` です。NJA の `point.level` の 8 とそれ以外にあたります。
+- **失敗**：住所を特定できないときは、`code` が `ZERO_RESULTS` のエラーで reject されます。住所データを取得できなかったときは `ERROR` です。
 - **`setPosition()` と `setMap()`**：マーカーは1つ作って位置を付け替えます。検索のたびに `new` すると、前のマーカーが残ります。
-- **`panTo()` と `setZoom()`**：緯度経度は `{ lat, lng }` のオブジェクトで渡します。
-- **`result.point` の有無**：住所を特定できなかったとき（`level: 0`）は `point` がありません。読む前に必ず確かめてください。
 
 </Lens>
 
@@ -277,7 +276,7 @@ createRoot(document.getElementById("root")).render(<App />);
 
 上のコードは、それぞれのタブの下でそのまま動いています。初期値のまま検索すると大手町へ、`東京都台東区上野公園7-7` に書き換えると番地の位置まで寄ります。
 
-前者は `位置情報レベル 3`、後者は `位置情報レベル 8` と出ます。同じ「番地まで書いた住所」でも、返る座標の細かさが違うことが確かめられます。
+前者は `位置情報レベル 3`、後者は `位置情報レベル 8` と出ます（suite タブでは `APPROXIMATE` と `ROOFTOP`）。同じ「番地まで書いた住所」でも、返る座標の細かさが違うことが確かめられます。
 
 ## 住所データの取得について
 
@@ -289,7 +288,7 @@ NJA は住所データを持ち歩かず、必要な範囲だけを Web API か�
 
 ## 逆はできますか
 
-緯度経度から住所を求める（逆ジオコーディング）ことは、NJA ではできません。NJA は住所文字列を入力に取るライブラリです。
+緯度経度から住所を求める（逆ジオコーディング）ことは、NJA ではできません。NJA は住所文字列を入力に取るライブラリです。maps-suite の `Geocoder` も同じで、`location` を渡すと `code` が `INVALID_REQUEST` のエラーになります。
 
 ## うまくいかないとき
 
