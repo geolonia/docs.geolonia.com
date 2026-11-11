@@ -251,8 +251,11 @@
 .cr-chart-tooltip {
   position: absolute; z-index: 1; min-width: 200px; padding: 8px 12px;
   background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); font-size: 13px; line-height: 1.6; pointer-events: none;
+  box-shadow: var(--shadow-modal); font-size: 13px; line-height: 1.6; pointer-events: none;
 }
+.cr-fx-all { margin-top: 12px; text-align: left; }
+.cr-fx-all summary { cursor: pointer; color: var(--color-accent-text); }
+.cr-fx-all .cr-table-wrap { margin-top: 8px; }
 .cr-chart-tooltip-head { color: var(--text-soft); }
 .cr-chart-tooltip-row { display: flex; align-items: center; gap: 6px; }
 .cr-chart-tooltip-row strong { margin-left: auto; }

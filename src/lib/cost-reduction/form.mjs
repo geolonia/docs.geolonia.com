@@ -16,6 +16,7 @@ if (form && result && empty) {
   const rate = /** @type {HTMLInputElement} */ (form.querySelector('#cr-rate'));
   const month = /** @type {HTMLSelectElement} */ (form.querySelector('#cr-month'));
   const fxRows = /** @type {HTMLElement} */ (result.querySelector('[data-cr="fx-rows"]'));
+  const fxAllRows = /** @type {HTMLElement} */ (result.querySelector('[data-cr="fx-all-rows"]'));
   const chart = /** @type {HTMLElement} */ (result.querySelector('[data-cr="chart"]'));
 
   const fmt = (n) => n.toLocaleString('ja-JP');
@@ -28,7 +29,22 @@ if (form && result && empty) {
     if (el) el.hidden = !visible;
   };
 
-  // 為替の表：最も円高の月、請求月（入力したレート）、最も円安の月
+  /** 為替の表の 1 行。label は行見出し、r は 1 米ドルあたりの円 */
+  const fxRow = (provider, loads, geoloniaJpy, label, r) => {
+    const tr = document.createElement('tr');
+    const th = document.createElement('th');
+    th.scope = 'row';
+    th.textContent = `${label} ${r.toFixed(2)} 円`;
+    const td1 = document.createElement('td');
+    td1.textContent = `${fmt(providerBillJpy(provider, loads, r))} 円`;
+    const td2 = document.createElement('td');
+    td2.textContent = `${fmt(geoloniaJpy)} 円`;
+    tr.append(th, td1, td2);
+    return tr;
+  };
+
+  // 為替の表：最も円高の月、請求月（入力したレート）、最も円安の月。
+  // その下の折りたたみに、グラフと同じ全月の値を新しい月から並べる（ツールチップはポインターでしか開けないため）
   const renderFxRows = (provider, loads, geoloniaJpy, billMonth, jpyPerUsd) => {
     const rows = [
       [`${fmtMonth(fx.min.month)}（5 年で最も円高）`, fx.min.rate],
@@ -36,19 +52,9 @@ if (form && result && empty) {
       [`${fmtMonth(billMonth)}（入力したレート）`, jpyPerUsd],
       [`${fmtMonth(fx.max.month)}（5 年で最も円安）`, fx.max.rate],
     ];
-    fxRows.replaceChildren(
-      ...rows.map(([label, r]) => {
-        const tr = document.createElement('tr');
-        const th = document.createElement('th');
-        th.scope = 'row';
-        th.textContent = `${label} ${r.toFixed(2)} 円`;
-        const td1 = document.createElement('td');
-        td1.textContent = `${fmt(providerBillJpy(provider, loads, r))} 円`;
-        const td2 = document.createElement('td');
-        td2.textContent = `${fmt(geoloniaJpy)} 円`;
-        tr.append(th, td1, td2);
-        return tr;
-      }),
+    fxRows.replaceChildren(...rows.map(([label, r]) => fxRow(provider, loads, geoloniaJpy, label, r)));
+    fxAllRows.replaceChildren(
+      ...[...rates].reverse().map(([m, r]) => fxRow(provider, loads, geoloniaJpy, fmtMonth(m), r)),
     );
   };
 

@@ -126,6 +126,17 @@ const examples = [30_000, 100_000, 500_000, 1_000_000, 5_000_000].map((loads) =>
             <tbody data-cr="fx-rows"></tbody>
           </table>
         </div>
+        <details class="cr-fx-all">
+          <summary>グラフのすべての月の値を表で見る</summary>
+          <div class="cr-table-wrap">
+            <table class="cr-fx-table">
+              <thead>
+                <tr><th scope="col">月（1 米ドルの月平均）</th><th scope="col"><span data-cr="provider">Google Maps</span></th><th scope="col">Geolonia Maps</th></tr>
+              </thead>
+              <tbody data-cr="fx-all-rows"></tbody>
+            </table>
+          </div>
+        </details>
       </div>
       <a class="cr-cta" data-cr="cta" href={providers[0][1].migrationUrl} target="_blank" rel="noopener">AI エージェントスキルで<wbr />いますぐ切り替える</a>
       <p class="cr-cta-sub">Claude Code で次のコマンドを上から順に実行すると、スキルが入り、移行が始まります（<a href="/explanation/agent-skills/">Geolonia Agent Skills とは</a>）。</p>
