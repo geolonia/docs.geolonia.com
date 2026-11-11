@@ -9,8 +9,10 @@ import {
   PRO_TIERS,
   monthlyCostJpy,
   tieredCost,
+  usageBreakdown,
   withTax,
 } from '../src/lib/pricing.mjs';
+import { readFileSync } from 'node:fs';
 
 test('Free の範囲は 0 円', () => {
   assert.equal(monthlyCostJpy(0), 0);
@@ -47,4 +49,21 @@ test('税込は 10% を足し、浮動小数の端数を残さない', () => {
   assert.equal(withTax(3980), 4378);
   assert.equal(withTax(0.23), 0.253);
   assert.equal(withTax(143_980), 158_378);
+});
+
+test('計算例の内訳は段ごとの金額で、合計は月額と一致する', () => {
+  const rows = usageBreakdown(500_000);
+  assert.deepEqual(rows, [
+    { from: 50_001, to: 100_000, count: 50_000, price: 0.4, jpy: 20_000 },
+    { from: 100_001, to: 500_000, count: 400_000, price: 0.3, jpy: 120_000 },
+  ]);
+  assert.equal(PRO_MONTHLY_JPY + rows.reduce((a, r) => a + r.jpy, 0), monthlyCostJpy(500_000));
+});
+
+test('/pricing/ の description（式を使えない frontmatter）が料金の値と一致する', () => {
+  const page = readFileSync(new URL('../src/pages/pricing/index.mdx', import.meta.url), 'utf8');
+  const description = page.match(/^description: (.+)$/m)[1];
+  const fmt = (n) => n.toLocaleString('ja-JP');
+  assert.ok(description.includes(`月 ${fmt(FREE_LOADS)} 回までは無料`), description);
+  assert.ok(description.includes(`月額 ${fmt(PRO_MONTHLY_JPY)} 円（税抜）`), description);
 });

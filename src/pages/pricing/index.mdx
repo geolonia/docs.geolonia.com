@@ -13,10 +13,12 @@ import {
   PRO_MONTHLY_JPY,
   PRO_INCLUDED_LOADS,
   monthlyCostJpy,
+  usageBreakdown,
   withTax,
 } from '../../lib/pricing.mjs'
 
 export const fmt = (n) => n.toLocaleString('ja-JP')
+export const EXAMPLE_LOADS = 500_000
 
 Geolonia Maps の料金は、地図を表示した回数に応じて決まります。料金は円建てで、すべて税抜の金額で記載しています（税込の金額を併記している箇所を除く）。
 
@@ -47,13 +49,14 @@ Pro プランでは、月の地図表示回数が {fmt(PRO_INCLUDED_LOADS)} 回�
 
 ## 料金の計算例
 
-月に 500,000 回表示した場合の月額は次のとおりです。
+月に {fmt(EXAMPLE_LOADS)} 回表示した場合の月額は次のとおりです。
 
-- Pro プランの月額：{fmt(PRO_MONTHLY_JPY)} 円
-- 50,001 〜 100,000 回目の 50,000 回：0.4 円 × 50,000 回 ＝ 20,000 円
-- 100,001 〜 500,000 回目の 400,000 回：0.3 円 × 400,000 回 ＝ 120,000 円
+<ul>
+  <li>Pro プランの月額：{fmt(PRO_MONTHLY_JPY)} 円</li>
+  {usageBreakdown(EXAMPLE_LOADS).map((r) => <li>{fmt(r.from)} 〜 {fmt(r.to)} 回目の {fmt(r.count)} 回：{r.price} 円 × {fmt(r.count)} 回 ＝ {fmt(r.jpy)} 円</li>)}
+</ul>
 
-合計は **{fmt(monthlyCostJpy(500_000))} 円**（税込 {fmt(withTax(monthlyCostJpy(500_000)))} 円）です。
+合計は **{fmt(monthlyCostJpy(EXAMPLE_LOADS))} 円**（税込 {fmt(withTax(monthlyCostJpy(EXAMPLE_LOADS)))} 円）です。
 
 ## サイトの規模の目安
 

@@ -66,3 +66,20 @@ export function monthlyCostJpy(loads) {
 export function withTax(jpy) {
   return tidy(jpy * (1 + TAX_RATE));
 }
+
+/**
+ * 月額の内訳。従量課金の段ごとに、回数の範囲・回数・単価・金額を返す（月額に含まれる段は除く）。
+ * /pricing/ の計算例はこれで作る。
+ * @param {number} loads
+ */
+export function usageBreakdown(loads) {
+  const rows = [];
+  let from = 0;
+  for (const { upTo, price } of PRO_TIERS) {
+    if (loads <= from) break;
+    const count = Math.min(loads, upTo) - from;
+    if (price > 0) rows.push({ from: from + 1, to: Math.min(loads, upTo), count, price, jpy: tidy(count * price) });
+    from = upTo;
+  }
+  return rows;
+}
