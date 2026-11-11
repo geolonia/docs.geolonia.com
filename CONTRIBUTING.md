@@ -100,6 +100,7 @@ URL になります（`src/pages/howto/clustering.mdx` → `/howto/clustering/`�
 このほかに次のものがあります。
 
 - `src/pages/index.mdx` … トップページ
+- `src/pages/pricing/` … Geolonia Maps の料金。4つの象限には入れず、グローバルナビの「料金」から開きます。金額と段階は `src/lib/pricing.mjs` にあり、表と計算例はそこから作ります
 - `src/pages/demos/inline/[id].astro` … LiveCode が使うデモページの生成元。**手で触りません**
 
 ## ページの作り方
