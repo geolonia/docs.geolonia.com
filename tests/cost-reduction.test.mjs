@@ -143,3 +143,10 @@ test('rateOf: 月のレートを返し、無い月は null', () => {
   assert.equal(rateOf(rates, '2026-10'), 157.97);
   assert.equal(rateOf(rates, '2020-01'), null);
 });
+
+test('移行を始めるコマンドは、リンク先のスキルと同じ名前を指す', () => {
+  for (const p of Object.values(PROVIDERS)) {
+    const skill = p.migrationUrl.split('/').at(-1);
+    assert.equal(p.skillCommand, `/geolonia:${skill}`);
+  }
+});

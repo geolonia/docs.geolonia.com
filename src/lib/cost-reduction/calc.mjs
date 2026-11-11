@@ -19,6 +19,7 @@ export const GEOLONIA_FREE_LOADS = FREE_LOADS;
  *   tiers: Tier[],
  *   sourceUrl: string,
  *   migrationUrl: string,
+ *   skillCommand: string,
  *   note?: string,
  * }} Provider
  */
@@ -45,6 +46,8 @@ export const PROVIDERS = {
     sourceUrl: 'https://developers.google.com/maps/billing-and-pricing/pricing',
     // 切り替えに使う AI エージェントスキル
     migrationUrl: 'https://github.com/geolonia/geolonia-agent-skills/tree/main/skills/geolonia-google-maps-migration',
+    // プラグインを入れた後に移行を始めるコマンド（プラグイン名:スキル名）
+    skillCommand: '/geolonia:geolonia-google-maps-migration',
   },
   mapbox: {
     label: 'Mapbox',
@@ -61,6 +64,7 @@ export const PROVIDERS = {
     ],
     sourceUrl: 'https://www.mapbox.com/pricing',
     migrationUrl: 'https://github.com/geolonia/geolonia-agent-skills/tree/main/skills/geolonia-mapbox-migration',
+    skillCommand: '/geolonia:geolonia-mapbox-migration',
     note: '5,000,000 回を超える分は個別見積りのため、$2.50 で計算しています。',
   },
 };
@@ -75,6 +79,7 @@ export function providerLoadsFromUsd(id, usd) {
   let remaining = usd;
   let from = 0;
   for (const { upTo, price } of PROVIDERS[id].tiers) {
+    // 無料枠は先頭の段にしかない。そこは使い切った前提で、次の段から金額を割り当てる
     if (price === 0) {
       from = upTo;
       continue;

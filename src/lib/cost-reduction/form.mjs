@@ -32,7 +32,8 @@ if (form && result && empty) {
   const renderFxRows = (provider, loads, geoloniaJpy, billMonth, jpyPerUsd) => {
     const rows = [
       [`${fmtMonth(fx.min.month)}（5 年で最も円高）`, fx.min.rate],
-      [`${fmtMonth(billMonth)}（請求月）`, jpyPerUsd],
+      // グラフの点は請求月の月平均、この行は入力欄のレート。書き換えた場合に区別できるようにする
+      [`${fmtMonth(billMonth)}（入力したレート）`, jpyPerUsd],
       [`${fmtMonth(fx.max.month)}（5 年で最も円安）`, fx.max.rate],
     ];
     fxRows.replaceChildren(
@@ -76,6 +77,7 @@ if (form && result && empty) {
     set('geolonia', fmt(r.geoloniaJpy));
     set('plan', r.loads <= GEOLONIA_FREE_LOADS ? 'Free' : 'Pro');
     result.querySelector('[data-cr="cta"]')?.setAttribute('href', p.migrationUrl);
+    set('skill-command', p.skillCommand);
 
     if (r.withinFreeTier) return;
     renderFxRows(provider, r.loads, r.geoloniaJpy, month.value, jpyPerUsd);
