@@ -88,10 +88,10 @@ const examples = [30_000, 100_000, 500_000, 1_000_000, 5_000_000].map((loads) =>
         </select>
       </div>
       <div class="cr-field cr-field--rate">
-        <label for="cr-rate">為替レート（1 米ドルあたり）</label>
+        <label for="cr-rate">為替レート</label>
         <div class="cr-input">
-          <input id="cr-rate" name="rate" type="number" inputmode="decimal" min="1" step="0.01" value={DEFAULT_JPY_PER_USD} required aria-describedby="cr-rate-hint" />
-          <span>円</span>
+          <input id="cr-rate" name="rate" type="number" inputmode="decimal" min="1" step="0.01" value={DEFAULT_JPY_PER_USD} required aria-describedby="cr-rate-unit cr-rate-hint" />
+          <span id="cr-rate-unit" class="cr-unit">円 / 1 米ドル</span>
         </div>
         <p id="cr-rate-hint" class="cr-hint">請求月の月平均（FRB 公表）です。実際の請求のレートに書き換えられます。</p>
       </div>

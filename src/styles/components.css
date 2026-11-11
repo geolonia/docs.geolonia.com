@@ -209,14 +209,16 @@
 .cr-tool > h2 { margin-top: 0; }
 .cr-form { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
 .cr-field { flex: 1 1 320px; }
-.cr-field--month, .cr-field--rate { flex: 0 1 200px; }
+.cr-field--month { flex: 0 1 180px; }
+.cr-field--rate { flex: 0 1 240px; }
 .cr-field label { display: block; margin-bottom: 4px; font-weight: 700; }
 .cr-field select, .cr-input input {
-  width: 100%; padding: 9px 10px; font: inherit; font-size: 16px;
+  box-sizing: border-box; width: 100%; height: 40px; padding: 0 10px; font: inherit; font-size: 16px; line-height: 1.25;
   background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 7px;
 }
 .cr-input { display: flex; align-items: center; gap: 8px; }
 .cr-input input { text-align: right; }
+.cr-unit { flex: none; }
 .cr-hint { margin: 4px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--text-soft); }
 .cr-field--provider { flex-basis: 100%; margin: 0; padding: 0; border: 0; }
 .cr-field--provider legend { margin-bottom: 4px; padding: 0; font-weight: 700; }
