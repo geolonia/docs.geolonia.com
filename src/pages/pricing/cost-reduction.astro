@@ -1,0 +1,196 @@
+---
+// コスト削減診断。他社の地図 API の先月のおおよその請求額から、Geolonia Maps に
+// 切り替えた場合の月額を試算する。計算は src/lib/cost-reduction/、Geolonia Maps の
+// 料金は /pricing/ と同じ src/lib/pricing.mjs。見た目は components.css の .cr-*。
+import DocLayout from '../../layouts/DocLayout.astro';
+import Callout from '../../components/Callout.astro';
+import {
+  PROVIDERS,
+  PRICES_CHECKED,
+  GEOLONIA_FREE_LOADS,
+  providerCostUsd,
+  rateRange,
+} from '../../lib/cost-reduction/calc.mjs';
+import { monthlyCostJpy } from '../../lib/pricing.mjs';
+import usdjpy from '../../data/usdjpy-monthly.json';
+
+const frontmatter = {
+  title: 'コスト削減診断',
+  htmlTitle: 'Google Maps・Mapbox の料金が高いと感じたら：地図 API のコスト削減診断 — Geolonia Docs',
+  description: '先月の Google Maps や Mapbox のおおよその請求額を選ぶと、Geolonia Maps に切り替えた場合の月額と削減額を試算します。',
+  page: 'pricing',
+  kicker: '料金',
+};
+
+// 為替は FRB 公表の月平均（src/data/usdjpy-monthly.json、npm run update:usdjpy で更新）。
+// 既定は手元にある一番新しい月
+const rates = usdjpy.rates as [string, number][];
+const [latestMonth, DEFAULT_JPY_PER_USD] = rates[rates.length - 1];
+const fx = rateRange(rates);
+const fmtMonth = (m: string) => `${m.slice(0, 4)}年${Number(m.slice(5, 7))}月`;
+const fxRatio = (fx.max.rate / fx.min.rate).toFixed(2);
+
+const providers = Object.entries(PROVIDERS);
+
+// 請求額は実額を入れずに、おおよその金額から選んでもらう（実額は社外に出しにくい）
+const BILL_OPTIONS = [
+  5_000, 10_000, 20_000, 30_000, 50_000,
+  100_000, 200_000, 300_000, 500_000,
+  1_000_000, 2_000_000, 3_000_000, 5_000_000, 10_000_000,
+];
+const billLabel = (n: number) => (n >= 10_000 ? `約 ${(n / 10_000).toLocaleString('ja-JP')} 万円` : `約 ${n.toLocaleString('ja-JP')} 円`);
+const fmt = (n: number) => n.toLocaleString('ja-JP');
+const range = (tiers: { upTo: number }[], i: number) => {
+  const from = i === 0 ? 0 : tiers[i - 1].upTo + 1;
+  const to = tiers[i].upTo;
+  return to === Infinity ? `${fmt(from)} 回〜` : `${fmt(from)} 〜 ${fmt(to)} 回`;
+};
+
+// 試算例。表示回数から各社の月額を出す
+const examples = [30_000, 100_000, 500_000, 1_000_000, 5_000_000].map((loads) => ({
+  loads,
+  others: providers.map(([id]) => Math.round(providerCostUsd(id, loads) * DEFAULT_JPY_PER_USD)),
+  geoloniaJpy: monthlyCostJpy(loads),
+}));
+---
+<DocLayout frontmatter={frontmatter}>
+  <p>Google Maps や Mapbox などの地図 API は、地図を表示した回数に応じて料金がかかります。無料枠を超えると、Google Maps は 1,000 回あたり 7 ドル、Mapbox は 1,000 回あたり 5 ドルからの従量課金です。</p>
+  <p>先月のおおよその請求額を選ぶと、同じ量の地図を Geolonia Maps で表示した場合の月額を試算します。</p>
+
+  <section class="cr-tool" aria-labelledby="cr-tool-title">
+    <h2 id="cr-tool-title">先月の金額を選んでください</h2>
+    <form id="cr-form" class="cr-form" novalidate>
+      <fieldset class="cr-field cr-field--provider">
+        <legend>お使いの地図 API</legend>
+        <div class="cr-providers">
+          {providers.map(([id, p], i) => (
+            <label class="cr-provider">
+              <input type="radio" name="provider" value={id} checked={i === 0} />
+              <span>{p.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <div class="cr-field">
+        <label for="cr-bill">先月の請求額（税抜、おおよそ）</label>
+        <select id="cr-bill" name="bill" required aria-describedby="cr-bill-hint">
+          <option value="" selected>選んでください</option>
+          {BILL_OPTIONS.map((n) => <option value={n}>{billLabel(n)}</option>)}
+        </select>
+        <p id="cr-bill-hint" class="cr-hint">いちばん近い金額を選んでください。試算はお使いのブラウザの中だけで行い、選んだ金額はどこにも送信しません。</p>
+      </div>
+      <div class="cr-field cr-field--month">
+        <label for="cr-month">請求月</label>
+        <select id="cr-month" name="month">
+          {[...rates].reverse().map(([m]) => <option value={m} selected={m === latestMonth}>{fmtMonth(m)}</option>)}
+        </select>
+      </div>
+      <div class="cr-field cr-field--rate">
+        <label for="cr-rate">為替レート（1 米ドルあたり）</label>
+        <div class="cr-input">
+          <input id="cr-rate" name="rate" type="number" inputmode="decimal" min="1" step="0.01" value={DEFAULT_JPY_PER_USD} required aria-describedby="cr-rate-hint" />
+          <span>円</span>
+        </div>
+        <p id="cr-rate-hint" class="cr-hint">請求月の月平均（FRB 公表）です。実際の請求のレートに書き換えられます。</p>
+      </div>
+    </form>
+
+    <div id="cr-result" class="cr-result" aria-live="polite" hidden>
+      <div data-cr-block="saving">
+        <p class="cr-result-lead">Geolonia Maps なら</p>
+        <p class="cr-result-main"><span data-cr="saving">0</span> 円 / 月 の削減</p>
+        <p class="cr-result-sub">年間 <span data-cr="annual">0</span> 円（削減率 <span data-cr="rate">0</span>%）</p>
+      </div>
+      <p class="cr-result-note" data-cr-block="free" hidden>先月は無料枠の範囲内だったため、切り替えによる削減はありません。</p>
+      <p class="cr-result-note" data-cr-block="higher" hidden>この利用量では、今の料金の方が <span data-cr="diff">0</span> 円 / 月 安くなります。</p>
+      <dl class="cr-result-detail">
+        <div><dt>推定した地図表示回数</dt><dd><span data-cr="loads">0</span> 回 / 月</dd></div>
+        <div><dt><span data-cr="provider">Google Maps</span>（選んだ金額）</dt><dd>約 <span data-cr="bill">0</span> 円</dd></div>
+        <div><dt>Geolonia Maps（税抜）</dt><dd><span data-cr="geolonia">0</span> 円（<span data-cr="plan">Free</span>）</dd></div>
+      </dl>
+      <div class="cr-fx" data-cr-block="fx">
+        <h3>為替が動いた場合</h3>
+        <p class="cr-chart-title">過去 5 年の為替で換算した月額（表示回数は同じ）</p>
+        <div class="cr-chart" data-cr="chart"></div>
+        <p class="cr-fx-text"><span data-cr="provider">Google Maps</span> の料金はドル建てです。同じ表示回数でも、円安になると円での支払額が増えます。Geolonia Maps は円建てなので、為替が動いても料金は変わりません。</p>
+        <div class="cr-table-wrap">
+          <table class="cr-fx-table">
+            <thead>
+              <tr><th scope="col">為替（1 米ドル）</th><th scope="col"><span data-cr="provider">Google Maps</span></th><th scope="col">Geolonia Maps</th></tr>
+            </thead>
+            <tbody data-cr="fx-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <a class="cr-cta" data-cr="cta" href={providers[0][1].migrationUrl} target="_blank" rel="noopener">AI エージェントスキルで<wbr />いますぐ切り替える</a>
+      <p class="cr-cta-sub">Claude Code で次のコマンドを実行すると、スキルを使えるようになります（<a href="/explanation/agent-skills/">Geolonia Agent Skills とは</a>）。</p>
+      <pre class="cr-cta-code"><code>/plugin marketplace add geolonia/geolonia-agent-skills
+/plugin install geolonia@geolonia</code></pre>
+    </div>
+    <p id="cr-empty" class="cr-empty">金額を選ぶと、ここに試算結果が表示されます。</p>
+  </section>
+
+  <h2>為替の影響を受けない円建ての料金</h2>
+  <p>Google Maps や Mapbox の料金はドル建てです。過去 5 年のドル円の月平均は、最も円高だった{fmtMonth(fx.min.month)}の {fx.min.rate.toFixed(2)} 円から、最も円安だった{fmtMonth(fx.max.month)}の {fx.max.rate.toFixed(2)} 円まで動きました。同じ量の地図を表示していても、円での支払額は約 {fxRatio} 倍に増えたことになります。</p>
+  <p>Geolonia Maps は円建ての料金です。為替が動いても請求額は変わらないので、予算を立てやすく、年度の途中で費用が膨らむことがありません。</p>
+
+  <h2>試算例</h2>
+  <p>1 米ドル {DEFAULT_JPY_PER_USD.toFixed(2)} 円（{fmtMonth(latestMonth)}の月平均）で計算した、月の地図表示回数ごとの料金です（税抜）。</p>
+  <div class="cr-table-wrap">
+    <table class="cr-num-table">
+      <thead>
+        <tr>
+          <th scope="col">月の地図表示回数</th>
+          {providers.map(([, p]) => <th scope="col">{p.label}</th>)}
+          <th scope="col">Geolonia Maps</th>
+        </tr>
+      </thead>
+      <tbody>
+        {examples.map((e) => (
+          <tr>
+            <th scope="row">{fmt(e.loads)} 回</th>
+            {e.others.map((jpy) => <td>{jpy === 0 ? '0 円' : `約 ${fmt(jpy)} 円`}</td>)}
+            <td>{fmt(e.geoloniaJpy)} 円</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>計算方法</h2>
+  <p>選んだ請求額を米ドルに換算し、お使いの地図 API の段階料金から、月の地図表示回数を逆算します。その回数を Geolonia Maps の料金で計算し直して比べます。Geolonia Maps の料金表は<a href="/pricing/">料金</a>のページにあります。</p>
+  <div class="cr-tables">
+    {providers.map(([, p]) => (
+      <div class="cr-table-wrap">
+        <table class="cr-num-table">
+          <caption>{p.label}：{p.sku}（1,000 回あたり）</caption>
+          <tbody>
+            {p.tiers.map((t, i) => (
+              <tr><th scope="row">{range(p.tiers, i)}</th><td>{t.price === 0 ? '無料' : `$${t.price.toFixed(2)}`}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ))}
+  </div>
+
+  <h2>試算の前提</h2>
+  <ul>
+    <li>請求額はすべて地図の表示の料金とみなしています。ジオコーディングや場所の検索など、地図の表示以外の API の料金が含まれる場合、実際の削減額は試算より小さくなります。</li>
+    <li>地図表示回数の数え方は各社で異なります。試算では同じ回数として比べています。</li>
+    <li>Geolonia Maps は、月 {fmt(GEOLONIA_FREE_LOADS)} 回までは Free プラン、それを超えると Pro プランとして計算しています。</li>
+    <li>サブスクリプションプランや、個別の割引契約は考慮していません。</li>
+    {providers.filter(([, p]) => p.note).map(([, p]) => <li>{p.label}：{p.note}</li>)}
+    <li>為替レートは、FRB が公表するドル円の月平均（<a href={usdjpy.sourceUrl} target="_blank" rel="noopener">FRED: EXJPUS</a>）を使っています。実際の請求に使われたレートとは少し異なる場合があります。</li>
+    <li>各社の料金は、{providers.map(([, p], i) => <>{i > 0 && '、'}<a href={p.sourceUrl} target="_blank" rel="noopener">{p.label} の料金表</a></>)}によります（{PRICES_CHECKED}時点）。</li>
+    <li>試算結果は目安であり、実際の料金を保証するものではありません。</li>
+  </ul>
+
+  <Callout kind="info" title="切り替えの相談">
+    <p>移行の手順や、自社の利用量での見積もりについては、<a href="https://www.geolonia.com/contact/">お問い合わせフォーム</a>からご連絡ください。</p>
+  </Callout>
+</DocLayout>
+
+<script>
+  import '../../lib/cost-reduction/form.mjs';
+</script>

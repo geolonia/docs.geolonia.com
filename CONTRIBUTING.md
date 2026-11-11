@@ -101,6 +101,9 @@ URL になります（`src/pages/howto/clustering.mdx` → `/howto/clustering/`�
 
 - `src/pages/index.mdx` … トップページ
 - `src/pages/pricing/` … Geolonia Maps の料金。4つの象限には入れず、グローバルナビの「料金」から開きます。金額と段階は `src/lib/pricing.mjs` にあり、表と計算例はそこから作ります
+- `src/pages/pricing/cost-reduction.astro` … コスト削減診断。Google Maps と Mapbox の請求額から Geolonia Maps の月額を試算します。計算は `src/lib/cost-reduction/`、見た目は `components.css` の `.cr-*` です。次の2つは手で更新します
+  - **為替**（`src/data/usdjpy-monthly.json`）：半年に1回ほど `npm run update:usdjpy` を実行してコミットします。FRED のドル円の月平均を直近60か月分取り直します
+  - **他社の料金**（`src/lib/cost-reduction/calc.mjs` の `PROVIDERS`）：各社の料金表を確認し、変わっていれば段階と単価を直して、確認した日を `PRICES_CHECKED` に書きます
 - `src/pages/demos/inline/[id].astro` … LiveCode が使うデモページの生成元。**手で触りません**
 
 ## ページの作り方
