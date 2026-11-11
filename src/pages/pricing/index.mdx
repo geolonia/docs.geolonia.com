@@ -1,0 +1,89 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 料金
+htmlTitle: Geolonia Maps の料金 — Geolonia Docs
+description: Geolonia Maps の料金プランです。月 20,000 回までは無料で、それを超える場合は月額 3,980 円（税抜）の Pro プランと、表示回数に応じた従量課金になります。
+page: pricing
+kicker: Geolonia Maps
+---
+import Callout from '../../components/Callout.astro'
+import PricingTiers from '../../components/PricingTiers.astro'
+import {
+  FREE_LOADS,
+  PRO_MONTHLY_JPY,
+  PRO_INCLUDED_LOADS,
+  monthlyCostJpy,
+  withTax,
+} from '../../lib/pricing.mjs'
+
+export const fmt = (n) => n.toLocaleString('ja-JP')
+
+Geolonia Maps の料金は、地図を表示した回数に応じて決まります。料金は円建てで、すべて税抜の金額で記載しています（税込の金額を併記している箇所を除く）。
+
+## プラン
+
+| | Free | Pro |
+|---|---|---|
+| 月額 | 無料 | {fmt(PRO_MONTHLY_JPY)} 円（税込 {fmt(withTax(PRO_MONTHLY_JPY))} 円） |
+| 月額に含まれる地図表示回数 | {fmt(FREE_LOADS)} 回まで | {fmt(PRO_INCLUDED_LOADS)} 回まで |
+| 含まれる回数を超えた分 | Pro プランをご利用ください | 従量課金（[下の表](#従量課金)） |
+| メンバーの追加 | できます | できます |
+| API キーの発行 | できます | できます |
+| 支払い方法 | なし | クレジットカード |
+
+月に {fmt(FREE_LOADS)} 回を超えて地図を表示する場合は、Pro プランをご利用ください。プランの変更と地図表示回数の確認は、[ダッシュボード](https://app.geolonia.com/)の「料金プランとお支払い」で行います。
+
+開発環境とプレビュー環境（`localhost`、GitHub Pages など）は、API キーを発行しなくても**デモキー**を使って地図を表示できます。対象の環境の一覧は「[デモキーで無料で試せる環境](/explanation/free-referers/)」にあります。
+
+## 従量課金
+
+Pro プランでは、月の地図表示回数が {fmt(PRO_INCLUDED_LOADS)} 回を超えると、超えた分に次の単価がかかります。回数が増えるほど単価は下がります。
+
+<PricingTiers />
+
+## 地図表示回数とは
+
+地図がユーザーの端末に表示された回数です。地図がページの下のほうにあり、画面に表示されなかった場合は数えません。
+
+## 料金の計算例
+
+月に 500,000 回表示した場合の月額は次のとおりです。
+
+- Pro プランの月額：{fmt(PRO_MONTHLY_JPY)} 円
+- 50,001 〜 100,000 回目の 50,000 回：0.4 円 × 50,000 回 ＝ 20,000 円
+- 100,001 〜 500,000 回目の 400,000 回：0.3 円 × 400,000 回 ＝ 120,000 円
+
+合計は **{fmt(monthlyCostJpy(500_000))} 円**（税込 {fmt(withTax(monthlyCostJpy(500_000)))} 円）です。
+
+## サイトの規模の目安
+
+ページビュー（PV）のうち地図が表示される割合によって、同じ表示回数で賄える PV は変わります。すべてのページに地図がある場合を 1 倍、平均して 25 PV に 1 回地図が表示される場合を 25 倍として見積もると、次のようになります。
+
+| | Free | Pro（月額のみ） |
+|---|---|---|
+| 地図表示回数 | {fmt(FREE_LOADS)} 回まで | {fmt(PRO_INCLUDED_LOADS)} 回まで |
+| サイトの月間 PV | {fmt(FREE_LOADS)} 〜 {fmt(FREE_LOADS * 25)} | {fmt(PRO_INCLUDED_LOADS)} 〜 {fmt(PRO_INCLUDED_LOADS * 25)} |
+
+イベントや不動産のサイトのように地図を多く使うサイトでは、PV あたりの表示回数が多くなります。
+
+## 支払いのサイクル
+
+- **Pro プランの月額**：初回分は Pro プランへの登録日に請求します。以降は毎月、チームの登録日と同じ日に請求します。
+- **従量課金**：チームを登録した日から 1 か月分を集計し、翌月の同じ日に請求します。
+
+チームは Geolonia Maps への登録日に自動で作られます。チームは複数作れます。
+
+## オプションとお問い合わせ
+
+技術サポートは月額 55,000 円で提供しています。メールでの技術的な問い合わせと、機能追加の相談に対応します。
+
+このほか、次のご相談も受け付けています。
+
+- 地図の開発の代行と開発のサポート
+- 大量の位置情報データの地図上での可視化
+- イントラネットでの利用
+- 請求書払い（お客様と利用状況に応じて対応します）
+
+<Callout kind="info" title="お問い合わせ">
+料金とオプションについては、[お問い合わせフォーム](https://www.geolonia.com/contact/)からご連絡ください。
+</Callout>

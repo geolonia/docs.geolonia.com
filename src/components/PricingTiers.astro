@@ -1,0 +1,30 @@
+---
+// Pro プランの従量課金の表。段階と単価は src/lib/pricing.mjs から作る。
+import { PRO_TIERS, withTax } from '../lib/pricing.mjs';
+
+const fmt = (n: number) => n.toLocaleString('ja-JP');
+const yen = (n: number) => `${n.toLocaleString('ja-JP', { maximumFractionDigits: 3 })} 円`;
+const rows = PRO_TIERS.map((t, i) => ({
+  from: i === 0 ? 1 : PRO_TIERS[i - 1].upTo + 1,
+  to: t.upTo,
+  price: t.price,
+}));
+---
+<table>
+  <thead>
+    <tr>
+      <th scope="col">月の地図表示回数</th>
+      <th scope="col">1 回あたりの単価（税抜）</th>
+      <th scope="col">税込</th>
+    </tr>
+  </thead>
+  <tbody>
+    {rows.map((r) => (
+      <tr>
+        <td>{r.to === Infinity ? `${fmt(r.from)} 回目から` : `${fmt(r.from)} 〜 ${fmt(r.to)} 回目`}</td>
+        <td>{r.price === 0 ? '月額に含まれる' : yen(r.price)}</td>
+        <td>{r.price === 0 ? '' : yen(withTax(r.price))}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
