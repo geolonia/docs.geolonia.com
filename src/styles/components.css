@@ -199,3 +199,91 @@
   .site-search__label, .site-search__kbd { display: none; }
   .site-search__button { padding: 6px 8px; }
 }
+
+/* ── コスト削減診断（/pricing/cost-reduction/） ─────────────────────
+   入力欄と試算結果。結果の表の行とグラフは JavaScript（src/lib/cost-reduction/）が作る。 */
+.cr-tool {
+  margin: 24px 0 40px; padding: 24px;
+  background: var(--accent-soft); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.cr-tool > h2 { margin-top: 0; }
+.cr-form { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.cr-field { flex: 1 1 320px; }
+.cr-field--month { flex: 0 1 180px; }
+.cr-field--rate { flex: 0 1 240px; }
+.cr-field label { display: block; margin-bottom: 4px; font-weight: 700; }
+.cr-field select, .cr-input input {
+  box-sizing: border-box; width: 100%; height: 40px; padding: 0 10px; font: inherit; font-size: 16px; line-height: 1.25;
+  background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 7px;
+}
+.cr-input { display: flex; align-items: center; gap: 8px; }
+.cr-input input { text-align: right; }
+.cr-unit { flex: none; }
+.cr-hint { margin: 4px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--text-soft); }
+.cr-field--provider { flex-basis: 100%; margin: 0; padding: 0; border: 0; }
+.cr-field--provider legend { margin-bottom: 4px; padding: 0; font-weight: 700; }
+.cr-providers { display: flex; flex-wrap: wrap; gap: 10px; }
+.cr-field .cr-provider {
+  display: flex; align-items: center; gap: 8px; margin: 0; padding: 8px 14px;
+  font-weight: 400; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; cursor: pointer;
+}
+.cr-provider:has(input:checked) { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
+.cr-empty { margin: 20px 0 0; color: var(--text-soft); }
+
+.cr-result { margin-top: 28px; text-align: center; }
+.cr-result p { margin: 0; }
+.cr-result-main { font-size: 32px; font-weight: 800; line-height: 1.4; color: var(--color-accent-text); }
+.cr-result-sub { margin-bottom: 20px !important; font-size: 17px; }
+.cr-result-note { margin-bottom: 20px !important; font-size: 17px; font-weight: 700; }
+.cr-result-detail { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 0 0 20px; }
+.cr-result-detail div { padding: 10px; background: var(--bg); border-radius: 7px; }
+.cr-result-detail dt { font-size: 13px; color: var(--text-soft); }
+.cr-result-detail dd { margin: 0; font-weight: 700; }
+
+.cr-fx { margin: 0 0 24px; padding: 20px; background: var(--bg); border-radius: 7px; text-align: left; }
+.cr-fx h3 { margin-top: 0; }
+.cr-chart-title { font-weight: 700; }
+.cr-fx-text { margin: 20px 0 12px !important; }
+.cr-chart { position: relative; }
+.cr-chart svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+.cr-chart .cr-chart-axis { font-size: 12px; fill: var(--text-soft); }
+.cr-chart .cr-chart-label { font-size: 13px; fill: var(--text); }
+.cr-chart-tooltip {
+  position: absolute; z-index: 1; min-width: 200px; padding: 8px 12px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
+  box-shadow: var(--shadow-modal); font-size: 13px; line-height: 1.6; pointer-events: none;
+}
+.cr-fx-all { margin-top: 12px; text-align: left; }
+.cr-fx-all summary { cursor: pointer; color: var(--color-accent-text); }
+.cr-fx-all .cr-table-wrap { margin-top: 8px; }
+.cr-chart-tooltip-head { color: var(--text-soft); }
+.cr-chart-tooltip-row { display: flex; align-items: center; gap: 6px; }
+.cr-chart-tooltip-row strong { margin-left: auto; }
+.cr-chart-swatch { display: inline-block; width: 10px; height: 2px; }
+
+/* 塗りのボタン。配色はヘッダーの「ユーザー登録」と同じ（オレンジ地＋白文字） */
+.cr-cta {
+  display: inline-block; padding: 12px 28px; border-radius: 7px;
+  background: var(--brand); color: #fff; font-weight: 800; text-decoration: none;
+  /* 折り返すときは「スキルで」の後ろで（日本語の途中で切らない） */
+  word-break: keep-all; overflow-wrap: anywhere;
+}
+.cr-cta:hover { background: var(--brand-dark); color: #fff; text-decoration: none; }
+.cr-cta-sub { margin-top: 12px !important; font-size: 14px; }
+.cr-cta-code { display: inline-block; max-width: 100%; margin: 8px 0 0; text-align: left; }
+
+/* 金額の表。数字は右に揃え、1 行に収める */
+.cr-table-wrap { overflow-x: auto; }
+.cr-tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 20px; }
+.cr-num-table caption, .cr-fx-table caption { text-align: left; font-weight: 700; margin-bottom: 6px; }
+.cr-num-table td, .cr-fx-table td { text-align: right; white-space: nowrap; }
+.cr-num-table th, .cr-fx-table th { white-space: nowrap; }
+.cr-num-table thead th, .cr-fx-table thead th { text-align: center; }
+
+@media (max-width: 700px) {
+  .cr-tool { padding: 16px; }
+  .cr-result-main { font-size: 26px; }
+  .cr-fx { padding: 14px; }
+  /* 金額は 1 行のまま、行見出しだけ折り返す */
+  .cr-fx-table tbody th { white-space: normal; }
+}
