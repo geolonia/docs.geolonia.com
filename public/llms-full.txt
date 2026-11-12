@@ -2329,7 +2329,24 @@ Pass the data with `geojson` and the colouring with `choropleth` on `<Map>`.
 />
 ```
 
-`choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. `geojson` and `choropleth` are read once when the map is created; to change them later, give `<Map>` a `key` and recreate it.
+`choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. Without `center`, the map fits its view to the data.
+
+`geojson` and `choropleth` on `<Map>` are read once when the map is created. To change the data or the colouring later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. When you use `<SimpleStyle>`, do not pass `geojson` to `<Map>`: both would try to add layers with the same IDs. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
+
+```jsx
+function Wards() {
+  const [property, setProperty] = useState("density");
+  return (
+    <>
+      <button onClick={() => setProperty("density")}>人口密度</button>
+      <button onClick={() => setProperty("population")}>人口</button>
+      <Map apiKey="YOUR-API-KEY" center={[139.73, 35.675]} zoom={9.4} containerStyle={{ height: 480 }}>
+        <SimpleStyle geojson="/data/tokyo23.geojson" choropleth={property} />
+      </Map>
+    </>
+  );
+}
+```
 
 Reading the `interpolate` expression in the maps-suite code:
 
@@ -2609,7 +2626,31 @@ Pass the points with `geojson` and the weight and colours with `heatmap` on `<Ma
 />
 ```
 
-`heatmap` takes `weight` and `colors` with the same meaning as the embed attributes; `heatmap={true}` weights every point equally. To tune radius or intensity as well, use `<Source>` and `<Layer type="heatmap">` with the same `paint` as the maps-suite code.
+`heatmap` takes `weight` and `colors` with the same meaning as the embed attributes; `heatmap={true}` weights every point equally. Without `center`, the map fits its view to the data.
+
+`geojson` and `heatmap` on `<Map>` are read once when the map is created. To change the data or the weighting later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. When you use `<SimpleStyle>`, do not pass `geojson` to `<Map>`: both would try to add layers with the same IDs. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
+
+```jsx
+function Density() {
+  const [weighted, setWeighted] = useState(true);
+  return (
+    <>
+      <label>
+        <input type="checkbox" checked={weighted} onChange={(e) => setWeighted(e.target.checked)} />
+        重みを使う
+      </label>
+      <Map apiKey="YOUR-API-KEY" center={[139.735, 35.668]} zoom={11} containerStyle={{ height: 480 }}>
+        <SimpleStyle
+          geojson="/data/dense-points.geojson"
+          heatmap={weighted ? { weight: "weight" } : true}
+        />
+      </Map>
+    </>
+  );
+}
+```
+
+To tune radius or intensity as well, use `<Source>` and `<Layer type="heatmap">` with the same `paint` as the maps-suite code.
 
 For the maps-suite code, there are mainly four things to tune.
 
@@ -2759,7 +2800,7 @@ The vector tile example uses a fictional `example.com` URL and will not work as 
 
 URL: https://docs.geolonia.com/howto/address-search/
 
-Deriving latitude and longitude from an address string such as "東京都千代田区大手町1-1-1" is called **geocoding**. Geolonia Maps has no geocoder of its own, so it is combined with an address library. This recipe uses `@geolonia/normalize-japanese-addresses` (NJA), at https://github.com/geolonia/normalize-japanese-addresses.
+Deriving latitude and longitude from an address string such as "東京都千代田区大手町1-1-1" is called **geocoding**. This recipe uses the address library `@geolonia/normalize-japanese-addresses` (NJA), at https://github.com/geolonia/normalize-japanese-addresses. embed has no geocoder, so it is combined with NJA. maps-suite has the geocoder `geolonia.maps.Geocoder`, and maps-react has the search box `<GeocoderControl>` and the function `geocode()`; both use NJA internally.
 
 NJA is primarily an **address normalisation** library. It absorbs variation in notation, tidies the address, and also returns the coordinates of that point, which can be used on the map directly.
 
@@ -2862,13 +2903,10 @@ NJA is an npm package but can be loaded from a CDN as an ES module. The embed CD
 
 ### maps-suite
 
-Get the coordinates with `normalize()` and move with `panTo()` and `setZoom()`. Reuse one marker via `setPosition()`.
+maps-suite has `geolonia.maps.Geocoder`, which uses NJA internally, so you do not load NJA yourself. Get the results with `geocode()` and pass `geometry.viewport` of the result to `fitBounds()`. Reuse one marker via `setPosition()`.
 
 ```js
-import { normalize } from "@geolonia/normalize-japanese-addresses";
 import { geolonia } from "@geolonia/maps-suite";
-
-const ZOOM = { 1: 9, 2: 12, 3: 15, 8: 18 };
 
 const map = new geolonia.maps.Map(container, {
   apiKey: "YOUR-API-KEY",
@@ -2876,65 +2914,88 @@ const map = new geolonia.maps.Map(container, {
   zoom: 8,
 });
 
+const geocoder = new geolonia.maps.Geocoder();
 const marker = new geolonia.maps.Marker();
+let latest = 0; // number of the last search sent
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const id = ++latest;
 
-  const result = await normalize(form.querySelector("#q").value);
-  if (!result.point) {
+  let results;
+  try {
+    ({ results } = await geocoder.geocode({ address: form.querySelector("#q").value }));
+  } catch (error) {
+    if (id !== latest) return; // a later search takes over
     marker.setMap(null);
+    console.warn(error.code); // ZERO_RESULTS, INVALID_REQUEST or ERROR
     return;
   }
+  if (id !== latest) return;
 
-  const { lat, lng, level } = result.point;
-  marker.setPosition({ lat, lng });
+  const { geometry } = results[0];
+  marker.setPosition(geometry.location);
   marker.setMap(map);
-  map.panTo({ lat, lng });
-  map.setZoom(ZOOM[level]);
+  map.fitBounds(geometry.viewport);
 });
 ```
 
+- **`geometry.viewport`**: a range matching how precise the coordinates are. Passed to `fitBounds()`, it shows a wide area for a municipal office and a narrow one for a house number, so you do not pick the zoom yourself.
+- **`geometry.location_type`**: `ROOFTOP` when the house number position is known, `APPROXIMATE` for district, municipality or prefecture representative points. This corresponds to NJA's `point.level` being 8 or not.
+- **Failure**: when the address cannot be identified, the promise rejects with an error whose `code` is `ZERO_RESULTS`. An empty address gives `INVALID_REQUEST`, and a failure to fetch the address data gives `ERROR`.
 - **`setPosition()` and `setMap()`**: create one marker and move it. Calling `new` on every search leaves the previous markers behind.
-- **`panTo()` and `setZoom()`**: coordinates go in as a `{ lat, lng }` object.
+- **`latest`**: results do not always come back in the order the searches were sent. Use only the result of the last search so an older result does not overwrite the screen.
 
 ### maps-react
 
-Put the search result in state and pass it to `center` and `zoom` on `Map`. Changing the values flies the map there.
+maps-react has `<GeocoderControl>`, a component that puts an address search box on the map. It uses NJA internally, so you do not load NJA yourself. Placed inside `<Map>`, it moves the map to the searched address and puts a marker there.
 
 ```jsx
+import { GeocoderControl, Map } from "@geolonia/maps-react";
+
+const MESSAGES = {
+  ZERO_RESULTS: "住所を特定できませんでした。",
+  INVALID_REQUEST: "住所を入力してください。",
+  ERROR: "住所データを取得できませんでした。",
+};
+
 function App() {
-  const [query, setQuery] = useState("東京都千代田区大手町1-1-1");
-  const [found, setFound] = useState(null);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const result = await normalize(query);
-    if (!result.point) {
-      setFound(null);
-      return;
-    }
-
-    const { lat, lng, level } = result.point;
-    setFound({ lat, lng, zoom: ZOOM[level] });
-  };
+  const [note, setNote] = useState("地図の左上の欄に住所を入力して検索してください。");
 
   return (
-    <Map
-      apiKey="YOUR-API-KEY"
-      center={found ? [found.lng, found.lat] : [139.76, 35.68]}
-      zoom={found ? found.zoom : 8}
-      containerStyle={{ flex: 1 }}
-    >
-      {found && <Marker lat={found.lat} lng={found.lng} />}
-    </Map>
+    <>
+      <div role="status">{note}</div>
+      <Map apiKey="YOUR-API-KEY" center={[139.76, 35.68]} zoom={8} containerStyle={{ flex: 1 }}>
+        <GeocoderControl
+          onResult={(result) => setNote(`${result.address}（位置情報レベル ${result.level}）`)}
+          onError={(error) => setNote(MESSAGES[error.code] ?? error.message)}
+        />
+      </Map>
+    </>
   );
 }
 ```
 
-- **`center` and `zoom`**: `Map` watches these two and moves the map. No imperative API is needed. `center` is in **`[longitude, latitude]` order**.
-- **`Marker`**: `lat` and `lng` are separate props, written differently from the `center` order.
+- **`<GeocoderControl>`**: handles the search box, moving the map and the marker. The map moves to the `bounds` of the result, so a municipal office shows a wide area and a house number a narrow one. One marker is moved, so markers do not accumulate. When searches overlap, only the latest one changes the map.
+- **`onResult`**: called when an address is found. `result.level` is how precise the coordinates are, the same value as NJA's `point.level`. When NJA returns no `point` but read the municipality, the municipal office is returned with `level: 2`. `result.address` is the address down to what the coordinates stand for, so a district representative point leaves out the house number.
+- **`onError`**: called when a search fails. `error.code` is `ZERO_RESULTS` when the address cannot be identified, `INVALID_REQUEST` when the input is empty, and `ERROR` when the address data could not be fetched or did not answer within 10 seconds. After a failure, the previous marker and map position stay.
+- **`placeholder`**: the faint text in the input, also used as its accessible label. The default is 「住所を入力」.
+
+To build your own search box, call `geocode()`. `bounds` of the result is `[[west, south], [east, north]]`, ready for `fitBounds()`, and `center` is `[longitude, latitude]`. On failure it rejects with an error carrying the same `code` as `onError`.
+
+```js
+import { geocode } from "@geolonia/maps-react";
+
+// map is the map received via onLoad or useMap()
+try {
+  const { center, bounds, level, address } = await geocode("東京都台東区上野公園7-7");
+  map.fitBounds(bounds);
+} catch (error) {
+  console.warn(error.code); // ZERO_RESULTS, INVALID_REQUEST or ERROR
+}
+```
+
+When you call it repeatedly, results do not always come back in order. As with `latest` in the maps-suite code, use only the result of the last call.
 
 ### About address data retrieval
 
@@ -2946,13 +3007,13 @@ NJA does not carry address data around; it fetches only the range it needs from 
 
 ### Can it go the other way?
 
-No. Deriving an address from coordinates, reverse geocoding, is not something NJA does. NJA takes address strings as input.
+No. Deriving an address from coordinates, reverse geocoding, is not something NJA does. NJA takes address strings as input. The maps-suite `Geocoder` is the same: passing `location` rejects with `code` `INVALID_REQUEST`. maps-react's `geocode()` also takes only an address string.
 
 **When it does not work**
 
-- Nothing happens: check that you handle the case where `result.point` is absent. An unidentifiable address gives `level: 0` and no `point`.
+- Nothing happens: check that you handle the case where `result.point` is absent. An unidentifiable address gives `level: 0` and no `point`. With the maps-suite `Geocoder`, the promise rejects with `code` `ZERO_RESULTS`, so check that you `catch` it. With maps-react's `<GeocoderControl>`, `onError` is called.
 - Accuracy drops when a building name is included: a trailing building name only remains in `other` and does not affect coordinates, but it can interfere with reading the address itself. Separating it in advance is the reliable route.
-- Only a rough place appears despite giving a house number: that number has no location information and the district representative point was returned. `point.level` distinguishes the two.
+- Only a rough place appears despite giving a house number: that number has no location information and the district representative point was returned. `point.level` distinguishes the two. With the maps-suite `Geocoder`, `geometry.location_type` is `APPROXIMATE`. With maps-react, `level` is below `8` and `partial` is `true`.
 - Markers accumulate with each search: you are creating a marker every time. Create one and move it.
 
 ---
@@ -2984,7 +3045,7 @@ map.getGeoloniaMap().setProjection({ type: "globe" });
 
 ### maps-react
 
-Receive the map instance in `onLoad` and switch the projection.
+Receive the map instance in `onLoad` and switch the projection. With `<GlobeControl>`, users can switch the projection with a button.
 
 ```jsx
 <Map
@@ -2993,10 +3054,13 @@ Receive the map instance in `onLoad` and switch the projection.
   zoom={2}
   onLoad={(map) => map.setProjection({ type: "globe" })}
   containerStyle={{ width: "100%", height: "100vh" }}
-/>
+>
+  <GlobeControl />
+</Map>
 ```
 
 - **`setProjection({ type: "globe" })`**: switches the projection to a globe. `{ type: "mercator" }` returns to the usual flat projection.
+- **`<GlobeControl>`**: a button that switches between globe and flat. `position` sets where it goes; the default is the top right (`"top-right"`).
 - The tiles are the same as usual. No data or style change is needed.
 
 **When it does not work**
@@ -3648,7 +3712,7 @@ The React library. **This is the only library without a reference generated from
 
 `Map` additionally has props deciding the appearance of the container such as `containerStyle` and `className`, props receiving map events such as `onClick` and `onMoveEnd`, `interactiveLayerIds` for narrowing which layers are clickable, and `onLoad` for retrieving the map instance. These are maps-react additions and do not appear on the MapLibre side.
 
-The available components are `Map` for the map itself, `Source` and `Layer` for data and drawing, `Marker` and `Popup`, and the controls (`NavigationControl`, `GeolocateControl`, `FullscreenControl`, `ScaleControl`, `AttributionControl`, and `Control` for writing your own). There is also `MapProvider` for handling several maps together, along with hooks such as `useMap`.
+The available components are `Map` for the map itself, `Source` and `Layer` for data and drawing, `Marker` and `Popup`, `SimpleStyle` for drawing GeoJSON, and the controls (`NavigationControl`, `GeolocateControl`, `FullscreenControl`, `GlobeControl`, `ScaleControl`, `AttributionControl`, the address search box `GeocoderControl`, and `Control` for writing your own). There is also `MapProvider` for handling several maps together, hooks such as `useMap` and `useControl`, and the function `geocode` for finding a position from an address.
 
 What you pass to `Source` and `Layer` is the MapLibre GL JS source and layer definition as it is. What can be written in `paint` and `layout`, and how `filter` expressions work, is covered by the MapLibre GL JS documentation. The map instance received in `onLoad` also extends the MapLibre `Map`, so the same documentation applies.
 

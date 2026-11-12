@@ -31,7 +31,7 @@ React 用のライブラリです。**このライブラリだけ、型定義か
 
 `Map` はこれに加えて、`containerStyle` や `className` で入れ物の見た目を決めるプロパティ、`onClick` や `onMoveEnd` などの地図イベントを受け取るプロパティ、クリック対象のレイヤを絞る `interactiveLayerIds`、地図インスタンスを取り出す `onLoad` を持ちます。こちらは maps-react が用意しているもので、MapLibre 側には出てきません。
 
-用意されているコンポーネントは、地図本体の `Map`、データと描き方の `Source` と `Layer`、`Marker` と `Popup`、コントロール類（`NavigationControl`、`GeolocateControl`、`FullscreenControl`、`ScaleControl`、`AttributionControl`、および自作用の `Control`）です。複数の地図をまとめて扱う `MapProvider` と、`useMap` などのフックもあります。
+用意されているコンポーネントは、地図本体の `Map`、データと描き方の `Source` と `Layer`、`Marker` と `Popup`、GeoJSON を描く `SimpleStyle`、コントロール類（`NavigationControl`、`GeolocateControl`、`FullscreenControl`、`GlobeControl`、`ScaleControl`、`AttributionControl`、住所の検索欄の `GeocoderControl`、および自作用の `Control`）です。複数の地図をまとめて扱う `MapProvider` と、`useMap` や `useControl` などのフック、住所から位置を求める関数 `geocode` もあります。
 
 `Source` と `Layer` に渡すものは、MapLibre GL JS のソース定義とレイヤ定義そのままです。`paint` や `layout` に書ける項目、`filter` の式の書き方は [MapLibre GL JS のドキュメント](https://maplibre.org/maplibre-gl-js/docs/)を見れば分かります。`onLoad` で受け取れる地図インスタンスも MapLibre の `Map` を継承したものなので、同じドキュメントがそのまま使えます。
 

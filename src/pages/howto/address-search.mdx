@@ -231,7 +231,7 @@ function App() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh",
                   font: "14px/1.6 system-ui, sans-serif" }}>
-      <div style={{ padding: 8, color: "#555" }}>{note}</div>
+      <div role="status" style={{ padding: 8, color: "#555" }}>{note}</div>
       <Map
         apiKey="YOUR-API-KEY"
         center={[139.76, 35.68]}
@@ -242,7 +242,7 @@ function App() {
           onResult={(result) =>
             setNote(`${result.address}（位置情報レベル ${result.level}）`)
           }
-          onError={(error) => setNote(MESSAGES[error.code])}
+          onError={(error) => setNote(MESSAGES[error.code] ?? error.message)}
         />
       </Map>
     </div>
@@ -255,18 +255,25 @@ createRoot(document.getElementById("root")).render(<App />);
 </LiveCode>
 
 - **`<GeocoderControl>`**：検索欄、地図の移動、マーカーをまとめて受け持ちます。地図は結果の `bounds` に合わせて動くので、市区町村役場の座標なら広く、番地の位置なら狭く表示されます。マーカーは1つを付け替えるので、検索のたびに増えることはありません。続けて検索したときは、最後に送った検索の結果だけが地図に反映されます。
-- **`onResult`**：住所が見つかったときに呼ばれます。`result.level` は座標の細かさで、NJA の `point.level` と同じ値です。`result.address` は座標が指す場所までの住所で、大字・丁目の代表点なら番地を含みません。
-- **`onError`**：失敗したときに呼ばれます。`error.code` は、住所を特定できないときが `ZERO_RESULTS`、入力が空のときが `INVALID_REQUEST`、住所データを取得できなかったときが `ERROR` です。失敗しても、前の結果のマーカーと地図の位置はそのまま残ります。
+- **`onResult`**：住所が見つかったときに呼ばれます。`result.level` は座標の細かさで、NJA の `point.level` と同じ値です。ただし NJA が `point` を返さなくても、市区町村まで読み取れていれば市区町村役場の座標を `level: 2` として返します。`result.address` は座標が指す場所までの住所で、大字・丁目の代表点なら番地を含みません。
+- **`onError`**：失敗したときに呼ばれます。`error.code` は、住所を特定できないときが `ZERO_RESULTS`、入力が空のときが `INVALID_REQUEST`、住所データを取得できなかったときと、10 秒以内に応答の無かったときが `ERROR` です。失敗しても、前の結果のマーカーと地図の位置はそのまま残ります。
 - **`placeholder`**：入力欄に薄く出す文字で、読み上げ用のラベルも兼ねます。既定は「住所を入力」です。
 
-検索欄を自分で作りたいときは、`geocode()` を呼びます。結果の `bounds` は `fitBounds()` にそのまま渡せる `[[西, 南], [東, 北]]` で、`center` は `[経度, 緯度]` の順です。
+検索欄を自分で作りたいときは、`geocode()` を呼びます。結果の `bounds` は `fitBounds()` にそのまま渡せる `[[西, 南], [東, 北]]` で、`center` は `[経度, 緯度]` の順です。失敗すると、`<GeocoderControl>` の `onError` と同じ `code` を持つエラーで reject されます。
 
 ```js
 import { geocode } from "@geolonia/maps-react";
 
-const { center, bounds, level, address } = await geocode("東京都台東区上野公園7-7");
-map.fitBounds(bounds); // map は onLoad や useMap() で受け取った地図
+// map は onLoad や useMap() で受け取った地図
+try {
+  const { center, bounds, level, address } = await geocode("東京都台東区上野公園7-7");
+  map.fitBounds(bounds);
+} catch (error) {
+  console.warn(error.code); // ZERO_RESULTS、INVALID_REQUEST、ERROR のいずれか
+}
 ```
+
+続けて呼ぶと、結果は送った順に返るとは限りません。suite タブの `latest` と同じように、最後に呼んだ結果だけを使ってください。
 
 </Lens>
 
@@ -293,7 +300,7 @@ NJA は住所データを持ち歩かず、必要な範囲だけを Web API か�
 <Callout kind="warning" title="うまくいかないとき">
 - 何も起きない → `result.point` が無い場合を処理しているか確認してください。住所を特定できなかったときは `level: 0` で `point` が付きません。maps-suite の `Geocoder` では、`code` が `ZERO_RESULTS` のエラーで reject されるので、`catch` しているか確認してください。maps-react の `<GeocoderControl>` では `onError` が呼ばれます。
 - 建物名を入れると精度が落ちる → 末尾の建物名は `other` に残るだけで座標には効きませんが、住所の読み取り自体を邪魔することがあります。あらかじめ分けておくのが確実です。
-- 番地まで入れたのに大まかな場所しか出ない → その番地の位置情報が無く、大字・丁目の代表点が返っています。`point.level` を見れば区別できます。maps-suite の `Geocoder` では、`geometry.location_type` が `APPROXIMATE` になります。maps-react では、`level` が `8` より小さくなります。
+- 番地まで入れたのに大まかな場所しか出ない → その番地の位置情報が無く、大字・丁目の代表点が返っています。`point.level` を見れば区別できます。maps-suite の `Geocoder` では、`geometry.location_type` が `APPROXIMATE` になります。maps-react では、`level` が `8` より小さくなり、`partial` が `true` になります。
 - 検索のたびにマーカーが増える → マーカーを毎回作っています。1つ作って位置を付け替えてください。
 </Callout>
 

@@ -157,7 +157,7 @@ createRoot(document.getElementById("root")).render(
 
 `center` を省くと、地図はデータ全体が収まる範囲に合わせて表示されます。上の例では、23 区がちょうど収まるように `center` と `zoom` を指定しています。
 
-`<Map>` の `geojson` と `choropleth` は、地図を作るときに一度だけ読まれます。データや塗り分けを後から変えるときは、`<Map>` の子要素に `<SimpleStyle>` を置きます。props が変わると、地図を作り直さずに描き直されます。
+`<Map>` の `geojson` と `choropleth` は、地図を作るときに一度だけ読まれます。データや塗り分けを後から変えるときは、`<Map>` の子要素に `<SimpleStyle>` を置きます。props が変わると、地図を作り直さずに描き直されます。`<SimpleStyle>` を使うときは、`<Map>` には `geojson` を渡さないでください。両方に渡すと、同じ ID のレイヤを2組作ろうとします。`<SimpleStyle>` でデータの範囲に合わせて表示するには、`fitBounds` を付けます。
 
 ```jsx
 import { useState } from "react";
