@@ -2918,7 +2918,7 @@ NJA is an npm package but can be loaded from a CDN as an ES module. The embed CD
 - **`type="module"`**: required to load NJA from a CDN. Pinning the version avoids surprises from updates.
 - **`geolonia.Marker`**: loading embed puts the contents of MapLibre GL JS on `window.geolonia`, so marker and popup classes are usable directly.
 - **Whether `result.point` exists**: when the address could not be identified (`level: 0`) there is no `point`. Always check before reading it.
-- **`try` and `latest`**: `normalize()` throws when the address data cannot be fetched. Results do not always come back in the order the searches were sent, so only the result of the last search is used.
+- **`try` and `latest`**: `normalize()` throws when the address data cannot be fetched because of a network error, for example. Some failures do not throw; see "About address data retrieval" below. Results do not always come back in the order the searches were sent, so only the result of the last search is used.
 
 ### maps-suite
 
@@ -3036,7 +3036,7 @@ NJA does not carry address data around; it fetches only the range it needs from 
 
 - **The first call takes a moment.** It walks prefecture, then municipality, then district, so there are several network round trips. Later calls hit the browser cache.
 - **It does not work offline.** When you use NJA directly (the embed code), point `config.japaneseAddressesApi` at your own endpoint for a disconnected environment. The maps-suite `Geocoder` and maps-react's `geocode()` have no setting for the endpoint, so they do not work without a connection.
-- **Failure raises an exception.** Transient failures such as 5xx, 429 and network errors are retried automatically up to twice, but anything beyond that throws. When processing in bulk, wrap calls in `try` so one failure does not stop everything. With the maps-suite `Geocoder` and maps-react's `geocode()`, such a failure is an error whose `code` is `ERROR`.
+- **A failed fetch does not always throw.** It throws on a network error, or when the prefecture, municipality or district list cannot be read as JSON. The block and lot data, however, is read without checking the HTTP status, so an error response from the server can yield the district representative point instead of an exception. Nothing is retried. When processing in bulk, wrap calls in `try` so one failure does not stop everything. With the maps-suite `Geocoder` and maps-react's `geocode()`, a failure that throws becomes an error whose `code` is `ERROR`.
 
 ### Can it go the other way?
 
