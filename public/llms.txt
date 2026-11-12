@@ -54,7 +54,7 @@ For full documentation content, see: https://docs.geolonia.com/llms-full.txt
 - [Visualise Density with a Heatmap](https://docs.geolonia.com/howto/heatmap/): `data-heatmap` in embed, the `heatmap` prop in maps-react, and the `heatmap` layer with weight, radius, intensity and colour ramp
 - [Show Buildings and Terrain in 3D](https://docs.geolonia.com/howto/3d/): `data-3d`, the maps-suite default, and the JSX spread needed in maps-react
 - [Add a Custom Data Source (Vector Tiles and More)](https://docs.geolonia.com/howto/custom-source/): Template `{z}/{x}/{y}` URLs, attribution and `source-layer`
-- [Search by Address and Show That Place](https://docs.geolonia.com/howto/address-search/): Geocoding with `@geolonia/normalize-japanese-addresses`, and reading `point.level`
+- [Search by Address and Show That Place](https://docs.geolonia.com/howto/address-search/): Geocoding with `@geolonia/normalize-japanese-addresses`, the maps-suite `Geocoder` and the maps-react `<GeocoderControl>`, and reading `point.level`
 - [Show the Map as a Globe](https://docs.geolonia.com/howto/globe/): `setProjection({ type: "globe" })`, which needs MapLibre GL JS v5
 - [Place a Map with HTML Tags Only (maps-suite)](https://docs.geolonia.com/howto/web-component/): The `<geolonia-map>` custom element, its attributes and `innerMap`
 - [Manage API Keys in YAML](https://docs.geolonia.com/howto/cli-map-keys/): `geolonia map-keys pull`, `plan` and `apply`

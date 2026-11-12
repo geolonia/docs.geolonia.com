@@ -242,7 +242,7 @@ function App() {
           onResult={(result) =>
             setNote(`${result.address}（位置情報レベル ${result.level}）`)
           }
-          onError={(error) => setNote(MESSAGES[error.code] ?? error.message)}
+          onError={(error) => setNote(MESSAGES[error.code] ?? "検索に失敗しました。")}
         />
       </Map>
     </div>
@@ -256,24 +256,29 @@ createRoot(document.getElementById("root")).render(<App />);
 
 - **`<GeocoderControl>`**：検索欄、地図の移動、マーカーをまとめて受け持ちます。地図は結果の `bounds` に合わせて動くので、市区町村役場の座標なら広く、番地の位置なら狭く表示されます。マーカーは1つを付け替えるので、検索のたびに増えることはありません。続けて検索したときは、最後に送った検索の結果だけが地図に反映されます。
 - **`onResult`**：住所が見つかったときに呼ばれます。`result.level` は座標の細かさで、NJA の `point.level` と同じ値です。ただし NJA が `point` を返さなくても、市区町村まで読み取れていれば市区町村役場の座標を `level: 2` として返します。`result.address` は座標が指す場所までの住所で、大字・丁目の代表点なら番地を含みません。
-- **`onError`**：失敗したときに呼ばれます。`error.code` は、住所を特定できないときが `ZERO_RESULTS`、入力が空のときが `INVALID_REQUEST`、住所データを取得できなかったときと、10 秒以内に応答の無かったときが `ERROR` です。失敗しても、前の結果のマーカーと地図の位置はそのまま残ります。
+- **`onError`**：失敗したときに呼ばれます。`error.code` は、住所を特定できないときが `ZERO_RESULTS`、入力が空のときが `INVALID_REQUEST`、住所データを取得できなかったとき（10 秒以内に応答の無いときを含む）などが `ERROR` です。失敗しても、前の結果のマーカーと地図の位置はそのまま残ります。
 - **`placeholder`**：入力欄に薄く出す文字で、読み上げ用のラベルも兼ねます。既定は「住所を入力」です。
 
-検索欄を自分で作りたいときは、`geocode()` を呼びます。結果の `bounds` は `fitBounds()` にそのまま渡せる `[[西, 南], [東, 北]]` で、`center` は `[経度, 緯度]` の順です。失敗すると、`<GeocoderControl>` の `onError` と同じ `code` を持つエラーで reject されます。
+検索欄を自分で作りたいときは、`geocode()` を呼びます。結果の `bounds` は `fitBounds()` にそのまま渡せる `[[西, 南], [東, 北]]` で、`center` は `[経度, 緯度]` の順です。失敗すると、`<GeocoderControl>` の `onError` と同じ `code` を持つエラーで reject されます。続けて呼ぶと、結果は送った順に返るとは限りません。suite タブと同じように、最後に呼んだ結果だけを使います。
 
 ```js
 import { geocode } from "@geolonia/maps-react";
 
+let latest = 0; // 最後に呼んだ検索の番号
+
 // map は onLoad や useMap() で受け取った地図
-try {
-  const { center, bounds, level, address } = await geocode("東京都台東区上野公園7-7");
-  map.fitBounds(bounds);
-} catch (error) {
-  console.warn(error.code); // ZERO_RESULTS、INVALID_REQUEST、ERROR のいずれか
+async function search(map, address) {
+  const id = ++latest;
+  try {
+    const { bounds } = await geocode(address);
+    if (id !== latest) return; // 後から呼んだ検索があれば、そちらに任せる
+    map.fitBounds(bounds);
+  } catch (error) {
+    if (id !== latest) return;
+    console.warn(error.code); // ZERO_RESULTS、INVALID_REQUEST、ERROR のいずれか
+  }
 }
 ```
-
-続けて呼ぶと、結果は送った順に返るとは限りません。suite タブの `latest` と同じように、最後に呼んだ結果だけを使ってください。
 
 </Lens>
 
@@ -288,8 +293,8 @@ try {
 NJA は住所データを持ち歩かず、必要な範囲だけを Web API から都度取得します。既定の取得先は `https://japanese-addresses-v2.geoloniamaps.com/api/ja` です。
 
 - **最初の1回は少し待ちます。** 都道府県、市区町村、大字・丁目と順にたどるので、ネットワーク越しの往復が複数回あります。2回目以降はブラウザのキャッシュが効きます。
-- **オフラインでは動きません。** 通信できない環境で使うなら、`config.japaneseAddressesApi` で自前の配信先を指定します。
-- **失敗すると例外を投げます。** 一過性の失敗（5xx、429、ネットワークエラーなど）は自動で最大2回まで再試行しますが、それでも駄目なら例外です。まとめて処理するときは、1件の失敗で全体が止まらないように `try` で囲んでください。
+- **オフラインでは動きません。** NJA を直接使う場合（embed タブ）、通信できない環境では `config.japaneseAddressesApi` で自前の配信先を指定します。
+- **失敗すると例外を投げます。** 一過性の失敗（5xx、429、ネットワークエラーなど）は自動で最大2回まで再試行しますが、それでも駄目なら例外です。まとめて処理するときは、1件の失敗で全体が止まらないように `try` で囲んでください。maps-suite の `Geocoder` と maps-react の `geocode()` では、この失敗は `code` が `ERROR` のエラーになります。
 
 ## 逆はできますか
 

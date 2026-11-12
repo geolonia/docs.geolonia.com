@@ -2331,7 +2331,7 @@ Pass the data with `geojson` and the colouring with `choropleth` on `<Map>`.
 
 `choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. Without `center`, the map fits its view to the data.
 
-`geojson` and `choropleth` on `<Map>` are read once when the map is created. To change the data or the colouring later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. When you use `<SimpleStyle>`, do not pass `geojson` to `<Map>`: both would try to add layers with the same IDs. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
+`geojson` and `choropleth` on `<Map>` are read once when the map is created. To change the data or the colouring later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. `geojson` on `<Map>` and `<SimpleStyle>` use the same source and layer IDs by default; when you use both, give `<SimpleStyle>` a different `id`. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
 
 ```jsx
 function Wards() {
@@ -2628,7 +2628,7 @@ Pass the points with `geojson` and the weight and colours with `heatmap` on `<Ma
 
 `heatmap` takes `weight` and `colors` with the same meaning as the embed attributes; `heatmap={true}` weights every point equally. Without `center`, the map fits its view to the data.
 
-`geojson` and `heatmap` on `<Map>` are read once when the map is created. To change the data or the weighting later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. When you use `<SimpleStyle>`, do not pass `geojson` to `<Map>`: both would try to add layers with the same IDs. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
+`geojson` and `heatmap` on `<Map>` are read once when the map is created. To change the data or the weighting later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. `geojson` on `<Map>` and `<SimpleStyle>` use the same source and layer IDs by default; when you use both, give `<SimpleStyle>` a different `id`. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
 
 ```jsx
 function Density() {
@@ -2834,7 +2834,7 @@ await normalize("東京都台東区上野公園7-7");
 
 The two do not always agree. Even when the house number was read (`level: 8`), if that number has no location information the representative point of the district is returned (`point.level: 3`).
 
-Match zoom to `point.level`. Zooming to level 18 on the coordinates of a municipal office reads to the viewer as "that building is that address". Varying zoom by the fineness of the coordinate is safer, and all the code below does so.
+Match zoom to `point.level`. Zooming to level 18 on the coordinates of a municipal office reads to the viewer as "that building is that address". Varying zoom by the fineness of the coordinate is safer, and all the code below does so. The maps-suite `Geocoder` returns a range matching that fineness (`geometry.viewport`), and maps-react's `geocode()` returns one as `bounds`.
 
 ### embed
 
@@ -2951,6 +2951,7 @@ form.addEventListener("submit", async (event) => {
 maps-react has `<GeocoderControl>`, a component that puts an address search box on the map. It uses NJA internally, so you do not load NJA yourself. Placed inside `<Map>`, it moves the map to the searched address and puts a marker there.
 
 ```jsx
+import { useState } from "react";
 import { GeocoderControl, Map } from "@geolonia/maps-react";
 
 const MESSAGES = {
@@ -2963,47 +2964,52 @@ function App() {
   const [note, setNote] = useState("地図の左上の欄に住所を入力して検索してください。");
 
   return (
-    <>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <div role="status">{note}</div>
       <Map apiKey="YOUR-API-KEY" center={[139.76, 35.68]} zoom={8} containerStyle={{ flex: 1 }}>
         <GeocoderControl
           onResult={(result) => setNote(`${result.address}（位置情報レベル ${result.level}）`)}
-          onError={(error) => setNote(MESSAGES[error.code] ?? error.message)}
+          onError={(error) => setNote(MESSAGES[error.code] ?? "検索に失敗しました。")}
         />
       </Map>
-    </>
+    </div>
   );
 }
 ```
 
 - **`<GeocoderControl>`**: handles the search box, moving the map and the marker. The map moves to the `bounds` of the result, so a municipal office shows a wide area and a house number a narrow one. One marker is moved, so markers do not accumulate. When searches overlap, only the latest one changes the map.
 - **`onResult`**: called when an address is found. `result.level` is how precise the coordinates are, the same value as NJA's `point.level`. When NJA returns no `point` but read the municipality, the municipal office is returned with `level: 2`. `result.address` is the address down to what the coordinates stand for, so a district representative point leaves out the house number.
-- **`onError`**: called when a search fails. `error.code` is `ZERO_RESULTS` when the address cannot be identified, `INVALID_REQUEST` when the input is empty, and `ERROR` when the address data could not be fetched or did not answer within 10 seconds. After a failure, the previous marker and map position stay.
+- **`onError`**: called when a search fails. `error.code` is `ZERO_RESULTS` when the address cannot be identified, `INVALID_REQUEST` when the input is empty, and `ERROR` when, for example, the address data could not be fetched (including no answer within 10 seconds). After a failure, the previous marker and map position stay.
 - **`placeholder`**: the faint text in the input, also used as its accessible label. The default is 「住所を入力」.
 
-To build your own search box, call `geocode()`. `bounds` of the result is `[[west, south], [east, north]]`, ready for `fitBounds()`, and `center` is `[longitude, latitude]`. On failure it rejects with an error carrying the same `code` as `onError`.
+To build your own search box, call `geocode()`. `bounds` of the result is `[[west, south], [east, north]]`, ready for `fitBounds()`, and `center` is `[longitude, latitude]`. On failure it rejects with an error carrying the same `code` as `onError`. When you call it repeatedly, results do not always come back in order; as in the maps-suite code, use only the result of the last call.
 
 ```js
 import { geocode } from "@geolonia/maps-react";
 
+let latest = 0; // number of the last search
+
 // map is the map received via onLoad or useMap()
-try {
-  const { center, bounds, level, address } = await geocode("東京都台東区上野公園7-7");
-  map.fitBounds(bounds);
-} catch (error) {
-  console.warn(error.code); // ZERO_RESULTS, INVALID_REQUEST or ERROR
+async function search(map, address) {
+  const id = ++latest;
+  try {
+    const { bounds } = await geocode(address);
+    if (id !== latest) return; // a later search takes over
+    map.fitBounds(bounds);
+  } catch (error) {
+    if (id !== latest) return;
+    console.warn(error.code); // ZERO_RESULTS, INVALID_REQUEST or ERROR
+  }
 }
 ```
-
-When you call it repeatedly, results do not always come back in order. As with `latest` in the maps-suite code, use only the result of the last call.
 
 ### About address data retrieval
 
 NJA does not carry address data around; it fetches only the range it needs from a web API each time. The default endpoint is `https://japanese-addresses-v2.geoloniamaps.com/api/ja`.
 
 - **The first call takes a moment.** It walks prefecture, then municipality, then district, so there are several network round trips. Later calls hit the browser cache.
-- **It does not work offline.** For a disconnected environment, point `config.japaneseAddressesApi` at your own endpoint.
-- **Failure raises an exception.** Transient failures such as 5xx, 429 and network errors are retried automatically up to twice, but anything beyond that throws. When processing in bulk, wrap calls in `try` so one failure does not stop everything.
+- **It does not work offline.** When you use NJA directly (the embed code), point `config.japaneseAddressesApi` at your own endpoint for a disconnected environment.
+- **Failure raises an exception.** Transient failures such as 5xx, 429 and network errors are retried automatically up to twice, but anything beyond that throws. When processing in bulk, wrap calls in `try` so one failure does not stop everything. With the maps-suite `Geocoder` and maps-react's `geocode()`, such a failure is an error whose `code` is `ERROR`.
 
 ### Can it go the other way?
 
