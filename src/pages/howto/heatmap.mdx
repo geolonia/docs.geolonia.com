@@ -132,7 +132,32 @@ createRoot(document.getElementById("root")).render(
 - **`weight`**：重みに使うプロパティ名。データの最小値を 0、最大値を 1 として扱います。省略するか `heatmap={true}` と渡すと、すべての点を同じ重みで扱います。
 - **`colors`**：密度の低い側から高い側へ並べた色。密度 0 は透明になります。
 
-ヒートマップにすると、点のマーカーとクラスタリングは表示しません。`geojson` と `heatmap` は、地図を作るときに一度だけ読まれます。後から変えるときは、`<Map>` に `key` を付けて作り直してください。
+ヒートマップにすると、点のマーカーとクラスタリングは表示しません。`center` を省くと、地図はデータ全体が収まる範囲に合わせて表示されます。
+
+`<Map>` の `geojson` と `heatmap` は、地図を作るときに一度だけ読まれます。データや重みを後から変えるときは、`<Map>` の子要素に `<SimpleStyle>` を置きます。props が変わると、地図を作り直さずに描き直されます。`<Map>` の `geojson` と `<SimpleStyle>` は、既定で同じ ID のソースとレイヤを使います。両方を使うときや `<SimpleStyle>` を複数置くときは、それぞれの `id` に別の名前を付けてください。`<SimpleStyle>` でデータの範囲に合わせて表示するには、`fitBounds` を付けます。
+
+```jsx
+import { useState } from "react";
+import { Map, SimpleStyle } from "@geolonia/maps-react";
+
+function Density() {
+  const [weighted, setWeighted] = useState(true);
+  return (
+    <>
+      <label>
+        <input type="checkbox" checked={weighted} onChange={(e) => setWeighted(e.target.checked)} />
+        重みを使う
+      </label>
+      <Map apiKey="YOUR-API-KEY" center={[139.735, 35.668]} zoom={11} containerStyle={{ height: 480 }}>
+        <SimpleStyle
+          geojson="/data/dense-points.geojson"
+          heatmap={weighted ? { weight: "weight" } : true}
+        />
+      </Map>
+    </>
+  );
+}
+```
 
 点1つが影響する半径（`heatmap-radius`）や全体の強さ（`heatmap-intensity`）まで調整したいときは、`<Source>` と `<Layer type="heatmap">` で、suite のタブと同じ `paint` を指定します。
 
@@ -140,7 +165,7 @@ createRoot(document.getElementById("root")).render(
 
 ## 結果
 
-上のコードは、それぞれのタブの下でそのまま動いています。点が密集している場所ほど赤く、まばらな場所は青く表示されます。
+各タブのライブデモのコードは、それぞれのタブの下でそのまま動いています。点が密集している場所ほど赤く、まばらな場所は青く表示されます。
 
 <Callout kind="warning" title="うまくいかないとき">
 - ほとんど色が付かない → 点が少ないと密度が上がりません。`heatmap-radius` または `heatmap-intensity` の値を上げてください。

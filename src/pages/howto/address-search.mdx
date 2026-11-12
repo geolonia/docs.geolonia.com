@@ -10,7 +10,7 @@ import Callout from '../../components/Callout.astro'
 import Lens from '../../components/Lens.astro'
 import LiveCode from '../../components/LiveCode.astro'
 
-「東京都千代田区大手町1-1-1」のような住所文字列から緯度経度を求めることを**ジオコーディング**といいます。ここでは住所を扱うライブラリ [`@geolonia/normalize-japanese-addresses`](https://github.com/geolonia/normalize-japanese-addresses)（以下 NJA）を使います。embed と maps-react はジオコーダを持っていないので、NJA を地図と組み合わせます。maps-suite には NJA を使ったジオコーダ `geolonia.maps.Geocoder` があります。
+「東京都千代田区大手町1-1-1」のような住所文字列から緯度経度を求めることを**ジオコーディング**といいます。ここでは住所を扱うライブラリ [`@geolonia/normalize-japanese-addresses`](https://github.com/geolonia/normalize-japanese-addresses)（以下 NJA）を使います。embed はジオコーダを持っていないので、NJA を地図と組み合わせます。maps-suite には NJA を使ったジオコーダ `geolonia.maps.Geocoder` が、maps-react には NJA を使った検索欄 `<GeocoderControl>` と関数 `geocode()` があります。
 
 NJA はもともと**住所の正規化**をするライブラリです。表記のゆれを吸収して住所を整えたうえで、その地点の緯度経度も返してくれるので、そのまま地図に使えます。動きを確かめるだけなら[公式のデモ](https://geolonia.github.io/normalize-japanese-addresses/)が手軽です。
 
@@ -45,7 +45,7 @@ await normalize("東京都台東区上野公園7-7");
 この2つは一致しないことがあります。番地まで読み取れても（`level: 8`）、その番地の位置情報が無ければ大字・丁目の代表点（`point.level: 3`）が返ります。
 
 <Callout kind="warning" title="ズームは point.level に合わせてください">
-市区町村役場の座標にズーム 18 で寄ると、読み手には「その建物がその住所だ」と見えてしまいます。座標の細かさに応じてズームを変えるのが安全です。下のコードはどれもそうしています。maps-suite の `Geocoder` は、座標の細かさに合わせた表示範囲（`geometry.viewport`）を返します。
+市区町村役場の座標にズーム 18 で寄ると、読み手には「その建物がその住所だ」と見えてしまいます。座標の細かさに応じてズームを変えるのが安全です。下のコードはどれもそうしています。maps-suite の `Geocoder` は座標の細かさに合わせた表示範囲（`geometry.viewport`）を、maps-react の `geocode()` は同じく `bounds` を返します。
 </Callout>
 
 ## コード
@@ -90,12 +90,24 @@ NJA は npm のパッケージですが、CDN から ES モジュールとして
       const map = new geolonia.Map("#map");
       const marker = new geolonia.Marker();
       const note = document.getElementById("note");
+      let latest = 0; // 最後に送った検索の番号
 
       document.getElementById("search").addEventListener("submit", async (event) => {
         event.preventDefault();
+        const id = ++latest;
         note.textContent = "検索中…";
 
-        const result = await normalize(document.getElementById("q").value);
+        let result;
+        try {
+          result = await normalize(document.getElementById("q").value);
+        } catch (error) {
+          if (id !== latest) return; // 後から送った検索があれば、そちらに任せる
+          console.error(error);
+          note.textContent = "住所データを取得できませんでした。";
+          return;
+        }
+        if (id !== latest) return;
+
         if (!result.point) {
           marker.remove();
           note.textContent = "住所を特定できませんでした。";
@@ -106,7 +118,7 @@ NJA は npm のパッケージですが、CDN から ES モジュールとして
         marker.setLngLat([lng, lat]).addTo(map);
         map.flyTo({ center: [lng, lat], zoom: ZOOM[level] });
         note.textContent =
-          `${result.pref}${result.city}${result.town || ""}${result.addr || ""}` +
+          `${result.pref}${result.city || ""}${result.town || ""}${result.addr || ""}` +
           `（位置情報レベル ${level}）`;
       });
     </script>
@@ -119,6 +131,7 @@ NJA は npm のパッケージですが、CDN から ES モジュールとして
 - **`type="module"`**：NJA を CDN から読むために必要です。バージョンを固定すると、更新によって挙動が変わることを避けられます。
 - **`geolonia.Marker`**：embed を読み込むと `window.geolonia` に MapLibre GL JS の中身が入るので、マーカーやポップアップのクラスがそのまま使えます。
 - **`result.point` の有無**：住所を特定できなかったとき（`level: 0`）は `point` がありません。読む前に必ず確かめてください。
+- **`try` と `latest`**：ネットワークエラーなどで住所データを取得できないと、`normalize()` は例外を投げます。例外にならない失敗もあるので、下の「住所データの取得について」も読んでください。また、検索の結果は送った順に返るとは限らないので、最後に送った検索の結果だけを使います。
 
 </Lens>
 
@@ -197,14 +210,14 @@ form.addEventListener("submit", async (event) => {
 
 - **`geometry.viewport`**：座標の細かさに合わせた範囲です。`fitBounds()` に渡すと、市区町村役場の座標なら広く、番地の位置なら狭く表示されます。ズームを自分で決める必要はありません。
 - **`geometry.location_type`**：番地の位置まで分かったときは `ROOFTOP`、大字・丁目、市区町村、都道府県の代表点のときは `APPROXIMATE` です。NJA の `point.level` の 8 とそれ以外にあたります。
-- **失敗**：住所を特定できないときは、`code` が `ZERO_RESULTS` のエラーで reject されます。住所が空のときは `INVALID_REQUEST`、住所データを取得できなかったときは `ERROR` です。
+- **失敗**：住所を特定できないときは、`code` が `ZERO_RESULTS` のエラーで reject されます。住所が空のときは `INVALID_REQUEST`、ネットワークエラーなどで住所データの取得が例外になったときは `ERROR` です。例外にならない取得の失敗もあります（下の「住所データの取得について」を参照）。
 - **`setPosition()` と `setMap()`**：マーカーは1つ作って位置を付け替えます。検索のたびに `new` すると、前のマーカーが残ります。
 - **`latest`**：検索の結果は、送った順に返るとは限りません。続けて検索したときに古い結果で画面を上書きしないよう、最後に送った検索の結果だけを使います。
 
 </Lens>
 
 <Lens name="react">
-検索結果を state に入れ、`Map` の `center` と `zoom` に渡します。値が変わると地図がそこへ飛びます。
+maps-react には、住所の検索欄を地図に置くコンポーネント `<GeocoderControl>` があります。中で NJA を使っているので、NJA を自分で読み込む必要はありません。`<Map>` の子要素に置くと、検索した住所へ地図が移動してマーカーが立ちます。
 
 <LiveCode title="maps-react で住所を検索する" height={420}>
 
@@ -213,59 +226,40 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { normalize } from "@geolonia/normalize-japanese-addresses";
-import { Map, Marker } from "@geolonia/maps-react";
+import { GeocoderControl, Map } from "@geolonia/maps-react";
 import { setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 
 setWorkerUrl(workerUrl);
 
-const ZOOM = { 1: 9, 2: 12, 3: 15, 8: 18 };
+const MESSAGES = {
+  ZERO_RESULTS: "住所を特定できませんでした。",
+  INVALID_REQUEST: "住所を入力してください。",
+  ERROR: "住所データを取得できませんでした。",
+};
 
 function App() {
-  const [query, setQuery] = useState("東京都千代田区大手町1-1-1");
-  const [found, setFound] = useState(null);
-  const [note, setNote] = useState("住所を入力して検索してください。");
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setNote("検索中…");
-
-    const result = await normalize(query);
-    if (!result.point) {
-      setFound(null);
-      setNote("住所を特定できませんでした。");
-      return;
-    }
-
-    const { lat, lng, level } = result.point;
-    setFound({ lat, lng, zoom: ZOOM[level] });
-    setNote(
-      `${result.pref}${result.city}${result.town || ""}${result.addr || ""}` +
-        `（位置情報レベル ${level}）`,
-    );
-  };
+  const [note, setNote] = useState("地図の左上の欄に住所を入力して検索してください。");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh",
                   font: "14px/1.6 system-ui, sans-serif" }}>
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: 6, padding: 8 }}>
-        <input
-          aria-label="住所"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          style={{ flex: 1, padding: "6px 8px" }}
-        />
-        <button type="submit">検索</button>
-      </form>
-      <div style={{ padding: "0 8px 8px", color: "#555" }}>{note}</div>
+      <div role="status" style={{ padding: 8, color: "#555" }}>{note}</div>
       <Map
         apiKey="YOUR-API-KEY"
-        center={found ? [found.lng, found.lat] : [139.76, 35.68]}
-        zoom={found ? found.zoom : 8}
+        center={[139.76, 35.68]}
+        zoom={8}
         containerStyle={{ flex: 1 }}
       >
-        {found && <Marker lat={found.lat} lng={found.lng} />}
+        <GeocoderControl
+          onResult={(result) =>
+            setNote(`${result.address}（位置情報レベル ${result.level}）`)
+          }
+          onError={(error) => {
+            if (!MESSAGES[error.code]) console.error(error);
+            setNote(MESSAGES[error.code] ?? "検索に失敗しました。");
+          }}
+        />
       </Map>
     </div>
   );
@@ -276,15 +270,39 @@ createRoot(document.getElementById("root")).render(<App />);
 
 </LiveCode>
 
-- **`center` と `zoom`**：`Map` はこの2つの変化を見て地図を動かします。命令的に呼ぶ API は要りません。`center` は **`[経度, 緯度]` の順**です。
-- **`Marker`**：`lat` と `lng` を個別の props で渡します（`center` と順序の書き方が違うので注意）。
-- **`result.point` の有無**：住所を特定できなかったとき（`level: 0`）は `point` がありません。読む前に必ず確かめてください。
+- **`<GeocoderControl>`**：検索欄、地図の移動、マーカーをまとめて受け持ちます。地図は結果の `bounds` に合わせて動くので、市区町村役場の座標なら広く、番地の位置なら狭く表示されます。マーカーは1つを付け替えるので、検索のたびに増えることはありません。続けて検索したときは、最後に送った検索の結果だけが地図に反映されます。
+- **`onResult`**：住所が見つかったときに呼ばれます。`result.level` は座標の細かさで、NJA の `point.level` と同じ値です。ただし NJA が `point` を返さなくても、市区町村まで読み取れていれば市区町村役場の座標を `level: 2` として返します。`result.address` は座標が指す場所までの住所で、大字・丁目の代表点なら番地を含みません。`result.partial` は、座標が入力より粗い代表点のときや、建物名など住所として読めない文字が残ったときに `true` です。
+- **`onError`**：失敗したときに呼ばれます。`error.code` は、住所を特定できないときが `ZERO_RESULTS`、入力が空のときが `INVALID_REQUEST`、ネットワークエラーなどで住所データの取得が例外になったときと、10 秒以内に応答の無いときが `ERROR` です。失敗しても、前の結果のマーカーと地図の位置はそのまま残ります。
+- **`placeholder`**：入力欄に薄く出す文字で、読み上げ用のラベルも兼ねます。既定は「住所を入力」です。
+
+検索欄を自分で作りたいときは、`geocode()` を呼びます。結果の `bounds` は `fitBounds()` にそのまま渡せる `[[西, 南], [東, 北]]` で、`center` は `[経度, 緯度]` の順です。失敗すると、`<GeocoderControl>` の `onError` と同じ `code` を持つエラーで reject されます。続けて呼ぶと、結果は送った順に返るとは限りません。suite タブと同じように、最後に呼んだ結果だけを使います。
+
+```js
+import { geocode } from "@geolonia/maps-react";
+
+let latest = 0; // 最後に呼んだ検索の番号
+
+// map は onLoad や useMap() で受け取った地図
+async function search(map, address) {
+  const id = ++latest;
+  let result;
+  try {
+    result = await geocode(address);
+  } catch (error) {
+    if (id !== latest) return; // 後から呼んだ検索があれば、そちらに任せる
+    console.warn(error.code, error); // code は ZERO_RESULTS、INVALID_REQUEST、ERROR のいずれか
+    return;
+  }
+  if (id !== latest) return;
+  map.fitBounds(result.bounds);
+}
+```
 
 </Lens>
 
 ## 結果
 
-上のコードは、それぞれのタブの下でそのまま動いています。初期値のまま検索すると大手町へ、`東京都台東区上野公園7-7` に書き換えると番地の位置まで寄ります。
+上のコードは、それぞれのタブの下でそのまま動いています。初期値のまま検索すると大手町へ、`東京都台東区上野公園7-7` に書き換えると番地の位置まで寄ります。react タブは入力欄が空で始まるので、`東京都千代田区大手町1-1-1` を入力して検索してください。
 
 前者は `位置情報レベル 3`、後者は `位置情報レベル 8` と出ます。suite タブでは位置情報レベルの代わりに、前者は `APPROXIMATE`、後者は `ROOFTOP` と出ます。同じ「番地まで書いた住所」でも、返る座標の細かさが違うことが確かめられます。
 
@@ -293,19 +311,19 @@ createRoot(document.getElementById("root")).render(<App />);
 NJA は住所データを持ち歩かず、必要な範囲だけを Web API から都度取得します。既定の取得先は `https://japanese-addresses-v2.geoloniamaps.com/api/ja` です。
 
 - **最初の1回は少し待ちます。** 都道府県、市区町村、大字・丁目と順にたどるので、ネットワーク越しの往復が複数回あります。2回目以降はブラウザのキャッシュが効きます。
-- **オフラインでは動きません。** 通信できない環境で使うなら、`config.japaneseAddressesApi` で自前の配信先を指定します。
-- **失敗すると例外を投げます。** 一過性の失敗（5xx、429、ネットワークエラーなど）は自動で最大2回まで再試行しますが、それでも駄目なら例外です。まとめて処理するときは、1件の失敗で全体が止まらないように `try` で囲んでください。
+- **オフラインでは動きません。** NJA を直接使う場合（embed タブ）、通信できない環境では `config.japaneseAddressesApi` で自前の配信先を指定します。maps-suite の `Geocoder` と maps-react の `geocode()` には取得先を変える設定が無いので、通信できない環境では使えません。
+- **取得の失敗が、いつも例外になるとは限りません。** ネットワークエラーのときや、都道府県・市区町村・大字の一覧を JSON として読めないときは例外を投げます。一方、街区・地番のデータは HTTP のステータスを確かめずに読むため、サーバーのエラー応答を読んだときは、例外の代わりに大字・丁目の代表点を返すことがあります。その結果は記憶されるので、ページを読み直すまで同じ大字の検索は代表点を返し続けます。再試行はしません。まとめて処理するときは、1件の失敗で全体が止まらないように `try` で囲んでください。maps-suite の `Geocoder` と maps-react の `geocode()` では、例外になった失敗は `code` が `ERROR` のエラーになります。
 
 ## 逆はできますか
 
-緯度経度から住所を求める（逆ジオコーディング）ことは、NJA ではできません。NJA は住所文字列を入力に取るライブラリです。maps-suite の `Geocoder` も同じで、`location` を渡すと `code` が `INVALID_REQUEST` のエラーになります。
+緯度経度から住所を求める（逆ジオコーディング）ことは、NJA ではできません。NJA は住所文字列を入力に取るライブラリです。maps-suite の `Geocoder` も同じで、`location` を渡すと `code` が `INVALID_REQUEST` のエラーになります。maps-react の `geocode()` も住所文字列だけを受け取ります。
 
 ## うまくいかないとき
 
 <Callout kind="warning" title="うまくいかないとき">
-- 何も起きない → `result.point` が無い場合を処理しているか確認してください。住所を特定できなかったときは `level: 0` で `point` が付きません。maps-suite の `Geocoder` では、`code` が `ZERO_RESULTS` のエラーで reject されるので、`catch` しているか確認してください。
+- 何も起きない → `result.point` が無い場合を処理しているか確認してください。住所を特定できなかったときは `level: 0` で `point` が付きません。maps-suite の `Geocoder` では、`code` が `ZERO_RESULTS` のエラーで reject されるので、`catch` しているか確認してください。maps-react の `<GeocoderControl>` では `onError` が呼ばれます。
 - 建物名を入れると精度が落ちる → 末尾の建物名は `other` に残るだけで座標には効きませんが、住所の読み取り自体を邪魔することがあります。あらかじめ分けておくのが確実です。
-- 番地まで入れたのに大まかな場所しか出ない → その番地の位置情報が無く、大字・丁目の代表点が返っています。`point.level` を見れば区別できます。maps-suite の `Geocoder` では、`geometry.location_type` が `APPROXIMATE` になります。
+- 番地まで入れたのに大まかな場所しか出ない → その番地の位置情報が無く、大字・丁目の代表点が返っています。`point.level` を見れば区別できます。maps-suite の `Geocoder` では、`geometry.location_type` が `APPROXIMATE` になります。maps-react では、`level` が `8` より小さくなり、`partial` が `true` になります。
 - 検索のたびにマーカーが増える → マーカーを毎回作っています。1つ作って位置を付け替えてください。
 </Callout>
 
