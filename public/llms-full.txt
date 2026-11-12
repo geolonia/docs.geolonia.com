@@ -2964,7 +2964,7 @@ form.addEventListener("submit", async (event) => {
 
 - **`geometry.viewport`**: a range matching how precise the coordinates are. Passed to `fitBounds()`, it shows a wide area for a municipal office and a narrow one for a house number, so you do not pick the zoom yourself.
 - **`geometry.location_type`**: `ROOFTOP` when the house number position is known, `APPROXIMATE` for district, municipality or prefecture representative points. This corresponds to NJA's `point.level` being 8 or not.
-- **Failure**: when the address cannot be identified, the promise rejects with an error whose `code` is `ZERO_RESULTS`. An empty address gives `INVALID_REQUEST`, and a failure to fetch the address data gives `ERROR`.
+- **Failure**: when the address cannot be identified, the promise rejects with an error whose `code` is `ZERO_RESULTS`. An empty address gives `INVALID_REQUEST`, and a fetch of the address data that throws, such as on a network error, gives `ERROR`. Some failed fetches do not throw; see "About address data retrieval" below.
 - **`setPosition()` and `setMap()`**: create one marker and move it. Calling `new` on every search leaves the previous markers behind.
 - **`latest`**: results do not always come back in the order the searches were sent. Use only the result of the last search so an older result does not overwrite the screen.
 
@@ -3004,7 +3004,7 @@ function App() {
 
 - **`<GeocoderControl>`**: handles the search box, moving the map and the marker. The map moves to the `bounds` of the result, so a municipal office shows a wide area and a house number a narrow one. One marker is moved, so markers do not accumulate. When searches overlap, only the latest one changes the map.
 - **`onResult`**: called when an address is found. `result.level` is how precise the coordinates are, the same value as NJA's `point.level`. When NJA returns no `point` but read the municipality, the municipal office is returned with `level: 2`. `result.address` is the address down to what the coordinates stand for, so a district representative point leaves out the house number. `result.partial` is `true` when the coordinates are a coarser representative point than the input, or when text that is not an address, such as a building name, was left over.
-- **`onError`**: called when a search fails. `error.code` is `ZERO_RESULTS` when the address cannot be identified, `INVALID_REQUEST` when the input is empty, and `ERROR` when, for example, the address data could not be fetched (including no answer within 10 seconds). After a failure, the previous marker and map position stay.
+- **`onError`**: called when a search fails. `error.code` is `ZERO_RESULTS` when the address cannot be identified, `INVALID_REQUEST` when the input is empty, and `ERROR` when fetching the address data throws, such as on a network error, or there is no answer within 10 seconds. After a failure, the previous marker and map position stay.
 - **`placeholder`**: the faint text in the input, also used as its accessible label. The default is 「住所を入力」.
 
 To build your own search box, call `geocode()`. `bounds` of the result is `[[west, south], [east, north]]`, ready for `fitBounds()`, and `center` is `[longitude, latitude]`. On failure it rejects with an error carrying the same `code` as `onError`. When you call it repeatedly, results do not always come back in order; as in the maps-suite code, use only the result of the last call.
@@ -3036,7 +3036,7 @@ NJA does not carry address data around; it fetches only the range it needs from 
 
 - **The first call takes a moment.** It walks prefecture, then municipality, then district, so there are several network round trips. Later calls hit the browser cache.
 - **It does not work offline.** When you use NJA directly (the embed code), point `config.japaneseAddressesApi` at your own endpoint for a disconnected environment. The maps-suite `Geocoder` and maps-react's `geocode()` have no setting for the endpoint, so they do not work without a connection.
-- **A failed fetch does not always throw.** It throws on a network error, or when the prefecture, municipality or district list cannot be read as JSON. The block and lot data, however, is read without checking the HTTP status, so an error response from the server can yield the district representative point instead of an exception. Nothing is retried. When processing in bulk, wrap calls in `try` so one failure does not stop everything. With the maps-suite `Geocoder` and maps-react's `geocode()`, a failure that throws becomes an error whose `code` is `ERROR`.
+- **A failed fetch does not always throw.** It throws on a network error, or when the prefecture, municipality or district list cannot be read as JSON. The block and lot data, however, is read without checking the HTTP status, so an error response from the server can yield the district representative point instead of an exception. That result is cached, so searches in the same district keep returning the representative point until the page is reloaded. Nothing is retried. When processing in bulk, wrap calls in `try` so one failure does not stop everything. With the maps-suite `Geocoder` and maps-react's `geocode()`, a failure that throws becomes an error whose `code` is `ERROR`.
 
 ### Can it go the other way?
 
