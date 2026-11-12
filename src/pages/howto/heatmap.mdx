@@ -134,7 +134,7 @@ createRoot(document.getElementById("root")).render(
 
 ヒートマップにすると、点のマーカーとクラスタリングは表示しません。`center` を省くと、地図はデータ全体が収まる範囲に合わせて表示されます。
 
-`<Map>` の `geojson` と `heatmap` は、地図を作るときに一度だけ読まれます。データや重みを後から変えるときは、`<Map>` の子要素に `<SimpleStyle>` を置きます。props が変わると、地図を作り直さずに描き直されます。`<Map>` の `geojson` と `<SimpleStyle>` は、既定で同じ ID のソースとレイヤを使います。両方を使うときは、`<SimpleStyle>` の `id` に別の名前を付けてください。`<SimpleStyle>` でデータの範囲に合わせて表示するには、`fitBounds` を付けます。
+`<Map>` の `geojson` と `heatmap` は、地図を作るときに一度だけ読まれます。データや重みを後から変えるときは、`<Map>` の子要素に `<SimpleStyle>` を置きます。props が変わると、地図を作り直さずに描き直されます。`<Map>` の `geojson` と `<SimpleStyle>` は、既定で同じ ID のソースとレイヤを使います。両方を使うときや `<SimpleStyle>` を複数置くときは、それぞれの `id` に別の名前を付けてください。`<SimpleStyle>` でデータの範囲に合わせて表示するには、`fitBounds` を付けます。
 
 ```jsx
 import { useState } from "react";
@@ -165,7 +165,7 @@ function Density() {
 
 ## 結果
 
-上のコードは、それぞれのタブの下でそのまま動いています。点が密集している場所ほど赤く、まばらな場所は青く表示されます。
+各タブのライブデモのコードは、それぞれのタブの下でそのまま動いています。点が密集している場所ほど赤く、まばらな場所は青く表示されます。
 
 <Callout kind="warning" title="うまくいかないとき">
 - ほとんど色が付かない → 点が少ないと密度が上がりません。`heatmap-radius` または `heatmap-intensity` の値を上げてください。

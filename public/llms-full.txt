@@ -2331,9 +2331,12 @@ Pass the data with `geojson` and the colouring with `choropleth` on `<Map>`.
 
 `choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. Without `center`, the map fits its view to the data.
 
-`geojson` and `choropleth` on `<Map>` are read once when the map is created. To change the data or the colouring later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. `geojson` on `<Map>` and `<SimpleStyle>` use the same source and layer IDs by default; when you use both, give `<SimpleStyle>` a different `id`. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
+`geojson` and `choropleth` on `<Map>` are read once when the map is created. To change the data or the colouring later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. `geojson` on `<Map>` and `<SimpleStyle>` use the same source and layer IDs by default; when you use both, or several `<SimpleStyle>`, give each its own `id`. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
 
 ```jsx
+import { useState } from "react";
+import { Map, SimpleStyle } from "@geolonia/maps-react";
+
 function Wards() {
   const [property, setProperty] = useState("density");
   return (
@@ -2628,9 +2631,12 @@ Pass the points with `geojson` and the weight and colours with `heatmap` on `<Ma
 
 `heatmap` takes `weight` and `colors` with the same meaning as the embed attributes; `heatmap={true}` weights every point equally. Without `center`, the map fits its view to the data.
 
-`geojson` and `heatmap` on `<Map>` are read once when the map is created. To change the data or the weighting later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. `geojson` on `<Map>` and `<SimpleStyle>` use the same source and layer IDs by default; when you use both, give `<SimpleStyle>` a different `id`. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
+`geojson` and `heatmap` on `<Map>` are read once when the map is created. To change the data or the weighting later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. `geojson` on `<Map>` and `<SimpleStyle>` use the same source and layer IDs by default; when you use both, or several `<SimpleStyle>`, give each its own `id`. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
 
 ```jsx
+import { useState } from "react";
+import { Map, SimpleStyle } from "@geolonia/maps-react";
+
 function Density() {
   const [weighted, setWeighted] = useState(true);
   return (
@@ -2873,12 +2879,24 @@ NJA is an npm package but can be loaded from a CDN as an ES module. The embed CD
       const map = new geolonia.Map("#map");
       const marker = new geolonia.Marker();
       const note = document.getElementById("note");
+      let latest = 0; // 最後に送った検索の番号
 
       document.getElementById("search").addEventListener("submit", async (event) => {
         event.preventDefault();
+        const id = ++latest;
         note.textContent = "検索中…";
 
-        const result = await normalize(document.getElementById("q").value);
+        let result;
+        try {
+          result = await normalize(document.getElementById("q").value);
+        } catch (error) {
+          if (id !== latest) return; // 後から送った検索があれば、そちらに任せる
+          console.error(error);
+          note.textContent = "住所データを取得できませんでした。";
+          return;
+        }
+        if (id !== latest) return;
+
         if (!result.point) {
           marker.remove();
           note.textContent = "住所を特定できませんでした。";
@@ -2889,7 +2907,7 @@ NJA is an npm package but can be loaded from a CDN as an ES module. The embed CD
         marker.setLngLat([lng, lat]).addTo(map);
         map.flyTo({ center: [lng, lat], zoom: ZOOM[level] });
         note.textContent =
-          `${result.pref}${result.city}${result.town || ""}${result.addr || ""}` +
+          `${result.pref}${result.city || ""}${result.town || ""}${result.addr || ""}` +
           `（位置情報レベル ${level}）`;
       });
     </script>
@@ -2900,6 +2918,7 @@ NJA is an npm package but can be loaded from a CDN as an ES module. The embed CD
 - **`type="module"`**: required to load NJA from a CDN. Pinning the version avoids surprises from updates.
 - **`geolonia.Marker`**: loading embed puts the contents of MapLibre GL JS on `window.geolonia`, so marker and popup classes are usable directly.
 - **Whether `result.point` exists**: when the address could not be identified (`level: 0`) there is no `point`. Always check before reading it.
+- **`try` and `latest`**: `normalize()` throws when the address data cannot be fetched. Results do not always come back in the order the searches were sent, so only the result of the last search is used.
 
 ### maps-suite
 
@@ -2907,6 +2926,9 @@ maps-suite has `geolonia.maps.Geocoder`, which uses NJA internally, so you do no
 
 ```js
 import { geolonia } from "@geolonia/maps-suite";
+
+const container = document.getElementById("map");
+const form = document.getElementById("search"); // <form id="search"><input id="q"></form>
 
 const map = new geolonia.maps.Map(container, {
   apiKey: "YOUR-API-KEY",
@@ -2928,7 +2950,7 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     if (id !== latest) return; // a later search takes over
     marker.setMap(null);
-    console.warn(error.code); // ZERO_RESULTS, INVALID_REQUEST or ERROR
+    console.warn(error.code, error); // code is ZERO_RESULTS, INVALID_REQUEST or ERROR
     return;
   }
   if (id !== latest) return;
@@ -2969,7 +2991,10 @@ function App() {
       <Map apiKey="YOUR-API-KEY" center={[139.76, 35.68]} zoom={8} containerStyle={{ flex: 1 }}>
         <GeocoderControl
           onResult={(result) => setNote(`${result.address}（位置情報レベル ${result.level}）`)}
-          onError={(error) => setNote(MESSAGES[error.code] ?? "検索に失敗しました。")}
+          onError={(error) => {
+            if (!MESSAGES[error.code]) console.error(error);
+            setNote(MESSAGES[error.code] ?? "検索に失敗しました。");
+          }}
         />
       </Map>
     </div>
@@ -2978,7 +3003,7 @@ function App() {
 ```
 
 - **`<GeocoderControl>`**: handles the search box, moving the map and the marker. The map moves to the `bounds` of the result, so a municipal office shows a wide area and a house number a narrow one. One marker is moved, so markers do not accumulate. When searches overlap, only the latest one changes the map.
-- **`onResult`**: called when an address is found. `result.level` is how precise the coordinates are, the same value as NJA's `point.level`. When NJA returns no `point` but read the municipality, the municipal office is returned with `level: 2`. `result.address` is the address down to what the coordinates stand for, so a district representative point leaves out the house number.
+- **`onResult`**: called when an address is found. `result.level` is how precise the coordinates are, the same value as NJA's `point.level`. When NJA returns no `point` but read the municipality, the municipal office is returned with `level: 2`. `result.address` is the address down to what the coordinates stand for, so a district representative point leaves out the house number. `result.partial` is `true` when the coordinates are a coarser representative point than the input, or when text that is not an address, such as a building name, was left over.
 - **`onError`**: called when a search fails. `error.code` is `ZERO_RESULTS` when the address cannot be identified, `INVALID_REQUEST` when the input is empty, and `ERROR` when, for example, the address data could not be fetched (including no answer within 10 seconds). After a failure, the previous marker and map position stay.
 - **`placeholder`**: the faint text in the input, also used as its accessible label. The default is 「住所を入力」.
 
@@ -2992,14 +3017,16 @@ let latest = 0; // number of the last search
 // map is the map received via onLoad or useMap()
 async function search(map, address) {
   const id = ++latest;
+  let result;
   try {
-    const { bounds } = await geocode(address);
-    if (id !== latest) return; // a later search takes over
-    map.fitBounds(bounds);
+    result = await geocode(address);
   } catch (error) {
-    if (id !== latest) return;
-    console.warn(error.code); // ZERO_RESULTS, INVALID_REQUEST or ERROR
+    if (id !== latest) return; // a later search takes over
+    console.warn(error.code, error); // code is ZERO_RESULTS, INVALID_REQUEST or ERROR
+    return;
   }
+  if (id !== latest) return;
+  map.fitBounds(result.bounds);
 }
 ```
 
@@ -3008,7 +3035,7 @@ async function search(map, address) {
 NJA does not carry address data around; it fetches only the range it needs from a web API each time. The default endpoint is `https://japanese-addresses-v2.geoloniamaps.com/api/ja`.
 
 - **The first call takes a moment.** It walks prefecture, then municipality, then district, so there are several network round trips. Later calls hit the browser cache.
-- **It does not work offline.** When you use NJA directly (the embed code), point `config.japaneseAddressesApi` at your own endpoint for a disconnected environment.
+- **It does not work offline.** When you use NJA directly (the embed code), point `config.japaneseAddressesApi` at your own endpoint for a disconnected environment. The maps-suite `Geocoder` and maps-react's `geocode()` have no setting for the endpoint, so they do not work without a connection.
 - **Failure raises an exception.** Transient failures such as 5xx, 429 and network errors are retried automatically up to twice, but anything beyond that throws. When processing in bulk, wrap calls in `try` so one failure does not stop everything. With the maps-suite `Geocoder` and maps-react's `geocode()`, such a failure is an error whose `code` is `ERROR`.
 
 ### Can it go the other way?
