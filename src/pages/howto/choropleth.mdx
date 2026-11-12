@@ -155,7 +155,27 @@ createRoot(document.getElementById("root")).render(
 
 塗りの不透明度は 0.7 なので、下の地図（道路や地名）が透けて位置が分かります。プロパティ名だけを `choropleth="density"` と渡すと、既定の色で塗り分けます。
 
-`geojson` と `choropleth` は、地図を作るときに一度だけ読まれます。後から変えるときは、`<Map>` に `key` を付けて作り直してください。
+`center` を省くと、地図はデータ全体が収まる範囲に合わせて表示されます。上の例では、23 区がちょうど収まるように `center` と `zoom` を指定しています。
+
+`<Map>` の `geojson` と `choropleth` は、地図を作るときに一度だけ読まれます。データや塗り分けを後から変えるときは、`<Map>` の子要素に `<SimpleStyle>` を置きます。props が変わると、地図を作り直さずに描き直されます。
+
+```jsx
+import { useState } from "react";
+import { Map, SimpleStyle } from "@geolonia/maps-react";
+
+function Wards() {
+  const [property, setProperty] = useState("density");
+  return (
+    <>
+      <button onClick={() => setProperty("density")}>人口密度</button>
+      <button onClick={() => setProperty("population")}>人口</button>
+      <Map apiKey="YOUR-API-KEY" center={[139.73, 35.675]} zoom={9.4} containerStyle={{ height: 480 }}>
+        <SimpleStyle geojson="/data/tokyo23.geojson" choropleth={property} />
+      </Map>
+    </>
+  );
+}
+```
 
 </Lens>
 

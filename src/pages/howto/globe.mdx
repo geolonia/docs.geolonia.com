@@ -47,7 +47,7 @@ map.getGeoloniaMap().setProjection({ type: "globe" });
 </Lens>
 
 <Lens name="react">
-`onLoad` で地図インスタンスを受け取り、`setProjection` で投影を切り替えます。
+`onLoad` で地図インスタンスを受け取り、`setProjection` で投影を切り替えます。`<GlobeControl>` を置くと、利用者がボタンで投影を切り替えられます。
 
 <LiveCode title="maps-react で地球儀表示にする">
 
@@ -55,7 +55,7 @@ map.getGeoloniaMap().setProjection({ type: "globe" });
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@geolonia/maps-core/css";
 import { createRoot } from "react-dom/client";
-import { Map } from "@geolonia/maps-react";
+import { GlobeControl, Map } from "@geolonia/maps-react";
 import { setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 
@@ -68,13 +68,16 @@ createRoot(document.getElementById("root")).render(
     zoom={2}
     onLoad={(map) => map.setProjection({ type: "globe" })}
     containerStyle={{ width: "100%", height: "100vh" }}
-  />,
+  >
+    <GlobeControl />
+  </Map>,
 );
 ```
 
 </LiveCode>
 
 - **`setProjection({ type: "globe" })`**：投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
+- **`<GlobeControl>`**：地球儀と平面を切り替えるボタンです。`position` で置く場所を変えられます。既定は右上（`"top-right"`）です。
 - タイルは普段と同じものがそのまま使えます。データやスタイルの変更は不要です。
 
 </Lens>
