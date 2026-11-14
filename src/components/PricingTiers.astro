@@ -3,7 +3,7 @@
 import { PRO_TIERS, withTax } from '../lib/pricing.mjs';
 
 const fmt = (n: number) => n.toLocaleString('ja-JP');
-const yen = (n: number) => `${n.toLocaleString('ja-JP', { maximumFractionDigits: 3 })} 円`;
+const yen = (n: number) => `${n.toLocaleString('ja-JP', { maximumFractionDigits: 4 })} 円`;
 const rows = PRO_TIERS.map((t, i) => ({
   from: i === 0 ? 1 : PRO_TIERS[i - 1].upTo + 1,
   to: t.upTo,

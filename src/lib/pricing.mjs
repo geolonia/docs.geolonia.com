@@ -24,7 +24,7 @@ export const PRO_TIERS = [
   { upTo: PRO_INCLUDED_LOADS, price: 0 },
   { upTo: 100_000, price: 0.4 },
   { upTo: 500_000, price: 0.3 },
-  { upTo: 1_000_000, price: 0.23 },
+  { upTo: 1_000_000, price: 0.225 },
   { upTo: 5_000_000, price: 0.12 },
   { upTo: Infinity, price: 0.06 },
 ];
@@ -60,7 +60,7 @@ export function monthlyCostJpy(loads) {
 }
 
 /**
- * 税込の金額。1 円未満は切り捨てずに残す（単価 0.23 円の税込は 0.253 円）。
+ * 税込の金額。1 円未満は切り捨てずに残す（単価 0.225 円の税込は 0.2475 円）。
  * @param {number} jpy
  */
 export function withTax(jpy) {

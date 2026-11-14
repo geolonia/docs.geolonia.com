@@ -29,8 +29,8 @@ test('Pro の月額に含まれる回数を超えた分は段階ごとの単価�
   assert.equal(monthlyCostJpy(100_000), 3980 + 20_000);
   // /pricing/ の計算例: 3,980 + 0.4 × 50,000 + 0.3 × 400,000
   assert.equal(monthlyCostJpy(500_000), 143_980);
-  assert.equal(monthlyCostJpy(1_000_000), 143_980 + 0.23 * 500_000);
-  assert.equal(monthlyCostJpy(6_000_000), 258_980 + 0.12 * 4_000_000 + 0.06 * 1_000_000);
+  assert.equal(monthlyCostJpy(1_000_000), 143_980 + 0.225 * 500_000);
+  assert.equal(monthlyCostJpy(6_000_000), 256_480 + 0.12 * 4_000_000 + 0.06 * 1_000_000);
 });
 
 test('段階の上限は昇順で、最後は上限なし', () => {
@@ -47,7 +47,7 @@ test('tieredCost は 1,000 回あたりの単価にも使える', () => {
 
 test('税込は 10% を足し、浮動小数の端数を残さない', () => {
   assert.equal(withTax(3980), 4378);
-  assert.equal(withTax(0.23), 0.253);
+  assert.equal(withTax(0.225), 0.2475);
   assert.equal(withTax(143_980), 158_378);
 });
 
@@ -66,4 +66,16 @@ test('/pricing/ の description（式を使えない frontmatter）が料金の�
   const fmt = (n) => n.toLocaleString('ja-JP');
   assert.ok(description.includes(`月 ${fmt(FREE_LOADS)} 回までは無料`), description);
   assert.ok(description.includes(`月額 ${fmt(PRO_MONTHLY_JPY)} 円（税抜）`), description);
+});
+
+test('段階と単価の一覧（請求の価格設定を写したもの）', () => {
+  // 請求（Stripe の価格設定）の段階と単価。料金を改定したら、この表も合わせて直す。
+  assert.deepEqual(PRO_TIERS, [
+    { upTo: 50_000, price: 0 },
+    { upTo: 100_000, price: 0.4 },
+    { upTo: 500_000, price: 0.3 },
+    { upTo: 1_000_000, price: 0.225 },
+    { upTo: 5_000_000, price: 0.12 },
+    { upTo: Infinity, price: 0.06 },
+  ]);
 });
