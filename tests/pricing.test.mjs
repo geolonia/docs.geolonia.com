@@ -68,7 +68,7 @@ test('/pricing/ の description（式を使えない frontmatter）が料金の�
   assert.ok(description.includes(`月額 ${fmt(PRO_MONTHLY_JPY)} 円（税抜）`), description);
 });
 
-test('段階と単価は請求に使っている価格設定と同じ', () => {
+test('段階と単価の一覧（請求の価格設定を写したもの）', () => {
   // 請求（Stripe の価格設定）の段階と単価。料金を改定したら、この表も合わせて直す。
   assert.deepEqual(PRO_TIERS, [
     { upTo: 50_000, price: 0 },
