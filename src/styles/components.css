@@ -271,6 +271,12 @@
 .eb-panel ul + h3 { margin-top: 0; }
 .eb-chart { margin-top: 12px; }
 .eb-chart .eb-chart-free { fill: var(--accent-soft); }
+.eb-chart .eb-chart-grid { stroke: var(--border); stroke-width: 1; }
+.eb-chart .eb-chart-baseline { stroke: var(--text-faint); stroke-width: 1; }
+.eb-chart .eb-chart-line { fill: none; stroke: var(--brand); stroke-width: 2.5; stroke-linejoin: round; }
+.eb-chart .eb-chart-drop { stroke: var(--brand); stroke-width: 1; stroke-dasharray: 4 3; }
+.eb-chart .eb-chart-point { fill: var(--brand); stroke: var(--bg); stroke-width: 2; }
+.eb-chart .eb-chart-guide { stroke: var(--text-soft); stroke-width: 1; }
 .eb-chart .eb-chart-label { font-weight: 700; }
 
 /* 塗りのボタン。配色はヘッダーの「ユーザー登録」と同じ（オレンジ地＋白文字） */

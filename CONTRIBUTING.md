@@ -127,7 +127,7 @@ badge: howto
 |---|---|---|
 | `layout` | ○ | `DocLayout.astro` への相対パス。階層に応じて `../` の数が変わります |
 | `title` | ○ | H1 になり、ブラウザのタブにも出ます |
-| `page` | | ヘッダーナビのどれを光らせるか。`home` `tutorial` `howto` `reference` `explanation` |
+| `page` | | ヘッダーナビのどれを光らせるか。`home` `tutorial` `howto` `reference` `explanation` `pricing` |
 | `kicker` | | H1 の上に出る小さな見出し |
 | `badge` | | H1 の頭に付く象限バッジ。`tutorial` `howto` `reference` `explanation` |
 | `embed` | | `true` にすると Geolonia embed の CDN スクリプトを読み込みます |
@@ -147,7 +147,7 @@ import LiveCode from '../../components/LiveCode.astro'
 
 ### ページを追加・リネームしたら
 
-チュートリアル・ハウツー・解説の左サイドバーは、`src/lib/doc-nav.ts` に**手で書いた
+チュートリアル・ハウツー・解説・料金の左サイドバーは、`src/lib/doc-nav.ts` に**手で書いた
 リンク一覧**から作っています。ページ構造から自動生成はしていません（並び順と分類が
 意味を持つので、ファイル名からは導出できないためです）。
 
@@ -156,7 +156,7 @@ import LiveCode from '../../components/LiveCode.astro'
 | 場所 | 何を |
 |---|---|
 | ページの frontmatter | `title` |
-| セクションの索引ページ（`tutorials/index.mdx`、`howto/index.md`、`explanation/index.md`） | 本文のリンク一覧 |
+| セクションの索引ページ（`tutorials/index.mdx`、`howto/index.md`、`explanation/index.md`、`pricing/index.mdx`） | 本文のリンク一覧 |
 | `src/lib/doc-nav.ts` | サイドバーのラベルと並び |
 
 3つのうち1つを忘れると表記がズレます。リネームしたときは `grep` で**旧い語がリポジトリに

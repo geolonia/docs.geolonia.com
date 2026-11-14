@@ -1,12 +1,11 @@
 // 月の地図表示回数と月額の関係を折れ線で描く。横軸は 0 から、選んだ回数の 10 倍まで（chartRange）。
 // 両軸とも等間隔の目盛りにして、月額が回数にどう比例するかをそのまま見せる。
-// 外部ライブラリは使わない（CSP とサイズのため）。見た目は components.css の .cr-chart と .eb-*。
+// 外部ライブラリは使わない（CSP とサイズのため）。色は components.css の .eb-chart-* でトークンから当てる。
 import { FREE_LOADS, PRO_TIERS, monthlyCostJpy } from '../pricing.mjs';
 import { chartPoints, chartRange } from './calc.mjs';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const H = 320;
-const LINE_COLOR = '#e0730d';
 
 const fmt = (n) => Math.round(n).toLocaleString('ja-JP');
 const fmtLoads = (n) => (n === 0 ? '0' : n >= 10_000 ? `${(n / 10_000).toLocaleString('ja-JP')}万回` : `${fmt(n)}回`);
@@ -65,7 +64,7 @@ export function renderBudgetChart(root, selected) {
 
   // 縦軸の目盛り
   for (let v = 0; v <= yMax; v += yStep) {
-    el('line', { x1: M.left, x2: M.left + iw, y1: y(v), y2: y(v), stroke: v === 0 ? '#bbb' : '#eee', 'stroke-width': 1 }, svg);
+    el('line', { x1: M.left, x2: M.left + iw, y1: y(v), y2: y(v), class: v === 0 ? 'eb-chart-baseline' : 'eb-chart-grid' }, svg);
     const t = el('text', { x: M.left - 8, y: y(v), 'text-anchor': 'end', 'dominant-baseline': 'middle', class: 'cr-chart-axis' }, svg);
     t.textContent = fmtYen(v);
   }
@@ -80,10 +79,7 @@ export function renderBudgetChart(root, selected) {
   const boundaries = [FREE_LOADS, ...PRO_TIERS.map((t) => t.upTo).filter(Number.isFinite)];
   el('path', {
     d: chartPoints(boundaries, xMax).map((p, i) => `${i === 0 ? 'M' : 'L'}${x(p.loads).toFixed(1)},${y(p.jpy).toFixed(1)}`).join(' '),
-    fill: 'none',
-    stroke: LINE_COLOR,
-    'stroke-width': 2.5,
-    'stroke-linejoin': 'round',
+    class: 'eb-chart-line',
   }, svg);
 
   // 選んだ回数の印
@@ -91,8 +87,8 @@ export function renderBudgetChart(root, selected) {
     const jpy = monthlyCostJpy(selected);
     const sx = x(selected);
     const sy = y(jpy);
-    el('line', { x1: sx, x2: sx, y1: sy, y2: M.top + ih, stroke: LINE_COLOR, 'stroke-width': 1, 'stroke-dasharray': '4 3' }, svg);
-    el('circle', { cx: sx, cy: sy, r: 6, fill: LINE_COLOR, stroke: '#fff', 'stroke-width': 2 }, svg);
+    el('line', { x1: sx, x2: sx, y1: sy, y2: M.top + ih, class: 'eb-chart-drop' }, svg);
+    el('circle', { cx: sx, cy: sy, r: 6, class: 'eb-chart-point' }, svg);
     const right = sx > M.left + iw * 0.6;
     const label = el('text', {
       x: sx + (right ? -10 : 10),
@@ -104,7 +100,7 @@ export function renderBudgetChart(root, selected) {
   }
 
   // ポインタを載せた位置の回数と月額を出す
-  const guide = el('line', { y1: M.top, y2: M.top + ih, stroke: '#999', 'stroke-width': 1, visibility: 'hidden' }, svg);
+  const guide = el('line', { y1: M.top, y2: M.top + ih, class: 'eb-chart-guide', visibility: 'hidden' }, svg);
   root.appendChild(svg);
   const tip = document.createElement('div');
   tip.className = 'cr-chart-tooltip';
