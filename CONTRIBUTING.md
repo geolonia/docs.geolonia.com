@@ -104,6 +104,7 @@ URL になります（`src/pages/howto/clustering.mdx` → `/howto/clustering/`�
 - `src/pages/pricing/cost-reduction.astro` … コスト削減診断。Google Maps と Mapbox の請求額から Geolonia Maps の月額を試算します。計算は `src/lib/cost-reduction/`、見た目は `components.css` の `.cr-*` です。次の2つは手で更新します
   - **為替**（`src/data/usdjpy-monthly.json`）：半年に1回ほど `npm run update:usdjpy` を実行してコミットします。FRED のドル円の月平均を直近60か月分取り直します
   - **他社の料金**（`src/lib/cost-reduction/calc.mjs` の `PROVIDERS`）：各社の料金表を確認し、変わっていれば段階と単価を直して、確認した日を `PRICES_CHECKED` に書きます
+- `src/pages/pricing/estimate-budget.astro` … 料金の目安。月間 PV と地図のあるページの割合から月額の目安を出し、表示回数と月額の関係をグラフで示します。計算は `src/lib/estimate-budget/`、見た目は `components.css` の `.eb-*` と、入力欄の `.cr-*` です
 - `src/pages/demos/inline/[id].astro` … LiveCode が使うデモページの生成元。**手で触りません**
 
 ## ページの作り方
@@ -127,7 +128,7 @@ badge: howto
 |---|---|---|
 | `layout` | ○ | `DocLayout.astro` への相対パス。階層に応じて `../` の数が変わります |
 | `title` | ○ | H1 になり、ブラウザのタブにも出ます |
-| `page` | | ヘッダーナビのどれを光らせるか。`home` `tutorial` `howto` `reference` `explanation` |
+| `page` | | ヘッダーナビのどれを光らせるか。`home` `tutorial` `howto` `reference` `explanation` `pricing` |
 | `kicker` | | H1 の上に出る小さな見出し |
 | `badge` | | H1 の頭に付く象限バッジ。`tutorial` `howto` `reference` `explanation` |
 | `embed` | | `true` にすると Geolonia embed の CDN スクリプトを読み込みます |
@@ -147,7 +148,7 @@ import LiveCode from '../../components/LiveCode.astro'
 
 ### ページを追加・リネームしたら
 
-チュートリアル・ハウツー・解説の左サイドバーは、`src/lib/doc-nav.ts` に**手で書いた
+チュートリアル・ハウツー・解説・料金の左サイドバーは、`src/lib/doc-nav.ts` に**手で書いた
 リンク一覧**から作っています。ページ構造から自動生成はしていません（並び順と分類が
 意味を持つので、ファイル名からは導出できないためです）。
 
@@ -156,7 +157,7 @@ import LiveCode from '../../components/LiveCode.astro'
 | 場所 | 何を |
 |---|---|
 | ページの frontmatter | `title` |
-| セクションの索引ページ（`tutorials/index.mdx`、`howto/index.md`、`explanation/index.md`） | 本文のリンク一覧 |
+| セクションの索引ページ（`tutorials/index.mdx`、`howto/index.md`、`explanation/index.md`、`pricing/index.mdx`） | 本文のリンク一覧 |
 | `src/lib/doc-nav.ts` | サイドバーのラベルと並び |
 
 3つのうち1つを忘れると表記がズレます。リネームしたときは `grep` で**旧い語がリポジトリに

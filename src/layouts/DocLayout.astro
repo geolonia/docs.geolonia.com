@@ -33,6 +33,7 @@ const NAV_BY_PAGE: Record<string, SectionKind> = {
   tutorial: 'tutorial',
   howto: 'howto',
   explanation: 'explanation',
+  pricing: 'pricing',
 };
 const navKind = sidebar ?? NAV_BY_PAGE[page] ?? null;
 // 本文に data-pagefind-body を付けて、全文検索が索く範囲を本文だけに絞る。
