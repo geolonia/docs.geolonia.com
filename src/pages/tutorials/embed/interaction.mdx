@@ -42,7 +42,7 @@ embed では、`.geolonia` の `div` の子要素として書いた HTML が、*
 
 ## embed のポップアップの制約
 
-embed のポップアップを付与できるのは、**中心の1つのマーカーだけ**です。複数のマーカーそれぞれにポップアップを付与する場合は、JavaScript による実装が必要です（[maps-suite](/tutorials/maps-suite/) または [maps-react](/tutorials/maps-react/) のチュートリアルを参照してください）。
+HTML の属性でポップアップを付与できるのは、**中心の1つのマーカーだけ**です。複数のマーカーそれぞれにポップアップを付与する場合は、embed の JavaScript API（`geolonia.Marker` と `geolonia.Popup`）で書きます。例は[クリックでポップアップを出すには](/howto/popup-on-click/)にあります。
 
 用途が1地点の説明に限られる場合、この制約は問題になりません。たとえば店舗ページに埋め込む地図では、住所や営業時間をポップアップに記述します。
 
