@@ -14,7 +14,25 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-embed（HTML の属性だけ）ではこの機能は使えません。上のタブで suite / react のコードに切り替えてください。
+点を GeoJSON にして `data-geojson` で読み込み、`data-lat` と `data-lng` を書かずにおくと、地図は GeoJSON の全地物が収まる範囲に合わせて表示されます。
+
+<LiveCode title="embed で全地点に画面を合わせる">
+
+```html
+<style>
+  body { margin: 0; }
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia" data-geojson="/data/sample-spots.geojson"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-geojson`**：点を並べた GeoJSON ファイルのパスまたは URL。書き方は[外部データ（GeoJSON）を地図に読み込むには](/howto/geojson-data/)にあります。
+- **`data-lat` と `data-lng` を書かない**：両方を書くと、その位置が中心になり、範囲には合わせません。中心が無いので、中心のマーカーも表示されません。
 
 </Lens>
 
@@ -120,9 +138,9 @@ createRoot(document.getElementById("root")).render(
 
 ## 結果
 
-上のコードは、それぞれのタブの下でそのまま動いています。初期表示の `center` / `zoom` がどうであれ、読み込み後に全地点が収まる表示範囲に移動します。
+上のコードは、それぞれのタブの下でそのまま動いています。読み込み後に、全地点が収まる表示範囲に移動します。
 
 <Callout kind="warning" title="うまくいかないとき">
-- 端の点が切れる → `padding` を増やしてください。マーカーはピンの高さがあるので、上側は特に余白が要ります。
-- 点が1つしかない、または全点が同じ座標 → 範囲の面積が 0 になり、極端にズームインします。点が1つのときは `center` と `zoom` を直接指定する方が簡単です。
+- 端の点が切れる（suite / react）→ `padding` を増やしてください。マーカーはピンの高さがあるので、上側は特に余白が要ります。
+- 点が1つしかない、または全点が同じ座標 → 範囲の面積が 0 になり、極端にズームインします。点が1つのときは `center` と `zoom`（embed では `data-lat`、`data-lng`、`data-zoom`）を直接指定する方が簡単です。
 </Callout>
