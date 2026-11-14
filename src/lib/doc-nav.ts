@@ -13,7 +13,7 @@
  * 両方を直す必要がある。CONTRIBUTING.md の「ページの作り方」にも書いてある。
  */
 
-export type SectionKind = 'tutorial' | 'howto' | 'explanation';
+export type SectionKind = 'tutorial' | 'howto' | 'explanation' | 'pricing';
 
 export interface DocNavLink {
   label: string;
@@ -130,6 +130,13 @@ const EXPLANATION_PAGES: [string, string][] = [
   ['agent-skills', 'Geolonia Agent Skills とは'],
 ];
 
+/** 料金。ページ数が少ないのでフラットに並べる。先頭は料金表（/pricing/）。 */
+const PRICING_PAGES: [string, string][] = [
+  ['/pricing/', '料金'],
+  ['/pricing/estimate-budget/', '料金の目安'],
+  ['/pricing/cost-reduction/', 'コスト削減診断'],
+];
+
 /** 末尾スラッシュを落として比較する。 */
 function isCurrent(href: string, currentPath: string): boolean {
   return href.replace(/\/$/, '') === currentPath;
@@ -142,7 +149,7 @@ function link(href: string, label: string, currentPath: string): DocNavLink {
 /**
  * セクションのリンク一覧を組み立て、現在地に印を付ける。
  *
- * @param section frontmatter の page（tutorial / howto / explanation）
+ * @param section frontmatter の page（tutorial / howto / explanation / pricing）
  * @param currentPath 末尾スラッシュを除いた現在のパス
  */
 export function buildDocNav(section: SectionKind, currentPath: string): DocNav {
@@ -171,6 +178,9 @@ export function buildDocNav(section: SectionKind, currentPath: string): DocNav {
       links: g.slugs.map(([slug, title]) => link(`/howto/${slug}/`, title, currentPath)),
       open: false,
     }));
+  } else if (section === 'pricing') {
+    label = '料金';
+    links = PRICING_PAGES.map(([href, title]) => link(href, title, currentPath));
   } else {
     label = '解説';
     links = EXPLANATION_PAGES.map(([slug, title]) => link(`/explanation/${slug}/`, title, currentPath));
