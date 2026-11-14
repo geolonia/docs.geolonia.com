@@ -2,10 +2,10 @@
 // 両軸とも等間隔の目盛りにして、月額が回数にどう比例するかをそのまま見せる。
 // 外部ライブラリは使わない（CSP とサイズのため）。色は components.css の .eb-chart-* でトークンから当てる。
 import { FREE_LOADS, PRO_TIERS, monthlyCostJpy } from '../pricing.mjs';
-import { chartPoints, chartRange, stepLoads } from './calc.mjs';
+import { chartPoints, chartRange, keyboardUnit, stepLoads } from './calc.mjs';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
-// 描き直しをまたいで残す状態（フォーカス中の回数と、グラフの外のタップの登録）
+// 描き直しをまたいで残す状態（最後に示した回数、そのときの見込み、グラフの外のタップの登録）
 const state = new WeakMap();
 const H = 320;
 
@@ -41,7 +41,7 @@ export function renderBudgetChart(root, selected) {
   prev?.remove();
   root.querySelector('.cr-chart-tooltip')?.remove();
 
-  // viewBox を表示幅と同じにして、文字を縮めない。狭い画面では余白と目盛りの数を詰める
+  // viewBox を表示幅と同じにして、文字を縮めない（幅 300 未満では縮む）。狭い画面では余白と目盛りの数を詰める
   const W = Math.max(300, Math.round(root.clientWidth || 720));
   const narrow = W < 560;
   const M = { top: 16, right: narrow ? 36 : 40, bottom: 36, left: narrow ? 68 : 72 };
@@ -52,7 +52,7 @@ export function renderBudgetChart(root, selected) {
   const maxJpy = monthlyCostJpy(xMax);
   const yStep = niceStep(maxJpy, 4);
   const yMax = Math.ceil((maxJpy * 1.05) / yStep) * yStep;
-  const xStep = niceStep(xMax, narrow ? 2 : 5);
+  const xStep = niceStep(xMax, narrow ? 3 : 5);
   const x = (loads) => M.left + (Math.min(Math.max(loads, 0), xMax) / xMax) * iw;
   const y = (jpy) => M.top + ih - (jpy / yMax) * ih;
 
@@ -122,16 +122,17 @@ export function renderBudgetChart(root, selected) {
     tip.hidden = true;
     guide.setAttribute('visibility', 'hidden');
   };
-  // 刻みは画面幅によらず、横軸の範囲を 5 等分した目盛りの 1/1000（キーボードとポインタで同じ）。
-  // 範囲が 100 万回までなら 200 回刻みで、75,000 回のような値にも止まれる
-  const unit = niceStep(xMax, 5) / 1000;
-  const kept = hadFocus ? state.get(root)?.cursor : undefined;
+  // 刻みは画面幅によらず同じ（calc.mjs の keyboardUnit）。0〜10 万回なら 20 回、0〜100 万回なら 200 回
+  const unit = keyboardUnit(xMax);
+  // 幅が変わっただけの描き直しでは、フォーカス中の回数を保つ。見込みを選び直したときは、新しい見込みから始める
+  const prevState = state.get(root);
+  const kept = hadFocus && prevState?.selected === selected ? prevState.cursor : undefined;
   let cursor = kept != null ? Math.min(kept, xMax) : selected != null && selected > 0 ? Math.min(selected, xMax) : 0;
   svg.setAttribute('aria-valuenow', String(cursor));
   svg.setAttribute('aria-valuetext', `月 ${fmt(cursor)} 回、月額 ${fmt(monthlyCostJpy(cursor))} 円`);
   const showAt = (loads) => {
     cursor = loads;
-    state.set(root, { ...state.get(root), cursor });
+    state.set(root, { ...state.get(root), cursor, selected });
     const rect = svg.getBoundingClientRect();
     const text = `月 ${fmt(loads)} 回、月額 ${fmt(monthlyCostJpy(loads))} 円`;
     svg.setAttribute('aria-valuenow', String(loads));
@@ -184,5 +185,6 @@ export function renderBudgetChart(root, selected) {
   document.addEventListener('pointerdown', (e) => {
     if (!svg.contains(e.target)) hide();
   }, { signal: outside.signal });
-  if (hadFocus) svg.focus();
+  // 戻すときにページをグラフまでスクロールさせない
+  if (hadFocus) svg.focus({ preventScroll: true });
 }

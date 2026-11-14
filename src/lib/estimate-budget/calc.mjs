@@ -116,6 +116,18 @@ export function chartPoints(boundaries, max, count = 200) {
   return [...xs].sort((a, b) => a - b).map((loads) => ({ loads, jpy: monthlyCostJpy(loads) }));
 }
 
+/**
+ * グラフで回数を動かす刻み（キーボードとポインタで同じ）。横軸の範囲を 1, 2, 5 × 10^n の目盛りで
+ * 5 つほどに分けたときの目盛りの 1/1000。範囲が 0〜10 万回なら 20 回、0〜100 万回なら 200 回。
+ * @param {number} max 横軸の上限（chartRange の値）
+ */
+export function keyboardUnit(max) {
+  const raw = max / 5;
+  const pow = 10 ** Math.floor(Math.log10(raw));
+  const n = raw / pow;
+  return ((n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * pow) / 1000;
+}
+
 /** キーボードでグラフの回数を動かすキーと、刻み（unit）の何個分動くか */
 export const STEP_KEYS = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 100, PageDown: -100 };
 

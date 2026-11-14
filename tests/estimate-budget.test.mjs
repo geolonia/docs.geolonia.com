@@ -11,6 +11,7 @@ import {
   PAGE_VIEW_OPTIONS,
   pageViewLabel,
   stepLoads,
+  keyboardUnit,
   chartPoints,
   chartRange,
   estimate,
@@ -131,10 +132,28 @@ test('キーボードの回数は 0 と上限で止まり、刻みの倍数に�
   assert.equal(stepLoads(75_000, 'Tab', 200, 100_000), null);
 });
 
-test('100 万回までの範囲では、75,000 回にキーボードで止まれる', () => {
-  const unit = 1_000_000 / 5 / 1000; // 横軸の目盛り 20 万回の 1/1000（chart.mjs と同じ）
-  let v = 0;
-  const seen = new Set();
-  while (v < 100_000) { v = stepLoads(v, 'ArrowRight', unit, 1_000_000); seen.add(v); }
-  assert.ok(seen.has(75_000));
+test('刻みは 0〜10 万回で 20 回、0〜100 万回で 200 回', () => {
+  assert.equal(keyboardUnit(100_000), 20);
+  assert.equal(keyboardUnit(1_000_000), 200);
+});
+
+test('chartRange が返すどの範囲でも、刻みは整数で上限を割り切る', () => {
+  for (const n of PAGE_VIEW_OPTIONS) {
+    for (const r of [1, 0.5, 0.2, 0.1, 0.04]) {
+      const max = chartRange(loadsFromPageViews(n, r));
+      const unit = keyboardUnit(max);
+      assert.ok(Number.isInteger(unit) && unit > 0, `${max}: ${unit}`);
+      assert.equal(max % unit, 0, `${max}: ${unit}`);
+    }
+  }
+});
+
+test('見込みを選ぶ前の範囲でも、選んだ後の 100 万回までの範囲でも、75,000 回にキーボードで止まれる', () => {
+  for (const max of [chartRange(null), chartRange(100_000)]) {
+    const unit = keyboardUnit(max);
+    let v = 0;
+    const seen = new Set();
+    while (v < 100_000) { v = stepLoads(v, 'ArrowRight', unit, max); seen.add(v); }
+    assert.ok(seen.has(75_000), `${max}`);
+  }
 });
