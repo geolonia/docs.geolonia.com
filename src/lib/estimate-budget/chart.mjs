@@ -39,7 +39,7 @@ export function renderBudgetChart(root, selected) {
   // viewBox を表示幅と同じにして、文字を縮めない。狭い画面では余白と目盛りの数を詰める
   const W = Math.max(300, Math.round(root.clientWidth || 720));
   const narrow = W < 560;
-  const M = { top: 16, right: narrow ? 28 : 40, bottom: 36, left: narrow ? 56 : 72 };
+  const M = { top: 16, right: narrow ? 28 : 40, bottom: 36, left: narrow ? 68 : 72 };
   const iw = W - M.left - M.right;
   const ih = H - M.top - M.bottom;
 
@@ -51,10 +51,14 @@ export function renderBudgetChart(root, selected) {
   const x = (loads) => M.left + (Math.min(Math.max(loads, 0), xMax) / xMax) * iw;
   const y = (jpy) => M.top + ih - (jpy / yMax) * ih;
 
+  // キーボードでも任意の回数の月額を読めるよう、グラフ全体を slider にする（矢印キーで回数を動かす）
   const svg = el('svg', {
     viewBox: `0 0 ${W} ${H}`,
-    role: 'img',
-    'aria-label': `月の地図表示回数（0〜${fmt(xMax)} 回）と月額（税抜）の関係。${fmt(FREE_LOADS)} 回までは 0 円、${fmt(xMax)} 回で ${fmt(maxJpy)} 円。`,
+    role: 'slider',
+    tabindex: 0,
+    'aria-label': `月の地図表示回数（0〜${fmt(xMax)} 回）と月額（税抜）`,
+    'aria-valuemin': 0,
+    'aria-valuemax': xMax,
   });
 
   // Free の範囲を薄く塗る
@@ -113,13 +117,17 @@ export function renderBudgetChart(root, selected) {
     tip.hidden = true;
     guide.setAttribute('visibility', 'hidden');
   };
-  const show = (e) => {
+  // 見せる回数は横軸の刻みの 1/100 に丸める（きりのよい数に見えるように）
+  const unit = xStep / 100;
+  let cursor = selected != null && selected > 0 ? Math.min(Math.round(selected / unit) * unit, xMax) : 0;
+  svg.setAttribute('aria-valuenow', String(cursor));
+  svg.setAttribute('aria-valuetext', `月 ${fmt(cursor)} 回、月額 ${fmt(monthlyCostJpy(cursor))} 円`);
+  const showAt = (loads) => {
+    cursor = loads;
     const rect = svg.getBoundingClientRect();
-    const px = ((e.clientX - rect.left) / rect.width) * W;
-    if (px < M.left || px > M.left + iw) return hide();
-    // 見せる回数は横軸の刻みの 1/100 に丸める（きりのよい数に見えるように）
-    const unit = xStep / 100;
-    const loads = Math.round((((px - M.left) / iw) * xMax) / unit) * unit;
+    const text = `月 ${fmt(loads)} 回、月額 ${fmt(monthlyCostJpy(loads))} 円`;
+    svg.setAttribute('aria-valuenow', String(loads));
+    svg.setAttribute('aria-valuetext', text);
     guide.setAttribute('x1', String(x(loads)));
     guide.setAttribute('x2', String(x(loads)));
     guide.setAttribute('visibility', 'visible');
@@ -139,6 +147,25 @@ export function renderBudgetChart(root, selected) {
     tip.style.left = `${Math.min(Math.max(left - 100, 0), Math.max(rect.width - 200, 0))}px`;
     tip.style.top = '8px';
   };
+  const show = (e) => {
+    const rect = svg.getBoundingClientRect();
+    const px = ((e.clientX - rect.left) / rect.width) * W;
+    if (px < M.left || px > M.left + iw) return hide();
+    showAt(Math.round((((px - M.left) / iw) * xMax) / unit) * unit);
+  };
+  // キーボード: 左右の矢印で刻みの 1/10、PageUp / PageDown で 1 刻み、Home / End で両端へ
+  const KEYS = { ArrowRight: unit * 10, ArrowUp: unit * 10, ArrowLeft: -unit * 10, ArrowDown: -unit * 10, PageUp: xStep, PageDown: -xStep };
+  svg.addEventListener('keydown', (e) => {
+    let next;
+    if (e.key in KEYS) next = cursor + KEYS[e.key];
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = xMax;
+    else return;
+    e.preventDefault();
+    showAt(Math.min(Math.max(Math.round(next / unit) * unit, 0), xMax));
+  });
+  svg.addEventListener('focus', () => showAt(cursor));
+  svg.addEventListener('blur', hide);
   // タッチ端末ではタップ（pointerdown）でも出す（コスト削減診断のグラフと同じ）
   svg.addEventListener('pointermove', show);
   svg.addEventListener('pointerdown', show);
