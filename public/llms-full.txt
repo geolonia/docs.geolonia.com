@@ -1222,6 +1222,11 @@ Put several places on the map at once. One point is served well enough by the ce
 With HTML attributes alone, the only marker embed can place is the single centre one. For several markers, create the map with `new geolonia.Map()` and loop over the list, placing a `geolonia.Marker` for each point.
 
 ```html
+<style>
+  body { margin: 0; }
+  #map { width: 100%; height: 100vh; }
+</style>
+
 <div id="map" data-lat="35.68" data-lng="139.75" data-zoom="11" data-marker="off"></div>
 
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
@@ -1722,7 +1727,12 @@ Rather than choosing `center` and `zoom` by hand, **compute the box enclosing ev
 Load the points as GeoJSON with `data-geojson` and leave out `data-lat` and `data-lng`; the map then fits its view to all features of the GeoJSON.
 
 ```html
-<div class="geolonia" data-geojson="/data/sample-spots.geojson"></div>
+<style>
+  body { margin: 0; }
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia" data-geojson="https://docs.geolonia.com/data/sample-spots.geojson"></div>
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
 
@@ -1785,7 +1795,7 @@ const handleLoad = (map) => {
 **When it does not work**
 
 - Outer points are cut off (maps-suite / maps-react): increase `padding`. Markers have pin height, so the top side needs particular margin.
-- Only one point, or all points identical: the box has zero area and the map zooms in extremely far. With a single point, specifying `center` and `zoom` directly is simpler.
+- Only one point, or all points identical: the box has zero area and the map zooms in extremely far. With a single point, specifying `center` and `zoom` directly is simpler (in embed, `data-lat`, `data-lng` and `data-zoom`).
 
 ---
 
@@ -2776,6 +2786,11 @@ For data too large for GeoJSON, or tiles someone else publishes, add a **tile so
 HTML attributes alone cannot add a data source. With a map created by `new geolonia.Map()`, wait for `load` and pass `tiles` (an array of template URLs) to `addSource`.
 
 ```html
+<style>
+  body { margin: 0; }
+  #map { width: 100%; height: 100vh; }
+</style>
+
 <div id="map" data-lat="35.6812" data-lng="139.7671" data-zoom="12" data-marker="off"></div>
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 <script>
@@ -3111,6 +3126,11 @@ Switching the map projection to **globe** shows a globe rather than a flat map w
 HTML attributes alone cannot switch to a globe. With a map created by `new geolonia.Map()`, call `setProjection` on `style.load` (the projection is reset when the style is replaced, so this keeps the globe after a style change).
 
 ```html
+<style>
+  body { margin: 0; }
+  #map { width: 100%; height: 100vh; }
+</style>
+
 <div id="map" data-lat="20" data-lng="0" data-zoom="2" data-marker="off"></div>
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 <script>
@@ -3160,7 +3180,7 @@ Receive the map instance in `onLoad` and switch the projection. With `<GlobeCont
 
 **When it does not work**
 
-- It stays flat: globe projection is a feature of **MapLibre GL JS v5 or later**. Check the `maplibre-gl` version.
+- It stays flat (maps-suite / maps-react): globe projection is a feature of **MapLibre GL JS v5 or later**. Check the `maplibre-gl` version.
 - You cannot tell whether it is a globe: zoom out. At high zoom it looks the same as the usual map.
 
 ---

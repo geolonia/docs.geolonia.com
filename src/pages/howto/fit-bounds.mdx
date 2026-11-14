@@ -20,6 +20,7 @@ import LiveCode from '../../components/LiveCode.astro'
 
 ```html
 <style>
+  body { margin: 0; }
   .geolonia { width: 100%; height: 100vh; }
 </style>
 
@@ -141,5 +142,5 @@ createRoot(document.getElementById("root")).render(
 
 <Callout kind="warning" title="うまくいかないとき">
 - 端の点が切れる（suite / react）→ `padding` を増やしてください。マーカーはピンの高さがあるので、上側は特に余白が要ります。
-- 点が1つしかない、または全点が同じ座標 → 範囲の面積が 0 になり、極端にズームインします。点が1つのときは `center` と `zoom` を直接指定する方が簡単です。
+- 点が1つしかない、または全点が同じ座標 → 範囲の面積が 0 になり、極端にズームインします。点が1つのときは `center` と `zoom`（embed では `data-lat`、`data-lng`、`data-zoom`）を直接指定する方が簡単です。
 </Callout>
