@@ -64,7 +64,7 @@ const nav = [
   <body data-page={page}>
     <header class="site-top">
       <a class="brand" href="/"><img class="brand-logo" src="/logo-docs.svg" alt="Geolonia Docs" width="204" height="32" /></a>
-      <nav class="dtx-nav">
+      <nav class="dtx-nav" aria-label="ドキュメントのセクション">
         {nav.map((n) => (
           <a href={n.href} data-sec={n.sec} class={page === n.sec ? 'active' : ''}>{n.label}</a>
         ))}
@@ -99,6 +99,12 @@ const nav = [
           <a class="site-foot__logo" href="https://docs.geolonia.com/"><span class="dot"></span>Geolonia 公式ドキュメント</a>
           <p class="site-foot__copyright">Copyright &copy; 2020-{copyrightYear} Geolonia.com<br />All rights reserved.</p>
         </div>
+        <nav class="site-foot__links" aria-labelledby="site-foot-docs-heading">
+          <p class="site-foot__links-heading" id="site-foot-docs-heading">資料</p>
+          <ul class="site-foot__links-list">
+            <li><a href="https://geolonia.github.io/geolonia-maps-livedeck/" target="_blank" rel="noopener noreferrer">Geolonia Maps 製品紹介スライド</a></li>
+          </ul>
+        </nav>
         <ul class="site-foot__social">
           <li>
             <a class="site-foot__social-link" href="https://github.com/geolonia/docs.geolonia.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub リポジトリを開く">
