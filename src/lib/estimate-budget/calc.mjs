@@ -86,7 +86,7 @@ export function growth(loads, factors = GROWTH_FACTORS) {
 }
 
 /**
- * グラフの横軸の上限。選んだ回数の 10 倍（「アクセスが増えたときの月額」の表の最大）までを、
+ * グラフの横軸の上限。選んだ回数の 10 倍（「アクセスが増えたときの月額」の表の最大）と CHART_MIN_RANGE の大きい方を、
  * 1, 2, 5 × 10^n のきりのよい数に切り上げる。
  * @param {number | null} loads
  */

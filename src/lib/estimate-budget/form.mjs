@@ -13,6 +13,7 @@ const chart = document.querySelector('[data-eb="chart"]');
 const empty = document.getElementById('eb-empty');
 
 if (form && result && chart) {
+  form.hidden = false;
   const pv = form.elements.namedItem('pv');
   const ratio = form.elements.namedItem('ratio');
   const set = (key, text) => {

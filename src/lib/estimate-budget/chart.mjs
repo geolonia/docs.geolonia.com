@@ -101,7 +101,7 @@ export function renderBudgetChart(root, selected) {
     label.textContent = `${fmt(jpy)} 円`;
   }
 
-  // ポインタを載せた位置の回数と月額を出す
+  // ポインタを載せた位置（タッチではタップした位置）の回数と月額を出す
   const guide = el('line', { y1: M.top, y2: M.top + ih, class: 'eb-chart-guide', visibility: 'hidden' }, svg);
   root.appendChild(svg);
   const tip = document.createElement('div');
@@ -146,4 +146,10 @@ export function renderBudgetChart(root, selected) {
   svg.addEventListener('pointerleave', (e) => {
     if (e.pointerType !== 'touch') hide();
   });
+  // タッチで出したものは、グラフの外をタップしたら閉じる。描き直すたびに前の登録を外す
+  root.ebOutside?.abort();
+  root.ebOutside = new AbortController();
+  document.addEventListener('pointerdown', (e) => {
+    if (!svg.contains(e.target)) hide();
+  }, { signal: root.ebOutside.signal });
 }

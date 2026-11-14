@@ -31,7 +31,8 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
       <noscript><p>グラフと月額の計算には JavaScript が必要です。代表的な回数の月額は、下の早見表にあります。</p></noscript>
     </div>
 
-    <form id="eb-form" class="cr-form" novalidate>
+    {/* 入力欄と案内は JavaScript が動くときだけ出す（form.mjs が hidden を外す）。動かないときは noscript の案内だけにする */}
+    <form id="eb-form" class="cr-form" novalidate hidden>
       <div class="cr-field">
         <label for="eb-pv">サイトの月間ページビュー（おおよそ）</label>
         <select id="eb-pv" name="pv" required aria-describedby="eb-pv-hint">
@@ -72,7 +73,7 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
       </div>
     </div>
 
-    <p id="eb-empty" class="cr-empty">ページビューを選ぶと、ここに月額の目安が表示されます。</p>
+    <p id="eb-empty" class="cr-empty" hidden>ページビューを選ぶと、ここに月額の目安が表示されます。</p>
 
   </section>
 
