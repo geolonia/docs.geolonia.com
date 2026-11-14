@@ -1,6 +1,6 @@
 ---
 // 料金の目安。月の地図表示回数と月額の関係をグラフで示し、PV から月額の目安を出す。
-// 請求額が想定を超えないための仕組みもここで説明する。計算は src/lib/estimate-budget/、
+// 請求について知っておくこと（Free プランでは請求されないことなど）もここで説明する。計算は src/lib/estimate-budget/、
 // 料金そのものは /pricing/ と同じ src/lib/pricing.mjs。見た目は components.css の .eb-* と .cr-chart。
 import DocLayout from '../../layouts/DocLayout.astro';
 import Callout from '../../components/Callout.astro';
@@ -8,9 +8,9 @@ import { FREE_LOADS, PRO_INCLUDED_LOADS, PRO_MONTHLY_JPY, monthlyCostJpy, withTa
 import { MAP_RATIOS, PAGE_VIEW_OPTIONS, estimate, pageViewLabel } from '../../lib/estimate-budget/calc.mjs';
 
 const frontmatter = {
-  title: '料金の目安と、請求額が想定を超えないための仕組み',
-  htmlTitle: '料金の目安と、請求額が想定を超えないための仕組み — Geolonia Docs',
-  description: '月の地図表示回数と月額の関係をグラフで示し、サイトのページビューから月額の目安を出します。Free プランでは請求されないことなど、請求額が想定を超えないための仕組みも説明します。',
+  title: '料金の目安',
+  htmlTitle: '料金の目安 — Geolonia Docs',
+  description: '月の地図表示回数と月額の関係をグラフで示し、サイトのページビューから月額の目安を出します。Free プランでは請求されないことなど、請求について知っておくことも説明します。',
   page: 'pricing',
   kicker: '料金',
 };
@@ -78,7 +78,7 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
   </section>
 
   <p>Geolonia Maps の料金は、月に地図を表示した回数で決まります。回数が分かれば、月額はあらかじめ計算できます。このページでは、表示回数と月額の関係をグラフで示し、サイトのページビュー（PV）から月額の目安を出します。</p>
-  <p>あわせて、請求額が想定を超えないための仕組みを説明します。料金表は<a href="/pricing/">料金</a>のページにあります。金額はすべて税抜です（税込を併記している箇所を除く）。</p>
+  <p>あわせて、請求について知っておくことを説明します。料金表は<a href="/pricing/">料金</a>のページにあります。金額はすべて税抜です（税込を併記している箇所を除く）。</p>
 
   <h2>月額の早見表</h2>
   <p>月の地図表示回数ごとの月額です。</p>
@@ -103,7 +103,7 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
   <p>月 {fmt(FREE_LOADS)} 回までは Free プランで 0 円です。それを超えると Pro プランの月額 {fmt(PRO_MONTHLY_JPY)} 円（税込 {fmt(withTax(PRO_MONTHLY_JPY))} 円）がかかり、{fmt(PRO_INCLUDED_LOADS)} 回を超えた分に従量課金がかかります。従量課金の単価は、回数が増えるほど段階的に下がります。</p>
   <p>月額は、表示回数の伸びと同じ割合で増えるとは限りません。Free を超えてから 50 万回くらいまでは、月額に含まれる 50,000 回を超えた分に従量課金がかかり始めるので、表示回数が 10 倍になると月額は 10 倍より大きくなることがあります。それより多くなると単価が下がっていくので、月額の伸びは表示回数の伸びより緩やかになります。予算を立てるときは、上の「アクセスが増えたときの月額」の表で、見込みの回数に近いところの金額を確かめてください。</p>
 
-  <h2>請求額が想定を超えないための仕組み</h2>
+  <h2>請求について知っておくこと</h2>
 
   <h3>Free プランでは請求されません</h3>
   <p>Free プランのまま月 {fmt(FREE_LOADS)} 回を超えると、地図の表示が止まります。自動で Pro プランに切り替わって請求されることはありません。Pro プランに切り替えられるのは、チームのオーナーがクレジットカードを登録して、自分でプランを変えたときだけです。</p>
