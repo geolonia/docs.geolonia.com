@@ -15,7 +15,7 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-HTML の属性だけでは、地球儀にはできません。`new geolonia.Map()` で作った地図なら、読み込みを待ってから `setProjection` で投影を切り替えられます。
+HTML の属性だけでは、地球儀にはできません。`new geolonia.Map()` で作った地図なら、スタイルの読み込みを待ってから `setProjection` で投影を切り替えられます。
 
 <LiveCode title="embed で地球儀表示にする">
 
@@ -31,7 +31,7 @@ HTML の属性だけでは、地球儀にはできません。`new geolonia.Map(
 <script>
   const map = new geolonia.Map("#map");
 
-  map.on("load", () => {
+  map.on("style.load", () => {
     map.setProjection({ type: "globe" });
   });
 </script>
@@ -39,8 +39,9 @@ HTML の属性だけでは、地球儀にはできません。`new geolonia.Map(
 
 </LiveCode>
 
-- **`class="geolonia"` を付けていません。** 付けると embed が自分で地図を作ってしまうので、`id` だけにして `new geolonia.Map("#map")` で作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
+- **`new geolonia.Map("#map")`**：`id` で要素を指定して地図を作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
 - **`setProjection({ type: "globe" })`**：投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
+- **`style.load`**：スタイルを読み込むたびに呼ばれます。スタイルを差し替えると投影は元に戻るので、ここで呼んでおくと差し替えた後も地球儀のままになります。
 
 </Lens>
 

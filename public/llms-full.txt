@@ -1242,7 +1242,7 @@ With HTML attributes alone, the only marker embed can place is the single centre
 </script>
 ```
 
-Do not give the element `class="geolonia"`, or embed creates a second map on it. To show several points without JavaScript, turn them into GeoJSON and load them with `data-geojson`.
+Pass the element's `id` to `new geolonia.Map()`; the `data-*` attributes are still read. To show several points without JavaScript, turn them into GeoJSON and load them with `data-geojson`.
 
 ### maps-suite
 
@@ -1432,7 +1432,7 @@ HTML written inside the `.geolonia` div becomes the popup of the marker.
 
 - The child elements are the popup content. Being HTML, bold text, links and images all work.
 - Writing children raises a marker at the centre, and clicking it opens the popup.
-- An embed popup can be attached to **the single centre marker only**.
+- With HTML attributes alone, a popup can be attached to **the single centre marker only**. For a popup on each of several markers, write it in JavaScript, as in the embed code of "Images inside popups, on several markers" below.
 
 ### maps-suite
 
@@ -1474,7 +1474,7 @@ The **children** of the `Marker` component are the popup content.
 ```
 
 - **`lat` and `lng`**: separate props, unlike the `[longitude, latitude]` array of `center`.
-- Unlike embed, several `Marker` elements can each carry **their own popup**.
+- Several `Marker` elements can each carry **their own popup**.
 
 ### Images inside popups, on several markers
 
@@ -1784,7 +1784,7 @@ const handleLoad = (map) => {
 
 **When it does not work**
 
-- Outer points are cut off: increase `padding`. Markers have pin height, so the top side needs particular margin.
+- Outer points are cut off (maps-suite / maps-react): increase `padding`. Markers have pin height, so the top side needs particular margin.
 - Only one point, or all points identical: the box has zero area and the map zooms in extremely far. With a single point, specifying `center` and `zoom` directly is simpler.
 
 ---
@@ -2792,7 +2792,7 @@ HTML attributes alone cannot add a data source. With a map created by `new geolo
 </script>
 ```
 
-Do not give the element `class="geolonia"`, or embed creates a second map on it.
+Pass the element's `id` to `new geolonia.Map()`; the `data-*` attributes are still read.
 
 ### maps-suite
 
@@ -3108,20 +3108,20 @@ Switching the map projection to **globe** shows a globe rather than a flat map w
 
 ### embed
 
-HTML attributes alone cannot switch to a globe. With a map created by `new geolonia.Map()`, wait for `load` and call `setProjection`.
+HTML attributes alone cannot switch to a globe. With a map created by `new geolonia.Map()`, call `setProjection` on `style.load` (the projection is reset when the style is replaced, so this keeps the globe after a style change).
 
 ```html
 <div id="map" data-lat="20" data-lng="0" data-zoom="2" data-marker="off"></div>
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 <script>
   const map = new geolonia.Map("#map");
-  map.on("load", () => {
+  map.on("style.load", () => {
     map.setProjection({ type: "globe" });
   });
 </script>
 ```
 
-Do not give the element `class="geolonia"`, or embed creates a second map on it.
+Pass the element's `id` to `new geolonia.Map()`; the `data-*` attributes are still read.
 
 ### maps-suite
 

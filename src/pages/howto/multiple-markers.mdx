@@ -49,7 +49,7 @@ HTML の属性で置けるマーカーは、中心の1本だけです。複数�
 
 </LiveCode>
 
-- **`geolonia.Marker` / `geolonia.Popup`**：embed を読み込むと `window.geolonia` に MapLibre GL JS の中身が入るので、マーカーとポップアップのクラスをそのまま使えます。`setLngLat` は `[経度, 緯度]` の順です。
+- **`geolonia.Marker` / `geolonia.Popup`**：embed を読み込むと、`window.geolonia` に MapLibre GL JS 互換の `Marker`（Geolonia のピン）と MapLibre の `Popup` が入ります。`setLngLat` は `[経度, 緯度]` の順です。
 - **`setPopup()`**：マーカーにポップアップを結び付けます。クリックで開く動きは MapLibre が受け持ちます。`setText` は文字をそのまま入れるので、名前に `<` などが入っていても HTML として解釈されません。
 - **`data-marker="off"`**：中心のマーカーを消しています。
 - 点を GeoJSON にして `data-geojson` で読み込めば、JavaScript を書かずに複数の点を出せます（→ [外部データ（GeoJSON）を地図に読み込むには](/howto/geojson-data/)）。

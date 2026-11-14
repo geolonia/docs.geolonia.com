@@ -45,8 +45,8 @@ HTML の属性だけでは、データソースを足せません。`new geoloni
 
 </LiveCode>
 
-- **`class="geolonia"` を付けていません。** 付けると embed が自分で地図を作ってしまうので、`id` だけにして `new geolonia.Map("#map")` で作ります。
-- **`tiles`**、**`attribution`**、ベクトルタイルの場合の書き方は、suite のタブと同じです。
+- **`new geolonia.Map("#map")`**：`id` で要素を指定して地図を作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
+- **`tiles`**、**`attribution`**、ベクトルタイルの場合の書き方は、suite のタブと同じです（suite の `impl` が、ここでは `map` です）。
 
 </Lens>
 
