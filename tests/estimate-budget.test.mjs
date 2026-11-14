@@ -139,7 +139,7 @@ test('刻みは 0〜10 万回で 20 回、0〜100 万回で 200 回', () => {
 
 test('chartRange が返すどの範囲でも、刻みは整数で上限を割り切る', () => {
   for (const n of PAGE_VIEW_OPTIONS) {
-    for (const r of [1, 0.5, 0.2, 0.1, 0.04]) {
+    for (const { value: r } of MAP_RATIOS) {
       const max = chartRange(loadsFromPageViews(n, r));
       const unit = keyboardUnit(max);
       assert.ok(Number.isInteger(unit) && unit > 0, `${max}: ${unit}`);

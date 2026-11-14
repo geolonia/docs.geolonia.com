@@ -35,7 +35,7 @@ function niceStep(max, count) {
  * @param {number | null} selected 印を付ける月の地図表示回数（無ければ null）
  */
 export function renderBudgetChart(root, selected) {
-  // 描き直す前にフォーカスを持っていたら、描き直した後に同じ回数でフォーカスを戻す
+  // 描き直す前にフォーカスを持っていたら、描き直した後にフォーカスを戻す（どの回数から始めるかは下の kept で決める）
   const prev = root.querySelector('svg');
   const hadFocus = prev != null && prev === document.activeElement;
   prev?.remove();
