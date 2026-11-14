@@ -2,9 +2,11 @@
 // 両軸とも等間隔の目盛りにして、月額が回数にどう比例するかをそのまま見せる。
 // 外部ライブラリは使わない（CSP とサイズのため）。色は components.css の .eb-chart-* でトークンから当てる。
 import { FREE_LOADS, PRO_TIERS, monthlyCostJpy } from '../pricing.mjs';
-import { chartPoints, chartRange } from './calc.mjs';
+import { chartPoints, chartRange, stepLoads } from './calc.mjs';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+// 描き直しをまたいで残す状態（フォーカス中の回数と、グラフの外のタップの登録）
+const state = new WeakMap();
 const H = 320;
 
 const fmt = (n) => Math.round(n).toLocaleString('ja-JP');
@@ -33,13 +35,16 @@ function niceStep(max, count) {
  * @param {number | null} selected 印を付ける月の地図表示回数（無ければ null）
  */
 export function renderBudgetChart(root, selected) {
-  root.querySelector('svg')?.remove();
+  // 描き直す前にフォーカスを持っていたら、描き直した後に同じ回数でフォーカスを戻す
+  const prev = root.querySelector('svg');
+  const hadFocus = prev != null && prev === document.activeElement;
+  prev?.remove();
   root.querySelector('.cr-chart-tooltip')?.remove();
 
   // viewBox を表示幅と同じにして、文字を縮めない。狭い画面では余白と目盛りの数を詰める
   const W = Math.max(300, Math.round(root.clientWidth || 720));
   const narrow = W < 560;
-  const M = { top: 16, right: narrow ? 28 : 40, bottom: 36, left: narrow ? 68 : 72 };
+  const M = { top: 16, right: narrow ? 36 : 40, bottom: 36, left: narrow ? 68 : 72 };
   const iw = W - M.left - M.right;
   const ih = H - M.top - M.bottom;
 
@@ -51,7 +56,7 @@ export function renderBudgetChart(root, selected) {
   const x = (loads) => M.left + (Math.min(Math.max(loads, 0), xMax) / xMax) * iw;
   const y = (jpy) => M.top + ih - (jpy / yMax) * ih;
 
-  // キーボードでも任意の回数の月額を読めるよう、グラフ全体を slider にする（矢印キーで回数を動かす）
+  // キーボードでも任意の回数の月額を読めるよう、グラフ全体を slider にする（矢印キーでポインタと同じ刻みずつ動かす）
   const svg = el('svg', {
     viewBox: `0 0 ${W} ${H}`,
     role: 'slider',
@@ -117,13 +122,16 @@ export function renderBudgetChart(root, selected) {
     tip.hidden = true;
     guide.setAttribute('visibility', 'hidden');
   };
-  // 見せる回数は横軸の刻みの 1/100 に丸める（きりのよい数に見えるように）
-  const unit = xStep / 100;
-  let cursor = selected != null && selected > 0 ? Math.min(Math.round(selected / unit) * unit, xMax) : 0;
+  // 刻みは画面幅によらず、横軸の範囲を 5 等分した目盛りの 1/1000（キーボードとポインタで同じ）。
+  // 範囲が 100 万回までなら 200 回刻みで、75,000 回のような値にも止まれる
+  const unit = niceStep(xMax, 5) / 1000;
+  const kept = hadFocus ? state.get(root)?.cursor : undefined;
+  let cursor = kept != null ? Math.min(kept, xMax) : selected != null && selected > 0 ? Math.min(selected, xMax) : 0;
   svg.setAttribute('aria-valuenow', String(cursor));
   svg.setAttribute('aria-valuetext', `月 ${fmt(cursor)} 回、月額 ${fmt(monthlyCostJpy(cursor))} 円`);
   const showAt = (loads) => {
     cursor = loads;
+    state.set(root, { ...state.get(root), cursor });
     const rect = svg.getBoundingClientRect();
     const text = `月 ${fmt(loads)} 回、月額 ${fmt(monthlyCostJpy(loads))} 円`;
     svg.setAttribute('aria-valuenow', String(loads));
@@ -153,16 +161,12 @@ export function renderBudgetChart(root, selected) {
     if (px < M.left || px > M.left + iw) return hide();
     showAt(Math.round((((px - M.left) / iw) * xMax) / unit) * unit);
   };
-  // キーボード: 左右の矢印で刻みの 1/10、PageUp / PageDown で 1 刻み、Home / End で両端へ
-  const KEYS = { ArrowRight: unit * 10, ArrowUp: unit * 10, ArrowLeft: -unit * 10, ArrowDown: -unit * 10, PageUp: xStep, PageDown: -xStep };
+  // キーボード: 矢印で 1 刻み、PageUp / PageDown で 100 刻み、Home / End で両端へ（calc.mjs の stepLoads）
   svg.addEventListener('keydown', (e) => {
-    let next;
-    if (e.key in KEYS) next = cursor + KEYS[e.key];
-    else if (e.key === 'Home') next = 0;
-    else if (e.key === 'End') next = xMax;
-    else return;
+    const next = stepLoads(cursor, e.key, unit, xMax);
+    if (next == null) return;
     e.preventDefault();
-    showAt(Math.min(Math.max(Math.round(next / unit) * unit, 0), xMax));
+    showAt(next);
   });
   svg.addEventListener('focus', () => showAt(cursor));
   svg.addEventListener('blur', hide);
@@ -174,9 +178,11 @@ export function renderBudgetChart(root, selected) {
     if (e.pointerType !== 'touch') hide();
   });
   // タッチで出したものは、グラフの外をタップしたら閉じる。描き直すたびに前の登録を外す
-  root.ebOutside?.abort();
-  root.ebOutside = new AbortController();
+  state.get(root)?.outside?.abort();
+  const outside = new AbortController();
+  state.set(root, { ...state.get(root), outside });
   document.addEventListener('pointerdown', (e) => {
     if (!svg.contains(e.target)) hide();
-  }, { signal: root.ebOutside.signal });
+  }, { signal: outside.signal });
+  if (hadFocus) svg.focus();
 }

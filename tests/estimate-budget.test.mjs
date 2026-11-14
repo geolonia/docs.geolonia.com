@@ -10,6 +10,7 @@ import {
   MAX_PAGE_VIEWS,
   PAGE_VIEW_OPTIONS,
   pageViewLabel,
+  stepLoads,
   chartPoints,
   chartRange,
   estimate,
@@ -111,4 +112,29 @@ test('PV の選択肢の表示名は万と億で書く', () => {
   assert.equal(pageViewLabel(500_000), '約 50 万 PV');
   assert.equal(pageViewLabel(50_000_000), '約 5,000 万 PV');
   assert.equal(pageViewLabel(100_000_000), '約 1 億 PV');
+});
+
+test('キーボードの回数は、矢印で 1 刻み、PageUp / PageDown で 100 刻み、Home / End で両端', () => {
+  assert.equal(stepLoads(74_800, 'ArrowRight', 200, 100_000), 75_000);
+  assert.equal(stepLoads(75_000, 'ArrowUp', 200, 100_000), 75_200);
+  assert.equal(stepLoads(75_000, 'ArrowLeft', 200, 100_000), 74_800);
+  assert.equal(stepLoads(55_000, 'PageUp', 200, 100_000), 75_000);
+  assert.equal(stepLoads(75_000, 'PageDown', 200, 100_000), 55_000);
+  assert.equal(stepLoads(75_000, 'Home', 200, 100_000), 0);
+  assert.equal(stepLoads(75_000, 'End', 200, 100_000), 100_000);
+});
+
+test('キーボードの回数は 0 と上限で止まり、刻みの倍数に丸める', () => {
+  assert.equal(stepLoads(0, 'ArrowLeft', 200, 100_000), 0);
+  assert.equal(stepLoads(100_000, 'PageUp', 200, 100_000), 100_000);
+  assert.equal(stepLoads(400, 'ArrowRight', 500, 100_000), 1_000);
+  assert.equal(stepLoads(75_000, 'Tab', 200, 100_000), null);
+});
+
+test('100 万回までの範囲では、75,000 回にキーボードで止まれる', () => {
+  const unit = 1_000_000 / 5 / 1000; // 横軸の目盛り 20 万回の 1/1000（chart.mjs と同じ）
+  let v = 0;
+  const seen = new Set();
+  while (v < 100_000) { v = stepLoads(v, 'ArrowRight', unit, 1_000_000); seen.add(v); }
+  assert.ok(seen.has(75_000));
 });

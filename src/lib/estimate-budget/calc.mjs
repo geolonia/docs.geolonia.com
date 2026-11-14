@@ -115,3 +115,23 @@ export function chartPoints(boundaries, max, count = 200) {
   }
   return [...xs].sort((a, b) => a - b).map((loads) => ({ loads, jpy: monthlyCostJpy(loads) }));
 }
+
+/** キーボードでグラフの回数を動かすキーと、刻み（unit）の何個分動くか */
+export const STEP_KEYS = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 100, PageDown: -100 };
+
+/**
+ * キーボードで動かした後の回数。刻み（unit）の倍数に丸め、0 から max の範囲に収める。
+ * Home と End は両端。対応しないキーは null。
+ * @param {number} current
+ * @param {string} key
+ * @param {number} unit
+ * @param {number} max
+ */
+export function stepLoads(current, key, unit, max) {
+  let next;
+  if (key in STEP_KEYS) next = current + STEP_KEYS[key] * unit;
+  else if (key === 'Home') next = 0;
+  else if (key === 'End') next = max;
+  else return null;
+  return Math.min(Math.max(Math.round(next / unit) * unit, 0), max);
+}
