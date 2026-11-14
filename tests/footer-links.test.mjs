@@ -10,7 +10,7 @@ import { readFile } from 'node:fs/promises';
 const layout = await readFile(new URL('../src/layouts/BaseLayout.astro', import.meta.url), 'utf8');
 
 const links = () => {
-  const match = layout.match(/<nav class="site-foot__links"[\s\S]*?<\/nav>/);
+  const match = layout.match(/<nav[^>]*class="site-foot__links"[\s\S]*?<\/nav>/);
   assert.ok(match, 'フッターに「資料」欄が見つからない');
   return match[0];
 };
@@ -20,8 +20,10 @@ test('「資料」欄は見出しで名前を付けたナビゲーションで�
   assert.match(links(), /id="site-foot-docs-heading">資料</);
 });
 
-test('製品紹介スライドへのリンクがある', () => {
-  assert.match(links(), /href="https:\/\/geolonia\.github\.io\/geolonia-maps-livedeck\/"/);
+test('製品紹介スライドへのリンクがあり、別タブで開く', () => {
+  const deck = links().match(/<a [^>]*href="https:\/\/geolonia\.github\.io\/geolonia-maps-livedeck\/"[^>]*>/);
+  assert.ok(deck, '製品紹介スライドへのリンクが見つからない');
+  assert.match(deck[0], /target="_blank"/);
 });
 
 test('別タブで開くリンクには rel="noopener noreferrer" を付ける', () => {
