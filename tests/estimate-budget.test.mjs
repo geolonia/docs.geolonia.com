@@ -8,6 +8,8 @@ import {
   CHART_MIN_RANGE,
   MAP_RATIOS,
   MAX_PAGE_VIEWS,
+  PAGE_VIEW_OPTIONS,
+  pageViewLabel,
   chartPoints,
   chartRange,
   estimate,
@@ -97,4 +99,16 @@ test('入力できる PV の上限を超える値や無限大は計算しない�
   assert.equal(loadsFromPageViews(1e308, 1), 0);
   assert.equal(loadsFromPageViews(Infinity, 1), 0);
   assert.ok(Number.isFinite(chartRange(MAX_PAGE_VIEWS)));
+});
+
+test('PV の選択肢は昇順で、上限を超えない', () => {
+  for (let i = 1; i < PAGE_VIEW_OPTIONS.length; i++) assert.ok(PAGE_VIEW_OPTIONS[i] > PAGE_VIEW_OPTIONS[i - 1]);
+  assert.ok(PAGE_VIEW_OPTIONS.at(-1) <= MAX_PAGE_VIEWS);
+});
+
+test('PV の選択肢の表示名は万と億で書く', () => {
+  assert.equal(pageViewLabel(10_000), '約 1 万 PV');
+  assert.equal(pageViewLabel(500_000), '約 50 万 PV');
+  assert.equal(pageViewLabel(50_000_000), '約 5,000 万 PV');
+  assert.equal(pageViewLabel(100_000_000), '約 1 億 PV');
 });

@@ -5,7 +5,7 @@
 import DocLayout from '../../layouts/DocLayout.astro';
 import Callout from '../../components/Callout.astro';
 import { FREE_LOADS, PRO_INCLUDED_LOADS, PRO_MONTHLY_JPY, monthlyCostJpy, withTax } from '../../lib/pricing.mjs';
-import { MAP_RATIOS, MAX_PAGE_VIEWS, estimate } from '../../lib/estimate-budget/calc.mjs';
+import { MAP_RATIOS, PAGE_VIEW_OPTIONS, estimate, pageViewLabel } from '../../lib/estimate-budget/calc.mjs';
 
 const frontmatter = {
   title: '料金の目安と、請求額が想定を超えないための仕組み',
@@ -16,7 +16,6 @@ const frontmatter = {
 };
 
 const fmt = (n: number) => Math.round(n).toLocaleString('ja-JP');
-const DEFAULT_PV = 100_000;
 
 // 月額の早見表
 const examples = [FREE_LOADS, PRO_INCLUDED_LOADS, 100_000, 500_000, 1_000_000, 5_000_000, 10_000_000].map((loads) => estimate(loads));
@@ -31,12 +30,12 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
     <h2 id="eb-tool-title">月額の目安を出す</h2>
     <form id="eb-form" class="cr-form" novalidate>
       <div class="cr-field">
-        <label for="eb-pv">サイトの月間ページビュー</label>
-        <div class="cr-input">
-          <input id="eb-pv" name="pv" type="number" inputmode="numeric" min="0" max={MAX_PAGE_VIEWS} step="1" value={DEFAULT_PV} aria-describedby="eb-pv-unit eb-pv-hint" />
-          <span id="eb-pv-unit" class="cr-unit">PV / 月</span>
-        </div>
-        <p id="eb-pv-hint" class="cr-hint">アクセス解析で見ている月のページビューです。計算はお使いのブラウザの中だけで行い、入力した値はどこにも送信しません。</p>
+        <label for="eb-pv">サイトの月間ページビュー（おおよそ）</label>
+        <select id="eb-pv" name="pv" required aria-describedby="eb-pv-hint">
+          <option value="" selected>選んでください</option>
+          {PAGE_VIEW_OPTIONS.map((n) => <option value={n}>{pageViewLabel(n)}</option>)}
+        </select>
+        <p id="eb-pv-hint" class="cr-hint">アクセス解析で見ている月のページビューに、いちばん近いものを選んでください。計算はお使いのブラウザの中だけで行い、選んだ値はどこにも送信しません。</p>
       </div>
       <div class="cr-field">
         <label for="eb-ratio">地図が表示されるページ</label>
@@ -70,9 +69,11 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
       </div>
     </div>
 
+    <p id="eb-empty" class="cr-empty">ページビューを選ぶと、ここに月額の目安が表示されます。</p>
+
     <div class="eb-panel">
       <h3 id="eb-chart-title">月の地図表示回数と月額（税抜）</h3>
-      <p class="cr-hint">横軸は、見込みの 10 倍の回数までを表示します。グラフにポインタを載せると、その回数の月額を表示します。同じ金額は、上の入力欄に PV を入れても確かめられます。</p>
+      <p class="cr-hint">横軸は、見込みの 10 倍の回数までを表示します。グラフにポインタを載せると、その回数の月額を表示します。</p>
       <div class="cr-chart eb-chart" data-eb="chart" aria-describedby="eb-chart-title"></div>
       <noscript><p>グラフの表示には JavaScript が必要です。代表的な回数の月額は、下の早見表にあります。</p></noscript>
     </div>

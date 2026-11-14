@@ -8,6 +8,28 @@ export const CHART_MIN_RANGE = 100_000;
 /** 入力できる月間ページビューの上限。これより大きい値は計算しない（グラフの目盛りが作れなくなるため） */
 export const MAX_PAGE_VIEWS = 1_000_000_000;
 
+/**
+ * 月間ページビューの選択肢。実数を入れずに、おおよその値から選んでもらう（コスト削減診断と同じ）。
+ * 最大でも MAX_PAGE_VIEWS 以下にする。
+ */
+export const PAGE_VIEW_OPTIONS = [
+  10_000, 20_000, 30_000, 50_000,
+  100_000, 200_000, 300_000, 500_000,
+  1_000_000, 2_000_000, 3_000_000, 5_000_000,
+  10_000_000, 20_000_000, 30_000_000, 50_000_000,
+  100_000_000,
+];
+
+/**
+ * 選択肢の表示名（例: 約 10 万 PV、約 1 億 PV）。
+ * @param {number} n
+ */
+export function pageViewLabel(n) {
+  if (n >= 100_000_000) return `約 ${(n / 100_000_000).toLocaleString('ja-JP')} 億 PV`;
+  if (n >= 10_000) return `約 ${(n / 10_000).toLocaleString('ja-JP')} 万 PV`;
+  return `約 ${n.toLocaleString('ja-JP')} PV`;
+}
+
 /** アクセスが増えたときの月額として並べる倍率 */
 export const GROWTH_FACTORS = [1, 2, 5, 10];
 

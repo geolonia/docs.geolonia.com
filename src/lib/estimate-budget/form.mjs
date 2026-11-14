@@ -10,6 +10,7 @@ const fmtPrice = (n) => n.toLocaleString('ja-JP', { maximumFractionDigits: 4 });
 const form = document.getElementById('eb-form');
 const result = document.getElementById('eb-result');
 const chart = document.querySelector('[data-eb="chart"]');
+const empty = document.getElementById('eb-empty');
 
 if (form && result && chart) {
   const pv = form.elements.namedItem('pv');
@@ -24,6 +25,7 @@ if (form && result && chart) {
     if (!(loads > 0)) {
       selected = null;
       result.hidden = true;
+      if (empty) empty.hidden = false;
       renderBudgetChart(chart, null);
       return;
     }
@@ -70,10 +72,12 @@ if (form && result && chart) {
     }
 
     result.hidden = false;
+    if (empty) empty.hidden = true;
     renderBudgetChart(chart, selected);
   };
 
   form.addEventListener('input', update);
+  form.addEventListener('change', update);
   form.addEventListener('submit', (e) => e.preventDefault());
   let width = chart.clientWidth;
   new ResizeObserver(() => {
