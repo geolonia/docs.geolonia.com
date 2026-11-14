@@ -1,0 +1,92 @@
+// 料金の目安（/pricing/estimate-budget/）の計算。料金そのものは src/lib/pricing.mjs。
+// .mjs にしてあるのは、ページのビルドとブラウザのスクリプトに加えて tests/ の node:test からも直接読むため。
+import { FREE_LOADS, monthlyCostJpy, usageBreakdown, withTax } from '../pricing.mjs';
+
+/** グラフの横軸の最小の範囲（月の地図表示回数）。Free と Pro の境目が見える広さにする */
+export const CHART_MIN_RANGE = 100_000;
+
+/** アクセスが増えたときの月額として並べる倍率 */
+export const GROWTH_FACTORS = [1, 2, 5, 10];
+
+/** 地図が表示されるページの割合の選択肢。1 は「すべてのページに地図がある」 */
+export const MAP_RATIOS = [
+  { value: 1, label: 'すべてのページ' },
+  { value: 0.5, label: '2 ページに 1 回' },
+  { value: 0.2, label: '5 ページに 1 回' },
+  { value: 0.1, label: '10 ページに 1 回' },
+  { value: 0.04, label: '25 ページに 1 回' },
+];
+
+/**
+ * 月間のページビューと、地図が表示されるページの割合から、月の地図表示回数を求める。
+ * 回数は整数に切り上げる（端数の 1 回も数える）。
+ * @param {number} pageViews
+ * @param {number} ratio 0 より大きく 1 以下
+ */
+export function loadsFromPageViews(pageViews, ratio) {
+  if (!(pageViews > 0) || !(ratio > 0)) return 0;
+  return Math.ceil(pageViews * Math.min(ratio, 1));
+}
+
+/**
+ * 月の地図表示回数から、月額とその内訳を求める。
+ * @param {number} loads
+ */
+export function estimate(loads) {
+  const jpy = monthlyCostJpy(loads);
+  const plan = loads <= FREE_LOADS ? 'Free' : 'Pro';
+  return {
+    loads,
+    plan,
+    jpy,
+    jpyWithTax: Math.round(withTax(jpy)),
+    // 1 回あたりの平均（税抜）。Free は 0 円
+    perLoad: loads > 0 ? jpy / loads : 0,
+    breakdown: plan === 'Pro' ? usageBreakdown(loads) : [],
+  };
+}
+
+/**
+ * 表示回数が倍率どおりに増えたときの月額。ratio は 1 倍のときの月額に対する比。
+ * @param {number} loads
+ * @param {number[]} [factors]
+ */
+export function growth(loads, factors = GROWTH_FACTORS) {
+  const base = monthlyCostJpy(loads);
+  return factors.map((factor) => {
+    const l = loads * factor;
+    const jpy = monthlyCostJpy(l);
+    return { factor, loads: l, jpy, ratio: base > 0 ? jpy / base : null };
+  });
+}
+
+/**
+ * グラフの横軸の上限。選んだ回数の 10 倍（「アクセスが増えたときの月額」の表の最大）までを、
+ * 1, 2, 5 × 10^n のきりのよい数に切り上げる。
+ * @param {number | null} loads
+ */
+export function chartRange(loads) {
+  const want = Math.max((loads ?? 0) * Math.max(...GROWTH_FACTORS), CHART_MIN_RANGE);
+  const pow = 10 ** Math.floor(Math.log10(want));
+  for (const m of [1, 2, 5, 10]) if (m * pow >= want) return m * pow;
+  return 10 * pow;
+}
+
+/**
+ * グラフの線の点。0 から max まで等間隔に取り、料金の段の境目では前後の点を足す
+ * （境目で線が曲がる位置と、Free から Pro に変わる段差を正確に描くため）。
+ * @param {number[]} boundaries 段の境目の回数
+ * @param {number} max 横軸の上限
+ * @param {number} [count]
+ */
+export function chartPoints(boundaries, max, count = 200) {
+  const xs = new Set();
+  for (let i = 0; i <= count; i++) xs.add(Math.round((max * i) / count));
+  for (const b of boundaries) {
+    if (b > 0 && b < max) {
+      xs.add(b);
+      xs.add(b + 1);
+    }
+  }
+  return [...xs].sort((a, b) => a - b).map((loads) => ({ loads, jpy: monthlyCostJpy(loads) }));
+}

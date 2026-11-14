@@ -261,6 +261,18 @@
 .cr-chart-tooltip-row strong { margin-left: auto; }
 .cr-chart-swatch { display: inline-block; width: 10px; height: 2px; }
 
+/* ── 料金の目安（/pricing/estimate-budget/） ─────────────────────
+   入力欄と結果の枠は .cr-* を使う。結果の表の行とグラフは JavaScript（src/lib/estimate-budget/）が作る。 */
+.eb-result { margin-top: 28px; text-align: center; }
+.eb-result p { margin: 0; }
+.eb-panel { margin: 20px 0 0; padding: 20px; background: var(--bg); border-radius: 7px; text-align: left; }
+.eb-panel h3 { margin-top: 0; }
+.eb-panel h3 + ul { margin-bottom: 20px; }
+.eb-panel ul + h3 { margin-top: 0; }
+.eb-chart { margin-top: 12px; }
+.eb-chart .eb-chart-free { fill: var(--accent-soft); }
+.eb-chart .eb-chart-label { font-weight: 700; }
+
 /* 塗りのボタン。配色はヘッダーの「ユーザー登録」と同じ（オレンジ地＋白文字） */
 .cr-cta {
   display: inline-block; padding: 12px 28px; border-radius: 7px;
