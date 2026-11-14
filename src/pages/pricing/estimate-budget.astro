@@ -23,11 +23,15 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
   r.plan === 'Free' ? '0 円' : `${(Math.round(r.perLoad * 1000) / 1000).toLocaleString('ja-JP')} 円`;
 ---
 <DocLayout frontmatter={frontmatter}>
-  <p>Geolonia Maps の料金は、月に地図を表示した回数で決まります。回数が分かれば、月額はあらかじめ計算できます。このページでは、表示回数と月額の関係をグラフで示し、サイトのページビュー（PV）から月額の目安を出します。</p>
-  <p>あわせて、請求額が想定を超えないための仕組みを説明します。料金表は<a href="/pricing/">料金</a>のページにあります。金額はすべて税抜です（税込を併記している箇所を除く）。</p>
-
   <section class="cr-tool" aria-labelledby="eb-tool-title">
     <h2 id="eb-tool-title">月額の目安を出す</h2>
+    <div class="eb-panel eb-panel--chart">
+      <h3 id="eb-chart-title">月の地図表示回数と月額（税抜）</h3>
+      <p class="cr-hint">横軸は、下で選んだ見込みの 10 倍の回数までを表示します。グラフにポインタを載せると、その回数の月額を表示します。</p>
+      <div class="cr-chart eb-chart" data-eb="chart" aria-describedby="eb-chart-title"></div>
+      <noscript><p>グラフの表示には JavaScript が必要です。代表的な回数の月額は、下の早見表にあります。</p></noscript>
+    </div>
+
     <form id="eb-form" class="cr-form" novalidate>
       <div class="cr-field">
         <label for="eb-pv">サイトの月間ページビュー（おおよそ）</label>
@@ -71,13 +75,10 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
 
     <p id="eb-empty" class="cr-empty">ページビューを選ぶと、ここに月額の目安が表示されます。</p>
 
-    <div class="eb-panel">
-      <h3 id="eb-chart-title">月の地図表示回数と月額（税抜）</h3>
-      <p class="cr-hint">横軸は、見込みの 10 倍の回数までを表示します。グラフにポインタを載せると、その回数の月額を表示します。</p>
-      <div class="cr-chart eb-chart" data-eb="chart" aria-describedby="eb-chart-title"></div>
-      <noscript><p>グラフの表示には JavaScript が必要です。代表的な回数の月額は、下の早見表にあります。</p></noscript>
-    </div>
   </section>
+
+  <p>Geolonia Maps の料金は、月に地図を表示した回数で決まります。回数が分かれば、月額はあらかじめ計算できます。このページでは、表示回数と月額の関係をグラフで示し、サイトのページビュー（PV）から月額の目安を出します。</p>
+  <p>あわせて、請求額が想定を超えないための仕組みを説明します。料金表は<a href="/pricing/">料金</a>のページにあります。金額はすべて税抜です（税込を併記している箇所を除く）。</p>
 
   <h2>月額の早見表</h2>
   <p>月の地図表示回数ごとの月額です。</p>

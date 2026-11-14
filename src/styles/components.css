@@ -267,6 +267,7 @@
 .eb-result p { margin: 0; }
 .eb-panel { margin: 20px 0 0; padding: 20px; background: var(--bg); border-radius: 7px; text-align: left; }
 .eb-panel h3 { margin-top: 0; }
+.eb-panel--chart { margin: 0 0 24px; }
 .eb-panel h3 + ul { margin-bottom: 20px; }
 .eb-panel ul + h3 { margin-top: 0; }
 .eb-chart { margin-top: 12px; }
