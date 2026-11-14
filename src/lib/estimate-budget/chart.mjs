@@ -1,4 +1,4 @@
-// 月の地図表示回数と月額の関係を折れ線で描く。横軸は 0 から、選んだ回数の 10 倍まで（chartRange）。
+// 月の地図表示回数と月額の関係を折れ線で描く。横軸は 0 から chartRange の値まで（選んだ回数の 10 倍以上）。
 // 両軸とも等間隔の目盛りにして、月額が回数にどう比例するかをそのまま見せる。
 // 外部ライブラリは使わない（CSP とサイズのため）。色は components.css の .eb-chart-* でトークンから当てる。
 import { FREE_LOADS, PRO_TIERS, monthlyCostJpy } from '../pricing.mjs';
@@ -113,7 +113,7 @@ export function renderBudgetChart(root, selected) {
     tip.hidden = true;
     guide.setAttribute('visibility', 'hidden');
   };
-  svg.addEventListener('pointermove', (e) => {
+  const show = (e) => {
     const rect = svg.getBoundingClientRect();
     const px = ((e.clientX - rect.left) / rect.width) * W;
     if (px < M.left || px > M.left + iw) return hide();
@@ -138,6 +138,12 @@ export function renderBudgetChart(root, selected) {
     const left = (x(loads) / W) * rect.width;
     tip.style.left = `${Math.min(Math.max(left - 100, 0), Math.max(rect.width - 200, 0))}px`;
     tip.style.top = '8px';
+  };
+  // タッチ端末ではタップ（pointerdown）でも出す（コスト削減診断のグラフと同じ）
+  svg.addEventListener('pointermove', show);
+  svg.addEventListener('pointerdown', show);
+  // タッチでは指を離すと pointerleave が来るので、隠すのはマウスとペンのときだけにする
+  svg.addEventListener('pointerleave', (e) => {
+    if (e.pointerType !== 'touch') hide();
   });
-  svg.addEventListener('pointerleave', hide);
 }

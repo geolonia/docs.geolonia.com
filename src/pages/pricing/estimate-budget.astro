@@ -27,9 +27,8 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
     <h2 id="eb-tool-title">月額の目安を出す</h2>
     <div class="eb-panel eb-panel--chart">
       <h3 id="eb-chart-title">月の地図表示回数と月額（税抜）</h3>
-      <p class="cr-hint">横軸は、下で選んだ見込みの 10 倍の回数までを表示します。グラフにポインタを載せると、その回数の月額を表示します。</p>
       <div class="cr-chart eb-chart" data-eb="chart" aria-describedby="eb-chart-title"></div>
-      <noscript><p>グラフの表示には JavaScript が必要です。代表的な回数の月額は、下の早見表にあります。</p></noscript>
+      <noscript><p>グラフと月額の計算には JavaScript が必要です。代表的な回数の月額は、下の早見表にあります。</p></noscript>
     </div>
 
     <form id="eb-form" class="cr-form" novalidate>
