@@ -5,6 +5,9 @@ import { FREE_LOADS, monthlyCostJpy, usageBreakdown, withTax } from '../pricing.
 /** グラフの横軸の最小の範囲（月の地図表示回数）。Free と Pro の境目が見える広さにする */
 export const CHART_MIN_RANGE = 100_000;
 
+/** 入力できる月間ページビューの上限。これより大きい値は計算しない（グラフの目盛りが作れなくなるため） */
+export const MAX_PAGE_VIEWS = 1_000_000_000;
+
 /** アクセスが増えたときの月額として並べる倍率 */
 export const GROWTH_FACTORS = [1, 2, 5, 10];
 
@@ -24,7 +27,7 @@ export const MAP_RATIOS = [
  * @param {number} ratio 0 より大きく 1 以下
  */
 export function loadsFromPageViews(pageViews, ratio) {
-  if (!(pageViews > 0) || !(ratio > 0)) return 0;
+  if (!(pageViews > 0) || !(ratio > 0) || !(pageViews <= MAX_PAGE_VIEWS)) return 0;
   return Math.ceil(pageViews * Math.min(ratio, 1));
 }
 

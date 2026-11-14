@@ -7,6 +7,7 @@ import { FREE_LOADS, PRO_MONTHLY_JPY, monthlyCostJpy } from '../src/lib/pricing.
 import {
   CHART_MIN_RANGE,
   MAP_RATIOS,
+  MAX_PAGE_VIEWS,
   chartPoints,
   chartRange,
   estimate,
@@ -88,4 +89,12 @@ test('グラフの点は 0 から上限まで昇順で、境目の前後を含�
   assert.ok(at(100_001));
   // 範囲の外の境目は足さない
   assert.equal(at(5_000_000), undefined);
+});
+
+test('入力できる PV の上限を超える値や無限大は計算しない（グラフが作れなくなるため）', () => {
+  assert.equal(loadsFromPageViews(MAX_PAGE_VIEWS, 1), MAX_PAGE_VIEWS);
+  assert.equal(loadsFromPageViews(MAX_PAGE_VIEWS + 1, 1), 0);
+  assert.equal(loadsFromPageViews(1e308, 1), 0);
+  assert.equal(loadsFromPageViews(Infinity, 1), 0);
+  assert.ok(Number.isFinite(chartRange(MAX_PAGE_VIEWS)));
 });

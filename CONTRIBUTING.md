@@ -104,6 +104,7 @@ URL になります（`src/pages/howto/clustering.mdx` → `/howto/clustering/`�
 - `src/pages/pricing/cost-reduction.astro` … コスト削減診断。Google Maps と Mapbox の請求額から Geolonia Maps の月額を試算します。計算は `src/lib/cost-reduction/`、見た目は `components.css` の `.cr-*` です。次の2つは手で更新します
   - **為替**（`src/data/usdjpy-monthly.json`）：半年に1回ほど `npm run update:usdjpy` を実行してコミットします。FRED のドル円の月平均を直近60か月分取り直します
   - **他社の料金**（`src/lib/cost-reduction/calc.mjs` の `PROVIDERS`）：各社の料金表を確認し、変わっていれば段階と単価を直して、確認した日を `PRICES_CHECKED` に書きます
+- `src/pages/pricing/estimate-budget.astro` … 料金の目安。月間 PV と地図のあるページの割合から月額の目安を出し、表示回数と月額の関係をグラフで示します。計算は `src/lib/estimate-budget/`、見た目は `components.css` の `.eb-*` と、入力欄の `.cr-*` です
 - `src/pages/demos/inline/[id].astro` … LiveCode が使うデモページの生成元。**手で触りません**
 
 ## ページの作り方

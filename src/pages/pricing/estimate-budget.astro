@@ -5,7 +5,7 @@
 import DocLayout from '../../layouts/DocLayout.astro';
 import Callout from '../../components/Callout.astro';
 import { FREE_LOADS, PRO_INCLUDED_LOADS, PRO_MONTHLY_JPY, monthlyCostJpy, withTax } from '../../lib/pricing.mjs';
-import { MAP_RATIOS, estimate } from '../../lib/estimate-budget/calc.mjs';
+import { MAP_RATIOS, MAX_PAGE_VIEWS, estimate } from '../../lib/estimate-budget/calc.mjs';
 
 const frontmatter = {
   title: '料金の目安と、請求額が想定を超えないための仕組み',
@@ -33,7 +33,7 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
       <div class="cr-field">
         <label for="eb-pv">サイトの月間ページビュー</label>
         <div class="cr-input">
-          <input id="eb-pv" name="pv" type="number" inputmode="numeric" min="0" step="1" value={DEFAULT_PV} aria-describedby="eb-pv-unit eb-pv-hint" />
+          <input id="eb-pv" name="pv" type="number" inputmode="numeric" min="0" max={MAX_PAGE_VIEWS} step="1" value={DEFAULT_PV} aria-describedby="eb-pv-unit eb-pv-hint" />
           <span id="eb-pv-unit" class="cr-unit">PV / 月</span>
         </div>
         <p id="eb-pv-hint" class="cr-hint">アクセス解析で見ている月のページビューです。計算はお使いのブラウザの中だけで行い、入力した値はどこにも送信しません。</p>
@@ -74,7 +74,7 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
       <h3 id="eb-chart-title">月の地図表示回数と月額（税抜）</h3>
       <p class="cr-hint">横軸は、見込みの 10 倍の回数までを表示します。グラフにポインタを載せると、その回数の月額を表示します。同じ金額は、上の入力欄に PV を入れても確かめられます。</p>
       <div class="cr-chart eb-chart" data-eb="chart" aria-describedby="eb-chart-title"></div>
-      <noscript><p>グラフの表示には JavaScript が必要です。下の早見表で同じ金額を確かめられます。</p></noscript>
+      <noscript><p>グラフの表示には JavaScript が必要です。代表的な回数の月額は、下の早見表にあります。</p></noscript>
     </div>
   </section>
 
@@ -105,16 +105,16 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
 
   <h3>Free プランでは請求されません</h3>
   <p>Free プランのまま月 {fmt(FREE_LOADS)} 回を超えると、地図の表示が止まります。自動で Pro プランに切り替わって請求されることはありません。Pro プランに切り替えられるのは、チームのオーナーがクレジットカードを登録して、自分でプランを変えたときだけです。</p>
-  <p>回数は 1 日 1 回の集計で確かめているため、{fmt(FREE_LOADS)} 回を超えてから地図が止まるまで、1 日ほどかかることがあります。その間の表示も請求されません。</p>
+  <p>回数は 1 日 1 回の集計で確かめているため、{fmt(FREE_LOADS)} 回を超えてから地図が止まるまで、1 日あまりかかることがあります。その間の表示も請求されません。</p>
 
   <h3>月の上限回数</h3>
   <p>月の上限回数を決めたい場合は<a href="https://www.geolonia.com/contact/">お問い合わせ</a>ください。</p>
 
   <h3>今月の回数と料金をダッシュボードで確かめられます</h3>
-  <p>チームのオーナーとオペレーターは、<a href="https://app.geolonia.com/">ダッシュボード</a>のメニューの「支払い」（料金プランとお支払い）で、今の請求期間の地図表示回数と、次回の請求見込み額を確かめられます。回数はおよそ 30 分ごとに更新されます。API キーごとの日別のグラフもあるので、どのサイトで回数が増えたかも分かります。</p>
+  <p>チームのオーナーとオペレーターは、<a href="https://app.geolonia.com/">ダッシュボード</a>のメニューの「支払い」（料金プランとお支払い）で、今の請求期間の地図表示回数を確かめられます。Pro プランでは、次回の請求見込み額も出ます。回数はおよそ 30 分ごとに更新されます。API キーごとの日別のグラフもあるので、どのサイトで回数が増えたかも分かります。</p>
 
   <h3>地図を表示できる URL を API キーに登録します</h3>
-  <p>API キーには、地図を表示してよいサイトの URL を登録します。登録していないサイトでキーが使われても地図は表示されず、回数にも数えません。ほかのサイトにキーを流用されて、回数を使われることを防げます。</p>
+  <p>API キーには、地図を表示してよいサイトの URL を登録します。ほかのサイトにキーを流用されて、回数を使われることを防げます。</p>
   <p>URL を <code>*</code> だけにすると、どのサイトでも地図を表示できるようになり、この制限が働きません。公開するサイトの URL を個別に登録してください。手順は <a href="/tutorials/embed/publish/">embed の Step 5: API キーの設定と本番公開</a>にあります。</p>
 
   <h3>開発中の表示は数えません</h3>
@@ -124,11 +124,11 @@ const perLoad = (r: { plan: string; perLoad: number }) =>
   <p>料金は円で決まっているので、為替が動いても請求額は変わりません。</p>
 
   <h3>いつでも Free プランに戻せます</h3>
-  <p>ダッシュボードで Free プランを選ぶと、その月の期間が終わるまでは Pro プランのまま使え、期間が終わると Free プランに戻ります。Free プランに戻ったあとは、その月の回数がすでに {fmt(FREE_LOADS)} 回を超えていれば、地図の表示が止まります。</p>
+  <p>ダッシュボードで Free プランを選ぶと、その月の期間が終わるまでは Pro プランのまま使え、期間が終わると Free プランに戻ります。</p>
 
   <h2>見積もりのコツ</h2>
   <ul>
-    <li>月の地図表示回数は、おおむね地図のあるページが読み込まれた回数です。同じページに同じ API キーの地図が複数あっても 1 回です。数え方の詳細は<a href="/pricing/#地図表示回数とは">料金</a>のページにあります。</li>
+    <li>地図表示回数の数え方は、<a href="/pricing/#地図表示回数とは">料金</a>のページにあります。</li>
     <li>アクセス解析の PV は、地図の無いページも含みます。地図のあるページの PV だけを数えると、見積もりが正確になります。</li>
     <li>季節やキャンペーンで PV が増える月があるなら、いちばん多い月の PV で計算してください。「アクセスが増えたときの月額」の表で、増えたときの金額も確かめられます。</li>
     <li>期間の途中で Pro プランに切り替えた場合も、その期間のはじめからの回数で計算します（{fmt(PRO_INCLUDED_LOADS)} 回までは月額に含まれます）。支払いの時期は<a href="/pricing/#支払いのサイクル">料金</a>のページにあります。</li>

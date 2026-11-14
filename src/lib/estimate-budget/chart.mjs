@@ -8,8 +8,10 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const H = 320;
 
 const fmt = (n) => Math.round(n).toLocaleString('ja-JP');
-const fmtLoads = (n) => (n === 0 ? '0' : n >= 10_000 ? `${(n / 10_000).toLocaleString('ja-JP')}万回` : `${fmt(n)}回`);
-const fmtYen = (n) => (n === 0 ? '0' : n >= 10_000 ? `${(n / 10_000).toLocaleString('ja-JP')}万円` : `${fmt(n)}円`);
+// 目盛りの数を万と億で短く書く
+const short = (n) => (n >= 100_000_000 ? `${(n / 100_000_000).toLocaleString('ja-JP')}億` : n >= 10_000 ? `${(n / 10_000).toLocaleString('ja-JP')}万` : fmt(n));
+const fmtLoads = (n) => (n === 0 ? '0' : `${short(n)}回`);
+const fmtYen = (n) => (n === 0 ? '0' : `${short(n)}円`);
 
 function el(name, attrs = {}, parent) {
   const node = document.createElementNS(SVG_NS, name);
