@@ -328,7 +328,7 @@ There are two points to note.
 
 ### The limits of embed popups
 
-An embed popup can only be attached to **the single centre marker**. Attaching a popup to each of several markers requires a JavaScript implementation, which means the maps-suite or maps-react tutorials.
+With HTML attributes alone, a popup can only be attached to **the single centre marker**. To attach a popup to each of several markers, use the embed JavaScript API (`geolonia.Marker` and `geolonia.Popup`); an example is in "Show a Popup on Click" (https://docs.geolonia.com/howto/popup-on-click/).
 
 One popup is still enough to answer "what is this place?". For a map embedded on a shop page, putting the address and opening hours in the popup makes it clear.
 
@@ -1219,7 +1219,35 @@ Put several places on the map at once. One point is served well enough by the ce
 
 ### embed
 
-embed, using HTML attributes alone, has **no** declarative way to place multiple markers. The only marker it can embed is the single centre one. To show several points, either turn the points into GeoJSON and load them with `data-geojson`, or switch to the maps-suite or maps-react code.
+With HTML attributes alone, the only marker embed can place is the single centre one. For several markers, create the map with `new geolonia.Map()` and loop over the list, placing a `geolonia.Marker` for each point.
+
+```html
+<style>
+  body { margin: 0; }
+  #map { width: 100%; height: 100vh; }
+</style>
+
+<div id="map" data-lat="35.68" data-lng="139.75" data-zoom="11" data-marker="off"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+<script>
+  const points = [
+    { name: "東京駅", lng: 139.767125, lat: 35.681236 },
+    { name: "新宿駅", lng: 139.700258, lat: 35.690921 },
+  ];
+
+  const map = new geolonia.Map("#map");
+
+  for (const p of points) {
+    new geolonia.Marker()
+      .setLngLat([p.lng, p.lat])
+      .setPopup(new geolonia.Popup().setText(p.name))
+      .addTo(map);
+  }
+</script>
+```
+
+Pass the element's `id` to `new geolonia.Map()`; the `data-*` attributes are still read. To show several points without JavaScript, turn them into GeoJSON and load them with `data-geojson`.
 
 ### maps-suite
 
@@ -1409,7 +1437,7 @@ HTML written inside the `.geolonia` div becomes the popup of the marker.
 
 - The child elements are the popup content. Being HTML, bold text, links and images all work.
 - Writing children raises a marker at the centre, and clicking it opens the popup.
-- An embed popup can be attached to **the single centre marker only**.
+- With HTML attributes alone, a popup can be attached to **the single centre marker only**. For a popup on each of several markers, write it in JavaScript, as in the embed code of "Images inside popups, on several markers" below.
 
 ### maps-suite
 
@@ -1451,7 +1479,7 @@ The **children** of the `Marker` component are the popup content.
 ```
 
 - **`lat` and `lng`**: separate props, unlike the `[longitude, latitude]` array of `center`.
-- Unlike embed, several `Marker` elements can each carry **their own popup**.
+- Several `Marker` elements can each carry **their own popup**.
 
 ### Images inside popups, on several markers
 
@@ -1696,7 +1724,19 @@ Rather than choosing `center` and `zoom` by hand, **compute the box enclosing ev
 
 ### embed
 
-Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+Load the points as GeoJSON with `data-geojson` and leave out `data-lat` and `data-lng`; the map then fits its view to all features of the GeoJSON.
+
+```html
+<style>
+  body { margin: 0; }
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia" data-geojson="https://docs.geolonia.com/data/sample-spots.geojson"></div>
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+If both `data-lat` and `data-lng` are given, that position becomes the centre and the view is not fitted. Without a centre, the centre marker is not shown either.
 
 ### maps-suite
 
@@ -1754,8 +1794,8 @@ const handleLoad = (map) => {
 
 **When it does not work**
 
-- Outer points are cut off: increase `padding`. Markers have pin height, so the top side needs particular margin.
-- Only one point, or all points identical: the box has zero area and the map zooms in extremely far. With a single point, specifying `center` and `zoom` directly is simpler.
+- Outer points are cut off (maps-suite / maps-react): increase `padding`. Markers have pin height, so the top side needs particular margin.
+- Only one point, or all points identical: the box has zero area and the map zooms in extremely far. With a single point, specifying `center` and `zoom` directly is simpler (in embed, `data-lat`, `data-lng` and `data-zoom`).
 
 ---
 
@@ -1892,7 +1932,7 @@ Drag a marker and receive the latitude and longitude where it is released. Usefu
 
 ### embed
 
-embed alone cannot make a draggable marker. Switch to the maps-suite or maps-react code.
+A draggable marker cannot be set with `data-*` attributes alone. Create the map with `new geolonia.Map()` and add `new geolonia.Marker({ draggable: true })`; `dragend` gives the position (`marker.getLngLat()`).
 
 ### maps-suite
 
@@ -2743,7 +2783,31 @@ For data too large for GeoJSON, or tiles someone else publishes, add a **tile so
 
 ### embed
 
-Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+HTML attributes alone cannot add a data source. With a map created by `new geolonia.Map()`, wait for `load` and pass `tiles` (an array of template URLs) to `addSource`.
+
+```html
+<style>
+  body { margin: 0; }
+  #map { width: 100%; height: 100vh; }
+</style>
+
+<div id="map" data-lat="35.6812" data-lng="139.7671" data-zoom="12" data-marker="off"></div>
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+<script>
+  const map = new geolonia.Map("#map");
+  map.on("load", () => {
+    map.addSource("gsi", {
+      type: "raster",
+      tiles: ["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      attribution: "地理院タイル",
+    });
+    map.addLayer({ id: "gsi", type: "raster", source: "gsi" });
+  });
+</script>
+```
+
+Pass the element's `id` to `new geolonia.Map()`; the `data-*` attributes are still read.
 
 ### maps-suite
 
@@ -3059,7 +3123,25 @@ Switching the map projection to **globe** shows a globe rather than a flat map w
 
 ### embed
 
-Not available with HTML attributes alone. Switch to the maps-suite or maps-react code.
+HTML attributes alone cannot switch to a globe. With a map created by `new geolonia.Map()`, call `setProjection` on `style.load` (the projection is reset when the style is replaced, so this keeps the globe after a style change).
+
+```html
+<style>
+  body { margin: 0; }
+  #map { width: 100%; height: 100vh; }
+</style>
+
+<div id="map" data-lat="20" data-lng="0" data-zoom="2" data-marker="off"></div>
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+<script>
+  const map = new geolonia.Map("#map");
+  map.on("style.load", () => {
+    map.setProjection({ type: "globe" });
+  });
+</script>
+```
+
+Pass the element's `id` to `new geolonia.Map()`; the `data-*` attributes are still read.
 
 ### maps-suite
 
@@ -3098,7 +3180,7 @@ Receive the map instance in `onLoad` and switch the projection. With `<GlobeCont
 
 **When it does not work**
 
-- It stays flat: globe projection is a feature of **MapLibre GL JS v5 or later**. Check the `maplibre-gl` version.
+- It stays flat (maps-suite / maps-react): globe projection is a feature of **MapLibre GL JS v5 or later**. Check the `maplibre-gl` version.
 - You cannot tell whether it is a globe: zoom out. At high zoom it looks the same as the usual map.
 
 ---

@@ -38,12 +38,12 @@ For full documentation content, see: https://docs.geolonia.com/llms-full.txt
 ## How-to Guides
 
 - [How-to Guides](https://docs.geolonia.com/howto/): Index of task recipes, each with embed, maps-suite and maps-react tabs
-- [Place Multiple Markers](https://docs.geolonia.com/howto/multiple-markers/): Loop over a list of points; embed cannot do this and needs GeoJSON instead
+- [Place Multiple Markers](https://docs.geolonia.com/howto/multiple-markers/): Loop over a list of points; in embed, `new geolonia.Map()` and `geolonia.Marker`, or GeoJSON without JavaScript
 - [Switch the Map Style](https://docs.geolonia.com/howto/change-style/): `data-style`, the `style` option, `setStyle`, and switching at runtime from React state
 - [Show a Popup on Click](https://docs.geolonia.com/howto/popup-on-click/): Child elements in embed and maps-react, `InfoWindow` in maps-suite, plus images inside popups on several markers
 - [Load External GeoJSON Data](https://docs.geolonia.com/howto/geojson-data/): `data-geojson`, `map.data.addGeoJson()`, and the Source plus Layer pair
 - [Show the Current Location](https://docs.geolonia.com/howto/current-location/): The geolocate control, and calling `navigator.geolocation` directly
-- [Fit All Points on Screen](https://docs.geolonia.com/howto/fit-bounds/): Computing a bounding box and calling `fitBounds` with padding
+- [Fit All Points on Screen](https://docs.geolonia.com/howto/fit-bounds/): In embed, `data-geojson` without `data-lat` / `data-lng`; otherwise computing a bounding box and calling `fitBounds` with padding
 - [Toggle Map Controls](https://docs.geolonia.com/howto/map-controls/): Navigation, geolocate, fullscreen, scale and logo controls, their defaults and positions
 - [Switch the Map Language](https://docs.geolonia.com/howto/switch-language/): `ja`, `en` and `auto`; maps-suite has no language option
 - [Get Coordinates from a Draggable Marker](https://docs.geolonia.com/howto/draggable-marker/): `draggable` and `dragend`, reading `getLngLat()`
