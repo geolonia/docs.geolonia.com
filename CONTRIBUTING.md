@@ -35,7 +35,7 @@ docs.geolonia.com（リニューアル版）にページを足したり直した
 
 ## セットアップとコマンド
 
-Node.js は **22.12.0 以上**が必要です。
+Node.js は **22.23.4 以上**が必要です。
 
 ```bash
 npm install
@@ -119,7 +119,7 @@ URL になります（`src/pages/howto/clustering.mdx` → `/howto/clustering/`�
 layout: ../../layouts/DocLayout.astro
 title: クリックでポップアップを出すには
 page: howto
-kicker: ハウツー ／ レシピ
+kicker: 基本
 badge: howto
 ---
 ```

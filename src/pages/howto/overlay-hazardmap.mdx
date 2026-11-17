@@ -13,9 +13,9 @@ import LiveCode from '../../components/LiveCode.astro'
 国土交通省の[ハザードマップポータルサイト](https://disaportal.gsi.go.jp/)は、洪水浸水想定区域や津波浸水想定などを `{z}/{x}/{y}` のラスタタイルとして配信しています。これをタイルソースとして追加すれば、自分の地図に重ねられます。
 
 <Callout kind="warning" title="出典表示が必須です">
-このデータには出典の記載が求められています。タイルソースの **`attribution`** に出典を書いてください。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
+このデータには出典の記載が求められています。タイルソースの **`attribution`** に出典を書いてください（`data-raster-tiles` では `data-raster-tiles-attribution`、`rasterTiles` では `attribution`）。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
 
-書く場所は**ソース**で、レイヤではありません。3つのライブラリはどれも同じで、書けば地図の右下に出ます。出典表示のコントロールを自分で足す必要はありません（[出典はどこに出るか](#出典はどこに出るか)）。
+`addSource` や `Source` で重ねるときは、書く場所は**ソース**で、レイヤではありません。3つのライブラリはどれも同じで、書けば地図の右下に出ます。出典表示のコントロールを自分で足す必要はありません（[出典はどこに出るか](#出典はどこに出るか)）。
 </Callout>
 
 ## コード
@@ -611,7 +611,7 @@ Geolonia Maps は、embed / maps-suite / maps-react のどれでも、地図を�
 - 何も出ない → その場所に、指定した災害のデータが無いだけかもしれません。タイルは対象区域のあるところにしか無く、無いところは 404 を返します。同じ場所をハザードマップポータルサイトで開いて、データがあるかどうか先に確かめてください。
 - ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと（`data-raster-tiles` では `data-raster-tiles-max-zoom`、`rasterTiles` では `maxZoom`）、それ以上は引き伸ばして表示されます。
 - ベース地図が見えない → 不透明度を下げてください（`raster-opacity`、`data-raster-tiles-opacity`、`rasterTiles` の `opacity`）。
-- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません（[出典はどこに出るか](#出典はどこに出るか)）。
+- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません。`data-raster-tiles` では `data-raster-tiles-attribution`、`rasterTiles` では `attribution` に書きます（[出典はどこに出るか](#出典はどこに出るか)）。
 - 出典が二重に出る → `AttributionControl` を自分で足しています。地図を作った時点で1つ足されているので、追加は要りません。
 </Callout>
 

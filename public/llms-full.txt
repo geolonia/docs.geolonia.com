@@ -1179,28 +1179,34 @@ URL: https://docs.geolonia.com/howto/
 
 A collection of recipes that answer "how do I ..." as directly as possible, organised by goal. Note that some recipes are not supported by every library.
 
-### Recipes
+### Basics
 
 - Place Multiple Markers: https://docs.geolonia.com/howto/multiple-markers/
-- Switch the Map Style: https://docs.geolonia.com/howto/change-style/
 - Show a Popup on Click: https://docs.geolonia.com/howto/popup-on-click/
 - Load External GeoJSON Data: https://docs.geolonia.com/howto/geojson-data/
 - Show the Current Location: https://docs.geolonia.com/howto/current-location/
 - Fit All Points on Screen: https://docs.geolonia.com/howto/fit-bounds/
-- Toggle Map Controls: https://docs.geolonia.com/howto/map-controls/
-- Switch the Map Language: https://docs.geolonia.com/howto/switch-language/
 - Get Coordinates from a Draggable Marker: https://docs.geolonia.com/howto/draggable-marker/
+
+### Visualisation and Appearance
+
+- Switch the Map Style: https://docs.geolonia.com/howto/change-style/
+- Switch the Map Language: https://docs.geolonia.com/howto/switch-language/
+- Toggle Map Controls: https://docs.geolonia.com/howto/map-controls/
+- Cluster a Large Number of Points: https://docs.geolonia.com/howto/clustering/
+- Colour Areas by Value (Choropleth): https://docs.geolonia.com/howto/choropleth/
+- Visualise Density with a Heatmap: https://docs.geolonia.com/howto/heatmap/
+- Colour Areas in 3D by Value (Extrusion): https://docs.geolonia.com/howto/extrusion/
+- Darken Everything Outside an Area (Mask): https://docs.geolonia.com/howto/mask/
+- Show Buildings and Terrain in 3D: https://docs.geolonia.com/howto/3d/
+- Show the Map as a Globe: https://docs.geolonia.com/howto/globe/
 
 ### Advanced
 
 - Access the Map Instance Directly (maps-core): https://docs.geolonia.com/howto/maps-core-access/
-- Cluster a Large Number of Points: https://docs.geolonia.com/howto/clustering/
-- Colour Areas by Value (Choropleth): https://docs.geolonia.com/howto/choropleth/
-- Visualise Density with a Heatmap: https://docs.geolonia.com/howto/heatmap/
-- Show Buildings and Terrain in 3D: https://docs.geolonia.com/howto/3d/
+- Pick a Region, Then a Prefecture: https://docs.geolonia.com/howto/region-select/
 - Add a Custom Data Source (Vector Tiles and More): https://docs.geolonia.com/howto/custom-source/
 - Search by Address and Show That Place: https://docs.geolonia.com/howto/address-search/
-- Show the Map as a Globe: https://docs.geolonia.com/howto/globe/
 - Place a Map with HTML Tags Only (maps-suite): https://docs.geolonia.com/howto/web-component/
 
 ### CLI
@@ -2404,7 +2410,7 @@ Keeping `fill-opacity` below 1 lets the map underneath, roads and place names, s
 
 - Everything is the same colour (list of colours): check the spelling of the property name and that the value is a **number**. A string such as `"14920"` is not coloured. Also check that the range is not far off the data values.
 - Everything is the same colour (value-to-colour map): check that the values in the map match the property values exactly (spelling, surrounding spaces).
-- Some areas turn blackish: those polygons have a **missing** property. Fill it in the data or give a default with something like `["coalesce", ["get", "density"], 0]`.
+- Some areas turn blackish (expressions written in maps-suite or `Layer`): those polygons have a **missing** property. With `choropleth` in embed and maps-react, such areas get their `fill` colour or the default (translucent red) instead. Fill it in the data or give a default with something like `["coalesce", ["get", "density"], 0]`.
 - Nothing appears: check for a missing `Layer` `id`, or a 404 on the GeoJSON.
 
 ---

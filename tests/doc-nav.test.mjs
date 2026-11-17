@@ -16,7 +16,7 @@ const index = await readFile(new URL('../src/pages/howto/index.md', import.meta.
 /** 一覧ページを「## 見出し」ごとに分け、その下のリンク先を並び順に返す。 */
 function indexGroups() {
   const groups = [];
-  for (const line of index.split('\n')) {
+  for (const line of index.split(/\r?\n/)) {
     const heading = line.match(/^## (.+)$/);
     if (heading) groups.push({ label: heading[1], hrefs: [] });
     const item = line.match(/^- \[[^\]]+\]\((\/howto\/[^)]+)\)/);
