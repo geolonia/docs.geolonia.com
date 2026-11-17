@@ -20,9 +20,10 @@ GeoloniaMapOptions.choropleth の詳細な指定。
 
 ### colors?
 
-> `optional` **colors?**: `string`[]
+> `optional` **colors?**: `string`[] \| [`ColorMap`](/reference/core/TypeAlias.ColorMap)
 
-値の小さい側から大きい側へ並べた色。値の範囲に等間隔で割り当て、間は補間する。
+配列なら、値の小さい側から大きい側へ並べた色。値の範囲に等間隔で割り当て、間は補間する。
+[ColorMap](/reference/core/TypeAlias.ColorMap) なら、値ごとの色。
 
 #### Default Value
 
@@ -34,7 +35,8 @@ GeoloniaMapOptions.choropleth の詳細な指定。
 
 > **property**: `string`
 
-塗り分けに使うプロパティ名。値が数値の地物だけを塗り分ける。
+塗り分けに使うプロパティ名。`colors` が配列か省略なら値が数値の地物だけを塗り分け、
+[ColorMap](/reference/core/TypeAlias.ColorMap) なら対応表にある値の地物を塗り分ける。
 
 ***
 
@@ -42,4 +44,4 @@ GeoloniaMapOptions.choropleth の詳細な指定。
 
 > `optional` **range?**: \[`number`, `number`\]
 
-色を割り当てる値の範囲 `[最小, 最大]`。省略するとデータの最小値と最大値を使う。
+色を割り当てる値の範囲 `[最小, 最大]`。省略するとデータの最小値と最大値を使う。`colors` が [ColorMap](/reference/core/TypeAlias.ColorMap) のときは使わない。
