@@ -26,7 +26,7 @@ page: reference
 
 ### PluginAttributes
 
-`PluginAttributes` *extends* `object` = \{\[`otherKey`: `string`\]: `string`; \}
+`PluginAttributes` *extends* [`EmbedPluginAttributes`](/reference/embed/TypeAlias.EmbedPluginAttributes) = [`EmbedPluginAttributes`](/reference/embed/TypeAlias.EmbedPluginAttributes)
 
 ## Parameters
 

@@ -71,10 +71,22 @@ import LiveCode from '../../components/LiveCode.astro'
 
 </LiveCode>
 
-- **`class="geolonia"` を付けていません。** 付けると embed が自分で地図を作ってしまうので、`id` だけにして `new geolonia.Map("#map")` で作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
+- **`new geolonia.Map("#map")`**：`id` で要素を指定して地図を作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
 - **`attribution`**：出典表示の文字列。必須です。右下の出典表示に追加されます。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+JavaScript を書かずに、属性だけで重ねることもできます（embed 6.1.0 以降）。この書き方では、タイルは地図のラベル（地名など）の下に重なります。
+
+```html
+<div class="geolonia"
+     data-lat="35.7" data-lng="139.82" data-zoom="12" data-marker="off"
+     data-raster-tiles="https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png"
+     data-raster-tiles-attribution='出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>'
+     data-raster-tiles-opacity="0.7"
+     data-raster-tiles-min-zoom="2"
+     data-raster-tiles-max-zoom="17"></div>
+```
 
 </Lens>
 
@@ -169,6 +181,8 @@ createRoot(document.getElementById("root")).render(
 - **`attribution`**：出典表示の文字列。必須です。`Source` に書きます（`Layer` ではありません）。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+`Map` の `rasterTiles`（`{ url, attribution, opacity, minZoom, maxZoom }`）でも重ねられます（maps-react 0.7.0 以降）。この書き方では、タイルは地図のラベルの下に重なります。
 
 </Lens>
 
@@ -550,7 +564,7 @@ createRoot(document.getElementById("root")).render(<App />);
 
 ## 地名が読めなくなるとき
 
-重ねたタイルはいちばん上に乗るので、ベース地図の地名や駅名が下に隠れます。ラベルの下に潜り込ませたいときは、レイヤを追加する位置を指定します。
+`addLayer` で重ねたタイルはいちばん上に乗るので、ベース地図の地名や駅名が下に隠れます。ラベルの下に潜り込ませたいときは、レイヤを追加する位置を指定します。embed の `data-raster-tiles` と maps-react の `rasterTiles` は、はじめからラベルの下に重ねます。
 
 embed と maps-suite では、`addLayer` の第2引数に「その手前に入れたいレイヤの id」を渡します。id はスタイルごとに違うので、最初の symbol レイヤを探して渡すのが確実です。
 

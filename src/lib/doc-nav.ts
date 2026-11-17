@@ -104,6 +104,8 @@ const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
       ['choropleth', '値に応じてエリアを色分けするには（コロプレス）'],
       ['region-select', '地方から都道府県を選ぶ地図を作るには'],
       ['heatmap', 'ヒートマップで密度を可視化するには'],
+      ['extrusion', 'エリアを値に応じた高さで立体的に描くには'],
+      ['mask', '範囲の外側を暗くして、地域を目立たせるには'],
       ['3d', '建物や地形を3Dで表示するには'],
       ['custom-source', '独自のデータソース（ベクトルタイル等）を追加するには'],
       ['overlay-hazardmap', 'ハザードマップを地図に重ねるには'],

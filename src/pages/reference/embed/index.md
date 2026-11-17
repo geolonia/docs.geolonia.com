@@ -14,3 +14,4 @@ page: reference
 
 - [EmbedAttributes](/reference/embed/TypeAlias.EmbedAttributes)
 - [EmbedPlugin](/reference/embed/TypeAlias.EmbedPlugin)
+- [EmbedPluginAttributes](/reference/embed/TypeAlias.EmbedPluginAttributes)

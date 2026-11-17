@@ -34,6 +34,8 @@ quadrant: Diátaxis / 仕事 × 行動
 - [値に応じてエリアを色分けするには（コロプレス）](/howto/choropleth/)
 - [地方から都道府県を選ぶ地図を作るには](/howto/region-select/)
 - [ヒートマップで密度を可視化するには](/howto/heatmap/)
+- [エリアを値に応じた高さで立体的に描くには](/howto/extrusion/)
+- [範囲の外側を暗くして、地域を目立たせるには](/howto/mask/)
 - [建物や地形を3Dで表示するには](/howto/3d/)
 - [独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
 - [ハザードマップを地図に重ねるには](/howto/overlay-hazardmap/)
