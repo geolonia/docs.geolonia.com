@@ -16,6 +16,7 @@ page: reference
 - [GeoloniaControl](/reference/core/Class.GeoloniaControl)
 - [GeoloniaMap](/reference/core/Class.GeoloniaMap)
 - [GeoloniaMarker](/reference/core/Class.GeoloniaMarker)
+- [Mask](/reference/core/Class.Mask)
 - [SimpleStyle](/reference/core/Class.SimpleStyle)
 - [SimpleStyleVector](/reference/core/Class.SimpleStyleVector)
 
@@ -23,8 +24,14 @@ page: reference
 
 - [ChoroplethOptions](/reference/core/TypeAlias.ChoroplethOptions)
 - [CircleOptions](/reference/core/TypeAlias.CircleOptions)
+- [ColorMap](/reference/core/TypeAlias.ColorMap)
+- [ExtrusionColorOptions](/reference/core/TypeAlias.ExtrusionColorOptions)
+- [ExtrusionHeightOptions](/reference/core/TypeAlias.ExtrusionHeightOptions)
+- [ExtrusionOptions](/reference/core/TypeAlias.ExtrusionOptions)
 - [GeoloniaMapOptions](/reference/core/TypeAlias.GeoloniaMapOptions)
 - [HeatmapOptions](/reference/core/TypeAlias.HeatmapOptions)
+- [MaskOptions](/reference/core/TypeAlias.MaskOptions)
+- [RasterTilesOptions](/reference/core/TypeAlias.RasterTilesOptions)
 
 ## Variables
 

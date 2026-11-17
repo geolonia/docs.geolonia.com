@@ -106,7 +106,7 @@ new SimpleStyle(geojson).addTo(map);
 
 > **applyDataDrivenPaint**(): `void`
 
-`choropleth`、`heatmap`、`circle` オプションの式を、現在のデータに合わせて設定します。
+`choropleth`、`heatmap`、`circle`、`extrusion` オプションの式を、現在のデータに合わせて設定します。
 
 値の範囲やカテゴリはデータから求めるため、[addTo](#addto) と
 [updateData](#updatedata) のたびに呼び出します。
@@ -131,7 +131,7 @@ new SimpleStyle(geojson).addTo(map);
 
 ##### options?
 
-\{ \}
+`FitBoundsOptions` = `{}`
 
 `map.fitBounds` に渡すオプションです。既定値は `duration: 3000`、`padding: 30` で、
   指定した項目のみがこれらを上書きします。
@@ -257,6 +257,23 @@ new SimpleStyle(geojson).addTo(map);
 `circle` オプションを指定したときは、`marker-symbol` の有無にかかわらずすべてのポイントを円で描き、
 シンボルレイヤーは追加しません。
 通常は [addTo](#addto) から呼び出されます。
+
+#### Returns
+
+`void`
+
+***
+
+### setPolygonExtrusion()
+
+> **setPolygonExtrusion**(): `void`
+
+ポリゴンを立体的に描くレイヤーを設定します。
+
+`extrusion` オプションを指定したときに、ポリゴンの塗りレイヤーの代わりに使います。
+高さと色は [applyDataDrivenPaint](#applydatadrivenpaint) がデータに合わせて設定します。
+あわせて [setPopup](#setpopup) でこのレイヤーにポップアップを設定します。
+通常は [setPolygonGeometries](#setpolygongeometries) から呼び出されます。
 
 #### Returns
 

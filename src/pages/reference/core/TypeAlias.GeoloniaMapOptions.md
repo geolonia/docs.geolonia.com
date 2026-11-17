@@ -46,6 +46,7 @@ Geolonia の API キー。Geolonia がホストするスタイルやタイルを
 
 `geojson` のポリゴンを、プロパティの値で塗り分ける（コロプレス）。
 プロパティ名の文字列、または [ChoroplethOptions](/reference/core/TypeAlias.ChoroplethOptions) を指定する。
+数値の値は連続した色で、`colors` に [ColorMap](/reference/core/TypeAlias.ColorMap) を渡したときは値ごとの色で塗る。
 地物の simplestyle の `fill` より優先する。地物に `fill-opacity` がないときの不透明度は、
 背景の地図が透けるよう 1 ではなく 0.7 にする。
 
@@ -97,6 +98,15 @@ Geolonia の API キー。Geolonia がホストするスタイルやタイルを
 文字列を指定するとその文言に差し替える（HTML としては解釈しない）。
 `false` または `'off'` を指定するとエラー表示自体を行わない。
 未指定のときは、原因と利用者が試せる復旧手順を示す既定の案内を表示する。
+
+### extrusion?
+
+> `optional` **extrusion?**: `string` \| [`ExtrusionOptions`](/reference/core/TypeAlias.ExtrusionOptions)
+
+`geojson` のポリゴンを、プロパティの値に応じた高さで立体的に描く。
+プロパティ名の文字列を渡すと、そのプロパティで高さと色の両方を決める。
+高さと色を別のプロパティにするときは [ExtrusionOptions](/reference/core/TypeAlias.ExtrusionOptions) を指定する。
+地物の simplestyle の `fill` と `choropleth` より優先する。立体に見せるには `pitch` も指定する。
 
 ### fullscreenControl?
 
@@ -188,6 +198,15 @@ Geolonia のロゴコントロール。`true` / `false`、または表示位置�
 
 マーカーの色（CSS カラー文字列）。
 
+### mask?
+
+> `optional` **mask?**: `string` \| [`MaskOptions`](/reference/core/TypeAlias.MaskOptions)
+
+指定した範囲（市区町村の境界など）の外側を暗くする。境界の GeoJSON の URL、または [MaskOptions](/reference/core/TypeAlias.MaskOptions) を指定する。
+マスクは既定では背景の地図のすべてのレイヤーの上に入れるので、範囲の外は地名のラベルも含めて暗くなる。
+`geojson` と `simpleVector` の地物はマスクの上に表示する。入れる位置は [MaskOptions.beforeId](/reference/core/TypeAlias.MaskOptions#beforeid) で変えられる。
+`center`、`bounds`、`geojson`、`simpleVector` が未指定のときは、境界の範囲に自動的にフィットする。
+
 ### navigationControl?
 
 > `optional` **navigationControl?**: `boolean` \| `ControlPosition`
@@ -205,6 +224,34 @@ Geolonia のロゴコントロール。`true` / `false`、または表示位置�
 > `optional` **openPopup?**: `boolean`
 
 読み込み時にマーカーのポップアップを自動的に開くかどうか。
+
+### projection?
+
+> `optional` **projection?**: `"mercator"` \| `"globe"`
+
+地図の投影。`'globe'` で地球儀、`'mercator'` で平面の地図にする。
+
+投影は MapLibre ではスタイルの設定なので、スタイルを適用するたびにこの値を指定し直す。
+スタイルを適用するのは、`setStyle`（差分の適用か作り直しかによらない）と、WebGL のコンテキストの復元と
+Worker の再起動（MapLibre 6.16 以降）で MapLibre がスタイルを作り直すときである。
+
+できるときは、適用する前にスタイルの `projection` に書き込むので、途中でスタイルの投影に切り替わらない。
+書き込めないとき（たとえば最初のスタイル）は、読み込んだ後に `setProjection` で指定し直す。このときは、
+スタイルの投影（無ければ mercator）がこの値と違えば、いったんそれに切り替わる。
+
+スタイル自身の `projection` と、`transformStyle` が返したスタイルの `projection` より、この値を優先する。
+地図を作った後に `setProjection` で変えた投影は、次にスタイルを適用したときにこの値へ戻る。
+未指定のときは、スタイルの `projection`（無ければ mercator）のまま。JavaScript から `null` を渡したときも未指定として扱う。
+それ以外の値は `console.error` に出して無視する。
+
+### rasterTiles?
+
+> `optional` **rasterTiles?**: [`RasterTilesOptions`](/reference/core/TypeAlias.RasterTilesOptions)
+
+他の配信元のラスタタイル（ハザードマップ、地理院タイルなど）を 1 枚重ねる。
+スタイルの最初の symbol レイヤの下（ラベルの下）に重ね、symbol レイヤが無いスタイルでは一番上に重ねる。
+ソースとレイヤの ID はどちらも `geolonia-raster-tiles`。
+`setStyle` でスタイルを差し替えた後も重ね直す（重ね直されない場合があることは https://github.com/geolonia/maps-core/issues/175 を参照）。
 
 ### scaleControl?
 
