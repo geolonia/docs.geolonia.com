@@ -160,5 +160,5 @@ createRoot(document.getElementById("root")).render(
 <Callout kind="warning" title="うまくいかないとき">
 - 何も出ない（ラスタ）→ テンプレート URL をブラウザで直接確認。`{z}/{x}/{y}` に実数（例: `12/3637/1612`）を入れて画像が返るか見ると早いです。
 - 何も出ない（ベクトル）→ **`source-layer` 名の不一致**が一番多い原因です。タイルの仕様書か、配信元のスタイル定義で正確な名前を確認してください。
-- タイルがずれる、粗い → タイルの大きさを確認（256 か 512 か、配信元によって異なります）。embed は `data-raster-tiles-size`、それ以外は `tileSize` で指定します。
+- タイルがずれる、粗い → タイルの大きさを確認（256 か 512 か、配信元によって異なります）。`data-raster-tiles` では `data-raster-tiles-size`、`addSource`、`Source`、`rasterTiles` では `tileSize` で指定します。
 </Callout>

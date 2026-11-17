@@ -2321,7 +2321,7 @@ Load the data with `data-geojson` and set the property and colours with the `dat
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
 
-- **`data-choropleth`**: the property used for colouring. With a list of colours, only features whose value is a number are coloured.
+- **`data-choropleth`**: the property used for colouring. Unless you use a value-to-colour map, only features whose value is a number are coloured.
 - **`data-choropleth-colors`**: comma-separated colours from low to high values, spread evenly over the range and interpolated between. Omit it for the default colours.
 - **`data-choropleth-range`**: the value range as `min,max`. Values outside the range get the end colours. Omit it to use the minimum and maximum of the data.
 - For one colour per value, write `value:colour` pairs in `data-choropleth-colors` (for example `千代田区:#bd0026, 港区:#fd8d3c` together with `data-choropleth="name"`); areas with other values get their `fill` colour or the default. `data-choropleth-range` is then not used (embed 6.1.0 or later).
@@ -2402,7 +2402,8 @@ Keeping `fill-opacity` below 1 lets the map underneath, roads and place names, s
 
 **When it does not work**
 
-- Everything is the same colour: check the spelling of the property name and that the value is a **number**. A string such as `"14920"` is not coloured. Also check that the range is not far off the data values.
+- Everything is the same colour (list of colours): check the spelling of the property name and that the value is a **number**. A string such as `"14920"` is not coloured. Also check that the range is not far off the data values.
+- Everything is the same colour (value-to-colour map): check that the values in the map match the property values exactly (spelling, surrounding spaces).
 - Some areas turn blackish: those polygons have a **missing** property. Fill it in the data or give a default with something like `["coalesce", ["get", "density"], 0]`.
 - Nothing appears: check for a missing `Layer` `id`, or a 404 on the GeoJSON.
 
@@ -2963,7 +2964,7 @@ The vector tile example uses a fictional `example.com` URL and will not work as 
 
 - Nothing appears with raster: check the template URL directly in a browser. Substituting real numbers such as `12/3637/1612` and seeing whether an image comes back is the fastest check.
 - Nothing appears with vector: **a mismatched `source-layer` name** is the most common cause. Confirm the exact name from the tile specification or the publisher style definition.
-- Tiles are offset or coarse: check the tile size, which is 256 or 512 depending on the publisher (`data-raster-tiles-size` in embed, `tileSize` elsewhere).
+- Tiles are offset or coarse: check the tile size, which is 256 or 512 depending on the publisher (`data-raster-tiles-size` with `data-raster-tiles`, `tileSize` with `addSource`, `Source` and `rasterTiles`).
 
 ---
 
