@@ -41,7 +41,7 @@ GeoJSON では収まらない大きなデータや、他所が配信している
 
 この属性は embed 6.1.0 以降で使えます。
 
-**ベクトルタイル**は属性では重ねられません。`new geolonia.Map()` で地図を作り、読み込みを待ってから、suite のタブと同じように `addSource` と `addLayer` を呼びます。
+**ベクトルタイル**は、SimpleStyle Vector のタイル（地物の色などを simplestyle のプロパティで持つもの）なら、`data-simple-vector` に URL を書くと重ねられます。それ以外のベクトルタイルは属性では重ねられません。`new geolonia.Map()` で地図を作り、読み込みを待ってから、suite のタブと同じように `addSource` と `addLayer` を呼びます。
 
 ```html
 <style>
