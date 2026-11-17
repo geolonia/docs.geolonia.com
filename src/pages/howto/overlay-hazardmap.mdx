@@ -20,7 +20,7 @@ import LiveCode from '../../components/LiveCode.astro'
 
 ## コード
 
-どのライブラリでも、行う操作は基盤の `GeoloniaMap` に対して `addSource` と `addLayer` を呼ぶことです。取り出し方だけが違います（[地図インスタンスに直接アクセスするには](/howto/maps-core-access/)）。例はどれも、洪水浸水想定区域（想定最大規模）を東京の下町に重ねる場合です。
+例はどれも、基盤の `GeoloniaMap` に対して `addSource` と `addLayer` を呼んで重ねます。ライブラリごとに違うのは取り出し方だけです（[地図インスタンスに直接アクセスするには](/howto/maps-core-access/)）。例はどれも、洪水浸水想定区域（想定最大規模）を東京の下町に重ねる場合です。
 
 <Lens name="embed">
 `new geolonia.Map()` で地図を作ると、その戻り値がそのまま `GeoloniaMap` です。あとは `load` を待って `addSource` と `addLayer` を呼びます。
@@ -603,8 +603,8 @@ Geolonia Maps は、embed / maps-suite / maps-react のどれでも、地図を�
 
 <Callout kind="warning" title="うまくいかないとき">
 - 何も出ない → その場所に、指定した災害のデータが無いだけかもしれません。タイルは対象区域のあるところにしか無く、無いところは 404 を返します。同じ場所をハザードマップポータルサイトで開いて、データがあるかどうか先に確かめてください。
-- ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと、それ以上は引き伸ばして表示されます。
-- ベース地図が見えない → `raster-opacity` を下げてください。
+- ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと（`data-raster-tiles` では `data-raster-tiles-max-zoom`、`rasterTiles` では `maxZoom`）、それ以上は引き伸ばして表示されます。
+- ベース地図が見えない → 不透明度を下げてください（`raster-opacity`、`data-raster-tiles-opacity`、`rasterTiles` の `opacity`）。
 - 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません（[出典はどこに出るか](#出典はどこに出るか)）。
 - 出典が二重に出る → `AttributionControl` を自分で足しています。地図を作った時点で1つ足されているので、追加は要りません。
 </Callout>

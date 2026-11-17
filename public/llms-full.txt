@@ -2321,10 +2321,10 @@ Load the data with `data-geojson` and set the property and colours with the `dat
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
 
-- **`data-choropleth`**: the property used for colouring. Only features whose value is a number are coloured.
+- **`data-choropleth`**: the property used for colouring. With a list of colours, only features whose value is a number are coloured.
 - **`data-choropleth-colors`**: comma-separated colours from low to high values, spread evenly over the range and interpolated between. Omit it for the default colours.
 - **`data-choropleth-range`**: the value range as `min,max`. Values outside the range get the end colours. Omit it to use the minimum and maximum of the data.
-- For one colour per value, write `value:colour` pairs in `data-choropleth-colors` (for example `千代田区:#bd0026, 港区:#fd8d3c`); areas with other values get their `fill` colour or the default. `data-choropleth-range` is then not used (embed 6.1.0 or later).
+- For one colour per value, write `value:colour` pairs in `data-choropleth-colors` (for example `千代田区:#bd0026, 港区:#fd8d3c` together with `data-choropleth="name"`); areas with other values get their `fill` colour or the default. `data-choropleth-range` is then not used (embed 6.1.0 or later).
 
 ### maps-suite
 
@@ -2370,7 +2370,7 @@ Pass the data with `geojson` and the colouring with `choropleth` on `<Map>`.
 />
 ```
 
-`choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. `colors` also takes a value-to-colour map such as `{ 千代田区: "#bd0026" }` (maps-react 0.7.0 or later). Without `center`, the map fits its view to the data.
+`choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. `colors` also takes a value-to-colour map such as `{ 千代田区: "#bd0026" }` (with `property: "name"`) (maps-react 0.7.0 or later). Without `center`, the map fits its view to the data.
 
 `geojson` and `choropleth` on `<Map>` are read once when the map is created. To change the data or the colouring later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. `geojson` on `<Map>` and `<SimpleStyle>` use the same source and layer IDs by default; when you use both, or several `<SimpleStyle>`, give each its own `id`. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
 
@@ -2768,7 +2768,7 @@ A property name alone sets both height and colour; `{ height, color }` sets them
 **When it does not work**
 
 - It looks flat: tilt the map (`data-pitch` in embed, `tilt` in maps-suite, `pitch` in maps-react).
-- Nothing appears: check the property name and that its values are **numbers**. Strings such as `"14920"` give a height of 0.
+- No height even when tilted: check the property name and that its values are **numbers**. Strings such as `"14920"` give a height of 0.
 
 ---
 
@@ -2796,7 +2796,7 @@ Give the URL of the boundary GeoJSON in `data-mask` (embed 6.1.0 or later).
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
 
-`data-mask-opacity` defaults to 0.3 and `data-mask-color` to black. `data-mask-outline="on"` draws the boundary. Without `data-lat` / `data-lng` and `data-geojson`, the map fits to the boundary.
+`data-mask-opacity` defaults to 0.3 and `data-mask-color` to black. `data-mask-outline="on"` draws the boundary. Without `data-lat` / `data-lng`, `data-geojson` and `data-simple-vector`, the map fits to the boundary.
 
 ### maps-suite
 
@@ -2812,7 +2812,7 @@ Put `<Mask>` inside `<Map>` (maps-react 0.7.0 or later).
 </Map>
 ```
 
-Changing a prop redraws the mask, and removing the component removes it. `mask` on `<Map>` does the same once, when the map is created.
+Changing a prop redraws the mask, and removing the component removes it. `mask` on `<Map>` also darkens the outside, read once when the map is created, but it does not fit the view to the boundary.
 
 **When it does not work**
 
@@ -2963,7 +2963,7 @@ The vector tile example uses a fictional `example.com` URL and will not work as 
 
 - Nothing appears with raster: check the template URL directly in a browser. Substituting real numbers such as `12/3637/1612` and seeing whether an image comes back is the fastest check.
 - Nothing appears with vector: **a mismatched `source-layer` name** is the most common cause. Confirm the exact name from the tile specification or the publisher style definition.
-- Tiles are offset or coarse: check `tileSize`, which is 256 or 512 depending on the publisher.
+- Tiles are offset or coarse: check the tile size, which is 256 or 512 depending on the publisher (`data-raster-tiles-size` in embed, `tileSize` elsewhere).
 
 ---
 
@@ -3272,7 +3272,7 @@ Pass `projection="globe"` (maps-react 0.7.0 or later). With `<GlobeControl>`, us
 </Map>
 ```
 
-- **`setProjection({ type: "globe" })`**: switches the projection to a globe. `{ type: "mercator" }` returns to the usual flat projection.
+- **`projection`**: `"globe"` for a globe or `"mercator"` for the usual flat projection (maps-react 0.7.0 or later).
 - **`<GlobeControl>`**: a button that switches between globe and flat. `position` sets where it goes; the default is the top right (`"top-right"`).
 - The tiles are the same as usual. No data or style change is needed.
 
@@ -3925,7 +3925,7 @@ The React library. **This is the only library without a reference generated from
 
 `Map` additionally has props deciding the appearance of the container such as `containerStyle` and `className`, props receiving map events such as `onClick` and `onMoveEnd`, `interactiveLayerIds` for narrowing which layers are clickable, and `onLoad` for retrieving the map instance. These are maps-react additions and do not appear on the MapLibre side.
 
-The available components are `Map` for the map itself, `Source` and `Layer` for data and drawing, `Marker` and `Popup`, `SimpleStyle` for drawing GeoJSON, and the controls (`NavigationControl`, `GeolocateControl`, `FullscreenControl`, `GlobeControl`, `ScaleControl`, `AttributionControl`, the address search box `GeocoderControl`, and `Control` for writing your own). There is also `MapProvider` for handling several maps together, hooks such as `useMap` and `useControl`, and the function `geocode` for finding a position from an address.
+The available components are `Map` for the map itself, `Source` and `Layer` for data and drawing, `Marker` and `Popup`, `SimpleStyle` for drawing GeoJSON, `Mask` for darkening outside an area, and the controls (`NavigationControl`, `GeolocateControl`, `FullscreenControl`, `GlobeControl`, `ScaleControl`, `AttributionControl`, the address search box `GeocoderControl`, and `Control` for writing your own). There is also `MapProvider` for handling several maps together, hooks such as `useMap` and `useControl`, and the function `geocode` for finding a position from an address.
 
 What you pass to `Source` and `Layer` is the MapLibre GL JS source and layer definition as it is. What can be written in `paint` and `layout`, and how `filter` expressions work, is covered by the MapLibre GL JS documentation. The map instance received in `onLoad` also extends the MapLibre `Map`, so the same documentation applies.
 
