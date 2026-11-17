@@ -116,7 +116,7 @@
   font-size: 12.5px; font-weight: 800; color: var(--text);
   padding: 5px 8px;
 }
-/* パッケージ名・ライブラリ名は等幅。ハウツーの「レシピ」などは地の文なので付けない。 */
+/* パッケージ名・ライブラリ名は等幅。ハウツーの「基本」などは地の文なので付けない。 */
 .doc-nav__top-name--mono { font-family: var(--font-mono); }
 .doc-nav__group-name {
   font-size: 12px; font-weight: 700; color: var(--text-soft);
