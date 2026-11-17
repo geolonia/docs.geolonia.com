@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { buildDocNav } from '../src/lib/doc-nav.ts';
 
-const GROUPS = ['基本', '可視化・見た目の制御', '応用（難しめ）', 'CLI（コマンドライン）'];
+const GROUPS = ['基本', '見た目の制御', 'データの可視化', '高度な応用', 'CLI（コマンドライン）'];
 
 const index = await readFile(new URL('../src/pages/howto/index.md', import.meta.url), 'utf8');
 
@@ -25,7 +25,7 @@ function indexGroups() {
   return groups;
 }
 
-test('サイドバーの分類は 基本 / 可視化・見た目の制御 / 応用（難しめ）/ CLI の順である', () => {
+test('サイドバーの分類は 基本 / 見た目の制御 / データの可視化 / 高度な応用 / CLI の順である', () => {
   assert.deepEqual(buildDocNav('howto', '/howto').groups.map((g) => g.label), GROUPS);
 });
 
@@ -42,8 +42,8 @@ test('どのページも、サイドバーに 1 回だけ出る', () => {
   assert.equal(new Set(hrefs).size, hrefs.length);
 });
 
-test('可視化のページは「可視化・見た目の制御」にある', () => {
-  const viz = buildDocNav('howto', '/howto').groups.find((g) => g.label === '可視化・見た目の制御');
+test('可視化のページは「データの可視化」にある', () => {
+  const viz = buildDocNav('howto', '/howto').groups.find((g) => g.label === 'データの可視化');
   const hrefs = viz.links.map((l) => l.href);
   for (const slug of ['clustering', 'choropleth', 'heatmap', 'extrusion', 'mask']) {
     assert.ok(hrefs.includes(`/howto/${slug}/`), slug);
@@ -52,5 +52,5 @@ test('可視化のページは「可視化・見た目の制御」にある', ()
 
 test('ページの中では、そのページを含む分類だけを開く', () => {
   const groups = buildDocNav('howto', '/howto/heatmap').groups;
-  assert.deepEqual(groups.filter((g) => g.open).map((g) => g.label), ['可視化・見た目の制御']);
+  assert.deepEqual(groups.filter((g) => g.open).map((g) => g.label), ['データの可視化']);
 });

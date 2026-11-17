@@ -1188,18 +1188,21 @@ A collection of recipes that answer "how do I ..." as directly as possible, orga
 - Fit All Points on Screen: https://docs.geolonia.com/howto/fit-bounds/
 - Get Coordinates from a Draggable Marker: https://docs.geolonia.com/howto/draggable-marker/
 
-### Visualisation and Appearance
+### Appearance
 
 - Switch the Map Style: https://docs.geolonia.com/howto/change-style/
 - Switch the Map Language: https://docs.geolonia.com/howto/switch-language/
 - Toggle Map Controls: https://docs.geolonia.com/howto/map-controls/
+- Show Buildings and Terrain in 3D: https://docs.geolonia.com/howto/3d/
+- Show the Map as a Globe: https://docs.geolonia.com/howto/globe/
+
+### Data Visualisation
+
 - Cluster a Large Number of Points: https://docs.geolonia.com/howto/clustering/
 - Colour Areas by Value (Choropleth): https://docs.geolonia.com/howto/choropleth/
 - Visualise Density with a Heatmap: https://docs.geolonia.com/howto/heatmap/
 - Colour Areas in 3D by Value (Extrusion): https://docs.geolonia.com/howto/extrusion/
 - Darken Everything Outside an Area (Mask): https://docs.geolonia.com/howto/mask/
-- Show Buildings and Terrain in 3D: https://docs.geolonia.com/howto/3d/
-- Show the Map as a Globe: https://docs.geolonia.com/howto/globe/
 
 ### Advanced
 
