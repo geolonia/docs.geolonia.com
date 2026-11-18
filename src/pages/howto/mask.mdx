@@ -1,0 +1,102 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: 範囲の外側を暗くして、地域を目立たせるには
+description: 市区町村などの境界の GeoJSON を渡し、その外側を暗く塗って、対象の地域だけを目立たせます。
+page: howto
+kicker: データの可視化
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+自治体のサイトの地図などで、対象の地域の外側を暗くすると、どこが対象かがはっきりします。境界の GeoJSON を渡すと、その範囲を残して外側を塗ります。ここでは、東京都 23 区の外側を暗くします。
+
+境界のデータは[コロプレス](/howto/choropleth/#データの用意)と同じ `/data/tokyo23.geojson` です。23 区それぞれのポリゴンが入っていて、すべての区の範囲が残ります。
+
+出典：国土地理院ウェブサイト（[https://www.gsi.go.jp/kankyochiri/gm_jpn.html](https://www.gsi.go.jp/kankyochiri/gm_jpn.html)）。「地球地図日本」の行政界データ（国土地理院）をもとに Geolonia が作成しました。公共データ利用規約（第 1.0 版）に従って利用しています。
+
+## コード
+
+<Lens name="embed">
+境界の GeoJSON の URL を `data-mask` に書きます。
+
+<LiveCode title="embed で範囲の外側を暗くする">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-marker="off"
+     data-mask="/data/tokyo23.geojson"
+     data-mask-opacity="0.5"
+     data-mask-outline="on"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-mask`**：境界の GeoJSON の URL。範囲の外側を暗くします。
+- **`data-mask-opacity`**：外側を塗る不透明度（0 から 1）。省略すると 0.3 です。色は `data-mask-color` で変えられます（省略すると黒）。
+- **`data-mask-outline`**：`"on"` で境界に線を引きます。
+- `data-lat` と `data-lng` を書かず、`data-geojson` と `data-simple-vector` も使わないときは、境界の範囲に合わせて表示します。
+
+この属性は embed 6.1.0 以降で使えます。
+
+</Lens>
+
+<Lens name="suite">
+maps-suite には、範囲の外側を暗くするオプションはありません。embed か maps-react を使ってください。
+
+</Lens>
+
+<Lens name="react">
+`<Map>` の子要素に `<Mask>` を置き、`geojson` に境界の GeoJSON の URL を渡します。
+
+<LiveCode title="maps-react で範囲の外側を暗くする">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map, Mask } from "@geolonia/maps-react";
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.73, 35.68]}
+    zoom={9.4}
+    containerStyle={{ width: "100%", height: "100vh" }}
+  >
+    <Mask geojson="/data/tokyo23.geojson" opacity={0.5} outline fitBounds />
+  </Map>,
+);
+```
+
+</LiveCode>
+
+- **`<Mask>`**：範囲の外側を暗くします。props を変えると描き直し、コンポーネントを外すと消えます。maps-react 0.7.0 以降で使えます。
+- **`opacity`**：外側を塗る不透明度（0 から 1）。省略すると 0.3 です。色は `color` で変えられます（省略すると黒）。
+- **`outline`**：境界に線を引きます。
+- **`fitBounds`**：境界の範囲に合わせて表示します。
+
+外側を暗くするだけなら、`<Map>` の `mask` でもできます。地図を作るときに一度だけ読まれ、境界の範囲に合わせた表示はしません。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。23 区の外側が暗くなり、境界に線が引かれます。外側の地名も暗くなります。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 何も暗くならない → ブラウザのコンソールを確認してください。境界の GeoJSON を取得できなかったときと、ポリゴンが 1 つも無いときは、エラーが出ます。
+</Callout>
+
+関連：[地方から都道府県を選ぶ地図を作るには](/howto/region-select/) ／ [指定した範囲に地図を移動するには](/howto/fit-bounds-to-area/)

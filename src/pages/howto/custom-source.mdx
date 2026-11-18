@@ -3,7 +3,7 @@ layout: ../../layouts/DocLayout.astro
 title: 独自のデータソース（ベクトルタイル等）を追加するには
 description: 他所が配信するベクトルタイルやラスタタイルを、テンプレート URL を指定して地図に重ねます。
 page: howto
-kicker: 応用
+kicker: 高度な応用
 badge: howto
 ---
 import Callout from '../../components/Callout.astro'
@@ -15,38 +15,49 @@ GeoJSON では収まらない大きなデータや、他所が配信している
 ## コード
 
 <Lens name="embed">
-HTML の属性だけでは、データソースを足せません。`new geolonia.Map()` で作った地図なら、読み込みを待ってから `addSource` に `tiles`（テンプレート URL の配列）を渡せます。例は地理院タイル（ラスタ）を重ねる場合です。
+ラスタタイルは、`data-raster-tiles` にテンプレート URL を書くと重ねられます。例は地理院タイルを重ねる場合です。
 
 <LiveCode title="embed で地理院タイルを重ねる">
 
 ```html
 <style>
-  body { margin: 0; }
-  #map { width: 100%; height: 100vh; }
+  .geolonia { width: 100%; height: 100vh; }
 </style>
 
-<div id="map" data-lat="35.6812" data-lng="139.7671" data-zoom="12" data-marker="off"></div>
+<div class="geolonia"
+     data-lat="35.6812" data-lng="139.7671" data-zoom="12"
+     data-marker="off"
+     data-raster-tiles="https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
+     data-raster-tiles-attribution="地理院タイル"></div>
 
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
-<script>
-  const map = new geolonia.Map("#map");
-
-  map.on("load", () => {
-    map.addSource("gsi", {
-      type: "raster",
-      tiles: ["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution: "地理院タイル",
-    });
-    map.addLayer({ id: "gsi", type: "raster", source: "gsi" });
-  });
-</script>
 ```
 
 </LiveCode>
 
-- **`new geolonia.Map("#map")`**：`id` で要素を指定して地図を作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
-- **`tiles`**、**`attribution`**、ベクトルタイルの場合の書き方は、suite のタブと同じです（suite の `impl` が、ここでは `map` です）。
+- **`data-raster-tiles`**：タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。地図のラベル（地名など）の下に重なります。
+- **`data-raster-tiles-attribution`**：データの出典表示。配信元の利用規約が求める表記を必ず入れます。HTML として表示されるので、自分で書いた文字列だけを入れてください。
+- 不透明度は `data-raster-tiles-opacity`、配信されているズームの範囲は `data-raster-tiles-min-zoom` と `data-raster-tiles-max-zoom` で指定します。重ねられるのは 1 枚です。
+
+この属性は embed 6.1.0 以降で使えます。
+
+**ベクトルタイル**は、SimpleStyle Vector のタイル（`g-simplestyle-v1` という名前のレイヤに、色などを simplestyle のプロパティで持つ地物を入れたもの）なら、`data-simple-vector` にその TileJSON（`tiles.json`）の URL を `https://` から書くと重ねられます。`/tiles.json` のような相対 URL と、`{z}/{x}/{y}.pbf` のようなテンプレート URL は渡せません（`http://`、`https://`、`geolonia://` のどれでも始まらない値は、Geolonia のカスタムタイルの ID として扱われます）。それ以外のベクトルタイル（地物が `roads` など別の名前のレイヤにあるものを含む）は属性では重ねられません。`new geolonia.Map()` で地図を作り、読み込みを待ってから、suite のタブと同じように `addSource` と `addLayer` を呼びます。
+
+```html
+<style>
+  #map { width: 100%; height: 100vh; }
+</style>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+<div id="map" data-lat="35.6812" data-lng="139.7671" data-zoom="12" data-marker="off"></div>
+<script>
+  const map = new geolonia.Map("#map");
+  map.on("load", () => {
+    map.addSource("mytiles", { type: "vector", tiles: ["https://example.com/tiles/{z}/{x}/{y}.pbf"] });
+    map.addLayer({ id: "mytiles-line", type: "line", source: "mytiles", "source-layer": "roads" });
+  });
+</script>
+```
 
 </Lens>
 
@@ -130,6 +141,7 @@ createRoot(document.getElementById("root")).render(
 - **`tiles`**：タイルのテンプレート URL。`{z}/{x}/{y}` の部分が実際のタイル座標に置き換えられます。
 - **`attribution`**：データの出典表示。配信元の利用規約が求める表記を必ず入れます。
 - **ベクトルタイル**の場合は `type="vector"` にして、`Layer` 側に **`source-layer`**（タイル内のレイヤ名）を指定します。
+- ラスタタイルを 1 枚重ねるだけなら、`Map` の `rasterTiles`（`{ url, attribution, opacity }`）でも指定できます。地図のラベルの下に重なります。maps-react 0.7.0 以降で使えます。
 
 ```jsx
 <Source id="mytiles" type="vector" tiles={["https://example.com/tiles/{z}/{x}/{y}.pbf"]}>
@@ -148,5 +160,5 @@ createRoot(document.getElementById("root")).render(
 <Callout kind="warning" title="うまくいかないとき">
 - 何も出ない（ラスタ）→ テンプレート URL をブラウザで直接確認。`{z}/{x}/{y}` に実数（例: `12/3637/1612`）を入れて画像が返るか見ると早いです。
 - 何も出ない（ベクトル）→ **`source-layer` 名の不一致**が一番多い原因です。タイルの仕様書か、配信元のスタイル定義で正確な名前を確認してください。
-- タイルがずれる、粗い → `tileSize` を確認（256 か 512 か、配信元によって異なります）。
+- タイルがずれる、粗い → タイルの大きさを確認（256 か 512 か、配信元によって異なります）。`data-raster-tiles` では `data-raster-tiles-size`、`addSource`、`Source`、`rasterTiles` では `tileSize` で指定します。
 </Callout>

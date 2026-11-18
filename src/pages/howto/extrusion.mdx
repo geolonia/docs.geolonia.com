@@ -1,0 +1,150 @@
+---
+layout: ../../layouts/DocLayout.astro
+title: エリアを値に応じた高さで立体的に描くには
+description: GeoJSON のポリゴンを、人口密度などのプロパティの値に応じた高さの立体として描きます。
+page: howto
+kicker: データの可視化
+badge: howto
+---
+import Callout from '../../components/Callout.astro'
+import Lens from '../../components/Lens.astro'
+import LiveCode from '../../components/LiveCode.astro'
+
+[コロプレス](/howto/choropleth/)は値を色の濃淡で見せますが、値を**高さ**でも見せると、どのエリアが突出しているかが一目で分かります。ここでは、東京都 23 区を人口密度に応じた高さと色で立体的に描きます。
+
+データは[コロプレス](/howto/choropleth/#データの用意)と同じ `/data/tokyo23.geojson` で、各区の `properties` に人口密度 `density` を持たせています。
+
+出典：国土地理院ウェブサイト（[https://www.gsi.go.jp/kankyochiri/gm_jpn.html](https://www.gsi.go.jp/kankyochiri/gm_jpn.html)）。「地球地図日本」の行政界データ（国土地理院）をもとに Geolonia が作成しました。公共データ利用規約（第 1.0 版）に従って利用しています。
+
+## コード
+
+<Lens name="embed">
+`data-geojson` でデータを読み込み、高さに使うプロパティを `data-extrusion` に書きます。立体に見せるため、`data-pitch` で地図を傾けます。
+
+<LiveCode title="embed でエリアを立体的に描く">
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.66" data-lng="139.73" data-zoom="10.2"
+     data-pitch="55" data-bearing="-20"
+     data-marker="off"
+     data-geojson="/data/tokyo23.geojson"
+     data-extrusion="density"
+     data-extrusion-max-height="3000"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+</LiveCode>
+
+- **`data-extrusion`**：高さに使うプロパティ名。色も、`data-extrusion-color` を書かなければ同じプロパティで塗り分けます。
+- **`data-extrusion-max-height`**：値がいちばん大きいエリアの高さ（メートル）。ほかのエリアの高さは値に比例します。
+- **`data-pitch`**：地図を手前に倒す角度（度）。0 のままだと真上から見るので、平らに見えます。
+
+色は `data-extrusion-colors` で変えられます。`値:色` の組を書くと、値ごとに色を決められます。この属性は embed 6.1.0 以降で使えます。
+
+</Lens>
+
+<Lens name="suite">
+maps-suite には、ポリゴンを値に応じた高さで描くオプションはありません。読み込みを待ってから、基盤の地図に `fill-extrusion` レイヤを重ねます。
+
+<LiveCode title="maps-suite でエリアを立体的に描く">
+
+```js
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { geolonia } from "@geolonia/maps-suite";
+
+const map = new geolonia.maps.Map(document.getElementById("map"), {
+  apiKey: "YOUR-API-KEY",
+  center: { lat: 35.66, lng: 139.73 },
+  zoom: 10.2,
+  tilt: 55,
+  heading: -20,
+});
+
+await map.whenReady();
+const impl = map.getGeoloniaMap();
+impl.addSource("wards", { type: "geojson", data: "/data/tokyo23.geojson" });
+impl.addLayer({
+  id: "wards",
+  type: "fill-extrusion",
+  source: "wards",
+  paint: {
+    "fill-extrusion-height": [
+      "interpolate", ["linear"], ["get", "density"],
+      0, 0,
+      21000, 3000,
+    ],
+    "fill-extrusion-color": [
+      "interpolate", ["linear"], ["get", "density"],
+      5000, "#ffffcc",
+      12500, "#fd8d3c",
+      20000, "#bd0026",
+    ],
+    "fill-extrusion-opacity": 0.85,
+  },
+});
+```
+
+</LiveCode>
+
+- **`fill-extrusion-height`**：高さ（メートル）。`interpolate` 式で、人口密度 0 を高さ 0、21,000 人/km² を 3,000 メートルに割り当てています。
+- **`tilt`**：地図を手前に倒す角度（度）。0 のままだと真上から見るので、平らに見えます。
+
+</Lens>
+
+<Lens name="react">
+データは `geojson` で、高さの指定は `extrusion` で `<Map>` へ渡します。立体に見せるため、`pitch` で地図を傾けます。
+
+<LiveCode title="maps-react でエリアを立体的に描く">
+
+```jsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@geolonia/maps-core/css";
+import { createRoot } from "react-dom/client";
+import { Map } from "@geolonia/maps-react";
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
+
+createRoot(document.getElementById("root")).render(
+  <Map
+    apiKey="YOUR-API-KEY"
+    center={[139.73, 35.66]}
+    zoom={10.2}
+    pitch={55}
+    bearing={-20}
+    containerStyle={{ width: "100%", height: "100vh" }}
+    geojson="/data/tokyo23.geojson"
+    extrusion={{ height: { property: "density", maxHeight: 3000 } }}
+  />,
+);
+```
+
+</LiveCode>
+
+- **`extrusion`**：プロパティ名だけを渡すと、そのプロパティで高さと色を決めます。高さと色を別に指定するときは `{ height, color }` を渡します。maps-react 0.7.0 以降で使えます。
+- **`maxHeight`**：値がいちばん大きいエリアの高さ（メートル）。ほかのエリアの高さは値に比例します。
+- **`pitch`**：地図を手前に倒す角度（度）。0 のままだと真上から見るので、平らに見えます。
+
+`geojson` と `extrusion` は、地図を作るときに一度だけ読まれます。後から変えるときは、`<Map>` の子要素に `<SimpleStyle>` を置きます（[コロプレス](/howto/choropleth/)と同じです）。
+
+</Lens>
+
+## 結果
+
+上のコードは、それぞれのタブの下でそのまま動いています。人口密度の高い区ほど高く、濃い色で描かれます。右ボタンでドラッグする（または Ctrl キーを押しながらドラッグする）と回転と傾きが変わり、立体の高さの違いを別の角度から確かめられます。
+
+<Callout kind="warning" title="うまくいかないとき">
+- 平らにしか見えない → 地図を傾けているか確認してください（embed は `data-pitch`、suite は `tilt`、react は `pitch`）。
+- 傾けても高さが付かない → 高さに使うプロパティ名のつづりと、値が**数値型**であることを確認してください。`"14920"` のような文字列だと高さが 0 になります。
+- 立体が建物と重なって見にくい → ズームアウトして見てください。maps-suite では `fill-extrusion-opacity` を下げても見やすくなります。
+</Callout>
+
+関連：[値に応じてエリアを色分けするには（コロプレス）](/howto/choropleth/) ／ [建物や地形を3Dで表示するには](/howto/3d/)

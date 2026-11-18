@@ -3,7 +3,7 @@ layout: ../../layouts/DocLayout.astro
 title: ハザードマップを地図に重ねるには
 description: ハザードマップポータルサイトが配信する浸水想定区域などのタイルを、出典表示つきで地図に重ねます。
 page: howto
-kicker: 応用
+kicker: 高度な応用
 badge: howto
 ---
 import Callout from '../../components/Callout.astro'
@@ -13,14 +13,14 @@ import LiveCode from '../../components/LiveCode.astro'
 国土交通省の[ハザードマップポータルサイト](https://disaportal.gsi.go.jp/)は、洪水浸水想定区域や津波浸水想定などを `{z}/{x}/{y}` のラスタタイルとして配信しています。これをタイルソースとして追加すれば、自分の地図に重ねられます。
 
 <Callout kind="warning" title="出典表示が必須です">
-このデータには出典の記載が求められています。タイルソースの **`attribution`** に出典を書いてください。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
+このデータには出典の記載が求められています。タイルソースの **`attribution`** に出典を書いてください（`data-raster-tiles` では `data-raster-tiles-attribution`、`rasterTiles` では `attribution`）。表記の決まりは[出典の書き方](#出典の書き方)にまとめました。
 
-書く場所は**ソース**で、レイヤではありません。3つのライブラリはどれも同じで、書けば地図の右下に出ます。出典表示のコントロールを自分で足す必要はありません（[出典はどこに出るか](#出典はどこに出るか)）。
+`addSource` や `Source` で重ねるときは、書く場所は**ソース**で、レイヤではありません。3つのライブラリはどれも同じで、書けば地図の右下に出ます。出典表示のコントロールを自分で足す必要はありません（[出典はどこに出るか](#出典はどこに出るか)）。
 </Callout>
 
 ## コード
 
-どのライブラリでも、行う操作は基盤の `GeoloniaMap` に対して `addSource` と `addLayer` を呼ぶことです。取り出し方だけが違います（[地図インスタンスに直接アクセスするには](/howto/maps-core-access/)）。例はどれも、洪水浸水想定区域（想定最大規模）を東京の下町に重ねる場合です。
+JavaScript で重ねる例は、基盤の `GeoloniaMap` に対して `addSource` と `addLayer` を呼びます。ライブラリごとに違うのは取り出し方だけです（[地図インスタンスに直接アクセスするには](/howto/maps-core-access/)）。どの例も、洪水浸水想定区域（想定最大規模）を東京の下町に重ねる場合です。
 
 <Lens name="embed">
 `new geolonia.Map()` で地図を作ると、その戻り値がそのまま `GeoloniaMap` です。あとは `load` を待って `addSource` と `addLayer` を呼びます。
@@ -71,10 +71,28 @@ import LiveCode from '../../components/LiveCode.astro'
 
 </LiveCode>
 
-- **`class="geolonia"` を付けていません。** 付けると embed が自分で地図を作ってしまうので、`id` だけにして `new geolonia.Map("#map")` で作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
+- **`new geolonia.Map("#map")`**：`id` で要素を指定して地図を作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
 - **`attribution`**：出典表示の文字列。必須です。右下の出典表示に追加されます。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+JavaScript を書かずに、属性だけで重ねることもできます（embed 6.1.0 以降）。この書き方では、タイルは地図のラベル（地名など）の下に重なります。
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.7" data-lng="139.82" data-zoom="12" data-marker="off"
+     data-raster-tiles="https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png"
+     data-raster-tiles-attribution='出典：<a href="https://disaportal.gsi.go.jp/">ハザードマップポータルサイト</a>'
+     data-raster-tiles-opacity="0.7"
+     data-raster-tiles-min-zoom="2"
+     data-raster-tiles-max-zoom="17"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
 
 </Lens>
 
@@ -169,6 +187,8 @@ createRoot(document.getElementById("root")).render(
 - **`attribution`**：出典表示の文字列。必須です。`Source` に書きます（`Layer` ではありません）。
 - **`minzoom` / `maxzoom`**：配信されているズームの範囲。書いておくと、範囲外の存在しないタイルを取りに行かずに済みます。`maxzoom` を超えたぶんは最後のタイルを引き伸ばして表示されます。
 - **`raster-opacity`**：重ねたタイルの不透明度。1 のままだとベース地図が完全に隠れるので、0.6 から 0.8 くらいにします。
+
+`Map` の `rasterTiles`（`{ url, attribution, opacity, minZoom, maxZoom }`）でも重ねられます（maps-react 0.7.0 以降）。この書き方では、タイルは地図のラベルの下に重なります。
 
 </Lens>
 
@@ -550,7 +570,7 @@ createRoot(document.getElementById("root")).render(<App />);
 
 ## 地名が読めなくなるとき
 
-重ねたタイルはいちばん上に乗るので、ベース地図の地名や駅名が下に隠れます。ラベルの下に潜り込ませたいときは、レイヤを追加する位置を指定します。
+`addLayer` で重ねたタイルはいちばん上に乗るので、ベース地図の地名や駅名が下に隠れます。ラベルの下に潜り込ませたいときは、レイヤを追加する位置を指定します。embed の `data-raster-tiles` と maps-react の `rasterTiles` は、はじめからラベルの下に重ねます。
 
 embed と maps-suite では、`addLayer` の第2引数に「その手前に入れたいレイヤの id」を渡します。id はスタイルごとに違うので、最初の symbol レイヤを探して渡すのが確実です。
 
@@ -589,9 +609,9 @@ Geolonia Maps は、embed / maps-suite / maps-react のどれでも、地図を�
 
 <Callout kind="warning" title="うまくいかないとき">
 - 何も出ない → その場所に、指定した災害のデータが無いだけかもしれません。タイルは対象区域のあるところにしか無く、無いところは 404 を返します。同じ場所をハザードマップポータルサイトで開いて、データがあるかどうか先に確かめてください。
-- ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと、それ以上は引き伸ばして表示されます。
-- ベース地図が見えない → `raster-opacity` を下げてください。
-- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません（[出典はどこに出るか](#出典はどこに出るか)）。
+- ズームすると消える → 配信の上限（多くは 17）を超えています。ソースに `maxzoom` を書いておくと（`data-raster-tiles` では `data-raster-tiles-max-zoom`、`rasterTiles` では `maxZoom`）、それ以上は引き伸ばして表示されます。
+- ベース地図が見えない → 不透明度を下げてください（`raster-opacity`、`data-raster-tiles-opacity`、`rasterTiles` の `opacity`）。
+- 出典が出ない → `attribution` はソース側に書きます。レイヤ側ではありません。`data-raster-tiles` では `data-raster-tiles-attribution`、`rasterTiles` では `attribution` に書きます（[出典はどこに出るか](#出典はどこに出るか)）。
 - 出典が二重に出る → `AttributionControl` を自分で足しています。地図を作った時点で1つ足されているので、追加は要りません。
 </Callout>
 

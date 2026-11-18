@@ -3,7 +3,7 @@ layout: ../../layouts/DocLayout.astro
 title: 地図を地球儀（グローブ）で表示するには
 description: 地図の投影を globe に切り替え、ズームアウトしたときに地球儀として表示します。
 page: howto
-kicker: 応用
+kicker: 見た目の制御
 badge: howto
 ---
 import Callout from '../../components/Callout.astro'
@@ -15,33 +15,29 @@ import LiveCode from '../../components/LiveCode.astro'
 ## コード
 
 <Lens name="embed">
-HTML の属性だけでは、地球儀にはできません。`new geolonia.Map()` で作った地図なら、スタイルの読み込みを待ってから `setProjection` で投影を切り替えられます。
+`data-projection="globe"` を付けると、地球儀で表示します。
 
 <LiveCode title="embed で地球儀表示にする">
 
 ```html
 <style>
-  body { margin: 0; }
-  #map { width: 100%; height: 100vh; }
+  .geolonia { width: 100%; height: 100vh; }
 </style>
 
-<div id="map" data-lat="20" data-lng="0" data-zoom="2" data-marker="off"></div>
+<div class="geolonia"
+     data-lat="20" data-lng="0" data-zoom="2"
+     data-marker="off"
+     data-projection="globe"></div>
 
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
-<script>
-  const map = new geolonia.Map("#map");
-
-  map.on("style.load", () => {
-    map.setProjection({ type: "globe" });
-  });
-</script>
 ```
 
 </LiveCode>
 
-- **`new geolonia.Map("#map")`**：`id` で要素を指定して地図を作ります。位置や拡大率の `data-` 属性は、この書き方でも読まれます。
-- **`setProjection({ type: "globe" })`**：投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
-- **`style.load`**：スタイルを読み込むたびに呼ばれます。スタイルを差し替えると投影は元に戻るので、ここで呼んでおくと差し替えた後も地球儀のままになります。
+- **`data-projection`**：地図の投影。`"globe"` で地球儀、`"mercator"` で通常の平面投影です。
+- タイルは普段と同じものがそのまま使えます。データやスタイルの変更は不要です。
+
+この属性は embed 6.1.0 以降で使えます。
 
 </Lens>
 
@@ -73,7 +69,7 @@ map.getGeoloniaMap().setProjection({ type: "globe" });
 </Lens>
 
 <Lens name="react">
-`onLoad` で地図インスタンスを受け取り、`setProjection` で投影を切り替えます。`<GlobeControl>` を置くと、利用者がボタンで投影を切り替えられます。
+`projection` に `"globe"` を渡します。`<GlobeControl>` を置くと、利用者がボタンで投影を切り替えられます。
 
 <LiveCode title="maps-react で地球儀表示にする">
 
@@ -92,7 +88,7 @@ createRoot(document.getElementById("root")).render(
     apiKey="YOUR-API-KEY"
     center={[0, 20]}
     zoom={2}
-    onLoad={(map) => map.setProjection({ type: "globe" })}
+    projection="globe"
     containerStyle={{ width: "100%", height: "100vh" }}
   >
     <GlobeControl />
@@ -102,7 +98,7 @@ createRoot(document.getElementById("root")).render(
 
 </LiveCode>
 
-- **`setProjection({ type: "globe" })`**：投影を地球儀に切り替えます。`{ type: "mercator" }` で通常の平面投影に戻せます。
+- **`projection`**：地図の投影。`"globe"` で地球儀、`"mercator"` で通常の平面投影です。maps-react 0.7.0 以降で使えます。
 - **`<GlobeControl>`**：地球儀と平面を切り替えるボタンです。`position` で置く場所を変えられます。既定は右上（`"top-right"`）です。
 - タイルは普段と同じものがそのまま使えます。データやスタイルの変更は不要です。
 

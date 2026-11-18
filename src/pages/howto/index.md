@@ -14,31 +14,39 @@ quadrant: Diátaxis / 仕事 × 行動
 
 「〜するには」を最短で解決するレシピ集です。「これがしたい」といった目的ベースで読み進めることができます。なお、各レシピでは、特定のライブラリで対応していないものもあります。
 
-## レシピ
+## 基本
 
 - [マーカーを複数置くには](/howto/multiple-markers/)
-- [地図の見た目（スタイル）を切り替えるには](/howto/change-style/)
 - [クリックでポップアップを出すには](/howto/popup-on-click/)
 - [外部データ（GeoJSON）を地図に読み込むには](/howto/geojson-data/)
 - [現在地を表示するには](/howto/current-location/)
 - [全地点が画面に収まるように表示するには](/howto/fit-bounds/)
 - [指定した範囲に地図を移動するには](/howto/fit-bounds-to-area/)
-- [地図のコントロールの表示を切り替えるには](/howto/map-controls/)
-- [地図の表示言語を切り替えるには](/howto/switch-language/)
 - [ドラッグできるマーカーで座標を取得するには](/howto/draggable-marker/)
 
-## 応用（難しめ）
+## 見た目の制御
 
-- [地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには](/howto/maps-core-access/)
+- [地図の見た目（スタイル）を切り替えるには](/howto/change-style/)
+- [地図の表示言語を切り替えるには](/howto/switch-language/)
+- [地図のコントロールの表示を切り替えるには](/howto/map-controls/)
+- [建物や地形を3Dで表示するには](/howto/3d/)
+- [地図を地球儀（グローブ）で表示するには](/howto/globe/)
+
+## データの可視化
+
 - [大量の点をクラスタリングするには](/howto/clustering/)
 - [値に応じてエリアを色分けするには（コロプレス）](/howto/choropleth/)
-- [地方から都道府県を選ぶ地図を作るには](/howto/region-select/)
 - [ヒートマップで密度を可視化するには](/howto/heatmap/)
-- [建物や地形を3Dで表示するには](/howto/3d/)
+- [エリアを値に応じた高さで立体的に描くには](/howto/extrusion/)
+- [範囲の外側を暗くして、地域を目立たせるには](/howto/mask/)
+
+## 高度な応用
+
+- [地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには](/howto/maps-core-access/)
+- [地方から都道府県を選ぶ地図を作るには](/howto/region-select/)
 - [独自のデータソース（ベクトルタイル等）を追加するには](/howto/custom-source/)
 - [ハザードマップを地図に重ねるには](/howto/overlay-hazardmap/)
 - [住所で検索してその場所の地図を表示するには](/howto/address-search/)
-- [地図を地球儀（グローブ）で表示するには](/howto/globe/)
 - [JavaScript を使わずに HTML 属性のみで地図を設置するには（maps-suite）](/howto/web-component/)
 
 ## CLI（コマンドライン）

@@ -6,7 +6,7 @@ Geolonia Maps のドキュメントサイト（リニューアル版）のリポ
 
 ## セットアップ
 
-Node.js 22.12.0 以上が必要です。
+Node.js 22.23.4 以上が必要です。
 
 ```bash
 npm install

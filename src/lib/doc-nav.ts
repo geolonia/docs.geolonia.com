@@ -3,7 +3,7 @@
  *
  * リファレンス（src/lib/api-nav.ts）は TypeDoc の出すファイル名から機械的に木を
  * 組めるので手で維持する一覧を持たない。こちらは事情が違う。並び順と分類が
- * 意味を持つ（チュートリアルは Step 0 から Step 5、ハウツーは「レシピ」と「応用」）ため、
+ * 意味を持つ（チュートリアルは Step 0 から Step 5、ハウツーは「基本」「見た目の制御」「データの可視化」「高度な応用」「CLI（コマンドライン）」）ため、
  * ファイル名の辞書順やディレクトリ構造からは導出できない。
  *
  * 索引ページの本文をパースする案もあったが、docs 側の機構をこれ以上増やさない
@@ -79,36 +79,48 @@ const TUTORIAL_STEP_OVERRIDES: Record<string, Record<string, string>> = {
 /** チュートリアルのライブラリ。ディレクトリ名がそのまま表示名になる。 */
 const TUTORIAL_LIBS = ['embed', 'maps-react', 'maps-suite'];
 
-/** ハウツー。並びと分類は /howto/ の索引ページに合わせている。 */
+/** ハウツー。並びと分類は /howto/ の索引ページに合わせている（tests/doc-nav.test.mjs で検査）。 */
 const HOWTO_GROUPS: { label: string; slugs: [string, string][] }[] = [
   {
-    label: 'レシピ',
+    label: '基本',
     slugs: [
       ['multiple-markers', 'マーカーを複数置くには'],
-      ['change-style', '地図の見た目（スタイル）を切り替えるには'],
       ['popup-on-click', 'クリックでポップアップを出すには'],
       ['geojson-data', '外部データ（GeoJSON）を地図に読み込むには'],
       ['current-location', '現在地を表示するには'],
       ['fit-bounds', '全地点が画面に収まるように表示するには'],
       ['fit-bounds-to-area', '指定した範囲に地図を移動するには'],
-      ['map-controls', '地図のコントロールの表示を切り替えるには'],
-      ['switch-language', '地図の表示言語を切り替えるには'],
       ['draggable-marker', 'ドラッグできるマーカーで座標を取得するには'],
     ],
   },
   {
-    label: '応用（難しめ）',
+    label: '見た目の制御',
     slugs: [
-      ['maps-core-access', '地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには'],
+      ['change-style', '地図の見た目（スタイル）を切り替えるには'],
+      ['switch-language', '地図の表示言語を切り替えるには'],
+      ['map-controls', '地図のコントロールの表示を切り替えるには'],
+      ['3d', '建物や地形を3Dで表示するには'],
+      ['globe', '地図を地球儀（グローブ）で表示するには'],
+    ],
+  },
+  {
+    label: 'データの可視化',
+    slugs: [
       ['clustering', '大量の点をクラスタリングするには'],
       ['choropleth', '値に応じてエリアを色分けするには（コロプレス）'],
-      ['region-select', '地方から都道府県を選ぶ地図を作るには'],
       ['heatmap', 'ヒートマップで密度を可視化するには'],
-      ['3d', '建物や地形を3Dで表示するには'],
+      ['extrusion', 'エリアを値に応じた高さで立体的に描くには'],
+      ['mask', '範囲の外側を暗くして、地域を目立たせるには'],
+    ],
+  },
+  {
+    label: '高度な応用',
+    slugs: [
+      ['maps-core-access', '地図インスタンス（maps-core）に直接アクセスし、MapLibre GL JS の機能を利用するには'],
+      ['region-select', '地方から都道府県を選ぶ地図を作るには'],
       ['custom-source', '独自のデータソース（ベクトルタイル等）を追加するには'],
       ['overlay-hazardmap', 'ハザードマップを地図に重ねるには'],
       ['address-search', '住所で検索してその場所の地図を表示するには'],
-      ['globe', '地図を地球儀（グローブ）で表示するには'],
       ['web-component', 'JavaScript を使わずに HTML 属性のみで地図を設置するには（maps-suite）'],
     ],
   },

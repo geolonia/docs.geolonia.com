@@ -1179,28 +1179,37 @@ URL: https://docs.geolonia.com/howto/
 
 A collection of recipes that answer "how do I ..." as directly as possible, organised by goal. Note that some recipes are not supported by every library.
 
-### Recipes
+### Basics
 
 - Place Multiple Markers: https://docs.geolonia.com/howto/multiple-markers/
-- Switch the Map Style: https://docs.geolonia.com/howto/change-style/
 - Show a Popup on Click: https://docs.geolonia.com/howto/popup-on-click/
 - Load External GeoJSON Data: https://docs.geolonia.com/howto/geojson-data/
 - Show the Current Location: https://docs.geolonia.com/howto/current-location/
 - Fit All Points on Screen: https://docs.geolonia.com/howto/fit-bounds/
-- Toggle Map Controls: https://docs.geolonia.com/howto/map-controls/
-- Switch the Map Language: https://docs.geolonia.com/howto/switch-language/
 - Get Coordinates from a Draggable Marker: https://docs.geolonia.com/howto/draggable-marker/
+
+### Appearance
+
+- Switch the Map Style: https://docs.geolonia.com/howto/change-style/
+- Switch the Map Language: https://docs.geolonia.com/howto/switch-language/
+- Toggle Map Controls: https://docs.geolonia.com/howto/map-controls/
+- Show Buildings and Terrain in 3D: https://docs.geolonia.com/howto/3d/
+- Show the Map as a Globe: https://docs.geolonia.com/howto/globe/
+
+### Data Visualisation
+
+- Cluster a Large Number of Points: https://docs.geolonia.com/howto/clustering/
+- Colour Areas by Value (Choropleth): https://docs.geolonia.com/howto/choropleth/
+- Visualise Density with a Heatmap: https://docs.geolonia.com/howto/heatmap/
+- Colour Areas in 3D by Value (Extrusion): https://docs.geolonia.com/howto/extrusion/
+- Darken Everything Outside an Area (Mask): https://docs.geolonia.com/howto/mask/
 
 ### Advanced
 
 - Access the Map Instance Directly (maps-core): https://docs.geolonia.com/howto/maps-core-access/
-- Cluster a Large Number of Points: https://docs.geolonia.com/howto/clustering/
-- Colour Areas by Value (Choropleth): https://docs.geolonia.com/howto/choropleth/
-- Visualise Density with a Heatmap: https://docs.geolonia.com/howto/heatmap/
-- Show Buildings and Terrain in 3D: https://docs.geolonia.com/howto/3d/
+- Pick a Region, Then a Prefecture: https://docs.geolonia.com/howto/region-select/
 - Add a Custom Data Source (Vector Tiles and More): https://docs.geolonia.com/howto/custom-source/
 - Search by Address and Show That Place: https://docs.geolonia.com/howto/address-search/
-- Show the Map as a Globe: https://docs.geolonia.com/howto/globe/
 - Place a Map with HTML Tags Only (maps-suite): https://docs.geolonia.com/howto/web-component/
 
 ### CLI
@@ -2321,9 +2330,10 @@ Load the data with `data-geojson` and set the property and colours with the `dat
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
 ```
 
-- **`data-choropleth`**: the property used for colouring. Only features whose value is a number are coloured.
+- **`data-choropleth`**: the property used for colouring. Unless you use a value-to-colour map, only features whose value is a number are coloured.
 - **`data-choropleth-colors`**: comma-separated colours from low to high values, spread evenly over the range and interpolated between. Omit it for the default colours.
 - **`data-choropleth-range`**: the value range as `min,max`. Values outside the range get the end colours. Omit it to use the minimum and maximum of the data.
+- For one colour per value, write `value:colour` pairs in `data-choropleth-colors` (for example `千代田区:#bd0026, 港区:#fd8d3c` together with `data-choropleth="name"`); areas with other values get their `fill` colour or the default. `data-choropleth-range` is then not used (embed 6.1.0 or later).
 
 ### maps-suite
 
@@ -2369,7 +2379,7 @@ Pass the data with `geojson` and the colouring with `choropleth` on `<Map>`.
 />
 ```
 
-`choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. Without `center`, the map fits its view to the data.
+`choropleth` takes `property`, `colors` and `range` with the same meaning as the embed attributes. `colors` also takes a value-to-colour map such as `{ 千代田区: "#bd0026" }` (with `property: "name"`) (maps-react 0.7.0 or later). Without `center`, the map fits its view to the data.
 
 `geojson` and `choropleth` on `<Map>` are read once when the map is created. To change the data or the colouring later, put `<SimpleStyle>` inside `<Map>`; when its props change, the layers are redrawn without recreating the map. `geojson` on `<Map>` and `<SimpleStyle>` use the same source and layer IDs by default; when you use both, or several `<SimpleStyle>`, give each its own `id`. To fit the view to the data with `<SimpleStyle>`, add `fitBounds`.
 
@@ -2401,8 +2411,9 @@ Keeping `fill-opacity` below 1 lets the map underneath, roads and place names, s
 
 **When it does not work**
 
-- Everything is the same colour: check the spelling of the property name and that the value is a **number**. A string such as `"14920"` is not coloured. Also check that the range is not far off the data values.
-- Some areas turn blackish: those polygons have a **missing** property. Fill it in the data or give a default with something like `["coalesce", ["get", "density"], 0]`.
+- Everything is the same colour (list of colours): check the spelling of the property name and that the value is a **number**. A string such as `"14920"` is not coloured. Also check that the range is not far off the data values.
+- Everything is the same colour (value-to-colour map): check that the values in the map match the property values exactly (spelling, surrounding spaces).
+- Some areas turn blackish (expressions written in maps-suite or `Layer`): those polygons have a **missing** property. With `choropleth` in embed and maps-react, such areas get their `fill` colour or the default (translucent red) instead. Fill it in the data or give a default with something like `["coalesce", ["get", "density"], 0]`.
 - Nothing appears: check for a missing `Layer` `id`, or a 404 on the GeoJSON.
 
 ---
@@ -2713,6 +2724,112 @@ For the maps-suite code, there are mainly four things to tune.
 
 ---
 
+## Colour Areas in 3D by Value (Extrusion)
+
+URL: https://docs.geolonia.com/howto/extrusion/
+
+Drawing polygons as columns whose height follows a property shows at a glance which areas stand out. The example draws Tokyo's 23 wards with height and colour by population density, using the same `/data/tokyo23.geojson` as the choropleth recipe (source: Geospatial Information Authority of Japan, Global Map Japan; processed by Geolonia).
+
+### embed
+
+Load the data with `data-geojson` and name the height property in `data-extrusion` (embed 6.1.0 or later). Tilt the map with `data-pitch`, or it looks flat.
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-lat="35.66" data-lng="139.73" data-zoom="10.2"
+     data-pitch="55" data-bearing="-20"
+     data-marker="off"
+     data-geojson="https://docs.geolonia.com/data/tokyo23.geojson"
+     data-extrusion="density"
+     data-extrusion-max-height="3000"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+`data-extrusion-max-height` is the height in metres of the area with the largest value; other areas are proportional. The colour also follows the same property unless `data-extrusion-color` names another; `data-extrusion-colors` sets the colours and also takes `value:colour` pairs.
+
+### maps-suite
+
+maps-suite has no option for this. Wait for load and add a `fill-extrusion` layer to the underlying map, with `fill-extrusion-height` and `fill-extrusion-color` as `interpolate` expressions on `density`, and tilt the map with `tilt`.
+
+### maps-react
+
+Pass the data with `geojson` and the height with `extrusion` on `<Map>` (maps-react 0.7.0 or later), and tilt the map with `pitch`.
+
+```jsx
+<Map
+  apiKey="YOUR-API-KEY"
+  center={[139.73, 35.66]}
+  zoom={10.2}
+  pitch={55}
+  bearing={-20}
+  containerStyle={{ width: "100%", height: "100vh" }}
+  geojson="/data/tokyo23.geojson"
+  extrusion={{ height: { property: "density", maxHeight: 3000 } }}
+/>
+```
+
+A property name alone sets both height and colour; `{ height, color }` sets them apart. To change them on a live map, use `<SimpleStyle>`.
+
+**When it does not work**
+
+- It looks flat: tilt the map (`data-pitch` in embed, `tilt` in maps-suite, `pitch` in maps-react).
+- No height even when tilted: check the property name and that its values are **numbers**. Strings such as `"14920"` give a height of 0.
+
+---
+
+## Darken Everything Outside an Area (Mask)
+
+URL: https://docs.geolonia.com/howto/mask/
+
+Darkening everything outside the area of interest makes it stand out, for example on a city's website. Pass a boundary GeoJSON; the area is kept and the outside is painted over. The example darkens everything outside Tokyo's 23 wards, using `/data/tokyo23.geojson` (source: Geospatial Information Authority of Japan, Global Map Japan; processed by Geolonia).
+
+### embed
+
+Give the URL of the boundary GeoJSON in `data-mask` (embed 6.1.0 or later).
+
+```html
+<style>
+  .geolonia { width: 100%; height: 100vh; }
+</style>
+
+<div class="geolonia"
+     data-marker="off"
+     data-mask="https://docs.geolonia.com/data/tokyo23.geojson"
+     data-mask-opacity="0.5"
+     data-mask-outline="on"></div>
+
+<script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
+```
+
+`data-mask-opacity` defaults to 0.3 and `data-mask-color` to black. `data-mask-outline="on"` draws the boundary. Without `data-lat` / `data-lng`, `data-geojson` and `data-simple-vector`, the map fits to the boundary.
+
+### maps-suite
+
+maps-suite has no option for this. Use embed or maps-react.
+
+### maps-react
+
+Put `<Mask>` inside `<Map>` (maps-react 0.7.0 or later).
+
+```jsx
+<Map apiKey="YOUR-API-KEY" center={[139.73, 35.68]} zoom={9.4} containerStyle={{ width: "100%", height: "100vh" }}>
+  <Mask geojson="/data/tokyo23.geojson" opacity={0.5} outline fitBounds />
+</Map>
+```
+
+Changing a prop redraws the mask, and removing the component removes it. `mask` on `<Map>` also darkens the outside, read once when the map is created, but it does not fit the view to the boundary.
+
+**When it does not work**
+
+- Nothing is darkened: check the browser console. Failing to fetch the boundary, or a boundary with no polygons, logs an error.
+
+---
+
 ## Show Buildings and Terrain in 3D
 
 URL: https://docs.geolonia.com/howto/3d/
@@ -2783,31 +2900,25 @@ For data too large for GeoJSON, or tiles someone else publishes, add a **tile so
 
 ### embed
 
-HTML attributes alone cannot add a data source. With a map created by `new geolonia.Map()`, wait for `load` and pass `tiles` (an array of template URLs) to `addSource`.
+Raster tiles can be laid with `data-raster-tiles` and a template URL (embed 6.1.0 or later). They go under the map labels.
 
 ```html
 <style>
-  body { margin: 0; }
-  #map { width: 100%; height: 100vh; }
+  .geolonia { width: 100%; height: 100vh; }
 </style>
 
-<div id="map" data-lat="35.6812" data-lng="139.7671" data-zoom="12" data-marker="off"></div>
+<div class="geolonia"
+     data-lat="35.6812" data-lng="139.7671" data-zoom="12"
+     data-marker="off"
+     data-raster-tiles="https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
+     data-raster-tiles-attribution="地理院タイル"></div>
+
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
-<script>
-  const map = new geolonia.Map("#map");
-  map.on("load", () => {
-    map.addSource("gsi", {
-      type: "raster",
-      tiles: ["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution: "地理院タイル",
-    });
-    map.addLayer({ id: "gsi", type: "raster", source: "gsi" });
-  });
-</script>
 ```
 
-Pass the element's `id` to `new geolonia.Map()`; the `data-*` attributes are still read.
+`data-raster-tiles-attribution` is rendered as HTML, so put only text you wrote yourself there. Opacity is `data-raster-tiles-opacity`, and the served zoom range is `data-raster-tiles-min-zoom` / `data-raster-tiles-max-zoom`. One raster layer can be laid this way.
+
+Vector tiles in SimpleStyle Vector form (a layer named `g-simplestyle-v1` whose features carry simplestyle properties such as colours) can be added by putting the absolute `https://` URL of their TileJSON (`tiles.json`) in `data-simple-vector`; a relative URL such as `/tiles.json` or a template URL such as `{z}/{x}/{y}.pbf` does not work there (a value that starts with none of `http://`, `https://` and `geolonia://` is treated as a Geolonia custom tile ID). Other vector tiles, including ones whose features sit in a layer with another name such as `roads`, cannot be added with attributes; for those, create the map with `new geolonia.Map()`, wait for `load`, and call `addSource` and `addLayer` as in the maps-suite code.
 
 ### maps-suite
 
@@ -2848,7 +2959,7 @@ impl.addLayer({ id: "mytiles-line", type: "line", source: "mytiles", "source-lay
 </Source>
 ```
 
-For vector tiles, use `type="vector"` and give `Layer` a `source-layer`.
+For vector tiles, use `type="vector"` and give `Layer` a `source-layer`. To lay a single raster layer, `rasterTiles` (`{ url, attribution, opacity }`) on `Map` also works (maps-react 0.7.0 or later); it goes under the map labels.
 
 ```jsx
 <Source id="mytiles" type="vector" tiles={["https://example.com/tiles/{z}/{x}/{y}.pbf"]}>
@@ -2862,7 +2973,7 @@ The vector tile example uses a fictional `example.com` URL and will not work as 
 
 - Nothing appears with raster: check the template URL directly in a browser. Substituting real numbers such as `12/3637/1612` and seeing whether an image comes back is the fastest check.
 - Nothing appears with vector: **a mismatched `source-layer` name** is the most common cause. Confirm the exact name from the tile specification or the publisher style definition.
-- Tiles are offset or coarse: check `tileSize`, which is 256 or 512 depending on the publisher.
+- Tiles are offset or coarse: check the tile size, which is 256 or 512 depending on the publisher (`data-raster-tiles-size` with `data-raster-tiles`, `tileSize` with `addSource`, `Source` and `rasterTiles`).
 
 ---
 
@@ -3123,25 +3234,22 @@ Switching the map projection to **globe** shows a globe rather than a flat map w
 
 ### embed
 
-HTML attributes alone cannot switch to a globe. With a map created by `new geolonia.Map()`, call `setProjection` on `style.load` (the projection is reset when the style is replaced, so this keeps the globe after a style change).
+Add `data-projection="globe"` (embed 6.1.0 or later).
 
 ```html
 <style>
-  body { margin: 0; }
-  #map { width: 100%; height: 100vh; }
+  .geolonia { width: 100%; height: 100vh; }
 </style>
 
-<div id="map" data-lat="20" data-lng="0" data-zoom="2" data-marker="off"></div>
+<div class="geolonia"
+     data-lat="20" data-lng="0" data-zoom="2"
+     data-marker="off"
+     data-projection="globe"></div>
+
 <script src="https://cdn.geolonia.com/embed/v6/embed?geolonia-api-key=YOUR-API-KEY"></script>
-<script>
-  const map = new geolonia.Map("#map");
-  map.on("style.load", () => {
-    map.setProjection({ type: "globe" });
-  });
-</script>
 ```
 
-Pass the element's `id` to `new geolonia.Map()`; the `data-*` attributes are still read.
+`data-projection` is `"globe"` for a globe or `"mercator"` for the usual flat projection.
 
 ### maps-suite
 
@@ -3160,21 +3268,21 @@ map.getGeoloniaMap().setProjection({ type: "globe" });
 
 ### maps-react
 
-Receive the map instance in `onLoad` and switch the projection. With `<GlobeControl>`, users can switch the projection with a button.
+Pass `projection="globe"` (maps-react 0.7.0 or later). With `<GlobeControl>`, users can switch the projection with a button.
 
 ```jsx
 <Map
   apiKey="YOUR-API-KEY"
   center={[0, 20]}
   zoom={2}
-  onLoad={(map) => map.setProjection({ type: "globe" })}
+  projection="globe"
   containerStyle={{ width: "100%", height: "100vh" }}
 >
   <GlobeControl />
 </Map>
 ```
 
-- **`setProjection({ type: "globe" })`**: switches the projection to a globe. `{ type: "mercator" }` returns to the usual flat projection.
+- **`projection`**: `"globe"` for a globe or `"mercator"` for the usual flat projection (maps-react 0.7.0 or later).
 - **`<GlobeControl>`**: a button that switches between globe and flat. `position` sets where it goes; the default is the top right (`"top-right"`).
 - The tiles are the same as usual. No data or style change is needed.
 
@@ -3827,7 +3935,7 @@ The React library. **This is the only library without a reference generated from
 
 `Map` additionally has props deciding the appearance of the container such as `containerStyle` and `className`, props receiving map events such as `onClick` and `onMoveEnd`, `interactiveLayerIds` for narrowing which layers are clickable, and `onLoad` for retrieving the map instance. These are maps-react additions and do not appear on the MapLibre side.
 
-The available components are `Map` for the map itself, `Source` and `Layer` for data and drawing, `Marker` and `Popup`, `SimpleStyle` for drawing GeoJSON, and the controls (`NavigationControl`, `GeolocateControl`, `FullscreenControl`, `GlobeControl`, `ScaleControl`, `AttributionControl`, the address search box `GeocoderControl`, and `Control` for writing your own). There is also `MapProvider` for handling several maps together, hooks such as `useMap` and `useControl`, and the function `geocode` for finding a position from an address.
+The available components are `Map` for the map itself, `Source` and `Layer` for data and drawing, `Marker` and `Popup`, `SimpleStyle` for drawing GeoJSON, `Mask` for darkening outside an area, and the controls (`NavigationControl`, `GeolocateControl`, `FullscreenControl`, `GlobeControl`, `ScaleControl`, `AttributionControl`, the address search box `GeocoderControl`, and `Control` for writing your own). There is also `MapProvider` for handling several maps together, hooks such as `useMap` and `useControl`, and the function `geocode` for finding a position from an address.
 
 What you pass to `Source` and `Layer` is the MapLibre GL JS source and layer definition as it is. What can be written in `paint` and `layout`, and how `filter` expressions work, is covered by the MapLibre GL JS documentation. The map instance received in `onLoad` also extends the MapLibre `Map`, so the same documentation applies.
 
