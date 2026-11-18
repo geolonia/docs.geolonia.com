@@ -41,7 +41,7 @@ GeoJSON では収まらない大きなデータや、他所が配信している
 
 この属性は embed 6.1.0 以降で使えます。
 
-**ベクトルタイル**は、SimpleStyle Vector のタイル（`g-simplestyle-v1` という名前のレイヤに、色などを simplestyle のプロパティで持つ地物を入れたもの）なら、`data-simple-vector` にその TileJSON（`tiles.json`）の URL を書くと重ねられます。`{z}/{x}/{y}.pbf` のようなテンプレート URL は渡せません。それ以外のベクトルタイル（地物が `roads` など別の名前のレイヤにあるものを含む）は属性では重ねられません。`new geolonia.Map()` で地図を作り、読み込みを待ってから、suite のタブと同じように `addSource` と `addLayer` を呼びます。
+**ベクトルタイル**は、SimpleStyle Vector のタイル（`g-simplestyle-v1` という名前のレイヤに、色などを simplestyle のプロパティで持つ地物を入れたもの）なら、`data-simple-vector` にその TileJSON（`tiles.json`）の URL を `https://` から書くと重ねられます。`/tiles.json` のような相対 URL と、`{z}/{x}/{y}.pbf` のようなテンプレート URL は渡せません（`http://`、`https://`、`geolonia://` のどれでも始まらない値は、Geolonia のカスタムタイルの ID として扱われます）。それ以外のベクトルタイル（地物が `roads` など別の名前のレイヤにあるものを含む）は属性では重ねられません。`new geolonia.Map()` で地図を作り、読み込みを待ってから、suite のタブと同じように `addSource` と `addLayer` を呼びます。
 
 ```html
 <style>

@@ -2918,7 +2918,7 @@ Raster tiles can be laid with `data-raster-tiles` and a template URL (embed 6.1.
 
 `data-raster-tiles-attribution` is rendered as HTML, so put only text you wrote yourself there. Opacity is `data-raster-tiles-opacity`, and the served zoom range is `data-raster-tiles-min-zoom` / `data-raster-tiles-max-zoom`. One raster layer can be laid this way.
 
-Vector tiles in SimpleStyle Vector form (a layer named `g-simplestyle-v1` whose features carry simplestyle properties such as colours) can be added by putting the URL of their TileJSON (`tiles.json`) in `data-simple-vector`; a template URL such as `{z}/{x}/{y}.pbf` does not work there. Other vector tiles, including ones whose features sit in a layer with another name such as `roads`, cannot be added with attributes; for those, create the map with `new geolonia.Map()`, wait for `load`, and call `addSource` and `addLayer` as in the maps-suite code.
+Vector tiles in SimpleStyle Vector form (a layer named `g-simplestyle-v1` whose features carry simplestyle properties such as colours) can be added by putting the absolute `https://` URL of their TileJSON (`tiles.json`) in `data-simple-vector`; a relative URL such as `/tiles.json` or a template URL such as `{z}/{x}/{y}.pbf` does not work there (a value that starts with none of `http://`, `https://` and `geolonia://` is treated as a Geolonia custom tile ID). Other vector tiles, including ones whose features sit in a layer with another name such as `roads`, cannot be added with attributes; for those, create the map with `new geolonia.Map()`, wait for `load`, and call `addSource` and `addLayer` as in the maps-suite code.
 
 ### maps-suite
 
